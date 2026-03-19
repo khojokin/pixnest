@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>PixNest | Home</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
   <style>
     *{
       margin:0;
@@ -213,10 +214,6 @@
       color:#ffffff;
     }
 
-    .hero h1 span{
-      color:var(--accent);
-    }
-
     .hero p{
       font-size:18px;
       color:#cbd5e1;
@@ -411,6 +408,7 @@
       width:100%;
       height:220px;
       object-fit:cover;
+      background:#1e293b;
     }
 
     .category-content{
@@ -429,118 +427,150 @@
       margin-bottom:14px;
     }
 
+    .category-footer{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+
+    .photo-count-badge{
+      display:inline-block;
+      padding:6px 10px;
+      border-radius:999px;
+      font-size:12px;
+      background:rgba(250,204,21,0.12);
+      border:1px solid rgba(250,204,21,0.16);
+      color:var(--accent);
+    }
+
     .link-btn{
       color:var(--accent);
       font-weight:700;
       font-size:14px;
     }
 
-    .featured-grid{
+    .featured-grid,
+    .masonry-grid{
       display:grid;
       grid-template-columns:repeat(3,1fr);
       gap:24px;
     }
 
-    .photo-card{
-      background:#111827;
-      border:1px solid var(--line);
+    .visual-card{
+      position:relative;
+      min-height:460px;
       border-radius:22px;
       overflow:hidden;
+      border:1px solid var(--line);
+      background:#111827;
       transition:0.3s;
-      display:flex;
-      flex-direction:column;
+      cursor:pointer;
     }
 
-    .photo-card:hover{
+    .visual-card:hover{
       transform:translateY(-6px);
       box-shadow:0 18px 36px rgba(0,0,0,0.2);
     }
 
-    .photo-card img{
+    .visual-card img{
+      position:absolute;
+      inset:0;
       width:100%;
-      height:280px;
+      height:100%;
       object-fit:cover;
       background:#1e293b;
     }
 
-    .photo-content{
+    .visual-card::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      z-index:1;
+      background:linear-gradient(
+        to top,
+        rgba(15,23,42,0.95) 0%,
+        rgba(15,23,42,0.72) 34%,
+        rgba(15,23,42,0.26) 66%,
+        rgba(15,23,42,0.05) 100%
+      );
+    }
+
+    .photo-overlay{
+      position:absolute;
+      left:0;
+      right:0;
+      bottom:0;
+      z-index:2;
       padding:18px;
       display:flex;
       flex-direction:column;
-      flex:1;
+      gap:10px;
+      background:transparent;
     }
 
     .meta{
       display:flex;
       flex-wrap:wrap;
       gap:10px;
-      margin-bottom:12px;
+      margin-bottom:0;
     }
 
     .pill{
-      background:rgba(255,255,255,0.06);
-      color:#cbd5e1;
+      background:rgba(255,255,255,0.12);
+      color:#ffffff;
       padding:6px 10px;
       border-radius:999px;
       font-size:12px;
+      backdrop-filter:blur(6px);
+      border:1px solid rgba(255,255,255,0.12);
     }
 
-    .photo-content h3{
-      font-size:22px;
+    .overlay-desc{
       color:#ffffff;
-      margin-bottom:8px;
-    }
-
-    .photo-content p{
-      color:#cbd5e1;
-      font-size:14px;
-      margin-bottom:14px;
+      font-size:16px;
+      line-height:1.5;
+      margin:0;
+      background:transparent;
+      text-shadow:0 2px 10px rgba(0,0,0,0.35);
     }
 
     .credit{
-      color:var(--muted);
-      font-size:13px;
-      margin-top:auto;
+      color:#e2e8f0;
+      font-size:14px;
+      background:transparent;
+      text-shadow:0 2px 10px rgba(0,0,0,0.35);
     }
 
-    .masonry-grid{
-      display:grid;
-      grid-template-columns:repeat(4,1fr);
-      gap:18px;
+    .overlay-actions{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:4px;
     }
 
-    .masonry-item{
-      background:#111827;
-      border:1px solid var(--line);
-      border-radius:20px;
-      overflow:hidden;
-      transition:0.3s;
+    .action-icon{
+      width:40px;
+      height:40px;
+      border-radius:50%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:rgba(255,255,255,0.12);
+      border:1px solid rgba(255,255,255,0.14);
+      color:#ffffff;
+      cursor:pointer;
+      backdrop-filter:blur(8px);
+      font-size:15px;
+      text-decoration:none;
     }
 
-    .masonry-item:hover{
-      transform:translateY(-4px);
-      box-shadow:0 16px 32px rgba(0,0,0,0.18);
-    }
-
-    .masonry-item img{
-      width:100%;
-      height:260px;
-      object-fit:cover;
-    }
-
-    .masonry-item .info{
-      padding:14px;
-    }
-
-    .masonry-item .info h4{
-      font-size:17px;
-      color:#fff;
-      margin-bottom:6px;
-    }
-
-    .masonry-item .info p{
-      font-size:13px;
-      color:var(--muted);
+    .action-icon:hover{
+      color:var(--accent);
+      border-color:rgba(250,204,21,0.3);
+      transform:translateY(-2px);
     }
 
     .feature-strip{
@@ -650,10 +680,7 @@
         grid-template-columns:repeat(2,1fr);
       }
 
-      .featured-grid{
-        grid-template-columns:repeat(2,1fr);
-      }
-
+      .featured-grid,
       .masonry-grid{
         grid-template-columns:repeat(2,1fr);
       }
@@ -817,9 +844,9 @@
         <a href="index.html" class="active">Home</a>
         <a href="explore.html">Explore</a>
         <a href="#categories">Categories</a>
-        <a href="about.html">About</a>
         <a href="upload.html">Upload</a>
-         <a href="contact.html">Contact</a>
+        <a href="license.html">License</a>
+        <a href="contact.html">Contact</a>
       </nav>
     </div>
   </header>
@@ -828,10 +855,10 @@
     <div class="container">
       <div class="hero-layout">
         <div class="hero-content">
-          <div class="hero-tag">Free and premium visual collections</div>
-          <h1>Discover beautiful photos from <span id="heroSiteName">PixNest</span> for projects, brands, and creative work.</h1>
-          <p>
-            Explore categories, browse fresh uploads, and find photos for websites, designs, social media, and creative projects.
+          <div class="hero-tag" id="heroTag">Discover fresh visual collections</div>
+          <h1 id="heroTitle">Discover beautiful photos for creative projects, brands, and inspiration.</h1>
+          <p id="heroText">
+            Browse categories, explore standout visuals, and find photos for websites, design work, social media, and creative ideas.
           </p>
 
           <div class="hero-buttons">
@@ -847,8 +874,8 @@
         </div>
 
         <div class="hero-panel">
-          <h3>Build your library faster</h3>
-          <p>Browse categories, discover trending shots, and find visuals that fit your project style in seconds.</p>
+          <h3>Find visuals faster</h3>
+          <p>Explore categories, discover standout picks, and browse fresh images in one simple gallery.</p>
 
           <div class="hero-stats">
             <div class="hero-stat">
@@ -868,11 +895,11 @@
             </div>
             <div class="hero-mini-item">
               <b>Browse by category</b>
-              <span>Easy navigation</span>
+              <span>Easy exploration</span>
             </div>
             <div class="hero-mini-item">
               <b>Download and use</b>
-              <span>Free or premium</span>
+              <span>Free and premium</span>
             </div>
           </div>
         </div>
@@ -884,13 +911,43 @@
     <div class="container">
       <div class="section-head">
         <div>
-          <h2>Browse Categories</h2>
-          <p>Explore photo collections by topic so visitors can quickly jump into the visuals they want.</p>
+          <h2 id="categoriesSectionTitle">All Categories</h2>
+          <p id="categoriesSectionText">Explore visual collections across different styles, themes, and creative topics.</p>
         </div>
       </div>
 
       <div class="categories-grid" id="categoriesContainer">
-        <div class="empty-box">Categories from the admin page will appear here.</div>
+        <div class="empty-box">Categories will appear here soon.</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="featured">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <h2 id="featuredSectionTitle">Featured Photos</h2>
+          <p id="featuredSectionText">Latest standout visuals selected for the PixNest collection.</p>
+        </div>
+      </div>
+
+      <div class="featured-grid" id="featuredPhotosContainer">
+        <div class="empty-box">No featured photos available yet. Check back soon for fresh highlights.</div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <h2 id="trendingSectionTitle">Trending This Week</h2>
+          <p id="trendingSectionText">Fresh visual picks to explore across multiple styles and categories.</p>
+        </div>
+      </div>
+
+      <div class="masonry-grid" id="trendingPhotosContainer">
+        <div class="empty-box">No photos available yet. Check back soon for new additions.</div>
       </div>
     </div>
   </section>
@@ -900,69 +957,39 @@
       <div class="section-head">
         <div>
           <h2>Why People Use PixNest</h2>
-          <p>A simple gallery setup that works for creators, marketers, designers, bloggers, and small brands.</p>
+          <p>A simple photo platform for creators, brands, designers, bloggers, and businesses looking for strong visuals.</p>
         </div>
       </div>
 
       <div class="strip-grid">
         <div class="strip-box">
           <h3>Free downloads</h3>
-          <p>Offer free images to grow traffic and keep visitors coming back.</p>
+          <p>Offer free images that keep visitors exploring and coming back for more.</p>
         </div>
 
         <div class="strip-box">
           <h3>Premium collections</h3>
-          <p>Sell exclusive high-resolution photos or curated premium packs.</p>
+          <p>Unlock stronger image packs and exclusive visuals for premium users.</p>
         </div>
 
         <div class="strip-box">
           <h3>Niche categories</h3>
-          <p>Build stronger relevance by focusing on targeted visual themes.</p>
+          <p>Organize visuals into focused themes that are easy to browse and discover.</p>
         </div>
 
         <div class="strip-box">
           <h3>Creator uploads</h3>
-          <p>Let photographers upload and organize work through your admin system.</p>
+          <p>Grow the collection with fresh visuals across different categories and styles.</p>
         </div>
-      </div>
-    </div>
-  </section>
-
-  <section id="featured">
-    <div class="container">
-      <div class="section-head">
-        <div>
-          <h2>Featured Photos</h2>
-          <p>Latest standout visuals pulled from your admin uploads.</p>
-        </div>
-      </div>
-
-      <div class="featured-grid" id="featuredPhotosContainer">
-        <div class="empty-box">Featured photos from the admin page will appear here.</div>
-      </div>
-    </div>
-  </section>
-
-  <section>
-    <div class="container">
-      <div class="section-head">
-        <div>
-          <h2>Trending This Week</h2>
-          <p>Fresh visual picks visitors can browse quickly across multiple styles and categories.</p>
-        </div>
-      </div>
-
-      <div class="masonry-grid" id="trendingPhotosContainer">
-        <div class="empty-box">Uploaded photos from the admin page will appear here.</div>
       </div>
     </div>
   </section>
 
   <section class="cta">
     <div class="container">
-      <h2>Start building your visual library today.</h2>
-      <p>
-        Explore curated categories, discover standout images, and grow your photo site with free and premium collections.
+      <h2 id="ctaTitle">Start exploring the PixNest collection today.</h2>
+      <p id="ctaText">
+        Browse curated categories, discover standout images, and enjoy a growing library of free and premium visuals.
       </p>
       <div class="cta-actions">
         <a href="explore.html" class="btn btn-primary">Explore All Photos</a>
@@ -985,6 +1012,405 @@
     </div>
   </footer>
 
-  <script src="pixnest-data.js"></script>
+  <script>
+    const STORAGE_KEY = "pixnest_admin_v1";
+
+    function createFallbackData(){
+      return {
+        siteName: "PixNest",
+        siteTagline: "Free and premium photo collections",
+        footerText: "©️ 2026 PixNest. Discover and share powerful visual collections.",
+        homepage: {
+          heroTag: "Discover fresh visual collections",
+          heroTitle: "Discover beautiful photos for creative projects, brands, and inspiration.",
+          heroText: "Browse categories, explore standout visuals, and find photos for websites, design work, social media, and creative ideas.",
+          categoriesTitle: "All Categories",
+          categoriesText: "Explore visual collections across different styles, themes, and creative topics.",
+          featuredTitle: "Featured Photos",
+          featuredText: "Latest standout visuals selected for the PixNest collection.",
+          trendingTitle: "Trending This Week",
+          trendingText: "Fresh visual picks to explore across multiple styles and categories.",
+          ctaTitle: "Start exploring the PixNest collection today.",
+          ctaText: "Browse curated categories, discover standout images, and enjoy a growing library of free and premium visuals."
+        },
+        categories: []
+      };
+    }
+
+    function escapeHtml(value = ""){
+      return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+
+    function loadData(){
+      try{
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if(raw){
+          return JSON.parse(raw);
+        }
+      }catch(error){
+        console.error("Failed to load PixNest data:", error);
+      }
+      return createFallbackData();
+    }
+
+    function flattenPhotos(categories = []){
+      return categories.flatMap(category =>
+        (category.photos || []).map(photo => ({
+          ...photo,
+          categoryId: category.id,
+          categoryName: category.name || "Uncategorized",
+          categoryDescription: category.description || ""
+        }))
+      );
+    }
+
+    function sortNewest(items = []){
+      return [...items].sort((a, b) => {
+        const aTime = new Date(a.createdAt || 0).getTime();
+        const bTime = new Date(b.createdAt || 0).getTime();
+        return bTime - aTime;
+      });
+    }
+
+    function getPhotoTags(photo){
+      return (photo.tags || "")
+        .split(/[,|]/)
+        .map(tag => tag.trim())
+        .filter(Boolean);
+    }
+
+    function getCategoryCover(category){
+      if(category.photos && category.photos.length){
+        return category.photos[0].image;
+      }
+      return "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&w=1200&q=80";
+    }
+
+    function setText(id, value){
+      const el = document.getElementById(id);
+      if(el && value !== undefined && value !== null){
+        el.textContent = value;
+      }
+    }
+
+    function initMenu(){
+      const menuToggle = document.getElementById("menuToggle");
+      const navLinks = document.getElementById("navLinks");
+
+      if(!menuToggle || !navLinks) return;
+
+      menuToggle.addEventListener("click", () => {
+        navLinks.classList.toggle("show");
+        const expanded = menuToggle.getAttribute("aria-expanded") === "true";
+        menuToggle.setAttribute("aria-expanded", String(!expanded));
+      });
+
+      document.querySelectorAll(".nav-links a").forEach(link => {
+        link.addEventListener("click", () => {
+          if(window.innerWidth <= 768){
+            navLinks.classList.remove("show");
+            menuToggle.setAttribute("aria-expanded", "false");
+          }
+        });
+      });
+
+      window.addEventListener("resize", () => {
+        if(window.innerWidth > 768){
+          navLinks.classList.remove("show");
+          menuToggle.setAttribute("aria-expanded", "false");
+        }
+      });
+    }
+
+    function applyBranding(data){
+      setText("brandTitle", data.siteName || "PixNest");
+      setText("brandSubtitle", data.siteTagline || "Photo Collection Site");
+      setText("footerText", data.footerText || "©️ 2026 PixNest. Discover and share powerful visual collections.");
+
+      const home = data.homepage || {};
+      setText("heroTag", home.heroTag || "Discover fresh visual collections");
+      setText("heroTitle", home.heroTitle || "Discover beautiful photos for creative projects, brands, and inspiration.");
+      setText("heroText", home.heroText || "Browse categories, explore standout visuals, and find photos for websites, design work, social media, and creative ideas.");
+      setText("categoriesSectionTitle", home.categoriesTitle || "All Categories");
+      setText("categoriesSectionText", home.categoriesText || "Explore visual collections across different styles, themes, and creative topics.");
+      setText("featuredSectionTitle", home.featuredTitle || "Featured Photos");
+      setText("featuredSectionText", home.featuredText || "Latest standout visuals selected for the PixNest collection.");
+      setText("trendingSectionTitle", home.trendingTitle || "Trending This Week");
+      setText("trendingSectionText", home.trendingText || "Fresh visual picks to explore across multiple styles and categories.");
+      setText("ctaTitle", home.ctaTitle || "Start exploring the PixNest collection today.");
+      setText("ctaText", home.ctaText || "Browse curated categories, discover standout images, and enjoy a growing library of free and premium visuals.");
+    }
+
+    function renderStats(categories, photos){
+      setText("photoCountStat", `${photos.length}+`);
+      setText("categoryCountStat", `${categories.length}+`);
+    }
+
+    function renderHomeCategories(categories = []){
+      const container = document.getElementById("categoriesContainer");
+      if(!container) return;
+
+      if(!categories.length){
+        container.innerHTML = `
+          <div class="empty-box">
+            Categories will appear here soon.
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = categories.map(category => `
+        <article class="category-card">
+          <img src="${escapeHtml(getCategoryCover(category))}" alt="${escapeHtml(category.name || "Category")}">
+          <div class="category-content">
+            <h3>${escapeHtml(category.name || "Untitled Category")}</h3>
+            <p>${escapeHtml(category.description || "No description added yet.")}</p>
+            <div class="category-footer">
+              <span class="photo-count-badge">${(category.photos || []).length} photo${(category.photos || []).length === 1 ? "" : "s"}</span>
+              <a href="category.html?category=${encodeURIComponent(category.name || "")}" class="link-btn">View Photos →</a>
+            </div>
+          </div>
+        </article>
+      `).join("");
+    }
+
+    function createOverlayActions(photo){
+      const targetUrl = `category.html?category=${encodeURIComponent(photo.categoryName || "")}&photo=${encodeURIComponent(photo.id || "")}`;
+      const absoluteTarget = new URL(targetUrl, window.location.href).href;
+      const shareText = `${photo.categoryName || "PixNest photo"} on PixNest`;
+      const imageUrl = photo.image || "";
+
+      return `
+        <div class="overlay-actions">
+          <a
+            class="action-icon"
+            href="https://x.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(absoluteTarget)}"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Share on X"
+            title="Share on X"
+            data-stop-card
+          >
+            <i class="fa-brands fa-x-twitter"></i>
+          </a>
+
+          <a
+            class="action-icon"
+            href="https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(absoluteTarget)}"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Share on Facebook"
+            title="Share on Facebook"
+            data-stop-card
+          >
+            <i class="fa-brands fa-facebook-f"></i>
+          </a>
+
+          <a
+            class="action-icon"
+            href="https://wa.me/?text=${encodeURIComponent(shareText + " " + absoluteTarget)}"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Share on WhatsApp"
+            title="Share on WhatsApp"
+            data-stop-card
+          >
+            <i class="fa-brands fa-whatsapp"></i>
+          </a>
+
+          <button
+            type="button"
+            class="action-icon share-btn"
+            aria-label="Share"
+            title="Share"
+            data-share-url="${escapeHtml(absoluteTarget)}"
+            data-share-title="${escapeHtml(shareText)}"
+            data-stop-card
+          >
+            <i class="fa-solid fa-share-nodes"></i>
+          </button>
+
+          <a
+            class="action-icon"
+            href="${escapeHtml(imageUrl)}"
+            download="${escapeHtml(photo.fileName || "pixnest-image")}"
+            aria-label="Download image"
+            title="Download image"
+            data-stop-card
+          >
+            <i class="fa-solid fa-download"></i>
+          </a>
+        </div>
+      `;
+    }
+
+    function buildOverlayCard(photo){
+      const tags = getPhotoTags(photo).slice(0, 4);
+      const description = (photo.description || "").trim();
+      const credit = (photo.credit || "").trim();
+      const href = `category.html?category=${encodeURIComponent(photo.categoryName || "")}&photo=${encodeURIComponent(photo.id || "")}`;
+
+      return `
+        <article class="visual-card" data-href="${escapeHtml(href)}">
+          <img src="${escapeHtml(photo.image || "")}" alt="${escapeHtml(photo.categoryName || "Photo")}">
+          <div class="photo-overlay">
+            <div class="meta">
+              <span class="pill">${escapeHtml(photo.categoryName || "Photo")}</span>
+              ${tags.map(tag => `<span class="pill">${escapeHtml(tag)}</span>`).join("")}
+            </div>
+            ${description ? `<p class="overlay-desc">${escapeHtml(description)}</p>` : ""}
+            ${credit ? `<div class="credit">By ${escapeHtml(credit)}</div>` : ""}
+            ${createOverlayActions(photo)}
+          </div>
+        </article>
+      `;
+    }
+
+    function activateCardBehaviors(root = document){
+      root.querySelectorAll(".visual-card").forEach(card => {
+        card.addEventListener("click", (e) => {
+          if(e.target.closest("[data-stop-card]")){
+            return;
+          }
+
+          const href = card.getAttribute("data-href");
+          if(href){
+            window.location.href = href;
+          }
+        });
+      });
+
+      root.querySelectorAll(".share-btn").forEach(btn => {
+        btn.addEventListener("click", async (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+
+          const url = btn.getAttribute("data-share-url") || window.location.href;
+          const title = btn.getAttribute("data-share-title") || "PixNest";
+
+          if(navigator.share){
+            try{
+              await navigator.share({
+                title,
+                url
+              });
+            }catch(error){
+            }
+          }else{
+            try{
+              await navigator.clipboard.writeText(url);
+              btn.innerHTML = '<i class="fa-solid fa-check"></i>';
+              setTimeout(() => {
+                btn.innerHTML = '<i class="fa-solid fa-share-nodes"></i>';
+              }, 1200);
+            }catch(error){
+              alert("Link copied failed. You can copy it manually:\n" + url);
+            }
+          }
+        });
+      });
+    }
+
+    function renderFeaturedPhotos(photos = []){
+      const container = document.getElementById("featuredPhotosContainer");
+      if(!container) return;
+
+      const featured = photos.filter(photo => photo.featured);
+
+      if(!featured.length){
+        container.innerHTML = `
+          <div class="empty-box">
+            No featured photos available yet. Check back soon for fresh highlights.
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = featured.slice(0, 6).map(buildOverlayCard).join("");
+      activateCardBehaviors(container);
+    }
+
+    function renderTrendingPhotos(photos = []){
+      const container = document.getElementById("trendingPhotosContainer");
+      if(!container) return;
+
+      if(!photos.length){
+        container.innerHTML = `
+          <div class="empty-box">
+            No photos available yet. Check back soon for new additions.
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = photos.slice(0, 8).map(buildOverlayCard).join("");
+      activateCardBehaviors(container);
+    }
+
+    function renderSearchResultsLabel(text = ""){
+      const label = document.getElementById("searchStatus");
+      if(!label) return;
+      label.textContent = text;
+    }
+
+    function setupHomeSearch(allPhotos){
+      const input = document.getElementById("homeSearchInput");
+      const button = document.getElementById("homeSearchBtn");
+      if(!input || !button) return;
+
+      function runSearch(){
+        const query = input.value.toLowerCase().trim();
+
+        if(!query){
+          renderFeaturedPhotos(allPhotos);
+          renderTrendingPhotos(allPhotos);
+          renderSearchResultsLabel("");
+          return;
+        }
+
+        const filtered = allPhotos.filter(photo => {
+          const searchText = [
+            photo.description,
+            photo.credit,
+            photo.tags,
+            photo.categoryName
+          ].join(" ").toLowerCase();
+
+          return searchText.includes(query);
+        });
+
+        renderFeaturedPhotos(filtered);
+        renderTrendingPhotos(filtered);
+        renderSearchResultsLabel(`${filtered.length} result${filtered.length === 1 ? "" : "s"} for "${input.value.trim()}"`);
+      }
+
+      button.addEventListener("click", runSearch);
+      input.addEventListener("keydown", (e) => {
+        if(e.key === "Enter"){
+          runSearch();
+        }
+      });
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      initMenu();
+
+      const data = loadData();
+      const categories = Array.isArray(data.categories) ? data.categories : [];
+      const allPhotos = sortNewest(flattenPhotos(categories));
+
+      applyBranding(data);
+      renderStats(categories, allPhotos);
+      renderHomeCategories(categories);
+      renderFeaturedPhotos(allPhotos);
+      renderTrendingPhotos(allPhotos);
+      setupHomeSearch(allPhotos);
+    });
+  </script>
 </body>
 </html>

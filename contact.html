@@ -1,9 +1,10 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>PixNest | Contact</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
   <style>
     *{
       margin:0;
@@ -290,27 +291,33 @@
     }
 
     .social-links{
-      display:grid;
+      display:flex;
+      align-items:center;
       gap:12px;
+      flex-wrap:wrap;
+      margin-top:8px;
     }
 
     .social-link{
+      width:50px;
+      height:50px;
+      border-radius:50%;
       display:flex;
       align-items:center;
       justify-content:center;
-      text-align:center;
-      padding:14px 16px;
-      border-radius:14px;
-      font-weight:700;
-      font-size:15px;
       background:#1e293b;
       border:1px solid rgba(255,255,255,0.08);
       color:#ffffff;
+      font-size:20px;
+      flex-shrink:0;
     }
 
     .social-link:hover{
       transform:translateY(-2px);
       box-shadow:0 12px 24px rgba(0,0,0,0.18);
+      color:var(--accent);
+      border-color:rgba(250,204,21,0.22);
+      background:#243447;
     }
 
     .form-grid{
@@ -694,7 +701,7 @@
 
             <div class="info-item">
               <strong>Phone</strong>
-              <a href="tel:+440000000000">+44 0000 000000</a>
+              <a href="tel:+440000000000">+44 7389 169170</a>
             </div>
 
             <div class="info-item">
@@ -709,18 +716,25 @@
           </div>
 
           <div class="social-links">
-            <a href="#" class="social-link">Instagram</a>
-            <a href="#" class="social-link">X</a>
-            <a href="#" class="social-link">Facebook</a>
-            <a href="#" class="social-link">TikTok</a>
+            <a href="#" class="social-link" aria-label="Instagram" title="Instagram">
+              <i class="fa-brands fa-instagram"></i>
+            </a>
+            <a href="#" class="social-link" aria-label="X" title="X">
+              <i class="fa-brands fa-x-twitter"></i>
+            </a>
+            <a href="#" class="social-link" aria-label="Facebook" title="Facebook">
+              <i class="fa-brands fa-facebook-f"></i>
+            </a>
+            <a href="#" class="social-link" aria-label="TikTok" title="TikTok">
+              <i class="fa-brands fa-tiktok"></i>
+            </a>
           </div>
         </div>
 
         <div class="panel">
           <h3>Send a Message</h3>
           <p>
-            Fill in the form below. You can later connect this to EmailJS, Formspree,
-            Netlify Forms, or your own backend.
+            Fill in the form below.
           </p>
 
           <form>
@@ -750,10 +764,6 @@
               </div>
             </div>
           </form>
-
-          <div class="form-note">
-            This form is front-end only for now. Connect it to a form service or backend to make it send real messages.
-          </div>
         </div>
       </div>
     </div>

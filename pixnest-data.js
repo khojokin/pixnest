@@ -1,644 +1,595 @@
-(() => {
-  const STORAGE_KEY = "pixnest_admin_v1";
+const PIXNEST_STORAGE_KEY = "pixnest_admin_v1";
 
-  function byId(id) {
-    return document.getElementById(id);
-  }
+function pixNestCreateFallbackData() {
+  return {
+    siteName: "PixNest",
+    siteTagline: "Free and premium photo collections",
+    footerText: "©️ 2026 PixNest. Discover and share powerful visual collections.",
+    homepage: {
+      heroTag: "Discover fresh visual collections",
+      heroTitle: "Discover beautiful photos for creative projects, brands, and inspiration.",
+      heroText: "Browse categories, explore standout visuals, and find photos for websites, design work, social media, and creative ideas.",
+      categoriesTitle: "All Categories",
+      categoriesText: "Explore visual collections across different styles, themes, and creative topics.",
+      featuredTitle: "Featured Photos",
+      featuredText: "Latest standout visuals selected for the PixNest collection.",
+      trendingTitle: "Trending This Week",
+      trendingText: "Fresh visual picks to explore across multiple styles and categories.",
+      ctaTitle: "Start exploring the PixNest collection today.",
+      ctaText: "Browse curated categories, discover standout images, and enjoy a growing library of free and premium visuals."
+    },
+    contactPage: {
+      heading: "Get in Touch",
+      intro: "Use the contact details or the form below to reach the PixNest team.",
+      email: "hello@pixnest.com",
+      phone: "+44 0000 000000",
+      location: "United Kingdom",
+      responseTime: "Usually within 24 to 48 hours",
+      instagram: "#",
+      x: "#",
+      facebook: "#",
+      tiktok: "#"
+    },
+    aboutPage: {
+      heroTitle: "About PixNest",
+      heroText: "PixNest is a growing photo platform built to help people discover strong visuals across free and premium collections.",
+      bodyTitle: "Our Story",
+      bodyText: "PixNest brings together visual collections across different categories, styles, and creative topics for inspiration, design work, and modern digital projects."
+    },
+    categories: []
+  };
+}
 
-  function escapeHtml(value = "") {
-    return String(value)
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#39;");
-  }
+function pixNestEscapeHtml(value = "") {
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
 
-  function loadData() {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      return raw ? JSON.parse(raw) : null;
-    } catch (error) {
-      console.error("Could not load PixNest data:", error);
-      return null;
+function pixNestNormalizeData(data) {
+  const fallback = pixNestCreateFallbackData();
+  const safe = data && typeof data === "object" ? data : {};
+  const homepage = safe.homepage || {};
+  const contactPage = safe.contactPage || {};
+  const aboutPage = safe.aboutPage || {};
+
+  return {
+    siteName: safe.siteName || fallback.siteName,
+    siteTagline: safe.siteTagline || fallback.siteTagline,
+    footerText: safe.footerText || fallback.footerText,
+    homepage: {
+      heroTag: homepage.heroTag || fallback.homepage.heroTag,
+      heroTitle: homepage.heroTitle || fallback.homepage.heroTitle,
+      heroText: homepage.heroText || fallback.homepage.heroText,
+      categoriesTitle: homepage.categoriesTitle || fallback.homepage.categoriesTitle,
+      categoriesText: homepage.categoriesText || fallback.homepage.categoriesText,
+      featuredTitle: homepage.featuredTitle || fallback.homepage.featuredTitle,
+      featuredText: homepage.featuredText || fallback.homepage.featuredText,
+      trendingTitle: homepage.trendingTitle || fallback.homepage.trendingTitle,
+      trendingText: homepage.trendingText || fallback.homepage.trendingText,
+      ctaTitle: homepage.ctaTitle || fallback.homepage.ctaTitle,
+      ctaText: homepage.ctaText || fallback.homepage.ctaText
+    },
+    contactPage: {
+      heading: contactPage.heading || fallback.contactPage.heading,
+      intro: contactPage.intro || fallback.contactPage.intro,
+      email: contactPage.email || fallback.contactPage.email,
+      phone: contactPage.phone || fallback.contactPage.phone,
+      location: contactPage.location || fallback.contactPage.location,
+      responseTime: contactPage.responseTime || fallback.contactPage.responseTime,
+      instagram: contactPage.instagram || fallback.contactPage.instagram,
+      x: contactPage.x || fallback.contactPage.x,
+      facebook: contactPage.facebook || fallback.contactPage.facebook,
+      tiktok: contactPage.tiktok || fallback.contactPage.tiktok
+    },
+    aboutPage: {
+      heroTitle: aboutPage.heroTitle || fallback.aboutPage.heroTitle,
+      heroText: aboutPage.heroText || fallback.aboutPage.heroText,
+      bodyTitle: aboutPage.bodyTitle || fallback.aboutPage.bodyTitle,
+      bodyText: aboutPage.bodyText || fallback.aboutPage.bodyText
+    },
+    categories: Array.isArray(safe.categories)
+      ? safe.categories.map((category) => ({
+          id: category.id || "",
+          name: category.name || "Untitled Category",
+          description: category.description || "",
+          photos: Array.isArray(category.photos)
+            ? category.photos.map((photo) => ({
+                id: photo.id || "",
+                title: photo.title || "",
+                description: photo.description || "",
+                credit: photo.credit || "",
+                tags: photo.tags || "",
+                image: photo.image || "",
+                fileName: photo.fileName || "",
+                createdAt: photo.createdAt || "",
+                featured: Boolean(photo.featured)
+              }))
+            : []
+        }))
+      : []
+  };
+}
+
+function pixNestLoadData() {
+  try {
+    const raw = localStorage.getItem(PIXNEST_STORAGE_KEY);
+    if (raw) {
+      return pixNestNormalizeData(JSON.parse(raw));
     }
+  } catch (error) {
+    console.error("Failed to load PixNest data:", error);
+  }
+  return pixNestNormalizeData(pixNestCreateFallbackData());
+}
+
+function pixNestSetText(id, value) {
+  const el = document.getElementById(id);
+  if (el && value !== undefined && value !== null) {
+    el.textContent = value;
+  }
+}
+
+function pixNestSetHref(id, value) {
+  const el = document.getElementById(id);
+  if (el && value) {
+    el.href = value;
+  }
+}
+
+function pixNestSetMailto(id, email) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.textContent = email || "";
+  el.href = `mailto:${email || ""}`;
+}
+
+function pixNestSetPhone(id, phone) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.textContent = phone || "";
+  el.href = `tel:${phone || ""}`;
+}
+
+function pixNestGetPhotoTags(photo) {
+  return (photo.tags || "")
+    .split(/[,|]/)
+    .map((tag) => tag.trim())
+    .filter(Boolean);
+}
+
+function pixNestFlattenPhotos(categories = []) {
+  return categories.flatMap((category) =>
+    (category.photos || []).map((photo) => ({
+      ...photo,
+      categoryId: category.id,
+      categoryName: category.name || "Uncategorized",
+      categoryDescription: category.description || ""
+    }))
+  );
+}
+
+function pixNestSortNewest(items = []) {
+  return [...items].sort((a, b) => {
+    const aTime = new Date(a.createdAt || 0).getTime();
+    const bTime = new Date(b.createdAt || 0).getTime();
+    return bTime - aTime;
+  });
+}
+
+function pixNestGetCategoryCover(category) {
+  if (category && Array.isArray(category.photos) && category.photos.length && category.photos[0].image) {
+    return category.photos[0].image;
   }
 
-  function flattenPhotos(categories = []) {
-    return categories.flatMap(category =>
-      (category.photos || []).map(photo => ({
-        ...photo,
-        categoryId: category.id,
-        categoryName: category.name || "Uncategorized",
-        categoryDescription: category.description || ""
-      }))
-    );
-  }
+  return "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&w=1200&q=80";
+}
 
-  function sortNewest(items = []) {
-    return [...items].sort((a, b) => {
-      const aTime = new Date(a.createdAt || 0).getTime();
-      const bTime = new Date(b.createdAt || 0).getTime();
-      return bTime - aTime;
-    });
-  }
+function pixNestInitMenu() {
+  const menuToggle = document.getElementById("menuToggle");
+  const navLinks = document.getElementById("navLinks");
 
-  function getPhotoTags(photo) {
-    return (photo.tags || "")
-      .split(",")
-      .map(tag => tag.trim())
-      .filter(Boolean);
-  }
+  if (!menuToggle || !navLinks) return;
 
-  function getCategoryCover(category) {
-    if (category.photos && category.photos.length) {
-      return category.photos[0].image;
-    }
-    return "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&w=1200&q=80";
-  }
+  menuToggle.addEventListener("click", () => {
+    navLinks.classList.toggle("show");
+    const expanded = menuToggle.getAttribute("aria-expanded") === "true";
+    menuToggle.setAttribute("aria-expanded", String(!expanded));
+  });
 
-  function setText(id, value) {
-    const el = byId(id);
-    if (el && value !== undefined && value !== null) {
-      el.textContent = value;
-    }
-  }
-
-  function slugifyFileName(text = "photo") {
-    return text
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/^-+|-+$/g, "") || "photo";
-  }
-
-  function applyBranding(data) {
-    if (!data) return;
-
-    setText("brandTitle", data.siteName || "PixNest");
-    setText("brandSubtitle", data.siteTagline || "Photo Collection Site");
-    setText("heroSiteName", data.siteName || "PixNest");
-    setText("footerText", `©️ 2026 ${data.siteName || "PixNest"}. Discover and share powerful visual collections.`);
-  }
-
-  function initMenu() {
-    const menuToggle = byId("menuToggle");
-    const navLinks = byId("navLinks");
-
-    if (!menuToggle || !navLinks) return;
-
-    menuToggle.addEventListener("click", () => {
-      navLinks.classList.toggle("show");
-      const expanded = menuToggle.getAttribute("aria-expanded") === "true";
-      menuToggle.setAttribute("aria-expanded", String(!expanded));
-    });
-
-    document.querySelectorAll(".nav-links a").forEach(link => {
-      link.addEventListener("click", () => {
-        if (window.innerWidth <= 768) {
-          navLinks.classList.remove("show");
-          menuToggle.setAttribute("aria-expanded", "false");
-        }
-      });
-    });
-
-    window.addEventListener("resize", () => {
-      if (window.innerWidth > 768) {
+  document.querySelectorAll(".nav-links a").forEach((link) => {
+    link.addEventListener("click", () => {
+      if (window.innerWidth <= 768) {
         navLinks.classList.remove("show");
         menuToggle.setAttribute("aria-expanded", "false");
       }
     });
-  }
+  });
 
-  function renderStats(categories, photos) {
-    setText("photoCountStat", `${photos.length}+`);
-    setText("categoryCountStat", `${categories.length}+`);
-  }
+  window.addEventListener("resize", () => {
+    if (window.innerWidth > 768) {
+      navLinks.classList.remove("show");
+      menuToggle.setAttribute("aria-expanded", "false");
+    }
+  });
+}
 
-  function renderHomeCategories(categories = []) {
-    const container = byId("categoriesContainer");
-    if (!container) return;
+function pixNestApplyBranding(data) {
+  pixNestSetText("brandTitle", data.siteName || "PixNest");
+  pixNestSetText("brandSubtitle", data.siteTagline || "Photo Collection Site");
+  pixNestSetText("footerText", data.footerText || "©️ 2026 PixNest. Discover and share powerful visual collections.");
+}
 
+function pixNestBuildLinkedOverlayCard(photo) {
+  const tags = pixNestGetPhotoTags(photo).slice(0, 4);
+  const description = (photo.description || "").trim();
+  const credit = (photo.credit || "").trim();
+  const href = `category.html?category=${encodeURIComponent(photo.categoryName || "")}&photo=${encodeURIComponent(photo.id || "")}`;
+
+  return `
+    <a class="visual-card" href="${href}">
+      <img src="${pixNestEscapeHtml(photo.image || "")}" alt="${pixNestEscapeHtml(photo.categoryName || "Photo")}">
+      <div class="photo-overlay">
+        <div class="meta">
+          <span class="pill">${pixNestEscapeHtml(photo.categoryName || "Photo")}</span>
+          ${tags.map((tag) => `<span class="pill">${pixNestEscapeHtml(tag)}</span>`).join("")}
+        </div>
+        ${description ? `<p class="overlay-desc">${pixNestEscapeHtml(description)}</p>` : ""}
+        ${credit ? `<div class="credit">By ${pixNestEscapeHtml(credit)}</div>` : ""}
+      </div>
+    </a>
+  `;
+}
+
+function pixNestBuildCategoryOverlayCard(category, photo) {
+  const tags = pixNestGetPhotoTags(photo).slice(0, 4);
+  const description = (photo.description || "").trim();
+  const credit = (photo.credit || "").trim();
+  const fileName = (photo.fileName || "").trim();
+
+  return `
+    <article class="visual-card" data-photo-id="${pixNestEscapeHtml(photo.id || "")}">
+      <img src="${pixNestEscapeHtml(photo.image || "")}" alt="${pixNestEscapeHtml(category.name || "Photo")}">
+      <div class="photo-overlay">
+        <div class="meta">
+          <span class="pill">${pixNestEscapeHtml(category.name || "Photo")}</span>
+          ${tags.map((tag) => `<span class="pill">${pixNestEscapeHtml(tag)}</span>`).join("")}
+        </div>
+        ${description ? `<p class="overlay-desc">${pixNestEscapeHtml(description)}</p>` : ""}
+        ${credit ? `<div class="credit">By ${pixNestEscapeHtml(credit)}</div>` : ""}
+        ${fileName ? `<div class="file-name">${pixNestEscapeHtml(fileName)}</div>` : ""}
+      </div>
+    </article>
+  `;
+}
+
+function pixNestRenderHomePage(data) {
+  const categoriesContainer = document.getElementById("categoriesContainer");
+  const featuredContainer = document.getElementById("featuredPhotosContainer");
+  const trendingContainer = document.getElementById("trendingPhotosContainer");
+
+  if (!categoriesContainer && !featuredContainer && !trendingContainer) return;
+
+  const categories = Array.isArray(data.categories) ? data.categories : [];
+  const allPhotos = pixNestSortNewest(pixNestFlattenPhotos(categories));
+  const homepage = data.homepage || {};
+
+  pixNestSetText("heroTag", homepage.heroTag || "Discover fresh visual collections");
+  pixNestSetText("heroTitle", homepage.heroTitle || "Discover beautiful photos for creative projects, brands, and inspiration.");
+  pixNestSetText("heroText", homepage.heroText || "Browse categories, explore standout visuals, and find photos for websites, design work, social media, and creative ideas.");
+  pixNestSetText("categoriesSectionTitle", homepage.categoriesTitle || "All Categories");
+  pixNestSetText("categoriesSectionText", homepage.categoriesText || "Explore visual collections across different styles, themes, and creative topics.");
+  pixNestSetText("featuredSectionTitle", homepage.featuredTitle || "Featured Photos");
+  pixNestSetText("featuredSectionText", homepage.featuredText || "Latest standout visuals selected for the PixNest collection.");
+  pixNestSetText("trendingSectionTitle", homepage.trendingTitle || "Trending This Week");
+  pixNestSetText("trendingSectionText", homepage.trendingText || "Fresh visual picks to explore across multiple styles and categories.");
+  pixNestSetText("ctaTitle", homepage.ctaTitle || "Start exploring the PixNest collection today.");
+  pixNestSetText("ctaText", homepage.ctaText || "Browse curated categories, discover standout images, and enjoy a growing library of free and premium visuals.");
+  pixNestSetText("photoCountStat", `${allPhotos.length}+`);
+  pixNestSetText("categoryCountStat", `${categories.length}+`);
+
+  if (categoriesContainer) {
     if (!categories.length) {
-      container.innerHTML = `
-        <div class="empty-box">
-          No categories yet. Add categories in the admin page and they will appear here.
-        </div>
-      `;
-      return;
-    }
-
-    container.innerHTML = categories.map(category => `
-      <article class="category-card">
-        <img src="${escapeHtml(getCategoryCover(category))}" alt="${escapeHtml(category.name || "Category")}">
-        <div class="category-content">
-          <h3>${escapeHtml(category.name || "Untitled Category")}</h3>
-          <p>${escapeHtml(category.description || "No description added yet.")}</p>
-          <a href="category.html?category=${encodeURIComponent(category.name || "")}" class="link-btn">Open Category →</a>
-        </div>
-      </article>
-    `).join("");
-  }
-
-  function renderFeaturedPhotos(photos = []) {
-    const container = byId("featuredPhotosContainer");
-    if (!container) return;
-
-    if (!photos.length) {
-      container.innerHTML = `
-        <div class="empty-box">
-          No featured photos yet. Upload pictures from the admin page and they will show here.
-        </div>
-      `;
-      return;
-    }
-
-    const featured = photos.slice(0, 3);
-
-    container.innerHTML = featured.map(photo => `
-      <article class="photo-card">
-        <img src="${escapeHtml(photo.image || "")}" alt="${escapeHtml(photo.title || "Photo")}">
-        <div class="photo-content">
-          <div class="meta">
-            <span class="pill">${escapeHtml(photo.categoryName || "Photo")}</span>
-            ${getPhotoTags(photo).slice(0, 1).map(tag => `<span class="pill">${escapeHtml(tag)}</span>`).join("")}
-          </div>
-          <h3>${escapeHtml(photo.title || "Untitled Photo")}</h3>
-          <p>${escapeHtml(photo.description || "No description added.")}</p>
-          <div class="credit">By ${escapeHtml(photo.credit || "Unknown")}</div>
-        </div>
-      </article>
-    `).join("");
-  }
-
-  function renderTrendingPhotos(photos = []) {
-    const container = byId("trendingPhotosContainer");
-    if (!container) return;
-
-    if (!photos.length) {
-      container.innerHTML = `
-        <div class="empty-box">
-          No photos found. Upload pictures from the admin page and they will show here.
-        </div>
-      `;
-      return;
-    }
-
-    const trending = photos.slice(0, 8);
-
-    container.innerHTML = trending.map(photo => `
-      <article class="masonry-item">
-        <img src="${escapeHtml(photo.image || "")}" alt="${escapeHtml(photo.title || "Photo")}">
-        <div class="info">
-          <h4>${escapeHtml(photo.title || "Untitled Photo")}</h4>
-          <p>${escapeHtml(photo.categoryName || "Photo")} • ${escapeHtml(getPhotoTags(photo)[0] || "Gallery")}</p>
-        </div>
-      </article>
-    `).join("");
-  }
-
-  function renderSearchResultsLabel(text = "") {
-    const label = byId("searchStatus");
-    if (!label) return;
-    label.textContent = text;
-  }
-
-  function setupHomeSearch(allPhotos) {
-    const input = byId("homeSearchInput");
-    const button = byId("homeSearchBtn");
-    if (!input || !button) return;
-
-    function runSearch() {
-      const query = input.value.toLowerCase().trim();
-
-      if (!query) {
-        renderFeaturedPhotos(allPhotos);
-        renderTrendingPhotos(allPhotos);
-        renderSearchResultsLabel("");
-        return;
-      }
-
-      const filtered = allPhotos.filter(photo => {
-        const searchText = [
-          photo.title,
-          photo.description,
-          photo.credit,
-          photo.tags,
-          photo.categoryName
-        ].join(" ").toLowerCase();
-
-        return searchText.includes(query);
-      });
-
-      renderFeaturedPhotos(filtered);
-      renderTrendingPhotos(filtered);
-      renderSearchResultsLabel(`${filtered.length} result${filtered.length === 1 ? "" : "s"} for "${input.value.trim()}"`);
-    }
-
-    button.addEventListener("click", runSearch);
-    input.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") {
-        runSearch();
-      }
-    });
-  }
-
-  function renderExploreCategories(categories = []) {
-    const container = byId("exploreCategoriesContainer");
-    if (!container) return;
-
-    if (!categories.length) {
-      container.innerHTML = `
-        <div class="empty-box">
-          No categories yet. Add categories from the admin page.
-        </div>
-      `;
-      return;
-    }
-
-    container.innerHTML = categories.map(category => `
-      <article class="category-box">
-        <img src="${escapeHtml(getCategoryCover(category))}" alt="${escapeHtml(category.name || "Category")}">
-        <div class="category-box-content">
-          <h3>${escapeHtml(category.name || "Category")}</h3>
-          <p>${escapeHtml(category.description || "No description added.")}</p>
-          <div class="category-box-foot">
-            <span class="small-pill">${(category.photos || []).length} photo${(category.photos || []).length === 1 ? "" : "s"}</span>
-            <a href="category.html?category=${encodeURIComponent(category.name || "")}" class="link-btn">View Photos →</a>
-          </div>
-        </div>
-      </article>
-    `).join("");
-  }
-
-  function renderExplorePhotos(photos = []) {
-    const container = byId("exploreGridContainer");
-    if (!container) return;
-
-    if (!photos.length) {
-      container.innerHTML = `
-        <div class="empty-box">
-          No photos match this search or category.
-        </div>
-      `;
-      return;
-    }
-
-    container.innerHTML = photos.map(photo => `
-      <article class="explore-photo-card">
-        <img src="${escapeHtml(photo.image || "")}" alt="${escapeHtml(photo.title || "Photo")}">
-        <div class="explore-photo-content">
-          <div class="meta">
-            <span class="pill">${escapeHtml(photo.categoryName || "Photo")}</span>
-            ${getPhotoTags(photo).slice(0, 2).map(tag => `<span class="pill">${escapeHtml(tag)}</span>`).join("")}
-          </div>
-          <h3>${escapeHtml(photo.title || "Untitled Photo")}</h3>
-          <p>${escapeHtml(photo.description || "No description added.")}</p>
-          <div class="credit">By ${escapeHtml(photo.credit || "Unknown")}</div>
-        </div>
-      </article>
-    `).join("");
-  }
-
-  function setupExplorePage(categories, allPhotos) {
-    const searchInput = byId("exploreSearchInput");
-    const categorySelect = byId("exploreCategorySelect");
-    const searchBtn = byId("exploreSearchBtn");
-    const countLabel = byId("exploreCountText");
-
-    if (!searchInput || !categorySelect || !searchBtn || !countLabel) return;
-
-    categorySelect.innerHTML = `<option value="all">All Categories</option>` +
-      categories.map(category => `
-        <option value="${escapeHtml(category.name || "")}">${escapeHtml(category.name || "")}</option>
-      `).join("");
-
-    const params = new URLSearchParams(window.location.search);
-    const categoryFromUrl = params.get("category");
-
-    if (categoryFromUrl) {
-      categorySelect.value = categoryFromUrl;
-      const matched = categories.find(cat => cat.name === categoryFromUrl);
-      if (matched) {
-        setText("exploreHeroTitle", `${matched.name} Photos`);
-        setText("exploreHeroDesc", matched.description || `Browse photos from the ${matched.name} collection.`);
-      }
-    }
-
-    function runExploreFilter() {
-      const searchValue = searchInput.value.toLowerCase().trim();
-      const selectedCategory = categorySelect.value;
-
-      const filtered = allPhotos.filter(photo => {
-        const matchesCategory = selectedCategory === "all" || photo.categoryName === selectedCategory;
-
-        const text = [
-          photo.title,
-          photo.description,
-          photo.credit,
-          photo.tags,
-          photo.categoryName
-        ].join(" ").toLowerCase();
-
-        const matchesSearch = !searchValue || text.includes(searchValue);
-
-        return matchesCategory && matchesSearch;
-      });
-
-      countLabel.textContent = `${filtered.length} photo${filtered.length === 1 ? "" : "s"} found`;
-      renderExplorePhotos(filtered);
-    }
-
-    searchBtn.addEventListener("click", runExploreFilter);
-    categorySelect.addEventListener("change", runExploreFilter);
-    searchInput.addEventListener("input", runExploreFilter);
-
-    runExploreFilter();
-  }
-
-  function renderCategoryHero(category, photoCount) {
-    setText("categoryHeroTitle", category.name || "Category");
-    setText("categoryHeroDesc", category.description || "Browse this category collection.");
-    setText("categoryCountText", `${photoCount} photo${photoCount === 1 ? "" : "s"}`);
-  }
-
-  function renderRelatedCategories(categories = [], currentCategoryName = "") {
-    const container = byId("relatedCategoriesContainer");
-    if (!container) return;
-
-    const related = categories.filter(cat => cat.name !== currentCategoryName).slice(0, 3);
-
-    if (!related.length) {
-      container.innerHTML = `
-        <div class="empty-box">
-          No other categories yet.
-        </div>
-      `;
-      return;
-    }
-
-    container.innerHTML = related.map(category => `
-      <article class="category-box">
-        <img src="${escapeHtml(getCategoryCover(category))}" alt="${escapeHtml(category.name || "Category")}">
-        <div class="category-box-content">
-          <h3>${escapeHtml(category.name || "Category")}</h3>
-          <p>${escapeHtml(category.description || "No description added.")}</p>
-          <div class="category-box-foot">
-            <span class="small-pill">${(category.photos || []).length} photo${(category.photos || []).length === 1 ? "" : "s"}</span>
-            <a href="category.html?category=${encodeURIComponent(category.name || "")}" class="link-btn">Open Category →</a>
-          </div>
-        </div>
-      </article>
-    `).join("");
-  }
-
-  function renderCategoryPhotos(photos = []) {
-    const container = byId("categoryGridContainer");
-    if (!container) return;
-
-    if (!photos.length) {
-      container.innerHTML = `
-        <div class="empty-box">
-          No photos in this category yet.
-        </div>
-      `;
-      return;
-    }
-
-    container.innerHTML = photos.map(photo => {
-      const fileName = photo.fileName || `${slugifyFileName(photo.title || "photo")}.jpg`;
-
-      return `
-        <article class="explore-photo-card">
-          <img src="${escapeHtml(photo.image || "")}" alt="${escapeHtml(photo.title || "Photo")}">
-          <div class="explore-photo-content">
-            <div class="meta">
-              ${getPhotoTags(photo).slice(0, 2).map(tag => `<span class="pill">${escapeHtml(tag)}</span>`).join("")}
-            </div>
-            <h3>${escapeHtml(photo.title || "Untitled Photo")}</h3>
-            <p>${escapeHtml(photo.description || "No description added.")}</p>
-            <div class="credit">By ${escapeHtml(photo.credit || "Unknown")}</div>
-
-            <div class="photo-actions">
-              <button
-                class="action-btn view-btn"
-                data-src="${escapeHtml(photo.image || "")}"
-                data-title="${escapeHtml(photo.title || "Photo")}"
-                type="button"
-              >
-                View Bigger
-              </button>
-
-              <a
-                class="action-btn download-btn"
-                href="${escapeHtml(photo.image || "")}"
-                download="${escapeHtml(fileName)}"
-              >
-                Download
-              </a>
-
-              <button
-                class="action-btn share-btn"
-                data-title="${escapeHtml(photo.title || "Photo")}"
-                data-category="${escapeHtml(photo.categoryName || "Category")}"
-                type="button"
-              >
-                Share
-              </button>
+      categoriesContainer.innerHTML = `<div class="empty-box">Categories will appear here soon.</div>`;
+    } else {
+      categoriesContainer.innerHTML = categories.map((category) => `
+        <article class="category-card">
+          <img src="${pixNestEscapeHtml(pixNestGetCategoryCover(category))}" alt="${pixNestEscapeHtml(category.name || "Category")}">
+          <div class="category-content">
+            <h3>${pixNestEscapeHtml(category.name || "Untitled Category")}</h3>
+            <p>${pixNestEscapeHtml(category.description || "No description added yet.")}</p>
+            <div class="category-footer">
+              <span class="photo-count-badge">${(category.photos || []).length} photo${(category.photos || []).length === 1 ? "" : "s"}</span>
+              <a href="category.html?category=${encodeURIComponent(category.name || "")}" class="link-btn">View Photos →</a>
             </div>
           </div>
         </article>
-      `;
-    }).join("");
-
-    attachCategoryActionHandlers();
+      `).join("");
+    }
   }
 
-  function openLightbox(src, title) {
-    const modal = byId("imageLightbox");
-    const modalImg = byId("lightboxImage");
-    const modalTitle = byId("lightboxTitle");
+  function renderFeatured(photos) {
+    if (!featuredContainer) return;
 
-    if (!modal || !modalImg || !modalTitle) return;
+    const featuredPhotos = photos.filter((photo) => photo.featured);
 
-    modalImg.src = src;
-    modalImg.alt = title;
-    modalTitle.textContent = title;
-    modal.classList.add("show");
+    if (!featuredPhotos.length) {
+      featuredContainer.innerHTML = `<div class="empty-box">No featured photos available yet. Check back soon for fresh highlights.</div>`;
+      return;
+    }
+
+    featuredContainer.innerHTML = featuredPhotos.slice(0, 6).map(pixNestBuildLinkedOverlayCard).join("");
+  }
+
+  function renderTrending(photos) {
+    if (!trendingContainer) return;
+
+    if (!photos.length) {
+      trendingContainer.innerHTML = `<div class="empty-box">No photos available yet. Check back soon for new additions.</div>`;
+      return;
+    }
+
+    trendingContainer.innerHTML = photos.slice(0, 8).map(pixNestBuildLinkedOverlayCard).join("");
+  }
+
+  renderFeatured(allPhotos);
+  renderTrending(allPhotos);
+
+  const searchInput = document.getElementById("homeSearchInput");
+  const searchBtn = document.getElementById("homeSearchBtn");
+  const searchStatus = document.getElementById("searchStatus");
+
+  function runHomeSearch() {
+    if (!searchInput) return;
+
+    const query = searchInput.value.toLowerCase().trim();
+
+    if (!query) {
+      renderFeatured(allPhotos);
+      renderTrending(allPhotos);
+      if (searchStatus) searchStatus.textContent = "";
+      return;
+    }
+
+    const filtered = allPhotos.filter((photo) => {
+      const haystack = [
+        photo.description,
+        photo.credit,
+        photo.tags,
+        photo.categoryName
+      ].join(" ").toLowerCase();
+
+      return haystack.includes(query);
+    });
+
+    renderFeatured(filtered);
+    renderTrending(filtered);
+
+    if (searchStatus) {
+      searchStatus.textContent = `${filtered.length} result${filtered.length === 1 ? "" : "s"} for "${searchInput.value.trim()}"`;
+    }
+  }
+
+  if (searchBtn && searchInput) {
+    searchBtn.addEventListener("click", runHomeSearch);
+    searchInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        runHomeSearch();
+      }
+    });
+  }
+}
+
+function pixNestRenderExplorePage(data) {
+  const exploreGrid = document.getElementById("exploreGrid");
+  if (!exploreGrid) return;
+
+  const categories = Array.isArray(data.categories) ? data.categories : [];
+  const allPhotos = pixNestSortNewest(pixNestFlattenPhotos(categories));
+  const exploreSearchInput = document.getElementById("exploreSearchInput");
+  const exploreCategoryFilter = document.getElementById("exploreCategoryFilter");
+  const exploreResultsText = document.getElementById("exploreResultsText");
+
+  if (exploreCategoryFilter) {
+    const currentValue = exploreCategoryFilter.value || "all";
+    exploreCategoryFilter.innerHTML = `<option value="all">All Categories</option>` + categories.map((category) => {
+      return `<option value="${pixNestEscapeHtml(category.id || "")}">${pixNestEscapeHtml(category.name || "Category")}</option>`;
+    }).join("");
+
+    const exists = [...exploreCategoryFilter.options].some((option) => option.value === currentValue);
+    exploreCategoryFilter.value = exists ? currentValue : "all";
+  }
+
+  function renderExploreList() {
+    const searchValue = exploreSearchInput ? exploreSearchInput.value.toLowerCase().trim() : "";
+    const categoryValue = exploreCategoryFilter ? exploreCategoryFilter.value : "all";
+
+    const filtered = allPhotos.filter((photo) => {
+      const categoryMatch = categoryValue === "all" || photo.categoryId === categoryValue;
+
+      const textMatch = !searchValue || [
+        photo.description,
+        photo.credit,
+        photo.tags,
+        photo.categoryName
+      ].join(" ").toLowerCase().includes(searchValue);
+
+      return categoryMatch && textMatch;
+    });
+
+    if (!filtered.length) {
+      exploreGrid.innerHTML = `<div class="empty-box">No photos found for this search or category.</div>`;
+    } else {
+      exploreGrid.innerHTML = filtered.map(pixNestBuildLinkedOverlayCard).join("");
+    }
+
+    if (exploreResultsText) {
+      exploreResultsText.textContent = `${filtered.length} photo${filtered.length === 1 ? "" : "s"} found`;
+    }
+  }
+
+  if (exploreSearchInput) {
+    exploreSearchInput.addEventListener("input", renderExploreList);
+  }
+
+  if (exploreCategoryFilter) {
+    exploreCategoryFilter.addEventListener("change", renderExploreList);
+  }
+
+  renderExploreList();
+}
+
+function pixNestRenderCategoryPage(data) {
+  const photoGrid = document.getElementById("photoGrid");
+  if (!photoGrid) return;
+
+  const categories = Array.isArray(data.categories) ? data.categories : [];
+  const params = new URLSearchParams(window.location.search);
+  const selectedCategoryName = params.get("category") || "";
+  const selectedPhotoId = params.get("photo") || "";
+
+  const activeCategory =
+    categories.find((category) => (category.name || "").toLowerCase() === selectedCategoryName.toLowerCase()) ||
+    categories[0] ||
+    null;
+
+  const categorySwitcher = document.getElementById("categorySwitcher");
+  if (categorySwitcher) {
+    if (!categories.length) {
+      categorySwitcher.innerHTML = "";
+    } else {
+      categorySwitcher.innerHTML = categories.map((category) => `
+        <a
+          href="category.html?category=${encodeURIComponent(category.name || "")}"
+          class="category-pill ${activeCategory && activeCategory.id === category.id ? "active" : ""}"
+        >
+          ${pixNestEscapeHtml(category.name || "Category")}
+        </a>
+      `).join("");
+    }
+  }
+
+  if (!activeCategory) {
+    pixNestSetText("categoryTitle", "No Category Found");
+    pixNestSetText("categoryDescription", "There are no categories available yet.");
+    pixNestSetText("galleryHeading", "Photos");
+    pixNestSetText("galleryCountText", "0 photos in this category.");
+    photoGrid.innerHTML = `<div class="empty-box">No photos found in this category yet.</div>`;
+    return;
+  }
+
+  pixNestSetText("categoryTitle", activeCategory.name || "Category");
+  pixNestSetText("categoryDescription", activeCategory.description || "Browse the photos in this collection and open any image in a larger view.");
+  pixNestSetText("galleryHeading", `${activeCategory.name || "Category"} Photos`);
+  pixNestSetText("galleryCountText", `${(activeCategory.photos || []).length} photo${(activeCategory.photos || []).length === 1 ? "" : "s"} in this category.`);
+
+  const photos = Array.isArray(activeCategory.photos) ? activeCategory.photos : [];
+
+  if (!photos.length) {
+    photoGrid.innerHTML = `<div class="empty-box">No photos found in this category yet.</div>`;
+    return;
+  }
+
+  photoGrid.innerHTML = photos.map((photo) => pixNestBuildCategoryOverlayCard(activeCategory, photo)).join("");
+
+  const lightbox = document.getElementById("lightbox");
+  const lightboxImage = document.getElementById("lightboxImage");
+  const lightboxClose = document.getElementById("lightboxClose");
+
+  function openLightbox(photo) {
+    if (!lightbox || !lightboxImage) return;
+
+    lightboxImage.src = photo.image || "";
+    lightboxImage.alt = photo.fileName || activeCategory.name || "Large photo";
+
+    pixNestSetText("lightboxTitle", photo.fileName || photo.title || "Photo");
+    pixNestSetText("lightboxDesc", photo.description || "No description added.");
+    pixNestSetText("lightboxCategory", activeCategory.name || "Uncategorized");
+    pixNestSetText("lightboxCredit", photo.credit || "Unknown");
+    pixNestSetText("lightboxTags", pixNestGetPhotoTags(photo).join(", ") || "No tags");
+    pixNestSetText("lightboxFileName", photo.fileName || "No file name");
+
+    lightbox.classList.add("show");
     document.body.style.overflow = "hidden";
   }
 
   function closeLightbox() {
-    const modal = byId("imageLightbox");
-    if (!modal) return;
-    modal.classList.remove("show");
+    if (!lightbox) return;
+    lightbox.classList.remove("show");
     document.body.style.overflow = "";
   }
 
-  async function sharePhoto(title, category) {
-    const shareText = `Check out "${title}" in the ${category} category on PixNest`;
-    const shareUrl = window.location.href;
+  document.querySelectorAll(".visual-card[data-photo-id]").forEach((card) => {
+    const photoId = card.getAttribute("data-photo-id");
+    const photo = photos.find((item) => String(item.id) === String(photoId));
+    if (!photo) return;
 
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title,
-          text: shareText,
-          url: shareUrl
-        });
-        return;
-      } catch (error) {}
-    }
+    card.addEventListener("click", () => {
+      openLightbox(photo);
+    });
+  });
 
-    const fallbackText = `${shareText} - ${shareUrl}`;
-
-    try {
-      await navigator.clipboard.writeText(fallbackText);
-      alert("Photo link copied to clipboard.");
-    } catch (error) {
-      alert(fallbackText);
-    }
+  if (lightboxClose) {
+    lightboxClose.addEventListener("click", closeLightbox);
   }
 
-  function attachCategoryActionHandlers() {
-    document.querySelectorAll(".view-btn").forEach(btn => {
-      btn.addEventListener("click", () => {
-        openLightbox(btn.dataset.src || "", btn.dataset.title || "Photo");
-      });
-    });
-
-    document.querySelectorAll(".share-btn").forEach(btn => {
-      btn.addEventListener("click", () => {
-        sharePhoto(btn.dataset.title || "Photo", btn.dataset.category || "Category");
-      });
-    });
-  }
-
-  function setupLightbox() {
-    const modal = byId("imageLightbox");
-    const closeBtn = byId("lightboxClose");
-
-    if (!modal || !closeBtn) return;
-
-    closeBtn.addEventListener("click", closeLightbox);
-
-    modal.addEventListener("click", (e) => {
-      if (e.target === modal) {
-        closeLightbox();
-      }
-    });
-
-    window.addEventListener("keydown", (e) => {
-      if (e.key === "Escape") {
+  if (lightbox) {
+    lightbox.addEventListener("click", (e) => {
+      if (e.target === lightbox) {
         closeLightbox();
       }
     });
   }
 
-  function setupCategoryPage(categories = []) {
-    const params = new URLSearchParams(window.location.search);
-    const categoryName = params.get("category");
-    const searchInput = byId("categorySearchInput");
-    const searchBtn = byId("categorySearchBtn");
-    const countLabel = byId("categoryResultCount");
-
-    setupLightbox();
-
-    if (!categoryName) {
-      setText("categoryHeroTitle", "Category Not Found");
-      setText("categoryHeroDesc", "No category was selected.");
-      if (countLabel) countLabel.textContent = "0 photos found";
-      renderCategoryPhotos([]);
-      renderRelatedCategories(categories, "");
-      return;
-    }
-
-    const category = categories.find(cat => cat.name === categoryName);
-
-    if (!category) {
-      setText("categoryHeroTitle", "Category Not Found");
-      setText("categoryHeroDesc", "This category does not exist in your admin data.");
-      if (countLabel) countLabel.textContent = "0 photos found";
-      renderCategoryPhotos([]);
-      renderRelatedCategories(categories, "");
-      return;
-    }
-
-    const allCategoryPhotos = sortNewest(
-      (category.photos || []).map(photo => ({
-        ...photo,
-        categoryName: category.name,
-        categoryDescription: category.description
-      }))
-    );
-
-    renderCategoryHero(category, allCategoryPhotos.length);
-    renderRelatedCategories(categories, category.name);
-
-    function runCategorySearch() {
-      const searchValue = searchInput ? searchInput.value.toLowerCase().trim() : "";
-
-      const filtered = allCategoryPhotos.filter(photo => {
-        if (!searchValue) return true;
-
-        const text = [
-          photo.title,
-          photo.description,
-          photo.credit,
-          photo.tags,
-          photo.categoryName
-        ].join(" ").toLowerCase();
-
-        return text.includes(searchValue);
-      });
-
-      if (countLabel) {
-        countLabel.textContent = `${filtered.length} photo${filtered.length === 1 ? "" : "s"} found`;
-      }
-
-      renderCategoryPhotos(filtered);
-    }
-
-    if (searchBtn) searchBtn.addEventListener("click", runCategorySearch);
-    if (searchInput) {
-      searchInput.addEventListener("input", runCategorySearch);
-      searchInput.addEventListener("keydown", (e) => {
-        if (e.key === "Enter") runCategorySearch();
-      });
-    }
-
-    runCategorySearch();
-  }
-
-  document.addEventListener("DOMContentLoaded", () => {
-    initMenu();
-
-    const data = loadData();
-    if (!data) return;
-
-    const categories = data.categories || [];
-    const allPhotos = sortNewest(flattenPhotos(categories));
-
-    applyBranding(data);
-
-    const page = document.body.dataset.page || "home";
-
-    if (page === "home") {
-      renderStats(categories, allPhotos);
-      renderHomeCategories(categories);
-      renderFeaturedPhotos(allPhotos);
-      renderTrendingPhotos(allPhotos);
-      setupHomeSearch(allPhotos);
-    }
-
-    if (page === "explore") {
-      setText("exploreHeroTitle", `${data.siteName || "PixNest"} Explore`);
-      setText("exploreHeroDesc", "Browse all uploaded photos, search by keyword, and filter by category.");
-      renderExploreCategories(categories);
-      setupExplorePage(categories, allPhotos);
-    }
-
-    if (page === "category") {
-      setupCategoryPage(categories);
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      closeLightbox();
     }
   });
-})();
+
+  if (selectedPhotoId) {
+    const targetPhoto = photos.find((photo) => String(photo.id) === String(selectedPhotoId));
+    if (targetPhoto) {
+      setTimeout(() => {
+        openLightbox(targetPhoto);
+      }, 100);
+    }
+  }
+}
+
+function pixNestRenderAboutPage(data) {
+  pixNestSetText("aboutHeroTitle", data.aboutPage.heroTitle || "About PixNest");
+  pixNestSetText("aboutHeroText", data.aboutPage.heroText || "PixNest is a growing photo platform.");
+  pixNestSetText("aboutBodyTitle", data.aboutPage.bodyTitle || "Our Story");
+  pixNestSetText("aboutBodyText", data.aboutPage.bodyText || "PixNest brings together strong visual collections.");
+}
+
+function pixNestRenderContactPage(data) {
+  pixNestSetText("contactHeading", data.contactPage.heading || "Get in Touch");
+  pixNestSetText("contactIntro", data.contactPage.intro || "Use the contact details or the form below to reach the PixNest team.");
+  pixNestSetText("contactLocation", data.contactPage.location || "United Kingdom");
+  pixNestSetText("contactResponseTime", data.contactPage.responseTime || "Usually within 24 to 48 hours");
+
+  pixNestSetMailto("contactEmail", data.contactPage.email || "hello@pixnest.com");
+  pixNestSetPhone("contactPhone", data.contactPage.phone || "+44 0000 000000");
+
+  pixNestSetHref("instagramLink", data.contactPage.instagram || "#");
+  pixNestSetHref("xLink", data.contactPage.x || "#");
+  pixNestSetHref("facebookLink", data.contactPage.facebook || "#");
+  pixNestSetHref("tiktokLink", data.contactPage.tiktok || "#");
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  const data = pixNestLoadData();
+
+  pixNestInitMenu();
+  pixNestApplyBranding(data);
+  pixNestRenderHomePage(data);
+  pixNestRenderExplorePage(data);
+  pixNestRenderCategoryPage(data);
+  pixNestRenderAboutPage(data);
+  pixNestRenderContactPage(data);
+});

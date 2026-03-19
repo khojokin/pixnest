@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PixNest | Admin Dashboard</title>
+  <title>PixNest | Full Admin Dashboard</title>
   <style>
     *{
       margin:0;
@@ -277,7 +277,7 @@
 
     .stats{
       display:grid;
-      grid-template-columns:repeat(4,1fr);
+      grid-template-columns:repeat(6,1fr);
       gap:16px;
       margin-bottom:22px;
     }
@@ -295,6 +295,7 @@
       color:var(--accent);
       font-size:24px;
       margin-bottom:6px;
+      word-break:break-word;
     }
 
     .stat span{
@@ -307,6 +308,7 @@
       grid-template-columns:1fr 1fr;
       gap:22px;
       align-items:start;
+      margin-bottom:22px;
     }
 
     .panel{
@@ -406,6 +408,16 @@
       border:1px solid var(--line);
     }
 
+    .mini-btn.success{
+      background:#064e3b;
+      color:#fff;
+      border:1px solid rgba(255,255,255,0.06);
+    }
+
+    .mini-btn.success:hover{
+      background:#065f46;
+    }
+
     .category-cards{
       display:grid;
       gap:14px;
@@ -442,6 +454,37 @@
       background:rgba(250,204,21,0.12);
       border:1px solid rgba(250,204,21,0.16);
       color:var(--accent);
+    }
+
+    .pill.featured{
+      background:rgba(16,185,129,0.12);
+      border-color:rgba(16,185,129,0.18);
+      color:#86efac;
+    }
+
+    .check-row{
+      display:flex;
+      align-items:flex-start;
+      gap:10px;
+      background:#0f172a;
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:14px;
+      margin-bottom:16px;
+    }
+
+    .check-row input{
+      width:18px;
+      height:18px;
+      margin-top:2px;
+      accent-color:#facc15;
+      flex-shrink:0;
+    }
+
+    .check-row label{
+      font-size:14px;
+      font-weight:600;
+      color:#cbd5e1;
     }
 
     .upload-preview{
@@ -558,6 +601,12 @@
       line-height:1.3;
     }
 
+    .photo-badges{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+    }
+
     .photo-meta{
       color:var(--muted);
       font-size:13px;
@@ -608,15 +657,15 @@
       .upload-preview{
         grid-template-columns:repeat(3,1fr);
       }
+
+      .stats{
+        grid-template-columns:repeat(3,1fr);
+      }
     }
 
     @media(max-width:1000px){
       .grid{
         grid-template-columns:1fr;
-      }
-
-      .stats{
-        grid-template-columns:repeat(2,1fr);
       }
 
       .photo-grid{
@@ -707,7 +756,7 @@
         <div class="brand-logo">P</div>
         <div class="brand-text">
           <h1>Pix<span>Nest</span></h1>
-          <p>Photo Site Admin</p>
+          <p>Full Site Admin</p>
         </div>
       </div>
 
@@ -722,8 +771,8 @@
         <div class="topbar-left">
           <button class="mobile-toggle" id="mobileToggle">☰</button>
           <div>
-            <h2>Photo Site Admin</h2>
-            <p>Create categories, upload pictures, and manage your gallery without writing code.</p>
+            <h2>PixNest Full Admin</h2>
+            <p>Manage site text, page content, categories, uploads, featured photos, and your gallery in one dashboard.</p>
           </div>
         </div>
 
@@ -739,7 +788,7 @@
       <div class="page-wrap">
         <div class="notice">
           This version works on the <strong>local side</strong> and saves everything in your browser using localStorage.
-          It is good for testing and building. For a real big photo site with many images, you will later need cloud storage or a backend.
+          It manages both your public text content and your photo/category data.
         </div>
 
         <div class="stats">
@@ -754,6 +803,11 @@
           </div>
 
           <div class="stat">
+            <strong id="totalFeatured">0</strong>
+            <span>Featured Photos</span>
+          </div>
+
+          <div class="stat">
             <strong id="activeCategoryName">None</strong>
             <span>Selected Category</span>
           </div>
@@ -762,12 +816,17 @@
             <strong id="selectedCategoryCount">0</strong>
             <span>Photos in Selected Category</span>
           </div>
+
+          <div class="stat">
+            <strong id="siteNameStat">PixNest</strong>
+            <span>Current Site Name</span>
+          </div>
         </div>
 
         <div class="grid">
           <section class="panel">
             <h3>Site Settings</h3>
-            <p class="panel-sub">Basic brand settings for your photo site.</p>
+            <p class="panel-sub">Basic brand settings used across the site.</p>
 
             <div class="field-grid">
               <div class="field">
@@ -779,11 +838,166 @@
                 <label for="siteTagline">Tagline</label>
                 <input type="text" id="siteTagline" placeholder="Enter site tagline">
               </div>
+
+              <div class="field full">
+                <label for="footerText">Footer Text</label>
+                <input type="text" id="footerText" placeholder="Enter footer text">
+              </div>
             </div>
 
             <p class="success" id="saveMessage"></p>
           </section>
 
+          <section class="panel">
+            <h3>About Page Settings</h3>
+            <p class="panel-sub">Manage the main content for your About page.</p>
+
+            <div class="field-grid">
+              <div class="field full">
+                <label for="aboutHeroTitle">About Hero Title</label>
+                <input type="text" id="aboutHeroTitle" placeholder="Enter about page heading">
+              </div>
+
+              <div class="field full">
+                <label for="aboutHeroText">About Hero Text</label>
+                <textarea id="aboutHeroText" placeholder="Enter about page hero text"></textarea>
+              </div>
+
+              <div class="field full">
+                <label for="aboutBodyTitle">About Section Title</label>
+                <input type="text" id="aboutBodyTitle" placeholder="Enter about section title">
+              </div>
+
+              <div class="field full">
+                <label for="aboutBodyText">About Section Text</label>
+                <textarea id="aboutBodyText" placeholder="Enter about section content"></textarea>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <div class="grid">
+          <section class="panel">
+            <h3>Homepage Settings</h3>
+            <p class="panel-sub">Control the public text shown on the homepage.</p>
+
+            <div class="field-grid">
+              <div class="field full">
+                <label for="homeHeroTag">Hero Tag</label>
+                <input type="text" id="homeHeroTag" placeholder="Enter hero tag">
+              </div>
+
+              <div class="field full">
+                <label for="homeHeroTitle">Hero Title</label>
+                <input type="text" id="homeHeroTitle" placeholder="Enter hero heading">
+              </div>
+
+              <div class="field full">
+                <label for="homeHeroText">Hero Description</label>
+                <textarea id="homeHeroText" placeholder="Enter hero description"></textarea>
+              </div>
+
+              <div class="field">
+                <label for="categoriesTitle">All Categories Title</label>
+                <input type="text" id="categoriesTitle" placeholder="Enter categories title">
+              </div>
+
+              <div class="field">
+                <label for="categoriesText">All Categories Text</label>
+                <input type="text" id="categoriesText" placeholder="Enter categories text">
+              </div>
+
+              <div class="field">
+                <label for="featuredTitle">Featured Photos Title</label>
+                <input type="text" id="featuredTitle" placeholder="Enter featured title">
+              </div>
+
+              <div class="field">
+                <label for="featuredText">Featured Photos Text</label>
+                <input type="text" id="featuredText" placeholder="Enter featured text">
+              </div>
+
+              <div class="field">
+                <label for="trendingTitle">Trending Title</label>
+                <input type="text" id="trendingTitle" placeholder="Enter trending title">
+              </div>
+
+              <div class="field">
+                <label for="trendingText">Trending Text</label>
+                <input type="text" id="trendingText" placeholder="Enter trending text">
+              </div>
+
+              <div class="field full">
+                <label for="ctaTitle">CTA Title</label>
+                <input type="text" id="ctaTitle" placeholder="Enter homepage CTA title">
+              </div>
+
+              <div class="field full">
+                <label for="ctaText">CTA Text</label>
+                <textarea id="ctaText" placeholder="Enter homepage CTA text"></textarea>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel">
+            <h3>Contact Page Settings</h3>
+            <p class="panel-sub">Manage the public contact details and social links.</p>
+
+            <div class="field-grid">
+              <div class="field full">
+                <label for="contactHeading">Contact Heading</label>
+                <input type="text" id="contactHeading" placeholder="Enter contact heading">
+              </div>
+
+              <div class="field full">
+                <label for="contactIntro">Contact Intro Text</label>
+                <textarea id="contactIntro" placeholder="Enter contact intro"></textarea>
+              </div>
+
+              <div class="field">
+                <label for="contactEmail">Email</label>
+                <input type="text" id="contactEmail" placeholder="hello@pixnest.com">
+              </div>
+
+              <div class="field">
+                <label for="contactPhone">Phone</label>
+                <input type="text" id="contactPhone" placeholder="+44 0000 000000">
+              </div>
+
+              <div class="field">
+                <label for="contactLocation">Location</label>
+                <input type="text" id="contactLocation" placeholder="United Kingdom">
+              </div>
+
+              <div class="field">
+                <label for="contactResponseTime">Response Time</label>
+                <input type="text" id="contactResponseTime" placeholder="Usually within 24 to 48 hours">
+              </div>
+
+              <div class="field">
+                <label for="instagramUrl">Instagram Link</label>
+                <input type="text" id="instagramUrl" placeholder="https://instagram.com/yourname">
+              </div>
+
+              <div class="field">
+                <label for="xUrl">X Link</label>
+                <input type="text" id="xUrl" placeholder="https://x.com/yourname">
+              </div>
+
+              <div class="field">
+                <label for="facebookUrl">Facebook Link</label>
+                <input type="text" id="facebookUrl" placeholder="https://facebook.com/yourname">
+              </div>
+
+              <div class="field">
+                <label for="tiktokUrl">TikTok Link</label>
+                <input type="text" id="tiktokUrl" placeholder="https://tiktok.com/@yourname">
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <div class="grid">
           <section class="panel">
             <div class="section-title">
               <h3>Add Category</h3>
@@ -803,9 +1017,18 @@
             <button class="btn btn-primary" id="addCategoryBtn">Add Category</button>
             <p class="danger-text" id="categoryError"></p>
           </section>
+
+          <section class="panel">
+            <div class="section-title">
+              <h3>Manage Categories</h3>
+            </div>
+            <p class="panel-sub">See all categories and remove any category you no longer want.</p>
+
+            <div class="category-cards" id="categoryCards"></div>
+          </section>
         </div>
 
-        <div class="grid" style="margin-top:22px;">
+        <div class="grid">
           <section class="panel">
             <div class="section-title">
               <h3>Upload Pictures</h3>
@@ -844,6 +1067,11 @@
               </div>
             </div>
 
+            <div class="check-row">
+              <input type="checkbox" id="photoFeatured">
+              <label for="photoFeatured">Mark uploaded picture(s) as featured so they can appear in the Featured Photos section.</label>
+            </div>
+
             <button class="btn btn-primary" id="uploadPhotosBtn">Upload Pictures</button>
             <p class="danger-text" id="uploadError"></p>
 
@@ -852,13 +1080,46 @@
 
           <section class="panel">
             <div class="section-title">
-              <h3>Manage Categories</h3>
+              <h3>Quick Public Text Preview</h3>
             </div>
-            <p class="panel-sub">See all categories and remove any category you no longer want.</p>
+            <p class="panel-sub">This helps you quickly see the text you are saving for public pages.</p>
 
-            <div class="category-cards" id="categoryCards"></div>
+            <div class="category-cards">
+              <div class="category-card">
+                <div>
+                  <h4 id="previewSiteName">PixNest</h4>
+                  <p id="previewTagline">Free and premium photo collections</p>
+                  <span class="pill" id="previewCategoriesTitle">All Categories</span>
+                </div>
+              </div>
+
+              <div class="category-card">
+                <div>
+                  <h4 id="previewFeaturedTitle">Featured Photos</h4>
+                  <p id="previewFeaturedText">Latest standout visuals selected for the PixNest collection.</p>
+                </div>
+              </div>
+
+              <div class="category-card">
+                <div>
+                  <h4 id="previewTrendingTitle">Trending This Week</h4>
+                  <p id="previewTrendingText">Fresh visual picks to explore across multiple styles and categories.</p>
+                </div>
+              </div>
+            </div>
           </section>
         </div>
+
+        <section class="library">
+          <div class="library-top">
+            <div>
+              <h2 style="font-size:30px; color:#fff; margin-bottom:6px;">Featured Photos</h2>
+              <p style="color:var(--muted);">These are the photos marked as featured across your categories.</p>
+            </div>
+          </div>
+
+          <div class="photo-groups" id="featuredGroups"></div>
+        </section>
 
         <section class="library">
           <div class="library-top">
@@ -884,9 +1145,58 @@
   <script>
     const STORAGE_KEY = "pixnest_admin_v1";
 
+    function createId(){
+      return "id-" + Math.random().toString(36).slice(2,10) + Date.now().toString(36);
+    }
+
+    function deepClone(value){
+      return JSON.parse(JSON.stringify(value));
+    }
+
+    function escapeHtml(value = ""){
+      return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+
     const defaultData = {
       siteName: "PixNest",
       siteTagline: "Free and premium photo collections",
+      footerText: "©️ 2026 PixNest. Discover and share powerful visual collections.",
+      homepage: {
+        heroTag: "Discover fresh visual collections",
+        heroTitle: "Discover beautiful photos for creative projects, brands, and inspiration.",
+        heroText: "Browse categories, explore standout visuals, and find photos for websites, design work, social media, and creative ideas.",
+        categoriesTitle: "All Categories",
+        categoriesText: "Explore visual collections across different styles, themes, and creative topics.",
+        featuredTitle: "Featured Photos",
+        featuredText: "Latest standout visuals selected for the PixNest collection.",
+        trendingTitle: "Trending This Week",
+        trendingText: "Fresh visual picks to explore across multiple styles and categories.",
+        ctaTitle: "Start exploring the PixNest collection today.",
+        ctaText: "Browse curated categories, discover standout images, and enjoy a growing library of free and premium visuals."
+      },
+      contactPage: {
+        heading: "Get in Touch",
+        intro: "Use the contact details or the form below to reach the PixNest team.",
+        email: "hello@pixnest.com",
+        phone: "+44 0000 000000",
+        location: "United Kingdom",
+        responseTime: "Usually within 24 to 48 hours",
+        instagram: "#",
+        x: "#",
+        facebook: "#",
+        tiktok: "#"
+      },
+      aboutPage: {
+        heroTitle: "About PixNest",
+        heroText: "PixNest is a growing photo platform built to help people discover strong visuals across free and premium collections.",
+        bodyTitle: "Our Story",
+        bodyText: "PixNest brings together visual collections across different categories, styles, and creative topics for inspiration, design work, and modern digital projects."
+      },
       categories: [
         {
           id: createId(),
@@ -903,6 +1213,83 @@
       ]
     };
 
+    function normalizeData(data){
+      const safeData = data && typeof data === "object" ? data : {};
+
+      const homepage = safeData.homepage || {};
+      const contactPage = safeData.contactPage || {};
+      const aboutPage = safeData.aboutPage || {};
+
+      return {
+        siteName: safeData.siteName || defaultData.siteName,
+        siteTagline: safeData.siteTagline || defaultData.siteTagline,
+        footerText: safeData.footerText || defaultData.footerText,
+        homepage: {
+          heroTag: homepage.heroTag || defaultData.homepage.heroTag,
+          heroTitle: homepage.heroTitle || defaultData.homepage.heroTitle,
+          heroText: homepage.heroText || defaultData.homepage.heroText,
+          categoriesTitle: homepage.categoriesTitle || defaultData.homepage.categoriesTitle,
+          categoriesText: homepage.categoriesText || defaultData.homepage.categoriesText,
+          featuredTitle: homepage.featuredTitle || defaultData.homepage.featuredTitle,
+          featuredText: homepage.featuredText || defaultData.homepage.featuredText,
+          trendingTitle: homepage.trendingTitle || defaultData.homepage.trendingTitle,
+          trendingText: homepage.trendingText || defaultData.homepage.trendingText,
+          ctaTitle: homepage.ctaTitle || defaultData.homepage.ctaTitle,
+          ctaText: homepage.ctaText || defaultData.homepage.ctaText
+        },
+        contactPage: {
+          heading: contactPage.heading || defaultData.contactPage.heading,
+          intro: contactPage.intro || defaultData.contactPage.intro,
+          email: contactPage.email || defaultData.contactPage.email,
+          phone: contactPage.phone || defaultData.contactPage.phone,
+          location: contactPage.location || defaultData.contactPage.location,
+          responseTime: contactPage.responseTime || defaultData.contactPage.responseTime,
+          instagram: contactPage.instagram || defaultData.contactPage.instagram,
+          x: contactPage.x || defaultData.contactPage.x,
+          facebook: contactPage.facebook || defaultData.contactPage.facebook,
+          tiktok: contactPage.tiktok || defaultData.contactPage.tiktok
+        },
+        aboutPage: {
+          heroTitle: aboutPage.heroTitle || defaultData.aboutPage.heroTitle,
+          heroText: aboutPage.heroText || defaultData.aboutPage.heroText,
+          bodyTitle: aboutPage.bodyTitle || defaultData.aboutPage.bodyTitle,
+          bodyText: aboutPage.bodyText || defaultData.aboutPage.bodyText
+        },
+        categories: Array.isArray(safeData.categories)
+          ? safeData.categories.map(cat => ({
+              id: cat.id || createId(),
+              name: cat.name || "Untitled Category",
+              description: cat.description || "",
+              photos: Array.isArray(cat.photos)
+                ? cat.photos.map(photo => ({
+                    id: photo.id || createId(),
+                    title: photo.title || "Untitled Photo",
+                    description: photo.description || "",
+                    credit: photo.credit || "",
+                    tags: photo.tags || "",
+                    image: photo.image || "",
+                    fileName: photo.fileName || "",
+                    createdAt: photo.createdAt || new Date().toISOString(),
+                    featured: Boolean(photo.featured)
+                  }))
+                : []
+            }))
+          : []
+      };
+    }
+
+    function loadData(){
+      try{
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if(saved){
+          return normalizeData(JSON.parse(saved));
+        }
+      }catch(error){
+        console.error("Failed to load PixNest admin data", error);
+      }
+      return normalizeData(deepClone(defaultData));
+    }
+
     let siteData = loadData();
     let activeCategoryId = siteData.categories[0] ? siteData.categories[0].id : null;
 
@@ -912,15 +1299,48 @@
     const uploadCategory = document.getElementById("uploadCategory");
     const filterCategory = document.getElementById("filterCategory");
     const photoGroups = document.getElementById("photoGroups");
+    const featuredGroups = document.getElementById("featuredGroups");
     const uploadPreview = document.getElementById("uploadPreview");
 
     const totalCategories = document.getElementById("totalCategories");
     const totalPhotos = document.getElementById("totalPhotos");
+    const totalFeatured = document.getElementById("totalFeatured");
     const activeCategoryName = document.getElementById("activeCategoryName");
     const selectedCategoryCount = document.getElementById("selectedCategoryCount");
+    const siteNameStat = document.getElementById("siteNameStat");
 
     const siteNameInput = document.getElementById("siteName");
     const siteTaglineInput = document.getElementById("siteTagline");
+    const footerTextInput = document.getElementById("footerText");
+
+    const aboutHeroTitleInput = document.getElementById("aboutHeroTitle");
+    const aboutHeroTextInput = document.getElementById("aboutHeroText");
+    const aboutBodyTitleInput = document.getElementById("aboutBodyTitle");
+    const aboutBodyTextInput = document.getElementById("aboutBodyText");
+
+    const homeHeroTagInput = document.getElementById("homeHeroTag");
+    const homeHeroTitleInput = document.getElementById("homeHeroTitle");
+    const homeHeroTextInput = document.getElementById("homeHeroText");
+    const categoriesTitleInput = document.getElementById("categoriesTitle");
+    const categoriesTextInput = document.getElementById("categoriesText");
+    const featuredTitleInput = document.getElementById("featuredTitle");
+    const featuredTextInput = document.getElementById("featuredText");
+    const trendingTitleInput = document.getElementById("trendingTitle");
+    const trendingTextInput = document.getElementById("trendingText");
+    const ctaTitleInput = document.getElementById("ctaTitle");
+    const ctaTextInput = document.getElementById("ctaText");
+
+    const contactHeadingInput = document.getElementById("contactHeading");
+    const contactIntroInput = document.getElementById("contactIntro");
+    const contactEmailInput = document.getElementById("contactEmail");
+    const contactPhoneInput = document.getElementById("contactPhone");
+    const contactLocationInput = document.getElementById("contactLocation");
+    const contactResponseTimeInput = document.getElementById("contactResponseTime");
+    const instagramUrlInput = document.getElementById("instagramUrl");
+    const xUrlInput = document.getElementById("xUrl");
+    const facebookUrlInput = document.getElementById("facebookUrl");
+    const tiktokUrlInput = document.getElementById("tiktokUrl");
+
     const categoryNameInput = document.getElementById("categoryName");
     const categoryDescInput = document.getElementById("categoryDesc");
     const addCategoryBtn = document.getElementById("addCategoryBtn");
@@ -930,6 +1350,7 @@
     const photoCreditInput = document.getElementById("photoCredit");
     const photoTagsInput = document.getElementById("photoTags");
     const photoFilesInput = document.getElementById("photoFiles");
+    const photoFeaturedInput = document.getElementById("photoFeatured");
     const uploadPhotosBtn = document.getElementById("uploadPhotosBtn");
 
     const categoryError = document.getElementById("categoryError");
@@ -937,21 +1358,13 @@
     const saveMessage = document.getElementById("saveMessage");
     const searchInput = document.getElementById("searchInput");
 
-    function createId(){
-      return "id-" + Math.random().toString(36).slice(2,10) + Date.now().toString(36);
-    }
-
-    function loadData(){
-      try{
-        const saved = localStorage.getItem(STORAGE_KEY);
-        if(saved){
-          return JSON.parse(saved);
-        }
-      }catch(error){
-        console.error("Failed to load photo site admin data", error);
-      }
-      return JSON.parse(JSON.stringify(defaultData));
-    }
+    const previewSiteName = document.getElementById("previewSiteName");
+    const previewTagline = document.getElementById("previewTagline");
+    const previewCategoriesTitle = document.getElementById("previewCategoriesTitle");
+    const previewFeaturedTitle = document.getElementById("previewFeaturedTitle");
+    const previewFeaturedText = document.getElementById("previewFeaturedText");
+    const previewTrendingTitle = document.getElementById("previewTrendingTitle");
+    const previewTrendingText = document.getElementById("previewTrendingText");
 
     function saveData(showMessage = false){
       try{
@@ -960,15 +1373,21 @@
           saveMessage.textContent = "Saved successfully.";
           setTimeout(() => {
             saveMessage.textContent = "";
-          }, 2000);
+          }, 2200);
         }
       }catch(error){
-        alert("Storage is full. Too many images for browser localStorage. You may need fewer images or a real backend/cloud storage.");
+        alert("Storage is full. Too many images for browser localStorage. You may need fewer images or real cloud storage later.");
       }
     }
 
     function getTotalPhotos(){
       return siteData.categories.reduce((sum, cat) => sum + cat.photos.length, 0);
+    }
+
+    function getTotalFeatured(){
+      return siteData.categories.reduce((sum, cat) => {
+        return sum + cat.photos.filter(photo => photo.featured).length;
+      }, 0);
     }
 
     function getActiveCategory(){
@@ -986,10 +1405,12 @@
     function renderStats(){
       totalCategories.textContent = siteData.categories.length;
       totalPhotos.textContent = getTotalPhotos();
+      totalFeatured.textContent = getTotalFeatured();
 
       const active = getActiveCategory();
       activeCategoryName.textContent = active ? active.name : "None";
       selectedCategoryCount.textContent = active ? active.photos.length : 0;
+      siteNameStat.textContent = siteData.siteName || "PixNest";
     }
 
     function renderSidebar(){
@@ -1004,7 +1425,7 @@
         const btn = document.createElement("button");
         btn.className = "cat-btn" + (cat.id === activeCategoryId ? " active" : "");
         btn.innerHTML = `
-          <span>${cat.name}</span>
+          <span>${escapeHtml(cat.name)}</span>
           <span class="cat-count">${cat.photos.length}</span>
         `;
         btn.onclick = () => {
@@ -1019,6 +1440,9 @@
     }
 
     function renderCategorySelects(){
+      const previousUpload = uploadCategory.value || activeCategoryId || "";
+      const previousFilter = filterCategory.value || "all";
+
       uploadCategory.innerHTML = "";
       filterCategory.innerHTML = '<option value="all">All Categories</option>';
 
@@ -1031,7 +1455,7 @@
         const option1 = document.createElement("option");
         option1.value = cat.id;
         option1.textContent = cat.name;
-        if(cat.id === activeCategoryId){
+        if(cat.id === previousUpload || (!previousUpload && cat.id === activeCategoryId)){
           option1.selected = true;
         }
         uploadCategory.appendChild(option1);
@@ -1041,6 +1465,9 @@
         option2.textContent = cat.name;
         filterCategory.appendChild(option2);
       });
+
+      const filterExists = [...filterCategory.options].some(option => option.value === previousFilter);
+      filterCategory.value = filterExists ? previousFilter : "all";
     }
 
     function renderCategoryCards(){
@@ -1052,13 +1479,16 @@
       }
 
       siteData.categories.forEach(cat => {
+        const featuredCount = cat.photos.filter(photo => photo.featured).length;
+
         const card = document.createElement("div");
         card.className = "category-card";
         card.innerHTML = `
           <div>
-            <h4>${cat.name}</h4>
-            <p>${cat.description || "No description added."}</p>
+            <h4>${escapeHtml(cat.name)}</h4>
+            <p>${escapeHtml(cat.description || "No description added.")}</p>
             <span class="pill">${cat.photos.length} photo${cat.photos.length === 1 ? "" : "s"}</span>
+            ${featuredCount ? `<span class="pill featured" style="margin-left:8px;">${featuredCount} featured</span>` : ""}
           </div>
         `;
 
@@ -1112,13 +1542,123 @@
           const div = document.createElement("div");
           div.className = "thumb";
           div.innerHTML = `
-            <img src="${e.target.result}" alt="${file.name}">
-            <p>${file.name}</p>
+            <img src="${e.target.result}" alt="${escapeHtml(file.name)}">
+            <p>${escapeHtml(file.name)}</p>
           `;
           uploadPreview.appendChild(div);
         };
         reader.readAsDataURL(file);
       });
+    }
+
+    function toggleFeatured(categoryId, photoId){
+      const category = siteData.categories.find(cat => cat.id === categoryId);
+      if(!category) return;
+
+      const photo = category.photos.find(item => item.id === photoId);
+      if(!photo) return;
+
+      photo.featured = !photo.featured;
+      saveData();
+      renderAll();
+    }
+
+    function deletePhoto(categoryId, photoId, title, categoryName){
+      const category = siteData.categories.find(cat => cat.id === categoryId);
+      if(!category) return;
+
+      const confirmDelete = confirm(`Delete "${title}" from ${categoryName}?`);
+      if(!confirmDelete) return;
+
+      category.photos = category.photos.filter(item => item.id !== photoId);
+      saveData();
+      renderAll();
+    }
+
+    function createPhotoCard(category, photo){
+      const card = document.createElement("div");
+      card.className = "photo-card";
+
+      const tagsText = photo.tags && photo.tags.trim() ? photo.tags.trim() : "No tags";
+      const descText = photo.description && photo.description.trim() ? photo.description.trim() : "No description added.";
+
+      card.innerHTML = `
+        <img src="${photo.image}" alt="${escapeHtml(photo.title)}">
+        <div class="photo-card-content">
+          <div class="photo-badges">
+            <span class="pill">${escapeHtml(category.name)}</span>
+            ${photo.featured ? '<span class="pill featured">Featured</span>' : ""}
+          </div>
+          <h4>${escapeHtml(photo.title)}</h4>
+          <div class="photo-meta">By ${escapeHtml(photo.credit || "Unknown")} • ${escapeHtml(tagsText)}</div>
+          <div class="photo-desc">${escapeHtml(descText)}</div>
+        </div>
+      `;
+
+      const actions = document.createElement("div");
+      actions.className = "photo-actions";
+
+      const featureBtn = document.createElement("button");
+      featureBtn.className = photo.featured ? "mini-btn secondary" : "mini-btn success";
+      featureBtn.textContent = photo.featured ? "Unfeature" : "Feature";
+      featureBtn.onclick = () => {
+        toggleFeatured(category.id, photo.id);
+      };
+
+      const deleteBtn = document.createElement("button");
+      deleteBtn.className = "mini-btn danger";
+      deleteBtn.textContent = "Delete";
+      deleteBtn.onclick = () => {
+        deletePhoto(category.id, photo.id, photo.title, category.name);
+      };
+
+      actions.appendChild(featureBtn);
+      actions.appendChild(deleteBtn);
+      card.querySelector(".photo-card-content").appendChild(actions);
+
+      return card;
+    }
+
+    function renderFeaturedGroups(){
+      featuredGroups.innerHTML = "";
+
+      const featuredPhotos = [];
+
+      siteData.categories.forEach(cat => {
+        cat.photos.forEach(photo => {
+          if(photo.featured){
+            featuredPhotos.push({ category: cat, photo });
+          }
+        });
+      });
+
+      if(!featuredPhotos.length){
+        featuredGroups.innerHTML = '<div class="empty-box">No featured photos yet. Upload photos and tick the featured option, or use the Feature button in the library below.</div>';
+        return;
+      }
+
+      const group = document.createElement("div");
+      group.className = "photo-group";
+
+      group.innerHTML = `
+        <div class="photo-group-head">
+          <div>
+            <h3>Featured Photo Collection</h3>
+            <p style="color:var(--muted); font-size:14px;">These are the photos marked as featured from across all categories.</p>
+          </div>
+          <span class="pill featured">${featuredPhotos.length} featured</span>
+        </div>
+      `;
+
+      const grid = document.createElement("div");
+      grid.className = "photo-grid";
+
+      featuredPhotos.forEach(item => {
+        grid.appendChild(createPhotoCard(item.category, item.photo));
+      });
+
+      group.appendChild(grid);
+      featuredGroups.appendChild(group);
     }
 
     function renderPhotoGroups(){
@@ -1147,7 +1687,8 @@
             photo.title,
             photo.description,
             photo.credit,
-            photo.tags
+            photo.tags,
+            cat.name
           ].join(" ").toLowerCase();
 
           return allText.includes(searchValue);
@@ -1160,13 +1701,18 @@
         const group = document.createElement("div");
         group.className = "photo-group";
 
+        const featuredCount = filteredPhotos.filter(photo => photo.featured).length;
+
         group.innerHTML = `
           <div class="photo-group-head">
             <div>
-              <h3>${cat.name}</h3>
-              <p style="color:var(--muted); font-size:14px;">${cat.description || "No description."}</p>
+              <h3>${escapeHtml(cat.name)}</h3>
+              <p style="color:var(--muted); font-size:14px;">${escapeHtml(cat.description || "No description.")}</p>
             </div>
-            <span class="pill">${filteredPhotos.length} photo${filteredPhotos.length === 1 ? "" : "s"}</span>
+            <div style="display:flex; gap:8px; flex-wrap:wrap;">
+              <span class="pill">${filteredPhotos.length} photo${filteredPhotos.length === 1 ? "" : "s"}</span>
+              ${featuredCount ? `<span class="pill featured">${featuredCount} featured</span>` : ""}
+            </div>
           </div>
         `;
 
@@ -1174,36 +1720,7 @@
         grid.className = "photo-grid";
 
         filteredPhotos.forEach(photo => {
-          const card = document.createElement("div");
-          card.className = "photo-card";
-
-          card.innerHTML = `
-            <img src="${photo.image}" alt="${photo.title}">
-            <div class="photo-card-content">
-              <h4>${photo.title}</h4>
-              <div class="photo-meta">By ${photo.credit || "Unknown"} • ${photo.tags || "No tags"}</div>
-              <div class="photo-desc">${photo.description || "No description added."}</div>
-            </div>
-          `;
-
-          const actions = document.createElement("div");
-          actions.className = "photo-actions";
-
-          const deleteBtn = document.createElement("button");
-          deleteBtn.className = "mini-btn danger";
-          deleteBtn.textContent = "Delete";
-          deleteBtn.onclick = () => {
-            const confirmDelete = confirm(`Delete "${photo.title}" from ${cat.name}?`);
-            if(!confirmDelete) return;
-
-            cat.photos = cat.photos.filter(item => item.id !== photo.id);
-            saveData();
-            renderAll();
-          };
-
-          actions.appendChild(deleteBtn);
-          card.querySelector(".photo-card-content").appendChild(actions);
-          grid.appendChild(card);
+          grid.appendChild(createPhotoCard(cat, photo));
         });
 
         group.appendChild(grid);
@@ -1215,14 +1732,58 @@
       }
     }
 
-    function renderAll(){
+    function renderContentInputs(){
       siteNameInput.value = siteData.siteName || "";
       siteTaglineInput.value = siteData.siteTagline || "";
+      footerTextInput.value = siteData.footerText || "";
 
+      homeHeroTagInput.value = siteData.homepage.heroTag || "";
+      homeHeroTitleInput.value = siteData.homepage.heroTitle || "";
+      homeHeroTextInput.value = siteData.homepage.heroText || "";
+      categoriesTitleInput.value = siteData.homepage.categoriesTitle || "";
+      categoriesTextInput.value = siteData.homepage.categoriesText || "";
+      featuredTitleInput.value = siteData.homepage.featuredTitle || "";
+      featuredTextInput.value = siteData.homepage.featuredText || "";
+      trendingTitleInput.value = siteData.homepage.trendingTitle || "";
+      trendingTextInput.value = siteData.homepage.trendingText || "";
+      ctaTitleInput.value = siteData.homepage.ctaTitle || "";
+      ctaTextInput.value = siteData.homepage.ctaText || "";
+
+      contactHeadingInput.value = siteData.contactPage.heading || "";
+      contactIntroInput.value = siteData.contactPage.intro || "";
+      contactEmailInput.value = siteData.contactPage.email || "";
+      contactPhoneInput.value = siteData.contactPage.phone || "";
+      contactLocationInput.value = siteData.contactPage.location || "";
+      contactResponseTimeInput.value = siteData.contactPage.responseTime || "";
+      instagramUrlInput.value = siteData.contactPage.instagram || "";
+      xUrlInput.value = siteData.contactPage.x || "";
+      facebookUrlInput.value = siteData.contactPage.facebook || "";
+      tiktokUrlInput.value = siteData.contactPage.tiktok || "";
+
+      aboutHeroTitleInput.value = siteData.aboutPage.heroTitle || "";
+      aboutHeroTextInput.value = siteData.aboutPage.heroText || "";
+      aboutBodyTitleInput.value = siteData.aboutPage.bodyTitle || "";
+      aboutBodyTextInput.value = siteData.aboutPage.bodyText || "";
+    }
+
+    function renderTextPreview(){
+      previewSiteName.textContent = siteData.siteName || "PixNest";
+      previewTagline.textContent = siteData.siteTagline || "";
+      previewCategoriesTitle.textContent = siteData.homepage.categoriesTitle || "All Categories";
+      previewFeaturedTitle.textContent = siteData.homepage.featuredTitle || "Featured Photos";
+      previewFeaturedText.textContent = siteData.homepage.featuredText || "";
+      previewTrendingTitle.textContent = siteData.homepage.trendingTitle || "Trending This Week";
+      previewTrendingText.textContent = siteData.homepage.trendingText || "";
+    }
+
+    function renderAll(){
+      renderContentInputs();
       renderSidebar();
       renderStats();
       renderCategorySelects();
       renderCategoryCards();
+      renderTextPreview();
+      renderFeaturedGroups();
       renderPhotoGroups();
     }
 
@@ -1295,6 +1856,7 @@
       const description = photoDescInput.value.trim();
       const credit = photoCreditInput.value.trim();
       const tags = photoTagsInput.value.trim();
+      const featured = photoFeaturedInput.checked;
 
       try{
         const imageResults = await Promise.all(
@@ -1318,7 +1880,8 @@
             tags,
             image: imageData,
             fileName: file.name,
-            createdAt: new Date().toISOString()
+            createdAt: new Date().toISOString(),
+            featured: featured
           });
         });
 
@@ -1328,6 +1891,7 @@
         photoCreditInput.value = "";
         photoTagsInput.value = "";
         photoFilesInput.value = "";
+        photoFeaturedInput.checked = false;
         uploadPreview.innerHTML = "";
 
         saveData();
@@ -1342,7 +1906,7 @@
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = "pixnest-admin-backup.json";
+      a.download = "pixnest-full-admin-backup.json";
       document.body.appendChild(a);
       a.click();
       a.remove();
@@ -1360,7 +1924,7 @@
             return;
           }
 
-          siteData = imported;
+          siteData = normalizeData(imported);
           activeCategoryId = siteData.categories[0] ? siteData.categories[0].id : null;
           saveData();
           renderAll();
@@ -1373,27 +1937,141 @@
     }
 
     function resetAll(){
-      const ok = confirm("Reset all categories and pictures back to the default starter data?");
+      const ok = confirm("Reset all text, categories, and pictures back to the default starter data?");
       if(!ok) return;
 
-      siteData = JSON.parse(JSON.stringify(defaultData));
+      siteData = normalizeData(deepClone(defaultData));
       activeCategoryId = siteData.categories[0] ? siteData.categories[0].id : null;
       saveData();
       renderAll();
+    }
+
+    function attachInputBindings(){
+      siteNameInput.addEventListener("input", () => {
+        siteData.siteName = siteNameInput.value;
+        renderTextPreview();
+        renderStats();
+      });
+
+      siteTaglineInput.addEventListener("input", () => {
+        siteData.siteTagline = siteTaglineInput.value;
+        renderTextPreview();
+      });
+
+      footerTextInput.addEventListener("input", () => {
+        siteData.footerText = footerTextInput.value;
+      });
+
+      homeHeroTagInput.addEventListener("input", () => {
+        siteData.homepage.heroTag = homeHeroTagInput.value;
+      });
+
+      homeHeroTitleInput.addEventListener("input", () => {
+        siteData.homepage.heroTitle = homeHeroTitleInput.value;
+      });
+
+      homeHeroTextInput.addEventListener("input", () => {
+        siteData.homepage.heroText = homeHeroTextInput.value;
+      });
+
+      categoriesTitleInput.addEventListener("input", () => {
+        siteData.homepage.categoriesTitle = categoriesTitleInput.value;
+        renderTextPreview();
+      });
+
+      categoriesTextInput.addEventListener("input", () => {
+        siteData.homepage.categoriesText = categoriesTextInput.value;
+      });
+
+      featuredTitleInput.addEventListener("input", () => {
+        siteData.homepage.featuredTitle = featuredTitleInput.value;
+        renderTextPreview();
+      });
+
+      featuredTextInput.addEventListener("input", () => {
+        siteData.homepage.featuredText = featuredTextInput.value;
+        renderTextPreview();
+      });
+
+      trendingTitleInput.addEventListener("input", () => {
+        siteData.homepage.trendingTitle = trendingTitleInput.value;
+        renderTextPreview();
+      });
+
+      trendingTextInput.addEventListener("input", () => {
+        siteData.homepage.trendingText = trendingTextInput.value;
+        renderTextPreview();
+      });
+
+      ctaTitleInput.addEventListener("input", () => {
+        siteData.homepage.ctaTitle = ctaTitleInput.value;
+      });
+
+      ctaTextInput.addEventListener("input", () => {
+        siteData.homepage.ctaText = ctaTextInput.value;
+      });
+
+      contactHeadingInput.addEventListener("input", () => {
+        siteData.contactPage.heading = contactHeadingInput.value;
+      });
+
+      contactIntroInput.addEventListener("input", () => {
+        siteData.contactPage.intro = contactIntroInput.value;
+      });
+
+      contactEmailInput.addEventListener("input", () => {
+        siteData.contactPage.email = contactEmailInput.value;
+      });
+
+      contactPhoneInput.addEventListener("input", () => {
+        siteData.contactPage.phone = contactPhoneInput.value;
+      });
+
+      contactLocationInput.addEventListener("input", () => {
+        siteData.contactPage.location = contactLocationInput.value;
+      });
+
+      contactResponseTimeInput.addEventListener("input", () => {
+        siteData.contactPage.responseTime = contactResponseTimeInput.value;
+      });
+
+      instagramUrlInput.addEventListener("input", () => {
+        siteData.contactPage.instagram = instagramUrlInput.value;
+      });
+
+      xUrlInput.addEventListener("input", () => {
+        siteData.contactPage.x = xUrlInput.value;
+      });
+
+      facebookUrlInput.addEventListener("input", () => {
+        siteData.contactPage.facebook = facebookUrlInput.value;
+      });
+
+      tiktokUrlInput.addEventListener("input", () => {
+        siteData.contactPage.tiktok = tiktokUrlInput.value;
+      });
+
+      aboutHeroTitleInput.addEventListener("input", () => {
+        siteData.aboutPage.heroTitle = aboutHeroTitleInput.value;
+      });
+
+      aboutHeroTextInput.addEventListener("input", () => {
+        siteData.aboutPage.heroText = aboutHeroTextInput.value;
+      });
+
+      aboutBodyTitleInput.addEventListener("input", () => {
+        siteData.aboutPage.bodyTitle = aboutBodyTitleInput.value;
+      });
+
+      aboutBodyTextInput.addEventListener("input", () => {
+        siteData.aboutPage.bodyText = aboutBodyTextInput.value;
+      });
     }
 
     addCategoryBtn.addEventListener("click", addCategory);
     uploadPhotosBtn.addEventListener("click", uploadPhotos);
 
     photoFilesInput.addEventListener("change", renderUploadPreview);
-
-    siteNameInput.addEventListener("input", () => {
-      siteData.siteName = siteNameInput.value;
-    });
-
-    siteTaglineInput.addEventListener("input", () => {
-      siteData.siteTagline = siteTaglineInput.value;
-    });
 
     document.getElementById("saveBtn").addEventListener("click", () => {
       saveData(true);
@@ -1421,9 +2099,8 @@
       sidebar.classList.toggle("show");
     });
 
+    attachInputBindings();
     renderAll();
   </script>
 </body>
 </html>
-
- 
