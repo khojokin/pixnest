@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PixNest | Privacy Policy</title>
+  <style>
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+      font-family:Arial, Helvetica, sans-serif;
+    }
+
+    :root{
+      --bg:#0f172a;
+      --panel:#111827;
+      --panel-2:#1e293b;
+      --text:#e5e7eb;
+      --muted:#94a3b8;
+      --accent:#facc15;
+      --line:rgba(255,255,255,0.08);
+    }
+
+    html{
+      scroll-behavior:smooth;
+    }
+
+    body{
+      background:var(--bg);
+      color:var(--text);
+      line-height:1.7;
+      overflow-x:hidden;
+    }
+
+    img{
+      max-width:100%;
+      display:block;
+    }
+
+    a{
+      text-decoration:none;
+      color:inherit;
+      transition:0.3s;
+    }
+
+    button{
+      font-family:Arial, Helvetica, sans-serif;
+      transition:0.3s;
+    }
+
+    .container{
+      width:min(1100px, 92%);
+      margin:auto;
+    }
+
+    header{
+      position:sticky;
+      top:0;
+      z-index:1000;
+      background:rgba(15,23,42,0.95);
+      border-bottom:1px solid var(--line);
+      backdrop-filter:blur(8px);
+    }
+
+    .nav{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:20px;
+      padding:16px 0;
+      position:relative;
+    }
+
+    .logo-wrap{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      flex-shrink:0;
+      min-width:0;
+    }
+
+    .logo-mark{
+      width:52px;
+      height:52px;
+      border-radius:14px;
+      background:linear-gradient(135deg,#facc15,#fb7185);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:#111827;
+      font-size:24px;
+      font-weight:800;
+      box-shadow:0 0 16px rgba(250,204,21,0.28);
+      flex-shrink:0;
+    }
+
+    .logo-text{
+      display:flex;
+      flex-direction:column;
+      line-height:1;
+      min-width:0;
+    }
+
+    .logo-title{
+      font-size:27px;
+      font-weight:800;
+      color:var(--accent);
+      letter-spacing:0.4px;
+    }
+
+    .logo-sub{
+      font-size:11px;
+      color:#cbd5e1;
+      letter-spacing:1.7px;
+      text-transform:uppercase;
+      margin-top:4px;
+    }
+
+    .nav-links{
+      display:flex;
+      align-items:center;
+      gap:20px;
+      flex-wrap:wrap;
+    }
+
+    .nav-links a{
+      color:#cbd5e1;
+      font-size:15px;
+      position:relative;
+      padding-bottom:4px;
+    }
+
+    .nav-links a:hover,
+    .nav-links a.active{
+      color:var(--accent);
+    }
+
+    .nav-links a.active::after{
+      content:"";
+      position:absolute;
+      left:0;
+      bottom:-4px;
+      width:100%;
+      height:2px;
+      background:var(--accent);
+      border-radius:999px;
+    }
+
+    .menu-toggle{
+      display:none;
+      width:46px;
+      height:46px;
+      border-radius:12px;
+      border:1px solid rgba(250,204,21,0.35);
+      background:#111827;
+      color:var(--accent);
+      align-items:center;
+      justify-content:center;
+      cursor:pointer;
+      flex-direction:column;
+      gap:5px;
+      box-shadow:0 0 12px rgba(250,204,21,0.12);
+    }
+
+    .menu-toggle span{
+      width:20px;
+      height:2px;
+      border-radius:999px;
+      background:var(--accent);
+      display:block;
+    }
+
+    .hero{
+      background:
+        linear-gradient(rgba(15,23,42,0.72), rgba(15,23,42,0.92)),
+        url('https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&w=1600&q=80') center/cover no-repeat;
+      min-height:50vh;
+      display:flex;
+      align-items:center;
+    }
+
+    .hero-content{
+      max-width:840px;
+      padding:80px 0;
+    }
+
+    .hero-tag{
+      display:inline-block;
+      background:rgba(250,204,21,0.12);
+      color:var(--accent);
+      padding:8px 14px;
+      border-radius:999px;
+      font-size:14px;
+      border:1px solid rgba(250,204,21,0.22);
+      margin-bottom:18px;
+    }
+
+    .hero h1{
+      font-size:clamp(34px, 5vw, 56px);
+      line-height:1.08;
+      margin-bottom:16px;
+      color:#ffffff;
+    }
+
+    .hero p{
+      font-size:18px;
+      color:#cbd5e1;
+      max-width:720px;
+    }
+
+    section{
+      padding:74px 0;
+    }
+
+    .privacy-wrap{
+      display:grid;
+      gap:22px;
+    }
+
+    .privacy-card{
+      background:#111827;
+      border:1px solid var(--line);
+      border-radius:22px;
+      padding:28px;
+      box-shadow:0 14px 30px rgba(0,0,0,0.15);
+    }
+
+    .privacy-card h2{
+      color:#ffffff;
+      font-size:28px;
+      margin-bottom:12px;
+    }
+
+    .privacy-card h3{
+      color:var(--accent);
+      font-size:20px;
+      margin:20px 0 10px;
+    }
+
+    .privacy-card p{
+      color:#cbd5e1;
+      font-size:15px;
+      margin-bottom:12px;
+    }
+
+    .privacy-card ul{
+      padding-left:20px;
+      color:#cbd5e1;
+    }
+
+    .privacy-card li{
+      margin-bottom:10px;
+    }
+
+    .highlight-box{
+      background:#0f172a;
+      border:1px solid rgba(250,204,21,0.16);
+      border-radius:18px;
+      padding:20px;
+      margin-top:16px;
+    }
+
+    .highlight-box strong{
+      color:var(--accent);
+    }
+
+    .contact-box{
+      background:linear-gradient(135deg, #1e293b, #111827);
+      border:1px solid var(--line);
+      border-radius:22px;
+      padding:26px;
+    }
+
+    .contact-box h2{
+      color:#ffffff;
+      margin-bottom:10px;
+      font-size:28px;
+    }
+
+    .contact-box p{
+      color:#cbd5e1;
+      font-size:15px;
+      margin-bottom:10px;
+    }
+
+    .email-link{
+      color:var(--accent);
+      font-weight:700;
+      word-break:break-word;
+    }
+
+    footer{
+      background:#020617;
+      border-top:1px solid var(--line);
+      padding:24px 0;
+      margin-top:10px;
+    }
+
+    .footer-inner{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:20px;
+      flex-wrap:wrap;
+    }
+
+    .footer-inner p{
+      color:#94a3b8;
+      font-size:14px;
+    }
+
+    .footer-links{
+      display:flex;
+      flex-wrap:wrap;
+      gap:16px;
+    }
+
+    .footer-links a{
+      color:#cbd5e1;
+      font-size:14px;
+    }
+
+    .footer-links a:hover{
+      color:var(--accent);
+    }
+
+    @media(max-width:768px){
+      .menu-toggle{
+        display:flex;
+      }
+
+      .nav-links{
+        position:absolute;
+        top:100%;
+        left:0;
+        right:0;
+        display:none;
+        flex-direction:column;
+        align-items:flex-start;
+        gap:0;
+        background:#0f172a;
+        border:1px solid var(--line);
+        border-radius:16px;
+        padding:12px;
+        box-shadow:0 16px 30px rgba(0,0,0,0.28);
+      }
+
+      .nav-links.show{
+        display:flex;
+      }
+
+      .nav-links a{
+        width:100%;
+        padding:12px 10px;
+        border-radius:10px;
+      }
+
+      .nav-links a.active::after{
+        display:none;
+      }
+
+      .nav-links a:hover,
+      .nav-links a.active{
+        background:rgba(250,204,21,0.12);
+      }
+
+      .hero{
+        min-height:auto;
+      }
+
+      .hero-content{
+        padding:70px 0 40px;
+      }
+
+      .privacy-card{
+        padding:22px;
+      }
+
+      .privacy-card h2,
+      .contact-box h2{
+        font-size:24px;
+      }
+
+      .logo-mark{
+        width:46px;
+        height:46px;
+      }
+
+      .logo-title{
+        font-size:22px;
+      }
+
+      .logo-sub{
+        font-size:10px;
+        letter-spacing:1.2px;
+      }
+
+      .footer-inner{
+        flex-direction:column;
+        align-items:flex-start;
+      }
+    }
+
+    @media(max-width:480px){
+      .container{
+        width:min(1100px,94%);
+      }
+
+      .hero h1{
+        font-size:31px;
+      }
+
+      .hero p{
+        font-size:16px;
+      }
+
+      .logo-title{
+        font-size:20px;
+      }
+
+      .logo-sub{
+        font-size:9px;
+      }
+
+      .privacy-card{
+        padding:18px;
+        border-radius:18px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="container nav">
+      <a href="index.html" class="logo-wrap">
+        <span class="logo-mark">P</span>
+        <span class="logo-text">
+          <span class="logo-title">PixNest</span>
+          <span class="logo-sub">Privacy Policy</span>
+        </span>
+      </a>
+
+      <button class="menu-toggle" id="menuToggle" aria-label="Open navigation menu" aria-expanded="false">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+
+      <nav class="nav-links" id="navLinks">
+        <a href="index.html">Home</a>
+        <a href="explore.html">Explore</a>
+        <a href="about.html">About</a>
+        <a href="privacy.html" class="active">Privacy</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="container">
+      <div class="hero-content">
+        <div class="hero-tag">Your privacy matters</div>
+        <h1>Privacy Policy</h1>
+        <p>
+          This Privacy Policy explains how PixNest may collect, use, store, and protect
+          information when visitors use the website.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="container privacy-wrap">
+
+      <div class="privacy-card">
+        <h2>1. Introduction</h2>
+        <p>
+          PixNest values visitor privacy and is committed to being clear about how data may be collected and used.
+          This Privacy Policy applies to information collected through the website and related services.
+        </p>
+
+        <div class="highlight-box">
+          <p><strong>Effective Date:</strong> March 19, 2026</p>
+          <p><strong>Website:</strong> https://yourdomain.com</p>
+        </div>
+      </div>
+
+      <div class="privacy-card">
+        <h2>2. Information We May Collect</h2>
+        <p>Depending on how the website is used, PixNest may collect information such as:</p>
+        <ul>
+          <li>Name and contact details submitted through contact forms</li>
+          <li>Email addresses used for enquiries or communications</li>
+          <li>Usage data such as page views, clicks, and browser information</li>
+          <li>Technical information like IP address, device type, and operating system</li>
+          <li>Uploaded content or other information submitted voluntarily</li>
+        </ul>
+      </div>
+
+      <div class="privacy-card">
+        <h2>3. How Information May Be Used</h2>
+        <p>Information collected may be used to:</p>
+        <ul>
+          <li>Operate and improve the website</li>
+          <li>Respond to questions, support requests, or feedback</li>
+          <li>Understand how visitors use the platform</li>
+          <li>Protect the site from misuse, fraud, or abuse</li>
+          <li>Communicate updates or important notices when needed</li>
+        </ul>
+      </div>
+
+      <div class="privacy-card">
+        <h2>4. Cookies and Similar Technologies</h2>
+        <p>
+          PixNest may use cookies and similar technologies to improve user experience,
+          remember preferences, measure traffic, and support analytics or advertising tools.
+        </p>
+        <p>
+          Visitors can usually control cookies through their browser settings.
+        </p>
+      </div>
+
+      <div class="privacy-card">
+        <h2>5. Analytics and Third-Party Services</h2>
+        <p>
+          PixNest may use analytics tools, advertising services, hosting platforms,
+          embedded media, or other third-party services to operate the website more effectively.
+        </p>
+        <p>
+          These services may collect information according to their own privacy policies.
+        </p>
+      </div>
+
+      <div class="privacy-card">
+        <h2>6. Sharing of Information</h2>
+        <p>
+          PixNest does not sell personal information to third parties.
+          Information may only be shared when necessary for website operations,
+          legal compliance, safety, or service delivery through trusted providers.
+        </p>
+      </div>
+
+      <div class="privacy-card">
+        <h2>7. Data Security</h2>
+        <p>
+          Reasonable steps may be taken to protect information from unauthorized access,
+          alteration, disclosure, or destruction. However, no internet transmission or storage system
+          can be guaranteed to be completely secure.
+        </p>
+      </div>
+
+      <div class="privacy-card">
+        <h2>8. External Links</h2>
+        <p>
+          PixNest may include links to third-party websites or platforms.
+          This Privacy Policy does not apply to those external websites, and visitors should review
+          their separate privacy policies before interacting with them.
+        </p>
+      </div>
+
+      <div class="privacy-card">
+        <h2>9. Children's Privacy</h2>
+        <p>
+          PixNest is not intended to knowingly collect personal information from children
+          without appropriate consent where required by law.
+        </p>
+      </div>
+
+      <div class="privacy-card">
+        <h2>10. Your Rights</h2>
+        <p>Depending on applicable law, visitors may have rights such as:</p>
+        <ul>
+          <li>Requesting access to personal data</li>
+          <li>Requesting correction of inaccurate information</li>
+          <li>Requesting deletion of certain data</li>
+          <li>Objecting to certain types of data processing</li>
+        </ul>
+        <p>
+          Requests can be made using the contact details provided below.
+        </p>
+      </div>
+
+      <div class="privacy-card">
+        <h2>11. Changes to This Policy</h2>
+        <p>
+          PixNest may update this Privacy Policy from time to time to reflect changes
+          in the website, legal requirements, or data practices.
+        </p>
+        <p>
+          Updates will be posted on this page with a revised effective date.
+        </p>
+      </div>
+
+      <div class="contact-box">
+        <h2>12. Contact Us</h2>
+        <p>If you have questions about this Privacy Policy, you can contact us at:</p>
+        <p><a class="email-link" href="mailto:hello@pixnest.com">hello@pixnest.com</a></p>
+        <p>You can also direct visitors to your contact page if needed.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <footer>
+    <div class="container footer-inner">
+      <p>©️ 2026 PixNest. Discover and share powerful visual collections.</p>
+
+      <div class="footer-links">
+        <a href="about.html">About</a>
+        <a href="license.html">License</a>
+        <a href="privacy.html">Privacy</a>
+        <a href="terms.html">Terms</a>
+        <a href="contact.html">Contact</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const menuToggle = document.getElementById("menuToggle");
+    const navLinks = document.getElementById("navLinks");
+
+    menuToggle.addEventListener("click", () => {
+      navLinks.classList.toggle("show");
+      const expanded = menuToggle.getAttribute("aria-expanded") === "true";
+      menuToggle.setAttribute("aria-expanded", !expanded);
+    });
+
+    document.querySelectorAll(".nav-links a").forEach(link => {
+      link.addEventListener("click", () => {
+        if(window.innerWidth <= 768){
+          navLinks.classList.remove("show");
+          menuToggle.setAttribute("aria-expanded", "false");
+        }
+      });
+    });
+
+    window.addEventListener("resize", () => {
+      if(window.innerWidth > 768){
+        navLinks.classList.remove("show");
+        menuToggle.setAttribute("aria-expanded", "false");
+      }
+    });
+  </script>
+
+</body>
+</html>

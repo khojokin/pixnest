@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PixNest | About</title>
+  <style>
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+      font-family:Arial, Helvetica, sans-serif;
+    }
+
+    :root{
+      --bg:#0f172a;
+      --panel:#111827;
+      --panel-2:#1e293b;
+      --text:#e5e7eb;
+      --muted:#94a3b8;
+      --accent:#facc15;
+      --line:rgba(255,255,255,0.08);
+    }
+
+    html{
+      scroll-behavior:smooth;
+    }
+
+    body{
+      background:var(--bg);
+      color:var(--text);
+      line-height:1.6;
+      overflow-x:hidden;
+    }
+
+    img{
+      max-width:100%;
+      display:block;
+    }
+
+    a{
+      text-decoration:none;
+      color:inherit;
+      transition:0.3s;
+    }
+
+    button{
+      font-family:Arial, Helvetica, sans-serif;
+      transition:0.3s;
+    }
+
+    .container{
+      width:min(1200px, 92%);
+      margin:auto;
+    }
+
+    header{
+      position:sticky;
+      top:0;
+      z-index:1000;
+      background:rgba(15,23,42,0.95);
+      border-bottom:1px solid var(--line);
+      backdrop-filter:blur(8px);
+    }
+
+    .nav{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:20px;
+      padding:16px 0;
+      position:relative;
+    }
+
+    .logo-wrap{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      flex-shrink:0;
+      min-width:0;
+    }
+
+    .logo-mark{
+      width:52px;
+      height:52px;
+      border-radius:14px;
+      background:linear-gradient(135deg,#facc15,#fb7185);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:#111827;
+      font-size:24px;
+      font-weight:800;
+      box-shadow:0 0 16px rgba(250,204,21,0.28);
+      flex-shrink:0;
+    }
+
+    .logo-text{
+      display:flex;
+      flex-direction:column;
+      line-height:1;
+      min-width:0;
+    }
+
+    .logo-title{
+      font-size:27px;
+      font-weight:800;
+      color:var(--accent);
+      letter-spacing:0.4px;
+    }
+
+    .logo-sub{
+      font-size:11px;
+      color:#cbd5e1;
+      letter-spacing:1.7px;
+      text-transform:uppercase;
+      margin-top:4px;
+    }
+
+    .nav-links{
+      display:flex;
+      align-items:center;
+      gap:20px;
+      flex-wrap:wrap;
+    }
+
+    .nav-links a{
+      color:#cbd5e1;
+      font-size:15px;
+      position:relative;
+      padding-bottom:4px;
+    }
+
+    .nav-links a:hover,
+    .nav-links a.active{
+      color:var(--accent);
+    }
+
+    .nav-links a.active::after{
+      content:"";
+      position:absolute;
+      left:0;
+      bottom:-4px;
+      width:100%;
+      height:2px;
+      background:var(--accent);
+      border-radius:999px;
+    }
+
+    .menu-toggle{
+      display:none;
+      width:46px;
+      height:46px;
+      border-radius:12px;
+      border:1px solid rgba(250,204,21,0.35);
+      background:#111827;
+      color:var(--accent);
+      align-items:center;
+      justify-content:center;
+      cursor:pointer;
+      flex-direction:column;
+      gap:5px;
+      box-shadow:0 0 12px rgba(250,204,21,0.12);
+    }
+
+    .menu-toggle span{
+      width:20px;
+      height:2px;
+      border-radius:999px;
+      background:var(--accent);
+      display:block;
+    }
+
+    .hero{
+      background:
+        linear-gradient(rgba(15,23,42,0.70), rgba(15,23,42,0.92)),
+        url('https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&w=1600&q=80') center/cover no-repeat;
+      min-height:62vh;
+      display:flex;
+      align-items:center;
+    }
+
+    .hero-content{
+      max-width:840px;
+      padding:80px 0;
+    }
+
+    .hero-tag{
+      display:inline-block;
+      background:rgba(250,204,21,0.12);
+      color:var(--accent);
+      padding:8px 14px;
+      border-radius:999px;
+      font-size:14px;
+      border:1px solid rgba(250,204,21,0.22);
+      margin-bottom:18px;
+    }
+
+    .hero h1{
+      font-size:clamp(34px, 5vw, 58px);
+      line-height:1.08;
+      margin-bottom:18px;
+      color:#ffffff;
+    }
+
+    .hero p{
+      font-size:18px;
+      color:#cbd5e1;
+      max-width:720px;
+    }
+
+    section{
+      padding:74px 0;
+    }
+
+    .section-head{
+      display:flex;
+      align-items:end;
+      justify-content:space-between;
+      gap:20px;
+      flex-wrap:wrap;
+      margin-bottom:28px;
+    }
+
+    .section-head h2{
+      font-size:32px;
+      color:#ffffff;
+      margin-bottom:8px;
+    }
+
+    .section-head p{
+      color:var(--muted);
+      max-width:720px;
+    }
+
+    .about-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:24px;
+      align-items:start;
+    }
+
+    .panel{
+      background:#111827;
+      border:1px solid var(--line);
+      border-radius:24px;
+      padding:24px;
+      box-shadow:0 14px 30px rgba(0,0,0,0.14);
+    }
+
+    .panel h3{
+      font-size:26px;
+      color:#fff;
+      margin-bottom:12px;
+    }
+
+    .panel p{
+      color:#cbd5e1;
+      font-size:15px;
+      margin-bottom:14px;
+    }
+
+    .vision-grid{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:20px;
+    }
+
+    .vision-card{
+      background:#111827;
+      border:1px solid var(--line);
+      border-radius:22px;
+      padding:22px;
+    }
+
+    .vision-card h3{
+      font-size:22px;
+      color:#fff;
+      margin-bottom:10px;
+    }
+
+    .vision-card p{
+      color:var(--muted);
+      font-size:14px;
+    }
+
+    .feature-grid{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:20px;
+    }
+
+    .feature-box{
+      background:#111827;
+      border:1px solid var(--line);
+      border-radius:20px;
+      padding:22px;
+    }
+
+    .feature-box h3{
+      color:#fff;
+      font-size:20px;
+      margin-bottom:10px;
+    }
+
+    .feature-box p{
+      color:var(--muted);
+      font-size:14px;
+    }
+
+    .story-strip{
+      background:#111827;
+      border-top:1px solid rgba(255,255,255,0.05);
+      border-bottom:1px solid rgba(255,255,255,0.05);
+    }
+
+    .story-grid{
+      display:grid;
+      grid-template-columns:1.1fr 0.9fr;
+      gap:24px;
+      align-items:center;
+    }
+
+    .story-card{
+      background:#0f172a;
+      border:1px solid var(--line);
+      border-radius:24px;
+      padding:26px;
+    }
+
+    .story-card h3{
+      color:#fff;
+      font-size:28px;
+      margin-bottom:12px;
+    }
+
+    .story-card p{
+      color:#cbd5e1;
+      font-size:15px;
+      margin-bottom:14px;
+    }
+
+    .story-image{
+      border-radius:24px;
+      overflow:hidden;
+      border:1px solid var(--line);
+      background:#111827;
+    }
+
+    .story-image img{
+      width:100%;
+      height:100%;
+      min-height:320px;
+      object-fit:cover;
+    }
+
+    .team-grid{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:22px;
+    }
+
+    .team-card{
+      background:#111827;
+      border:1px solid var(--line);
+      border-radius:22px;
+      overflow:hidden;
+    }
+
+    .team-card img{
+      width:100%;
+      height:280px;
+      object-fit:cover;
+      background:#1e293b;
+    }
+
+    .team-content{
+      padding:18px;
+    }
+
+    .team-content h3{
+      color:#fff;
+      font-size:22px;
+      margin-bottom:6px;
+    }
+
+    .team-role{
+      color:var(--accent);
+      font-size:13px;
+      margin-bottom:10px;
+      font-weight:700;
+    }
+
+    .team-content p{
+      color:var(--muted);
+      font-size:14px;
+    }
+
+    .cta{
+      text-align:center;
+      background:linear-gradient(135deg,#1e293b,#111827);
+    }
+
+    .cta h2{
+      font-size:36px;
+      color:#ffffff;
+      margin-bottom:12px;
+    }
+
+    .cta p{
+      max-width:720px;
+      margin:0 auto 24px;
+      color:#cbd5e1;
+    }
+
+    .cta-actions{
+      display:flex;
+      justify-content:center;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+
+    .btn{
+      display:inline-block;
+      padding:14px 22px;
+      border-radius:12px;
+      font-weight:700;
+      font-size:15px;
+      border:none;
+      cursor:pointer;
+      text-align:center;
+    }
+
+    .btn-primary{
+      background:var(--accent);
+      color:#111827;
+    }
+
+    .btn-primary:hover{
+      transform:translateY(-2px);
+      box-shadow:0 10px 24px rgba(250,204,21,0.2);
+    }
+
+    .btn-secondary{
+      background:transparent;
+      color:#ffffff;
+      border:1px solid rgba(255,255,255,0.2);
+    }
+
+    .btn-secondary:hover{
+      background:rgba(255,255,255,0.06);
+    }
+
+    footer{
+      background:#020617;
+      border-top:1px solid var(--line);
+      padding:24px 0;
+    }
+
+    .footer-inner{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:20px;
+      flex-wrap:wrap;
+    }
+
+    .footer-inner p{
+      color:#94a3b8;
+      font-size:14px;
+    }
+
+    .footer-links{
+      display:flex;
+      flex-wrap:wrap;
+      gap:16px;
+    }
+
+    .footer-links a{
+      color:#cbd5e1;
+      font-size:14px;
+    }
+
+    .footer-links a:hover{
+      color:var(--accent);
+    }
+
+    @media(max-width:1024px){
+      .about-grid,
+      .story-grid{
+        grid-template-columns:1fr;
+      }
+
+      .vision-grid{
+        grid-template-columns:1fr;
+      }
+
+      .feature-grid{
+        grid-template-columns:repeat(2,1fr);
+      }
+
+      .team-grid{
+        grid-template-columns:repeat(2,1fr);
+      }
+    }
+
+    @media(max-width:768px){
+      .menu-toggle{
+        display:flex;
+      }
+
+      .nav-links{
+        position:absolute;
+        top:100%;
+        left:0;
+        right:0;
+        display:none;
+        flex-direction:column;
+        align-items:flex-start;
+        gap:0;
+        background:#0f172a;
+        border:1px solid var(--line);
+        border-radius:16px;
+        padding:12px;
+        box-shadow:0 16px 30px rgba(0,0,0,0.28);
+      }
+
+      .nav-links.show{
+        display:flex;
+      }
+
+      .nav-links a{
+        width:100%;
+        padding:12px 10px;
+        border-radius:10px;
+      }
+
+      .nav-links a.active::after{
+        display:none;
+      }
+
+      .nav-links a:hover,
+      .nav-links a.active{
+        background:rgba(250,204,21,0.12);
+      }
+
+      .hero{
+        min-height:auto;
+      }
+
+      .hero-content{
+        padding:70px 0 40px;
+      }
+
+      .feature-grid,
+      .team-grid{
+        grid-template-columns:1fr;
+      }
+
+      .section-head h2{
+        font-size:28px;
+      }
+
+      .cta h2{
+        font-size:30px;
+      }
+
+      .logo-mark{
+        width:46px;
+        height:46px;
+      }
+
+      .logo-title{
+        font-size:22px;
+      }
+
+      .logo-sub{
+        font-size:10px;
+        letter-spacing:1.2px;
+      }
+
+      .footer-inner{
+        flex-direction:column;
+        align-items:flex-start;
+      }
+    }
+
+    @media(max-width:480px){
+      .container{
+        width:min(1200px,94%);
+      }
+
+      .hero h1{
+        font-size:32px;
+      }
+
+      .hero p{
+        font-size:16px;
+      }
+
+      .btn{
+        width:100%;
+      }
+
+      .cta-actions{
+        flex-direction:column;
+      }
+
+      .logo-title{
+        font-size:20px;
+      }
+
+      .logo-sub{
+        font-size:9px;
+      }
+
+      .section-head h2{
+        font-size:25px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="container nav">
+      <a href="index.html" class="logo-wrap">
+        <span class="logo-mark">P</span>
+        <span class="logo-text">
+          <span class="logo-title">PixNest</span>
+          <span class="logo-sub">Photo Collection Site</span>
+        </span>
+      </a>
+
+      <button class="menu-toggle" id="menuToggle" aria-label="Open menu" aria-expanded="false">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+
+      <nav class="nav-links" id="navLinks">
+        <a href="index.html">Home</a>
+        <a href="explore.html">Explore</a>
+        <a href="category.html">Categories</a>
+        <a href="about.html" class="active">About</a>
+        <a href="upload.html">Upload</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="container">
+      <div class="hero-content">
+        <div class="hero-tag">About PixNest</div>
+        <h1>A growing photo platform built to organize, showcase, and share beautiful visual collections.</h1>
+        <p>
+          PixNest is designed as a clean and modern photo website where categories, galleries,
+          and uploads can be managed simply while still giving visitors a polished experience.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <h2>Who We Are</h2>
+          <p>PixNest is built for creators, brands, designers, and anyone who needs strong visual collections in one place.</p>
+        </div>
+      </div>
+
+      <div class="about-grid">
+        <div class="panel">
+          <h3>Our Purpose</h3>
+          <p>
+            PixNest exists to make photo discovery feel simple, fast, and visually strong.
+            The goal is to help people browse organized image collections across multiple categories
+            without the site feeling cluttered or hard to use.
+          </p>
+          <p>
+            Whether someone is searching for nature shots, business visuals, lifestyle images,
+            travel collections, or culture-focused photography, PixNest is built to present those
+            visuals clearly and beautifully.
+          </p>
+        </div>
+
+        <div class="panel">
+          <h3>What We’re Building</h3>
+          <p>
+            This platform is being shaped as a modern gallery space where photo categories,
+            uploads, and future premium collections can all live inside one clean system.
+          </p>
+          <p>
+            Over time, PixNest can grow into a larger library with category pages, explore pages,
+            featured photo sections, contributor uploads, and premium download options.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="story-strip">
+    <div class="container">
+      <div class="story-grid">
+        <div class="story-card">
+          <h3>Our Story</h3>
+          <p>
+            PixNest started from the idea of building a photo website that feels modern, organized,
+            and easier to manage without always editing raw code for every little update.
+          </p>
+          <p>
+            Instead of a messy gallery, the vision is a platform where categories are clear,
+            visuals are strong, and content can grow in a smart structure over time.
+          </p>
+          <p>
+            It is built with growth in mind, so today it can work as a focused gallery,
+            and tomorrow it can expand into a larger visual brand.
+          </p>
+        </div>
+
+        <div class="story-image">
+          <img src="https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1200&q=80" alt="Creative team workspace">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <h2>What Matters Most</h2>
+          <p>The direction behind PixNest is built around quality, clarity, and long-term growth.</p>
+        </div>
+      </div>
+
+      <div class="vision-grid">
+        <div class="vision-card">
+          <h3>Clarity</h3>
+          <p>Images should be easy to browse, categories should make sense, and the whole experience should stay clean.</p>
+        </div>
+
+        <div class="vision-card">
+          <h3>Quality</h3>
+          <p>Strong presentation matters. Photos, descriptions, and layouts should feel polished and intentional.</p>
+        </div>
+
+        <div class="vision-card">
+          <h3>Growth</h3>
+          <p>PixNest is structured so it can start simple and later grow into a bigger gallery, premium photo, or contributor platform.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <h2>Why PixNest Stands Out</h2>
+          <p>A good photo website is not only about images. It is about how those images are organized and experienced.</p>
+        </div>
+      </div>
+
+      <div class="feature-grid">
+        <div class="feature-box">
+          <h3>Clean Structure</h3>
+          <p>Photos are grouped in a way that feels smooth and easy to explore.</p>
+        </div>
+
+        <div class="feature-box">
+          <h3>Strong Categories</h3>
+          <p>Each collection can have its own identity and category page.</p>
+        </div>
+
+        <div class="feature-box">
+          <h3>Admin Control</h3>
+          <p>Content can be managed from the admin side instead of rewriting everything manually.</p>
+        </div>
+
+        <div class="feature-box">
+          <h3>Scalable Design</h3>
+          <p>The site can grow from a small gallery into a larger visual library over time.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <h2>Meet the Vision Team</h2>
+          <p>You can keep this as a real team section later, or leave it as a brand presentation section for now.</p>
+        </div>
+      </div>
+
+      <div class="team-grid">
+        <article class="team-card">
+          <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=900&q=80" alt="Creative director">
+          <div class="team-content">
+            <h3>Creative Direction</h3>
+            <div class="team-role">Brand Vision</div>
+            <p>Focused on how PixNest looks, feels, and presents visual collections to visitors.</p>
+          </div>
+        </article>
+
+        <article class="team-card">
+          <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=900&q=80" alt="Gallery manager">
+          <div class="team-content">
+            <h3>Gallery Management</h3>
+            <div class="team-role">Content Organization</div>
+            <p>Helps shape categories, uploads, and how photos are grouped across the site.</p>
+          </div>
+        </article>
+
+        <article class="team-card">
+          <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=900&q=80" alt="Growth strategy">
+          <div class="team-content">
+            <h3>Growth Strategy</h3>
+            <div class="team-role">Future Expansion</div>
+            <p>Supports the longer-term direction for premium sections, contributors, and scaling the platform.</p>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta">
+    <div class="container">
+      <h2>Explore the PixNest collection.</h2>
+      <p>
+        Browse categories, discover fresh visuals, and see how the platform is growing into a stronger photo experience.
+      </p>
+      <div class="cta-actions">
+        <a href="explore.html" class="btn btn-primary">Explore Photos</a>
+        <a href="contact.html" class="btn btn-secondary">Contact Us</a>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container footer-inner">
+      <p>©️ 2026 PixNest. Discover and share powerful visual collections.</p>
+
+      <div class="footer-links">
+        <a href="about.html">About</a>
+        <a href="license.html">License</a>
+        <a href="privacy.html">Privacy</a>
+        <a href="terms.html">Terms</a>
+        <a href="contact.html">Contact</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const menuToggle = document.getElementById("menuToggle");
+    const navLinks = document.getElementById("navLinks");
+
+    menuToggle.addEventListener("click", () => {
+      navLinks.classList.toggle("show");
+      const expanded = menuToggle.getAttribute("aria-expanded") === "true";
+      menuToggle.setAttribute("aria-expanded", String(!expanded));
+    });
+
+    document.querySelectorAll(".nav-links a").forEach(link => {
+      link.addEventListener("click", () => {
+        if(window.innerWidth <= 768){
+          navLinks.classList.remove("show");
+          menuToggle.setAttribute("aria-expanded", "false");
+        }
+      });
+    });
+
+    window.addEventListener("resize", () => {
+      if(window.innerWidth > 768){
+        navLinks.classList.remove("show");
+        menuToggle.setAttribute("aria-expanded", "false");
+      }
+    });
+  </script>
+
+</body>
+</html>

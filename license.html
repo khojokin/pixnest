@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PixNest | License</title>
+  <style>
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+      font-family:Arial, Helvetica, sans-serif;
+    }
+
+    :root{
+      --bg:#0f172a;
+      --panel:#111827;
+      --panel-2:#1e293b;
+      --text:#e5e7eb;
+      --muted:#94a3b8;
+      --accent:#facc15;
+      --line:rgba(255,255,255,0.08);
+    }
+
+    html{
+      scroll-behavior:smooth;
+    }
+
+    body{
+      background:var(--bg);
+      color:var(--text);
+      line-height:1.7;
+      overflow-x:hidden;
+    }
+
+    img{
+      max-width:100%;
+      display:block;
+    }
+
+    a{
+      text-decoration:none;
+      color:inherit;
+      transition:0.3s;
+    }
+
+    button{
+      font-family:Arial, Helvetica, sans-serif;
+      transition:0.3s;
+    }
+
+    .container{
+      width:min(1100px, 92%);
+      margin:auto;
+    }
+
+    header{
+      position:sticky;
+      top:0;
+      z-index:1000;
+      background:rgba(15,23,42,0.95);
+      border-bottom:1px solid var(--line);
+      backdrop-filter:blur(8px);
+    }
+
+    .nav{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:20px;
+      padding:16px 0;
+      position:relative;
+    }
+
+    .logo-wrap{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      flex-shrink:0;
+      min-width:0;
+    }
+
+    .logo-mark{
+      width:52px;
+      height:52px;
+      border-radius:14px;
+      background:linear-gradient(135deg,#facc15,#fb7185);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:#111827;
+      font-size:24px;
+      font-weight:800;
+      box-shadow:0 0 16px rgba(250,204,21,0.28);
+      flex-shrink:0;
+    }
+
+    .logo-text{
+      display:flex;
+      flex-direction:column;
+      line-height:1;
+      min-width:0;
+    }
+
+    .logo-title{
+      font-size:27px;
+      font-weight:800;
+      color:var(--accent);
+      letter-spacing:0.4px;
+    }
+
+    .logo-sub{
+      font-size:11px;
+      color:#cbd5e1;
+      letter-spacing:1.7px;
+      text-transform:uppercase;
+      margin-top:4px;
+    }
+
+    .nav-links{
+      display:flex;
+      align-items:center;
+      gap:20px;
+      flex-wrap:wrap;
+    }
+
+    .nav-links a{
+      color:#cbd5e1;
+      font-size:15px;
+      position:relative;
+      padding-bottom:4px;
+    }
+
+    .nav-links a:hover,
+    .nav-links a.active{
+      color:var(--accent);
+    }
+
+    .nav-links a.active::after{
+      content:"";
+      position:absolute;
+      left:0;
+      bottom:-4px;
+      width:100%;
+      height:2px;
+      background:var(--accent);
+      border-radius:999px;
+    }
+
+    .menu-toggle{
+      display:none;
+      width:46px;
+      height:46px;
+      border-radius:12px;
+      border:1px solid rgba(250,204,21,0.35);
+      background:#111827;
+      color:var(--accent);
+      align-items:center;
+      justify-content:center;
+      cursor:pointer;
+      flex-direction:column;
+      gap:5px;
+      box-shadow:0 0 12px rgba(250,204,21,0.12);
+    }
+
+    .menu-toggle span{
+      width:20px;
+      height:2px;
+      border-radius:999px;
+      background:var(--accent);
+      display:block;
+    }
+
+    .hero{
+      background:
+        linear-gradient(rgba(15,23,42,0.72), rgba(15,23,42,0.92)),
+        url('https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&w=1600&q=80') center/cover no-repeat;
+      min-height:50vh;
+      display:flex;
+      align-items:center;
+    }
+
+    .hero-content{
+      max-width:840px;
+      padding:80px 0;
+    }
+
+    .hero-tag{
+      display:inline-block;
+      background:rgba(250,204,21,0.12);
+      color:var(--accent);
+      padding:8px 14px;
+      border-radius:999px;
+      font-size:14px;
+      border:1px solid rgba(250,204,21,0.22);
+      margin-bottom:18px;
+    }
+
+    .hero h1{
+      font-size:clamp(34px, 5vw, 56px);
+      line-height:1.08;
+      margin-bottom:16px;
+      color:#ffffff;
+    }
+
+    .hero p{
+      font-size:18px;
+      color:#cbd5e1;
+      max-width:720px;
+    }
+
+    section{
+      padding:74px 0;
+    }
+
+    .license-wrap{
+      display:grid;
+      gap:22px;
+    }
+
+    .license-card{
+      background:#111827;
+      border:1px solid var(--line);
+      border-radius:22px;
+      padding:28px;
+      box-shadow:0 14px 30px rgba(0,0,0,0.15);
+    }
+
+    .license-card h2{
+      color:#ffffff;
+      font-size:28px;
+      margin-bottom:12px;
+    }
+
+    .license-card h3{
+      color:var(--accent);
+      font-size:20px;
+      margin:20px 0 10px;
+    }
+
+    .license-card p{
+      color:#cbd5e1;
+      font-size:15px;
+      margin-bottom:12px;
+    }
+
+    .license-card ul{
+      padding-left:20px;
+      color:#cbd5e1;
+    }
+
+    .license-card li{
+      margin-bottom:10px;
+    }
+
+    .highlight-box{
+      background:#0f172a;
+      border:1px solid rgba(250,204,21,0.16);
+      border-radius:18px;
+      padding:20px;
+      margin-top:16px;
+    }
+
+    .highlight-box strong{
+      color:var(--accent);
+    }
+
+    .contact-box{
+      background:linear-gradient(135deg, #1e293b, #111827);
+      border:1px solid var(--line);
+      border-radius:22px;
+      padding:26px;
+    }
+
+    .contact-box h2{
+      color:#ffffff;
+      margin-bottom:10px;
+      font-size:28px;
+    }
+
+    .contact-box p{
+      color:#cbd5e1;
+      font-size:15px;
+      margin-bottom:10px;
+    }
+
+    .email-link{
+      color:var(--accent);
+      font-weight:700;
+      word-break:break-word;
+    }
+
+    .use-grid{
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:18px;
+      margin-top:12px;
+    }
+
+    .use-box{
+      background:#0f172a;
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:20px;
+    }
+
+    .use-box h3{
+      margin-top:0;
+    }
+
+    footer{
+      background:#020617;
+      border-top:1px solid var(--line);
+      padding:24px 0;
+      margin-top:10px;
+    }
+
+    .footer-inner{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:20px;
+      flex-wrap:wrap;
+    }
+
+    .footer-inner p{
+      color:#94a3b8;
+      font-size:14px;
+    }
+
+    .footer-links{
+      display:flex;
+      flex-wrap:wrap;
+      gap:16px;
+    }
+
+    .footer-links a{
+      color:#cbd5e1;
+      font-size:14px;
+    }
+
+    .footer-links a:hover{
+      color:var(--accent);
+    }
+
+    @media(max-width:768px){
+      .menu-toggle{
+        display:flex;
+      }
+
+      .nav-links{
+        position:absolute;
+        top:100%;
+        left:0;
+        right:0;
+        display:none;
+        flex-direction:column;
+        align-items:flex-start;
+        gap:0;
+        background:#0f172a;
+        border:1px solid var(--line);
+        border-radius:16px;
+        padding:12px;
+        box-shadow:0 16px 30px rgba(0,0,0,0.28);
+      }
+
+      .nav-links.show{
+        display:flex;
+      }
+
+      .nav-links a{
+        width:100%;
+        padding:12px 10px;
+        border-radius:10px;
+      }
+
+      .nav-links a.active::after{
+        display:none;
+      }
+
+      .nav-links a:hover,
+      .nav-links a.active{
+        background:rgba(250,204,21,0.12);
+      }
+
+      .hero{
+        min-height:auto;
+      }
+
+      .hero-content{
+        padding:70px 0 40px;
+      }
+
+      .license-card{
+        padding:22px;
+      }
+
+      .license-card h2,
+      .contact-box h2{
+        font-size:24px;
+      }
+
+      .use-grid{
+        grid-template-columns:1fr;
+      }
+
+      .logo-mark{
+        width:46px;
+        height:46px;
+      }
+
+      .logo-title{
+        font-size:22px;
+      }
+
+      .logo-sub{
+        font-size:10px;
+        letter-spacing:1.2px;
+      }
+
+      .footer-inner{
+        flex-direction:column;
+        align-items:flex-start;
+      }
+    }
+
+    @media(max-width:480px){
+      .container{
+        width:min(1100px,94%);
+      }
+
+      .hero h1{
+        font-size:31px;
+      }
+
+      .hero p{
+        font-size:16px;
+      }
+
+      .logo-title{
+        font-size:20px;
+      }
+
+      .logo-sub{
+        font-size:9px;
+      }
+
+      .license-card{
+        padding:18px;
+        border-radius:18px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="container nav">
+      <a href="index.html" class="logo-wrap">
+        <span class="logo-mark">P</span>
+        <span class="logo-text">
+          <span class="logo-title">PixNest</span>
+          <span class="logo-sub">License</span>
+        </span>
+      </a>
+
+      <button class="menu-toggle" id="menuToggle" aria-label="Open navigation menu" aria-expanded="false">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+
+      <nav class="nav-links" id="navLinks">
+        <a href="index.html">Home</a>
+        <a href="explore.html">Explore</a>
+        <a href="category.html">Categories</a>
+        <a href="about.html">About</a>
+        <a href="license.html" class="active">License</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="container">
+      <div class="hero-content">
+        <div class="hero-tag">How PixNest images may be used</div>
+        <h1>License</h1>
+        <p>
+          This page explains how images on PixNest may be used, what is allowed,
+          and what is not allowed when downloading or using content from the website.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="container license-wrap">
+
+      <div class="license-card">
+        <h2>1. Introduction</h2>
+        <p>
+          PixNest provides visual content that may be available for personal, editorial,
+          commercial, or other approved uses depending on the image and any stated terms.
+        </p>
+        <p>
+          By downloading, using, or sharing images from PixNest, you agree to follow this License Policy.
+        </p>
+
+        <div class="highlight-box">
+          <p><strong>Effective Date:</strong> March 19, 2026</p>
+          <p><strong>Website:</strong> https://yourdomain.com</p>
+        </div>
+      </div>
+
+      <div class="license-card">
+        <h2>2. General Use</h2>
+        <p>
+          Unless otherwise stated, images on PixNest may be used in a way that is consistent with
+          the permissions described on the relevant image, collection, or product page.
+        </p>
+        <p>
+          Some images may be free to use, while others may require attribution, permission,
+          purchase, or a premium license.
+        </p>
+      </div>
+
+      <div class="license-card">
+        <h2>3. What You May Be Allowed to Do</h2>
+        <div class="use-grid">
+          <div class="use-box">
+            <h3>Personal Use</h3>
+            <p>You may be allowed to use images for personal projects, mood boards, wallpapers, presentations, or learning materials.</p>
+          </div>
+
+          <div class="use-box">
+            <h3>Creative Projects</h3>
+            <p>You may be allowed to use images in designs, websites, blogs, mockups, or social media content, depending on the image license.</p>
+          </div>
+
+          <div class="use-box">
+            <h3>Commercial Use</h3>
+            <p>Some images may be used for commercial purposes, but this may depend on the image source, license type, or premium restrictions.</p>
+          </div>
+
+          <div class="use-box">
+            <h3>Editorial Use</h3>
+            <p>Some images may be suitable for editorial or informational use, provided the use is lawful and not misleading.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="license-card">
+        <h2>4. What You May Not Do</h2>
+        <p>Unless you have explicit permission, you may not:</p>
+        <ul>
+          <li>Resell, redistribute, or repackage images as standalone files</li>
+          <li>Claim ownership of images you did not create</li>
+          <li>Upload or publish PixNest images as your own stock library</li>
+          <li>Use images in unlawful, harmful, defamatory, or deceptive ways</li>
+          <li>Use images in logos or trademarks without proper rights</li>
+          <li>Remove watermarks, branding, or attribution if they are required</li>
+        </ul>
+      </div>
+
+      <div class="license-card">
+        <h2>5. Attribution</h2>
+        <p>
+          Some images may require attribution to the creator, photographer, or PixNest.
+          Where attribution is required, it should be provided clearly and appropriately.
+        </p>
+        <p>
+          If no attribution requirement is stated, that does not automatically mean all uses are unrestricted.
+        </p>
+      </div>
+
+      <div class="license-card">
+        <h2>6. Premium or Restricted Content</h2>
+        <p>
+          Certain collections, downloads, or image files may be offered under premium, extended,
+          or restricted licenses. These may include different rules for:
+        </p>
+        <ul>
+          <li>Commercial use</li>
+          <li>Client work</li>
+          <li>Print runs</li>
+          <li>Advertising use</li>
+          <li>Merchandise use</li>
+        </ul>
+        <p>
+          Where premium terms apply, those terms will take priority over this general page.
+        </p>
+      </div>
+
+      <div class="license-card">
+        <h2>7. Third-Party Rights</h2>
+        <p>
+          Some images may include people, property, logos, products, artwork, locations, or other elements
+          that may be subject to third-party rights.
+        </p>
+        <p>
+          PixNest does not guarantee that every possible permission has been obtained for every use case.
+          It is your responsibility to ensure your use complies with applicable law and any required permissions.
+        </p>
+      </div>
+
+      <div class="license-card">
+        <h2>8. No Transfer of Ownership</h2>
+        <p>
+          Downloading or using an image does not transfer ownership of the image, copyright,
+          or any related intellectual property rights to you.
+        </p>
+        <p>
+          All rights remain with the original owner, creator, or rights holder unless explicitly stated otherwise.
+        </p>
+      </div>
+
+      <div class="license-card">
+        <h2>9. Termination of License</h2>
+        <p>
+          PixNest may revoke or restrict access to content if images are used in violation of this policy,
+          applicable laws, or any specific image terms.
+        </p>
+      </div>
+
+      <div class="license-card">
+        <h2>10. Changes to This License</h2>
+        <p>
+          PixNest may update this License page from time to time to reflect changes in content,
+          legal requirements, or platform rules.
+        </p>
+        <p>
+          Updated terms will be posted here with a revised effective date.
+        </p>
+      </div>
+
+      <div class="contact-box">
+        <h2>11. Contact Us</h2>
+        <p>If you have any questions about image use or licensing, contact us at:</p>
+        <p><a class="email-link" href="mailto:hello@pixnest.com">hello@pixnest.com</a></p>
+        <p>Use the contact page as well for custom permissions or special licensing requests.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <footer>
+    <div class="container footer-inner">
+      <p>©️ 2026 PixNest. Discover and share powerful visual collections.</p>
+
+      <div class="footer-links">
+        <a href="about.html">About</a>
+        <a href="license.html">License</a>
+        <a href="privacy.html">Privacy</a>
+        <a href="terms.html">Terms</a>
+        <a href="contact.html">Contact</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const menuToggle = document.getElementById("menuToggle");
+    const navLinks = document.getElementById("navLinks");
+
+    menuToggle.addEventListener("click", () => {
+      navLinks.classList.toggle("show");
+      const expanded = menuToggle.getAttribute("aria-expanded") === "true";
+      menuToggle.setAttribute("aria-expanded", !expanded);
+    });
+
+    document.querySelectorAll(".nav-links a").forEach(link => {
+      link.addEventListener("click", () => {
+        if(window.innerWidth <= 768){
+          navLinks.classList.remove("show");
+          menuToggle.setAttribute("aria-expanded", "false");
+        }
+      });
+    });
+
+    window.addEventListener("resize", () => {
+      if(window.innerWidth > 768){
+        navLinks.classList.remove("show");
+        menuToggle.setAttribute("aria-expanded", "false");
+      }
+    });
+  </script>
+
+</body>
+</html>
