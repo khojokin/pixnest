@@ -408,13 +408,13 @@
     }
 
     .lightbox-panel{
-      width:min(1100px, 100%);
+      width:min(1180px, 100%);
       background:#111827;
       border:1px solid var(--line);
       border-radius:24px;
       overflow:hidden;
       display:grid;
-      grid-template-columns:1.15fr 0.85fr;
+      grid-template-columns:1.2fr 0.8fr;
       max-height:90vh;
       box-shadow:0 24px 60px rgba(0,0,0,0.35);
     }
@@ -422,12 +422,17 @@
     .lightbox-image-wrap{
       background:#020617;
       min-height:300px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
     }
 
     .lightbox-image-wrap img{
       width:100%;
       height:100%;
-      object-fit:cover;
+      object-fit:contain;
+      max-height:90vh;
+      background:#020617;
     }
 
     .lightbox-info{
@@ -455,24 +460,107 @@
       color:var(--accent);
     }
 
-    .lightbox-title{
-      font-size:28px;
+    .creator-top{
+      display:flex;
+      align-items:center;
+      gap:14px;
+      margin-bottom:18px;
+      padding-right:56px;
+    }
+
+    .creator-avatar{
+      width:58px;
+      height:58px;
+      border-radius:50%;
+      overflow:hidden;
+      background:linear-gradient(135deg,#facc15,#fb7185);
+      color:#111827;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:22px;
+      font-weight:800;
+      flex-shrink:0;
+      border:2px solid rgba(255,255,255,0.12);
+    }
+
+    .creator-avatar img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+    }
+
+    .creator-top small{
+      display:block;
+      color:var(--muted);
+      font-size:12px;
+      text-transform:uppercase;
+      letter-spacing:0.8px;
+      margin-bottom:2px;
+    }
+
+    .creator-top strong{
       color:#fff;
-      margin-bottom:10px;
-      padding-right:54px;
+      font-size:18px;
+      line-height:1.3;
       word-break:break-word;
     }
 
-    .lightbox-desc{
+    .lightbox-title{
+      font-size:30px;
+      color:#fff;
+      margin-bottom:10px;
+      word-break:break-word;
+    }
+
+    .lightbox-sub{
       color:#cbd5e1;
       font-size:15px;
       margin-bottom:18px;
     }
 
+    .lightbox-sub:empty{
+      display:none;
+    }
+
+    .lightbox-actions{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-bottom:20px;
+    }
+
+    .lightbox-social{
+      width:42px;
+      height:42px;
+      border-radius:50%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:#0f172a;
+      border:1px solid var(--line);
+      color:#fff;
+      font-size:15px;
+      cursor:pointer;
+    }
+
+    .lightbox-social:hover{
+      color:var(--accent);
+      border-color:rgba(250,204,21,0.22);
+      transform:translateY(-2px);
+    }
+
+    .lightbox-social.disabled{
+      opacity:0.45;
+      cursor:not-allowed;
+      pointer-events:none;
+    }
+
     .detail-list{
       display:grid;
       gap:12px;
-      margin-top:18px;
+      margin-top:6px;
     }
 
     .detail-item{
@@ -653,6 +741,10 @@
       .lightbox-info{
         padding:18px;
       }
+
+      .creator-top{
+        align-items:flex-start;
+      }
     }
   </style>
 </head>
@@ -727,8 +819,19 @@
 
       <div class="lightbox-info">
         <button class="lightbox-close" id="lightboxClose" aria-label="Close">×</button>
+
+        <div class="creator-top">
+          <div class="creator-avatar" id="creatorAvatar"></div>
+          <div>
+            <small>Creator</small>
+            <strong id="lightboxCreatorTop">Unknown</strong>
+          </div>
+        </div>
+
         <h3 class="lightbox-title" id="lightboxTitle">Photo</h3>
-        <p class="lightbox-desc" id="lightboxDesc"></p>
+        <p class="lightbox-sub" id="lightboxSub"></p>
+
+        <div class="lightbox-actions" id="lightboxActions"></div>
 
         <div class="detail-list">
           <div class="detail-item">
@@ -744,11 +847,6 @@
           <div class="detail-item">
             <strong>Tags</strong>
             <span id="lightboxTags">—</span>
-          </div>
-
-          <div class="detail-item">
-            <strong>File Name</strong>
-            <span id="lightboxFileName">—</span>
           </div>
         </div>
       </div>
@@ -858,16 +956,142 @@
     const lightbox = document.getElementById("lightbox");
     const lightboxClose = document.getElementById("lightboxClose");
     const lightboxImage = document.getElementById("lightboxImage");
+    const creatorAvatar = document.getElementById("creatorAvatar");
+    const lightboxActions = document.getElementById("lightboxActions");
+
+    function getDisplayTitle(photo){
+      const cleanDescription = (photo.description || "").trim();
+      const cleanTitle = (photo.title || "").trim();
+      return cleanDescription || cleanTitle || "Photo";
+    }
+
+    function buildCreatorAvatar(photo){
+      const creatorName = (photo.credit || "Unknown").trim();
+      const creatorPhoto = (photo.creatorPhoto || "").trim();
+
+      if(creatorPhoto){
+        return `<img src="${escapeHtml(creatorPhoto)}" alt="${escapeHtml(creatorName)}">`;
+      }
+
+      const firstLetter = creatorName.charAt(0).toUpperCase() || "P";
+      return `<span>${escapeHtml(firstLetter)}</span>`;
+    }
+
+    function buildSocialButton(url, iconClass, label){
+      if(url){
+        return `
+          <a
+            class="lightbox-social"
+            href="${escapeHtml(url)}"
+            target="_blank"
+            rel="noopener noreferrer"
+            title="${escapeHtml(label)}"
+            aria-label="${escapeHtml(label)}"
+          >
+            <i class="${escapeHtml(iconClass)}"></i>
+          </a>
+        `;
+      }
+
+      return `
+        <button
+          type="button"
+          class="lightbox-social disabled"
+          title="${escapeHtml(label)} unavailable"
+          aria-label="${escapeHtml(label)} unavailable"
+        >
+          <i class="${escapeHtml(iconClass)}"></i>
+        </button>
+      `;
+    }
+
+    function buildLightboxActions(category, photo){
+      const creatorSocials = photo.creatorSocials || {};
+      const categoryUrl = `category.html?category=${encodeURIComponent(category.name || "")}&photo=${encodeURIComponent(photo.id || "")}`;
+      const absoluteTarget = new URL(categoryUrl, window.location.href).href;
+      const shareTitle = `${getDisplayTitle(photo)} on PixNest`;
+
+      const actions = [];
+
+      actions.push(buildSocialButton(creatorSocials.instagram || "", "fa-brands fa-instagram", "Creator Instagram"));
+      actions.push(buildSocialButton(creatorSocials.x || "", "fa-brands fa-x-twitter", "Creator X"));
+      actions.push(buildSocialButton(creatorSocials.facebook || "", "fa-brands fa-facebook-f", "Creator Facebook"));
+
+      actions.push(`
+        <button
+          type="button"
+          class="lightbox-social"
+          id="lightboxShareBtn"
+          data-share-url="${escapeHtml(absoluteTarget)}"
+          data-share-title="${escapeHtml(shareTitle)}"
+          title="Share"
+          aria-label="Share"
+        >
+          <i class="fa-solid fa-share-nodes"></i>
+        </button>
+      `);
+
+      actions.push(`
+        <a
+          class="lightbox-social"
+          href="${escapeHtml(photo.image || "")}"
+          download="${escapeHtml(photo.fileName || "pixnest-image")}"
+          title="Download image"
+          aria-label="Download image"
+        >
+          <i class="fa-solid fa-download"></i>
+        </a>
+      `);
+
+      return actions.join("");
+    }
+
+    async function handleNativeShare(button){
+      const url = button.getAttribute("data-share-url") || window.location.href;
+      const title = button.getAttribute("data-share-title") || "PixNest";
+
+      if(navigator.share){
+        try{
+          await navigator.share({
+            title,
+            url
+          });
+        }catch(error){
+        }
+      }else{
+        try{
+          await navigator.clipboard.writeText(url);
+          button.innerHTML = '<i class="fa-solid fa-check"></i>';
+          setTimeout(() => {
+            button.innerHTML = '<i class="fa-solid fa-share-nodes"></i>';
+          }, 1200);
+        }catch(error){
+          alert("Link copy failed. You can copy it manually:\n" + url);
+        }
+      }
+    }
 
     function openLightbox(category, photo){
       lightboxImage.src = photo.image || "";
-      lightboxImage.alt = photo.fileName || photo.title || "Large photo";
-      setText("lightboxTitle", photo.fileName || photo.title || "Photo");
-      setText("lightboxDesc", photo.description || "No description added.");
+      lightboxImage.alt = getDisplayTitle(photo);
+
+      setText("lightboxTitle", getDisplayTitle(photo));
+      setText("lightboxSub", "");
       setText("lightboxCategory", category.name || "Uncategorized");
       setText("lightboxCredit", photo.credit || "Unknown");
       setText("lightboxTags", getPhotoTags(photo).join(", ") || "No tags");
-      setText("lightboxFileName", photo.fileName || "No file name");
+      setText("lightboxCreatorTop", photo.credit || "Unknown");
+
+      creatorAvatar.innerHTML = buildCreatorAvatar(photo);
+      lightboxActions.innerHTML = buildLightboxActions(category, photo);
+
+      const lightboxShareBtn = document.getElementById("lightboxShareBtn");
+      if(lightboxShareBtn){
+        lightboxShareBtn.addEventListener("click", async () => {
+          await handleNativeShare(lightboxShareBtn);
+        });
+      }
+
       lightbox.classList.add("show");
       document.body.style.overflow = "hidden";
     }
@@ -875,6 +1099,7 @@
     function closeLightbox(){
       lightbox.classList.remove("show");
       document.body.style.overflow = "";
+      lightboxActions.innerHTML = "";
     }
 
     lightboxClose.addEventListener("click", closeLightbox);
@@ -912,7 +1137,7 @@
     function createOverlayActions(category, photo){
       const categoryUrl = `category.html?category=${encodeURIComponent(category.name || "")}&photo=${encodeURIComponent(photo.id || "")}`;
       const absoluteTarget = new URL(categoryUrl, window.location.href).href;
-      const shareText = `${category.name || "PixNest photo"} on PixNest`;
+      const shareText = `${getDisplayTitle(photo)} on PixNest`;
       const imageUrl = photo.image || "";
 
       return `
@@ -997,29 +1222,7 @@
         btn.addEventListener("click", async (e) => {
           e.preventDefault();
           e.stopPropagation();
-
-          const url = btn.getAttribute("data-share-url") || window.location.href;
-          const title = btn.getAttribute("data-share-title") || "PixNest";
-
-          if(navigator.share){
-            try{
-              await navigator.share({
-                title,
-                url
-              });
-            }catch(error){
-            }
-          }else{
-            try{
-              await navigator.clipboard.writeText(url);
-              btn.innerHTML = '<i class="fa-solid fa-check"></i>';
-              setTimeout(() => {
-                btn.innerHTML = '<i class="fa-solid fa-share-nodes"></i>';
-              }, 1200);
-            }catch(error){
-              alert("Link copy failed. You can copy it manually:\n" + url);
-            }
-          }
+          await handleNativeShare(btn);
         });
       });
     }
