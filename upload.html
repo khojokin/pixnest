@@ -1,12 +1,15 @@
- <!DOCTYPE html>
+Nice — you’re ready.
+
+Paste this as your new upload.html and replace the publishable key near the bottom with your real one.
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6723276431169192"
-     crossorigin="anonymous"></script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>PixNest | Upload</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     *{
       margin:0;
@@ -345,6 +348,13 @@
     .submit-btn:hover{
       transform:translateY(-2px);
       box-shadow:0 10px 24px rgba(250,204,21,.2);
+    }
+
+    .submit-btn:disabled{
+      opacity:.7;
+      cursor:not-allowed;
+      transform:none;
+      box-shadow:none;
     }
 
     .status{
@@ -723,7 +733,6 @@
         <a href="index.html">Home</a>
         <a href="explore.html">Explore</a>
         <a href="category.html">Categories</a>
-        <a href="about.html">About</a>
         <a href="upload.html" class="active">Upload</a>
         <a href="contact.html">Contact</a>
       </nav>
@@ -737,7 +746,7 @@
         <h1>Share your photos with creator details, profile image, and socials.</h1>
         <p>
           Submit your visuals with category, description, tags, creator profile photo,
-          and social links so your work can appear in your admin dashboard first.
+          and social links so your work can be added to PixNest.
         </p>
       </div>
     </div>
@@ -748,13 +757,14 @@
       <div class="section-head">
         <div>
           <h2>Upload Your Work</h2>
+          <p>Uploads on this page now go to Supabase instead of browser local storage.</p>
         </div>
       </div>
 
       <div class="upload-layout">
         <div class="panel">
           <h3>Photo Submission Form</h3>
-           
+          <p class="panel-sub">Fill the form, upload your files, and submit directly to PixNest storage and database.</p>
 
           <form id="uploadForm">
             <div class="field-grid">
@@ -765,7 +775,16 @@
 
               <div class="field">
                 <label for="category">Category</label>
-                <select id="category"></select>
+                <select id="category">
+                  <option value="Nature">Nature</option>
+                  <option value="Travel">Travel</option>
+                  <option value="Cars">Cars</option>
+                  <option value="Fashion">Fashion</option>
+                  <option value="Street">Street</option>
+                  <option value="Food">Food</option>
+                  <option value="People">People</option>
+                  <option value="Business">Business</option>
+                </select>
               </div>
 
               <div class="field full">
@@ -802,7 +821,7 @@
                 <label for="creatorProfilePhoto">Creator Profile Photo</label>
                 <div class="upload-box">
                   <input type="file" id="creatorProfilePhoto" accept="image/*">
-                  <p>Upload the creator profile photo used in the bigger image view.</p>
+                  <p>Upload a creator profile image for the photo detail view.</p>
                 </div>
               </div>
 
@@ -810,12 +829,12 @@
                 <label for="mainPhoto">Main Photo Upload</label>
                 <div class="upload-box">
                   <input type="file" id="mainPhoto" accept="image/*">
-                  <p>Choose the main image to submit into the selected category.</p>
+                  <p>Choose the main image you want to upload to PixNest.</p>
                 </div>
               </div>
             </div>
 
-            <button type="submit" class="submit-btn">Submit Upload</button>
+            <button type="submit" class="submit-btn" id="submitBtn">Submit Upload</button>
             <div class="status" id="formStatus"></div>
           </form>
         </div>
@@ -858,7 +877,9 @@
                 </a>
               </div>
 
-               
+              <div class="mini-note">
+                Creator profile photo, socials, main photo, and photo details will upload into Supabase.
+              </div>
             </div>
           </div>
         </div>
@@ -866,19 +887,20 @@
 
       <div class="guides">
         <div class="guide-box">
-  <h3>Easy Submission</h3>
-  <p>Upload your best photo with a title, description, tags, and creator details in one simple form.</p>
-</div>
+          <h3>Easy Submission</h3>
+          <p>Upload your best photo with a title, description, tags, and creator details in one simple form.</p>
+        </div>
 
-<div class="guide-box">
-  <h3>Creator Spotlight</h3>
-  <p>Add your name, profile photo, and social links so viewers can connect with the creator behind the image.</p>
-</div>
+        <div class="guide-box">
+          <h3>Creator Spotlight</h3>
+          <p>Add your name, profile photo, and social links so viewers can connect with the creator behind the image.</p>
+        </div>
 
-<div class="guide-box">
-  <h3>Curated Quality</h3>
-  <p>Every upload is designed to fit a clean, high-quality visual collection across multiple categories and styles.</p>
-</div>
+        <div class="guide-box">
+          <h3>Curated Quality</h3>
+          <p>Every upload is designed to fit a clean, high-quality visual collection across multiple categories and styles.</p>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -897,176 +919,11 @@
   </footer>
 
   <script>
-    const STORAGE_KEY = "pixnest_admin_v1";
+    const SUPABASE_URL = "https://vigczssznfvuijtdapbv.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_UmF-mmVS42XeF6PqsNnCSw_wpA35wg2";
 
-    function createId(){
-      return "id-" + Math.random().toString(36).slice(2,10) + Date.now().toString(36);
-    }
-
-    function deepClone(value){
-      return JSON.parse(JSON.stringify(value));
-    }
-
-    function createFallbackData(){
-      return {
-        siteName: "PixNest",
-        siteTagline: "Free and premium photo collections",
-        footerText: "©️ 2026 PixNest. Discover and share powerful visual collections.",
-        homepage: {
-          heroTag: "Discover fresh visual collections",
-          heroTitle: "Discover beautiful photos for creative projects, brands, and inspiration.",
-          heroText: "Browse categories, explore standout visuals, and find photos for websites, design work, social media, and creative ideas.",
-          categoriesTitle: "All Categories",
-          categoriesText: "Explore visual collections across different styles, themes, and creative topics.",
-          featuredTitle: "Featured Photos",
-          featuredText: "Latest standout visuals selected for the PixNest collection.",
-          trendingTitle: "Trending This Week",
-          trendingText: "Fresh visual picks to explore across multiple styles and categories.",
-          ctaTitle: "Start exploring the PixNest collection today.",
-          ctaText: "Browse curated categories, discover standout images, and enjoy a growing library of free and premium visuals."
-        },
-        contactPage: {
-          heading: "Get in Touch",
-          intro: "Use the contact details or the form below to reach the PixNest team.",
-          email: "hello@pixnest.com",
-          phone: "+44 0000 000000",
-          location: "United Kingdom",
-          responseTime: "Usually within 24 to 48 hours",
-          instagram: "#",
-          x: "#",
-          facebook: "#",
-          tiktok: "#"
-        },
-        aboutPage: {
-          heroTitle: "About PixNest",
-          heroText: "PixNest is a growing photo platform built to help people discover strong visuals across free and premium collections.",
-          bodyTitle: "Our Story",
-          bodyText: "PixNest brings together visual collections across different categories, styles, and creative topics for inspiration, design work, and modern digital projects."
-        },
-        categories: [
-          {
-            id: createId(),
-            name: "Nature",
-            description: "Landscapes, forests, mountains, and outdoor scenes.",
-            photos: []
-          },
-          {
-            id: createId(),
-            name: "Travel",
-            description: "Road trips, city views, destinations, and cultural scenes.",
-            photos: []
-          }
-        ]
-      };
-    }
-
-    function normalizeData(data){
-      const fallback = createFallbackData();
-      const safeData = data && typeof data === "object" ? data : {};
-      const homepage = safeData.homepage || {};
-      const contactPage = safeData.contactPage || {};
-      const aboutPage = safeData.aboutPage || {};
-
-      return {
-        siteName: safeData.siteName || fallback.siteName,
-        siteTagline: safeData.siteTagline || fallback.siteTagline,
-        footerText: safeData.footerText || fallback.footerText,
-        homepage: {
-          heroTag: homepage.heroTag || fallback.homepage.heroTag,
-          heroTitle: homepage.heroTitle || fallback.homepage.heroTitle,
-          heroText: homepage.heroText || fallback.homepage.heroText,
-          categoriesTitle: homepage.categoriesTitle || fallback.homepage.categoriesTitle,
-          categoriesText: homepage.categoriesText || fallback.homepage.categoriesText,
-          featuredTitle: homepage.featuredTitle || fallback.homepage.featuredTitle,
-          featuredText: homepage.featuredText || fallback.homepage.featuredText,
-          trendingTitle: homepage.trendingTitle || fallback.homepage.trendingTitle,
-          trendingText: homepage.trendingText || fallback.homepage.trendingText,
-          ctaTitle: homepage.ctaTitle || fallback.homepage.ctaTitle,
-          ctaText: homepage.ctaText || fallback.homepage.ctaText
-        },
-        contactPage: {
-          heading: contactPage.heading || fallback.contactPage.heading,
-          intro: contactPage.intro || fallback.contactPage.intro,
-          email: contactPage.email || fallback.contactPage.email,
-          phone: contactPage.phone || fallback.contactPage.phone,
-          location: contactPage.location || fallback.contactPage.location,
-          responseTime: contactPage.responseTime || fallback.contactPage.responseTime,
-          instagram: contactPage.instagram || fallback.contactPage.instagram,
-          x: contactPage.x || fallback.contactPage.x,
-          facebook: contactPage.facebook || fallback.contactPage.facebook,
-          tiktok: contactPage.tiktok || fallback.contactPage.tiktok
-        },
-        aboutPage: {
-          heroTitle: aboutPage.heroTitle || fallback.aboutPage.heroTitle,
-          heroText: aboutPage.heroText || fallback.aboutPage.heroText,
-          bodyTitle: aboutPage.bodyTitle || fallback.aboutPage.bodyTitle,
-          bodyText: aboutPage.bodyText || fallback.aboutPage.bodyText
-        },
-        categories: Array.isArray(safeData.categories)
-          ? safeData.categories.map(cat => ({
-              id: cat.id || createId(),
-              name: cat.name || "Untitled Category",
-              description: cat.description || "",
-              photos: Array.isArray(cat.photos)
-                ? cat.photos.map(photo => ({
-                    id: photo.id || createId(),
-                    title: photo.title || "Untitled Photo",
-                    description: photo.description || "",
-                    credit: photo.credit || "",
-                    tags: photo.tags || "",
-                    image: photo.image || "",
-                    fileName: photo.fileName || "",
-                    createdAt: photo.createdAt || new Date().toISOString(),
-                    featured: Boolean(photo.featured),
-                    creatorPhoto: photo.creatorPhoto || "",
-                    creatorSocials: {
-                      instagram: photo.creatorSocials?.instagram || "",
-                      x: photo.creatorSocials?.x || "",
-                      facebook: photo.creatorSocials?.facebook || ""
-                    }
-                  }))
-                : []
-            }))
-          : fallback.categories
-      };
-    }
-
-    function loadData(){
-      try{
-        const raw = localStorage.getItem(STORAGE_KEY);
-        if(raw){
-          return normalizeData(JSON.parse(raw));
-        }
-      }catch(error){
-        console.error("Failed to load PixNest data:", error);
-      }
-      return normalizeData(deepClone(createFallbackData()));
-    }
-
-    function saveData(data){
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-    }
-
-    function slugTitle(name){
-      return name
-        .replace(/\.[^/.]+$/, "")
-        .replace(/[-_]+/g, " ")
-        .replace(/\s+/g, " ")
-        .trim();
-    }
-
-    function readFileAsDataURL(file){
-      return new Promise((resolve, reject) => {
-        if(!file){
-          resolve("");
-          return;
-        }
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
-      });
-    }
+    const { createClient } = supabase;
+    const supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY);
 
     const menuToggle = document.getElementById("menuToggle");
     const navLinks = document.getElementById("navLinks");
@@ -1093,8 +950,6 @@
       }
     });
 
-    const siteData = loadData();
-
     const creatorName = document.getElementById("creatorName");
     const category = document.getElementById("category");
     const photoTitle = document.getElementById("photoTitle");
@@ -1119,28 +974,17 @@
 
     const uploadForm = document.getElementById("uploadForm");
     const formStatus = document.getElementById("formStatus");
+    const submitBtn = document.getElementById("submitBtn");
 
     let creatorProfileImageData = "";
     let mainPhotoImageData = "";
 
-    function populateCategories(){
-      category.innerHTML = "";
-
-      const categories = Array.isArray(siteData.categories) ? siteData.categories : [];
-      if(!categories.length){
-        const option = document.createElement("option");
-        option.value = "";
-        option.textContent = "No categories available";
-        category.appendChild(option);
-        return;
+    function setStatus(message, type = ""){
+      formStatus.className = "status";
+      if(type){
+        formStatus.classList.add(type);
       }
-
-      categories.forEach(cat => {
-        const option = document.createElement("option");
-        option.value = cat.id;
-        option.textContent = cat.name;
-        category.appendChild(option);
-      });
+      formStatus.textContent = message;
     }
 
     function setSocialState(element, url){
@@ -1160,9 +1004,7 @@
     }
 
     function updatePreviewTags(){
-      const selectedOption = category.options[category.selectedIndex];
-      const categoryValue = selectedOption ? selectedOption.textContent : "Category";
-
+      const categoryValue = category.value.trim() || "Category";
       const tags = photoTags.value
         .split(/[,|]/)
         .map(tag => tag.trim())
@@ -1193,27 +1035,61 @@
       }
     }
 
-    creatorProfilePhoto.addEventListener("change", async () => {
-      const file = creatorProfilePhoto.files[0];
-      if(!file){
-        creatorProfileImageData = "";
-        previewAvatar.innerHTML = creatorName.value.trim().charAt(0).toUpperCase() || "P";
-        return;
+    function readImageFile(file, callback){
+      if(!file) return;
+      const reader = new FileReader();
+      reader.onload = e => callback(e.target.result);
+      reader.readAsDataURL(file);
+    }
+
+    function getFileExtension(fileName = ""){
+      const parts = fileName.split(".");
+      return parts.length > 1 ? parts.pop().toLowerCase() : "jpg";
+    }
+
+    function createFileName(prefix, originalName){
+      const ext = getFileExtension(originalName);
+      const cleanPrefix = prefix.replace(/[^a-zA-Z0-9-_]/g, "").toLowerCase() || "file";
+      return `${cleanPrefix}-${Date.now()}-${Math.random().toString(36).slice(2,8)}.${ext}`;
+    }
+
+    async function uploadToBucket(bucketName, file, fileName){
+      const { error } = await supabaseClient.storage
+        .from(bucketName)
+        .upload(fileName, file, {
+          cacheControl: "3600",
+          upsert: false
+        });
+
+      if(error){
+        throw error;
       }
 
-      creatorProfileImageData = await readFileAsDataURL(file);
-      previewAvatar.innerHTML = `<img src="${creatorProfileImageData}" alt="Creator profile photo">`;
+      const { data } = supabaseClient.storage
+        .from(bucketName)
+        .getPublicUrl(fileName);
+
+      return data.publicUrl;
+    }
+
+    creatorProfilePhoto.addEventListener("change", () => {
+      const file = creatorProfilePhoto.files[0];
+      if(!file) return;
+
+      readImageFile(file, (src) => {
+        creatorProfileImageData = src;
+        previewAvatar.innerHTML = `<img src="${src}" alt="Creator profile photo">`;
+      });
     });
 
-    mainPhoto.addEventListener("change", async () => {
+    mainPhoto.addEventListener("change", () => {
       const file = mainPhoto.files[0];
-      if(!file){
-        mainPhotoImageData = "";
-        return;
-      }
+      if(!file) return;
 
-      mainPhotoImageData = await readFileAsDataURL(file);
-      previewMainImage.src = mainPhotoImageData;
+      readImageFile(file, (src) => {
+        mainPhotoImageData = src;
+        previewMainImage.src = src;
+      });
     });
 
     [creatorName, category, photoTitle, photoDescription, photoTags].forEach(field => {
@@ -1238,76 +1114,82 @@
     uploadForm.addEventListener("submit", async (e) => {
       e.preventDefault();
 
-      formStatus.className = "status";
-      formStatus.textContent = "";
+      if(SUPABASE_KEY === "PASTE_YOUR_SB_PUBLISHABLE_KEY_HERE"){
+        setStatus("Paste your real Supabase publishable key into the code first.", "error");
+        return;
+      }
 
       const creatorValue = creatorName.value.trim();
+      const categoryValue = category.value.trim();
       const titleValue = photoTitle.value.trim();
-      const descValue = photoDescription.value.trim();
+      const descriptionValue = photoDescription.value.trim();
       const tagsValue = photoTags.value.trim();
-      const categoryId = category.value;
-      const mainFile = mainPhoto.files[0];
+      const instagramValue = instagramLink.value.trim();
+      const xValue = xLink.value.trim();
+      const facebookValue = facebookLink.value.trim();
+      const mainPhotoFile = mainPhoto.files[0];
+      const creatorPhotoFile = creatorProfilePhoto.files[0];
 
       if(!creatorValue){
-        formStatus.className = "status error";
-        formStatus.textContent = "Please enter the creator name.";
+        setStatus("Please enter the creator name.", "error");
         return;
       }
 
-      if(!categoryId){
-        formStatus.className = "status error";
-        formStatus.textContent = "Please choose a category.";
+      if(!categoryValue){
+        setStatus("Please choose a category.", "error");
         return;
       }
 
-      if(!mainFile){
-        formStatus.className = "status error";
-        formStatus.textContent = "Please upload the main photo.";
+      if(!mainPhotoFile){
+        setStatus("Please upload the main photo.", "error");
         return;
       }
+
+      submitBtn.disabled = true;
+      setStatus("Uploading to PixNest...", "success");
 
       try{
-        const liveData = loadData();
-        const targetCategory = liveData.categories.find(cat => cat.id === categoryId);
+        const mainPhotoPath = createFileName("photo", mainPhotoFile.name);
+        const imageUrl = await uploadToBucket("photos", mainPhotoFile, mainPhotoPath);
 
-        if(!targetCategory){
-          formStatus.className = "status error";
-          formStatus.textContent = "Selected category was not found.";
-          return;
+        let creatorPhotoUrl = "";
+        if(creatorPhotoFile){
+          const creatorPhotoPath = createFileName("creator", creatorPhotoFile.name);
+          creatorPhotoUrl = await uploadToBucket("creator-photos", creatorPhotoFile, creatorPhotoPath);
         }
 
-        const finalMainImage = mainPhotoImageData || await readFileAsDataURL(mainFile);
-        const finalCreatorPhoto = creatorProfileImageData || "";
+        const finalTitle = titleValue || mainPhotoFile.name.replace(/\.[^/.]+$/, "").replace(/[-_]+/g, " ").trim() || "Untitled Photo";
 
-        targetCategory.photos.unshift({
-          id: createId(),
-          title: titleValue || slugTitle(mainFile.name) || "Untitled Photo",
-          description: descValue,
-          credit: creatorValue,
-          tags: tagsValue,
-          image: finalMainImage,
-          fileName: mainFile.name,
-          createdAt: new Date().toISOString(),
-          featured: false,
-          creatorPhoto: finalCreatorPhoto,
-          creatorSocials: {
-            instagram: instagramLink.value.trim(),
-            x: xLink.value.trim(),
-            facebook: facebookLink.value.trim()
-          }
-        });
+        const { error } = await supabaseClient
+          .from("photos")
+          .insert([
+            {
+              title: finalTitle,
+              description: descriptionValue,
+              category: categoryValue,
+              tags: tagsValue,
+              credit: creatorValue,
+              creator_photo: creatorPhotoUrl,
+              instagram: instagramValue,
+              x: xValue,
+              facebook: facebookValue,
+              image_url: imageUrl,
+              featured: false
+            }
+          ]);
 
-        saveData(liveData);
+        if(error){
+          throw error;
+        }
 
-        formStatus.className = "status success";
-        formStatus.textContent = "Upload saved into your local PixNest admin dashboard data.";
-
+        setStatus("Upload submitted successfully.", "success");
         uploadForm.reset();
+
         creatorProfileImageData = "";
         mainPhotoImageData = "";
 
         previewMainImage.src = "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&w=1200&q=80";
-        previewAvatar.textContent = "P";
+        previewAvatar.innerHTML = "P";
 
         updatePreviewText();
         updatePreviewTags();
@@ -1316,12 +1198,12 @@
         setSocialState(previewFacebook, "");
       }catch(error){
         console.error(error);
-        formStatus.className = "status error";
-        formStatus.textContent = "Upload failed. This can happen if browser storage is full.";
+        setStatus(error.message || "Upload failed. Check your Supabase key, buckets, or policies.", "error");
+      }finally{
+        submitBtn.disabled = false;
       }
     });
 
-    populateCategories();
     updatePreviewText();
     updatePreviewTags();
     setSocialState(previewInstagram, "");
@@ -1330,3 +1212,5 @@
   </script>
 </body>
 </html>
+
+ 
