@@ -20,10 +20,10 @@
       --panel2:#1e293b;
       --text:#e5e7eb;
       --muted:#94a3b8;
-      --accent:#facc15;
       --line:rgba(255,255,255,0.08);
-      --success:#22c55e;
-      --danger:#ef4444;
+      --accent:#facc15;
+      --success:#10b981;
+      --danger:#f87171;
     }
 
     html{
@@ -57,7 +57,7 @@
     }
 
     .container{
-      width:min(1200px,92%);
+      width:min(1200px, 92%);
       margin:auto;
     }
 
@@ -113,8 +113,7 @@
       font-size:27px;
       font-weight:800;
       color:var(--accent);
-      letter-spacing:.4px;
-      white-space:nowrap;
+      letter-spacing:0.4px;
     }
 
     .logo-sub{
@@ -123,7 +122,6 @@
       letter-spacing:1.7px;
       text-transform:uppercase;
       margin-top:4px;
-      white-space:nowrap;
     }
 
     .nav-links{
@@ -161,7 +159,7 @@
       width:46px;
       height:46px;
       border-radius:12px;
-      border:1px solid rgba(250,204,21,.35);
+      border:1px solid rgba(250,204,21,0.35);
       background:#111827;
       color:var(--accent);
       align-items:center;
@@ -169,6 +167,7 @@
       cursor:pointer;
       flex-direction:column;
       gap:5px;
+      box-shadow:0 0 12px rgba(250,204,21,0.12);
     }
 
     .menu-toggle span{
@@ -181,34 +180,34 @@
 
     .hero{
       background:
-        linear-gradient(rgba(15,23,42,.7), rgba(15,23,42,.92)),
+        linear-gradient(rgba(15,23,42,0.72), rgba(15,23,42,0.94)),
         url('https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&w=1600&q=80') center/cover no-repeat;
-      min-height:58vh;
+      min-height:48vh;
       display:flex;
       align-items:center;
     }
 
     .hero-content{
-      max-width:850px;
-      padding:80px 0;
+      max-width:840px;
+      padding:78px 0 58px;
     }
 
     .hero-tag{
       display:inline-block;
-      background:rgba(250,204,21,.12);
+      background:rgba(250,204,21,0.12);
       color:var(--accent);
       padding:8px 14px;
       border-radius:999px;
       font-size:14px;
-      border:1px solid rgba(250,204,21,.22);
+      border:1px solid rgba(250,204,21,0.22);
       margin-bottom:18px;
     }
 
     .hero h1{
-      font-size:clamp(34px,5vw,58px);
+      font-size:clamp(34px, 5vw, 56px);
       line-height:1.08;
       margin-bottom:18px;
-      color:#fff;
+      color:#ffffff;
     }
 
     .hero p{
@@ -232,52 +231,52 @@
 
     .section-head h2{
       font-size:32px;
-      color:#fff;
+      color:#ffffff;
       margin-bottom:8px;
     }
 
     .section-head p{
       color:var(--muted);
-      max-width:740px;
+      max-width:720px;
     }
 
-    .upload-layout{
+    .upload-grid{
       display:grid;
-      grid-template-columns:1.05fr .95fr;
+      grid-template-columns:1.08fr .92fr;
       gap:24px;
       align-items:start;
     }
 
     .panel{
-      background:var(--panel);
+      background:#111827;
       border:1px solid var(--line);
       border-radius:24px;
       padding:24px;
-      box-shadow:0 14px 30px rgba(0,0,0,.16);
+      box-shadow:0 14px 30px rgba(0,0,0,0.14);
     }
 
     .panel h3{
       font-size:26px;
       color:#fff;
-      margin-bottom:8px;
+      margin-bottom:12px;
     }
 
-    .panel-sub{
-      color:var(--muted);
-      font-size:14px;
-      margin-bottom:18px;
+    .panel p{
+      color:#cbd5e1;
+      font-size:15px;
+      margin-bottom:16px;
     }
 
     .field-grid{
       display:grid;
-      grid-template-columns:repeat(2,minmax(0,1fr));
+      grid-template-columns:repeat(2,1fr);
       gap:16px;
+      margin-top:18px;
     }
 
     .field{
       display:grid;
       gap:8px;
-      margin-bottom:16px;
     }
 
     .field.full{
@@ -285,7 +284,7 @@
     }
 
     label{
-      color:#fff;
+      color:#ffffff;
       font-size:14px;
       font-weight:700;
     }
@@ -295,12 +294,19 @@
     select{
       width:100%;
       background:#0f172a;
-      border:1px solid var(--line);
+      border:1px solid rgba(255,255,255,0.08);
       border-radius:14px;
-      padding:14px;
-      color:#fff;
+      padding:14px 16px;
+      color:#ffffff;
       outline:none;
-      font-size:14px;
+      font-size:15px;
+    }
+
+    input:focus,
+    textarea:focus,
+    select:focus{
+      border-color:rgba(250,204,21,0.6);
+      box-shadow:0 0 0 3px rgba(250,204,21,0.08);
     }
 
     textarea{
@@ -308,42 +314,36 @@
       resize:vertical;
     }
 
-    input:focus,
-    textarea:focus,
-    select:focus{
-      border-color:rgba(250,204,21,.55);
-      box-shadow:0 0 0 3px rgba(250,204,21,.08);
-    }
-
-    .upload-box{
+    .file-box{
       background:#0f172a;
-      border:1px dashed rgba(255,255,255,.15);
-      border-radius:18px;
-      padding:18px;
+      border:1px dashed rgba(255,255,255,0.14);
+      border-radius:16px;
+      padding:14px;
     }
 
-    .upload-box p{
+    .file-help{
       color:var(--muted);
-      font-size:14px;
-      margin-top:10px;
+      font-size:13px;
+      margin-top:8px;
     }
 
     .submit-btn{
+      display:inline-block;
       width:100%;
-      padding:15px 20px;
+      padding:14px 22px;
+      border-radius:12px;
+      font-weight:700;
+      font-size:15px;
       border:none;
-      border-radius:14px;
+      cursor:pointer;
       background:var(--accent);
       color:#111827;
-      font-size:16px;
-      font-weight:800;
-      cursor:pointer;
-      margin-top:8px;
+      margin-top:10px;
     }
 
     .submit-btn:hover{
       transform:translateY(-2px);
-      box-shadow:0 10px 24px rgba(250,204,21,.2);
+      box-shadow:0 10px 24px rgba(250,204,21,0.2);
     }
 
     .submit-btn:disabled{
@@ -353,52 +353,38 @@
       box-shadow:none;
     }
 
-    .status{
-      min-height:22px;
+    .status-message{
       margin-top:14px;
       font-size:14px;
+      font-weight:700;
+      min-height:22px;
     }
 
-    .status.success{
-      color:var(--success);
+    .status-message.success{
+      color:#86efac;
     }
 
-    .status.error{
-      color:var(--danger);
+    .status-message.error{
+      color:#fca5a5;
     }
 
     .preview-card{
-      background:#0f172a;
-      border:1px solid var(--line);
-      border-radius:24px;
       overflow:hidden;
+      padding:0;
     }
 
     .preview-image-wrap{
       position:relative;
-      min-height:420px;
+      min-height:320px;
       background:#020617;
     }
 
-    .preview-image-wrap img{
+    .preview-main-image{
       width:100%;
-      height:420px;
+      height:100%;
+      min-height:320px;
       object-fit:cover;
       background:#020617;
-    }
-
-    .preview-image-wrap::after{
-      content:"";
-      position:absolute;
-      inset:0;
-      background:linear-gradient(
-        to top,
-        rgba(15,23,42,.94) 0%,
-        rgba(15,23,42,.65) 35%,
-        rgba(15,23,42,.18) 66%,
-        rgba(15,23,42,.02) 100%
-      );
-      pointer-events:none;
     }
 
     .preview-overlay{
@@ -406,57 +392,64 @@
       left:0;
       right:0;
       bottom:0;
-      z-index:2;
       padding:18px;
-      display:flex;
-      flex-direction:column;
-      gap:10px;
+      background:linear-gradient(to top, rgba(15,23,42,.95), rgba(15,23,42,.45), transparent);
     }
 
     .preview-tags{
       display:flex;
       flex-wrap:wrap;
-      gap:10px;
+      gap:8px;
+      margin-bottom:10px;
     }
 
     .pill{
-      background:rgba(255,255,255,.12);
-      color:#fff;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
       padding:6px 10px;
       border-radius:999px;
       font-size:12px;
+      background:rgba(255,255,255,.12);
       border:1px solid rgba(255,255,255,.12);
+      color:#fff;
       backdrop-filter:blur(6px);
     }
 
-    .preview-desc{
+    .preview-title{
+      font-size:28px;
       color:#fff;
-      font-size:16px;
-      line-height:1.5;
-      text-shadow:0 2px 10px rgba(0,0,0,.35);
+      line-height:1.15;
+      margin-bottom:6px;
+      word-break:break-word;
     }
 
-    .preview-credit{
+    .preview-desc{
       color:#e2e8f0;
       font-size:14px;
-      text-shadow:0 2px 10px rgba(0,0,0,.35);
+      margin-bottom:10px;
+      word-break:break-word;
     }
 
-    .creator-panel{
-      padding:18px;
+    .preview-meta{
+      padding:22px;
       display:grid;
       gap:16px;
     }
 
-    .creator-top{
+    .creator-box{
       display:flex;
       align-items:center;
       gap:14px;
+      background:#0f172a;
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:14px;
     }
 
     .creator-avatar{
-      width:62px;
-      height:62px;
+      width:58px;
+      height:58px;
       border-radius:50%;
       overflow:hidden;
       background:linear-gradient(135deg,#facc15,#fb7185);
@@ -464,9 +457,8 @@
       align-items:center;
       justify-content:center;
       color:#111827;
-      font-size:24px;
+      font-size:22px;
       font-weight:800;
-      border:2px solid rgba(255,255,255,.1);
       flex-shrink:0;
     }
 
@@ -476,19 +468,21 @@
       object-fit:cover;
     }
 
-    .creator-meta small{
-      display:block;
+    .creator-box small{
       color:var(--muted);
+      font-size:12px;
       text-transform:uppercase;
       letter-spacing:.8px;
-      font-size:12px;
+      display:block;
       margin-bottom:2px;
     }
 
-    .creator-meta strong{
+    .creator-box strong{
       color:#fff;
       font-size:18px;
-      line-height:1.3;
+      line-height:1.2;
+      display:block;
+      margin-bottom:4px;
     }
 
     .social-row{
@@ -508,50 +502,61 @@
       border:1px solid var(--line);
       color:#fff;
       font-size:15px;
+      text-decoration:none;
     }
 
-    .social-icon.active:hover{
+    .social-icon:hover{
       color:var(--accent);
       transform:translateY(-2px);
-      border-color:rgba(250,204,21,.24);
     }
 
     .social-icon.disabled{
       opacity:.45;
-      cursor:not-allowed;
       pointer-events:none;
     }
 
-    .mini-note{
+    .info-box{
       background:#0f172a;
-      border:1px solid rgba(250,204,21,.12);
-      border-radius:16px;
+      border:1px solid var(--line);
+      border-radius:18px;
       padding:16px;
-      color:#cbd5e1;
-      font-size:14px;
     }
 
-    .guides{
+    .info-box strong{
+      display:block;
+      color:var(--accent);
+      font-size:13px;
+      margin-bottom:6px;
+      text-transform:uppercase;
+      letter-spacing:.8px;
+    }
+
+    .info-box span{
+      color:#e5e7eb;
+      font-size:14px;
+      word-break:break-word;
+    }
+
+    .tips-grid{
       display:grid;
       grid-template-columns:repeat(3,1fr);
       gap:20px;
-      margin-top:24px;
     }
 
-    .guide-box{
+    .tip-box{
       background:#111827;
       border:1px solid var(--line);
       border-radius:20px;
       padding:22px;
     }
 
-    .guide-box h3{
+    .tip-box h3{
       color:#fff;
       font-size:20px;
       margin-bottom:10px;
     }
 
-    .guide-box p{
+    .tip-box p{
       color:var(--muted);
       font-size:14px;
     }
@@ -591,11 +596,11 @@
     }
 
     @media(max-width:1024px){
-      .upload-layout{
+      .upload-grid{
         grid-template-columns:1fr;
       }
 
-      .guides{
+      .tips-grid{
         grid-template-columns:1fr;
       }
     }
@@ -618,7 +623,7 @@
         border:1px solid var(--line);
         border-radius:16px;
         padding:12px;
-        box-shadow:0 16px 30px rgba(0,0,0,.28);
+        box-shadow:0 16px 30px rgba(0,0,0,0.28);
       }
 
       .nav-links.show{
@@ -637,7 +642,7 @@
 
       .nav-links a:hover,
       .nav-links a.active{
-        background:rgba(250,204,21,.12);
+        background:rgba(250,204,21,0.12);
       }
 
       .hero{
@@ -701,8 +706,8 @@
         font-size:25px;
       }
 
-      .preview-image-wrap img{
-        height:320px;
+      .preview-title{
+        font-size:24px;
       }
     }
   </style>
@@ -738,12 +743,9 @@
   <section class="hero">
     <div class="container">
       <div class="hero-content">
-        <div class="hero-tag">Upload to PixNest</div>
-        <h1>Share your photos with creator details, profile image, and socials.</h1>
-        <p>
-          Submit your visuals with category, description, tags, creator profile photo,
-          and social links so your work can be added to PixNest.
-        </p>
+        <div class="hero-tag">Submit your photo</div>
+        <h1>Share a strong visual with title, creator details, and social links.</h1>
+        <p>Upload one main image, add the creator profile photo if you want, and send it into the PixNest collection.</p>
       </div>
     </div>
   </section>
@@ -752,147 +754,143 @@
     <div class="container">
       <div class="section-head">
         <div>
-          <h2>Upload Your Work</h2>
-          <p>Uploads on this page now go to Supabase instead of browser local storage.</p>
+          <h2>Upload to PixNest</h2>
+          <p>Use jpg, jpeg, png, or webp for the smoothest upload. The image will be stored in Supabase and added to the public collection.</p>
         </div>
       </div>
 
-      <div class="upload-layout">
+      <div class="upload-grid">
         <div class="panel">
-          <h3>Photo Submission Form</h3>
-          <p class="panel-sub">Fill the form, upload your files, and submit directly to PixNest storage and database.</p>
+          <h3>Submission Form</h3>
+          <p>Fill in the details below and submit one photo into the selected category.</p>
 
           <form id="uploadForm">
             <div class="field-grid">
               <div class="field">
                 <label for="creatorName">Creator Name</label>
-                <input type="text" id="creatorName" placeholder="Enter creator name">
+                <input type="text" id="creatorName" placeholder="Enter creator name" />
               </div>
 
               <div class="field">
                 <label for="category">Category</label>
-                <select id="category">
-                  <option value="Nature">Nature</option>
-                  <option value="Travel">Travel</option>
-                  <option value="Cars">Cars</option>
-                  <option value="Fashion">Fashion</option>
-                  <option value="Street">Street</option>
-                  <option value="Food">Food</option>
-                  <option value="People">People</option>
-                  <option value="Business">Business</option>
-                </select>
+                <select id="category"></select>
               </div>
 
               <div class="field full">
                 <label for="photoTitle">Photo Title</label>
-                <input type="text" id="photoTitle" placeholder="Example: M4 at dawn">
+                <input type="text" id="photoTitle" placeholder="Enter photo title" />
               </div>
 
               <div class="field full">
-                <label for="photoDescription">Photo Description</label>
-                <textarea id="photoDescription" placeholder="Write a short description of the image"></textarea>
+                <label for="photoDescription">Description</label>
+                <textarea id="photoDescription" placeholder="Write a short description"></textarea>
               </div>
 
               <div class="field full">
                 <label for="photoTags">Tags</label>
-                <input type="text" id="photoTags" placeholder="Example: Bmw, Luxury, Grey, Vehicle">
+                <input type="text" id="photoTags" placeholder="Example: sunset, road trip, luxury" />
               </div>
 
               <div class="field">
                 <label for="instagramLink">Instagram</label>
-                <input type="text" id="instagramLink" placeholder="https://instagram.com/creatorname">
+                <input type="url" id="instagramLink" placeholder="https://instagram.com/creatorname" />
               </div>
 
               <div class="field">
                 <label for="xLink">X</label>
-                <input type="text" id="xLink" placeholder="https://x.com/creatorname">
+                <input type="url" id="xLink" placeholder="https://x.com/creatorname" />
               </div>
 
               <div class="field full">
                 <label for="facebookLink">Facebook</label>
-                <input type="text" id="facebookLink" placeholder="https://facebook.com/creatorname">
+                <input type="url" id="facebookLink" placeholder="https://facebook.com/creatorname" />
               </div>
 
               <div class="field full">
                 <label for="creatorProfilePhoto">Creator Profile Photo</label>
-                <div class="upload-box">
-                  <input type="file" id="creatorProfilePhoto" accept="image/*">
-                  <p>Upload a creator profile image for the photo detail view.</p>
+                <div class="file-box">
+                  <input type="file" id="creatorProfilePhoto" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" />
+                  <div class="file-help">Optional creator profile image for the detail view.</div>
                 </div>
               </div>
 
               <div class="field full">
                 <label for="mainPhoto">Main Photo Upload</label>
-                <div class="upload-box">
-                  <input type="file" id="mainPhoto" accept="image/*">
-                  <p>Choose the main image you want to upload to PixNest.</p>
+                <div class="file-box">
+                  <input type="file" id="mainPhoto" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" />
+                  <div class="file-help">Choose the main image you want to upload to PixNest.</div>
                 </div>
               </div>
-            </div>
 
-            <button type="submit" class="submit-btn" id="submitBtn">Submit Upload</button>
-            <div class="status" id="formStatus"></div>
+              <div class="field full">
+                <button type="submit" class="submit-btn" id="submitBtn">Submit Upload</button>
+                <div id="statusMessage" class="status-message"></div>
+              </div>
+            </div>
           </form>
         </div>
 
-        <div class="panel">
-          <h3>Live Preview</h3>
-          <p class="panel-sub">This shows how your upload details can look on PixNest.</p>
+        <div class="panel preview-card">
+          <div class="preview-image-wrap">
+            <img
+              id="previewMainImage"
+              class="preview-main-image"
+              src="https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&w=1200&q=80"
+              alt="Preview"
+            />
+            <div class="preview-overlay">
+              <div class="preview-tags" id="previewTags">
+                <span class="pill">Category</span>
+                <span class="pill">Tag</span>
+              </div>
+              <h3 class="preview-title" id="previewTitle">Your photo title</h3>
+              <p class="preview-desc" id="previewDescription">Your description will appear here.</p>
+            </div>
+          </div>
 
-          <div class="preview-card">
-            <div class="preview-image-wrap">
-              <img id="previewMainImage" src="https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&w=1200&q=80" alt="Preview image">
-              <div class="preview-overlay">
-                <div class="preview-tags" id="previewTags">
-                  <span class="pill">Category</span>
-                  <span class="pill">Tag</span>
+          <div class="preview-meta">
+            <div class="creator-box">
+              <div class="creator-avatar" id="previewAvatar">P</div>
+              <div>
+                <small>Creator Preview</small>
+                <strong id="previewCreatorName">Creator Name</strong>
+                <div class="social-row">
+                  <a href="#" id="previewInstagram" class="social-icon disabled" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-instagram"></i></a>
+                  <a href="#" id="previewX" class="social-icon disabled" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-x-twitter"></i></a>
+                  <a href="#" id="previewFacebook" class="social-icon disabled" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-facebook-f"></i></a>
                 </div>
-                <p class="preview-desc" id="previewDesc">Your description will appear here on the image overlay.</p>
-                <div class="preview-credit" id="previewCredit">By Creator Name</div>
               </div>
             </div>
 
-            <div class="creator-panel">
-              <div class="creator-top">
-                <div class="creator-avatar" id="previewAvatar">P</div>
-                <div class="creator-meta">
-                  <small>Creator</small>
-                  <strong id="previewCreatorName">Creator Name</strong>
-                </div>
-              </div>
+            <div class="info-box">
+              <strong>Selected Category</strong>
+              <span id="previewCategory">No category selected</span>
+            </div>
 
-              <div class="social-row">
-                <a href="#" class="social-icon disabled" id="previewInstagram" aria-label="Instagram">
-                  <i class="fa-brands fa-instagram"></i>
-                </a>
-                <a href="#" class="social-icon disabled" id="previewX" aria-label="X">
-                  <i class="fa-brands fa-x-twitter"></i>
-                </a>
-                <a href="#" class="social-icon disabled" id="previewFacebook" aria-label="Facebook">
-                  <i class="fa-brands fa-facebook-f"></i>
-                </a>
-              </div>
-
-              <div class="mini-note">
-                Creator profile photo, socials, main photo, and photo details will upload into Supabase.
-              </div>
+            <div class="info-box">
+              <strong>Upload Note</strong>
+              <span>Creator profile photo, social links, and the main image will upload into Supabase.</span>
             </div>
           </div>
         </div>
       </div>
+    </div>
+  </section>
 
-      <div class="guides">
-        <div class="guide-box">
+  <section>
+    <div class="container">
+      <div class="tips-grid">
+        <div class="tip-box">
           <h3>Easy Submission</h3>
           <p>Upload your best photo with a title, description, tags, and creator details in one simple form.</p>
         </div>
 
-        <div class="guide-box">
+        <div class="tip-box">
           <h3>Creator Spotlight</h3>
           <p>Add your name, profile photo, and social links so viewers can connect with the creator behind the image.</p>
         </div>
 
-        <div class="guide-box">
+        <div class="tip-box">
           <h3>Curated Quality</h3>
           <p>Every upload is designed to fit a clean, high-quality visual collection across multiple categories and styles.</p>
         </div>
@@ -917,12 +915,43 @@
   <script>
     const SUPABASE_URL = "https://vigczssznfvuijtdapbv.supabase.co";
     const SUPABASE_KEY = "sb_publishable_UmF-mmVS42XeF6PqsNnCSw_wpA35wg2";
+    const PHOTOS_BUCKET = "photos";
+    const CREATOR_BUCKET = "creator-photos";
+    const ADMIN_STORAGE_KEY = "pixnest_admin_v2";
 
     const { createClient } = supabase;
     const supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY);
 
     const menuToggle = document.getElementById("menuToggle");
     const navLinks = document.getElementById("navLinks");
+
+    const uploadForm = document.getElementById("uploadForm");
+    const creatorName = document.getElementById("creatorName");
+    const category = document.getElementById("category");
+    const photoTitle = document.getElementById("photoTitle");
+    const photoDescription = document.getElementById("photoDescription");
+    const photoTags = document.getElementById("photoTags");
+    const instagramLink = document.getElementById("instagramLink");
+    const xLink = document.getElementById("xLink");
+    const facebookLink = document.getElementById("facebookLink");
+    const creatorProfilePhoto = document.getElementById("creatorProfilePhoto");
+    const mainPhoto = document.getElementById("mainPhoto");
+    const submitBtn = document.getElementById("submitBtn");
+    const statusMessage = document.getElementById("statusMessage");
+
+    const previewMainImage = document.getElementById("previewMainImage");
+    const previewAvatar = document.getElementById("previewAvatar");
+    const previewCreatorName = document.getElementById("previewCreatorName");
+    const previewTitle = document.getElementById("previewTitle");
+    const previewDescription = document.getElementById("previewDescription");
+    const previewTags = document.getElementById("previewTags");
+    const previewCategory = document.getElementById("previewCategory");
+    const previewInstagram = document.getElementById("previewInstagram");
+    const previewX = document.getElementById("previewX");
+    const previewFacebook = document.getElementById("previewFacebook");
+
+    let creatorProfileImageData = "";
+    let mainPhotoImageData = "";
 
     menuToggle.addEventListener("click", () => {
       navLinks.classList.toggle("show");
@@ -946,113 +975,42 @@
       }
     });
 
-    const creatorName = document.getElementById("creatorName");
-    const category = document.getElementById("category");
-    const photoTitle = document.getElementById("photoTitle");
-    const photoDescription = document.getElementById("photoDescription");
-    const photoTags = document.getElementById("photoTags");
-    const instagramLink = document.getElementById("instagramLink");
-    const xLink = document.getElementById("xLink");
-    const facebookLink = document.getElementById("facebookLink");
-    const creatorProfilePhoto = document.getElementById("creatorProfilePhoto");
-    const mainPhoto = document.getElementById("mainPhoto");
-
-    const previewMainImage = document.getElementById("previewMainImage");
-    const previewTags = document.getElementById("previewTags");
-    const previewDesc = document.getElementById("previewDesc");
-    const previewCredit = document.getElementById("previewCredit");
-    const previewAvatar = document.getElementById("previewAvatar");
-    const previewCreatorName = document.getElementById("previewCreatorName");
-
-    const previewInstagram = document.getElementById("previewInstagram");
-    const previewX = document.getElementById("previewX");
-    const previewFacebook = document.getElementById("previewFacebook");
-
-    const uploadForm = document.getElementById("uploadForm");
-    const formStatus = document.getElementById("formStatus");
-    const submitBtn = document.getElementById("submitBtn");
-
-    let creatorProfileImageData = "";
-    let mainPhotoImageData = "";
-
-    function setStatus(message, type = ""){
-      formStatus.className = "status";
-      if(type){
-        formStatus.classList.add(type);
-      }
-      formStatus.textContent = message;
+    function setStatus(message, type){
+      statusMessage.textContent = message || "";
+      statusMessage.className = "status-message" + (type ? " " + type : "");
     }
 
-    function setSocialState(element, url){
-      if(url.trim()){
-        element.href = url.trim();
-        element.classList.remove("disabled");
-        element.classList.add("active");
-        element.setAttribute("target", "_blank");
-        element.setAttribute("rel", "noopener noreferrer");
-      }else{
-        element.href = "#";
-        element.classList.remove("active");
-        element.classList.add("disabled");
-        element.removeAttribute("target");
-        element.removeAttribute("rel");
-      }
+    function escapeHtml(value = ""){
+      return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
     }
 
-    function updatePreviewTags(){
-      const categoryValue = category.value.trim() || "Category";
-      const tags = photoTags.value
-        .split(/[,|]/)
-        .map(tag => tag.trim())
-        .filter(Boolean)
-        .slice(0,4);
-
-      let html = `<span class="pill">${categoryValue}</span>`;
-
-      if(tags.length){
-        html += tags.map(tag => `<span class="pill">${tag}</span>`).join("");
-      }else{
-        html += `<span class="pill">Tag</span>`;
-      }
-
-      previewTags.innerHTML = html;
+    function slugTitle(name){
+      return String(name || "")
+        .toLowerCase()
+        .replace(/\.[^/.]+$/, "")
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/(^-|-$)/g, "") || "file";
     }
 
-    function updatePreviewText(){
-      const creatorValue = creatorName.value.trim() || "Creator Name";
-      const descValue = photoDescription.value.trim() || photoTitle.value.trim() || "Your description will appear here on the image overlay.";
-
-      previewCreatorName.textContent = creatorValue;
-      previewCredit.textContent = `By ${creatorValue}`;
-      previewDesc.textContent = descValue;
-
-      if(!previewAvatar.querySelector("img")){
-        previewAvatar.textContent = creatorValue.charAt(0).toUpperCase() || "P";
-      }
-    }
-
-    function readImageFile(file, callback){
-      if(!file) return;
-      const reader = new FileReader();
-      reader.onload = e => callback(e.target.result);
-      reader.readAsDataURL(file);
-    }
-
-    function getFileExtension(fileName = ""){
-      const parts = fileName.split(".");
+    function getFileExt(name = ""){
+      const parts = String(name).split(".");
       return parts.length > 1 ? parts.pop().toLowerCase() : "jpg";
     }
 
     function createFileName(prefix, originalName){
-      const ext = getFileExtension(originalName);
-      const cleanPrefix = prefix.replace(/[^a-zA-Z0-9-_]/g, "").toLowerCase() || "file";
-      return `${cleanPrefix}-${Date.now()}-${Math.random().toString(36).slice(2,8)}.${ext}`;
+      const ext = getFileExt(originalName);
+      return `${prefix}/${Date.now()}-${slugTitle(originalName)}-${Math.random().toString(36).slice(2,8)}.${ext}`;
     }
 
-    async function uploadToBucket(bucketName, file, fileName){
+    async function uploadToBucket(bucket, file, path){
       const { error } = await supabaseClient.storage
-        .from(bucketName)
-        .upload(fileName, file, {
+        .from(bucket)
+        .upload(path, file, {
           cacheControl: "3600",
           upsert: false
         });
@@ -1061,43 +1019,130 @@
         throw error;
       }
 
-      const { data } = supabaseClient.storage
-        .from(bucketName)
-        .getPublicUrl(fileName);
-
+      const { data } = supabaseClient.storage.from(bucket).getPublicUrl(path);
       return data.publicUrl;
     }
 
-    creatorProfilePhoto.addEventListener("change", () => {
-      const file = creatorProfilePhoto.files[0];
-      if(!file) return;
+    function setSocialState(element, value){
+      const url = (value || "").trim();
 
-      readImageFile(file, (src) => {
-        creatorProfileImageData = src;
-        previewAvatar.innerHTML = `<img src="${src}" alt="Creator profile photo">`;
+      if(url){
+        element.href = url;
+        element.classList.remove("disabled");
+      }else{
+        element.href = "#";
+        element.classList.add("disabled");
+      }
+    }
+
+    function updatePreviewText(){
+      previewCreatorName.textContent = creatorName.value.trim() || "Creator Name";
+      previewTitle.textContent = photoTitle.value.trim() || "Your photo title";
+      previewDescription.textContent = photoDescription.value.trim() || "Your description will appear here.";
+      previewCategory.textContent = category.value.trim() || "No category selected";
+    }
+
+    function updatePreviewTags(){
+      const selectedCategory = category.value.trim();
+      const tags = photoTags.value
+        .split(",")
+        .map(tag => tag.trim())
+        .filter(Boolean)
+        .slice(0, 5);
+
+      const pills = [];
+
+      if(selectedCategory){
+        pills.push(`<span class="pill">${escapeHtml(selectedCategory)}</span>`);
+      }
+
+      if(tags.length){
+        tags.forEach(tag => {
+          pills.push(`<span class="pill">${escapeHtml(tag)}</span>`);
+        });
+      }
+
+      if(!pills.length){
+        pills.push(`<span class="pill">Category</span>`);
+        pills.push(`<span class="pill">Tag</span>`);
+      }
+
+      previewTags.innerHTML = pills.join("");
+    }
+
+    function updateAvatarPreview(){
+      const value = creatorName.value.trim();
+      const letter = value ? value.charAt(0).toUpperCase() : "P";
+
+      if(creatorProfileImageData){
+        previewAvatar.innerHTML = `<img src="${creatorProfileImageData}" alt="${escapeHtml(value || "Creator")}">`;
+      }else{
+        previewAvatar.textContent = letter;
+      }
+    }
+
+    function loadCategories(){
+      const fallbackCategories = [
+        "Nature",
+        "Travel",
+        "Cars",
+        "Architecture",
+        "Street",
+        "Portraits"
+      ];
+
+      let categories = [];
+
+      try{
+        const saved = localStorage.getItem(ADMIN_STORAGE_KEY);
+        if(saved){
+          const parsed = JSON.parse(saved);
+          if(parsed && Array.isArray(parsed.categories)){
+            categories = parsed.categories
+              .map(item => typeof item === "string" ? item : item.name)
+              .filter(Boolean);
+          }
+        }
+      }catch(error){
+        console.error("Category load error:", error);
+      }
+
+      if(!categories.length){
+        categories = fallbackCategories;
+      }
+
+      category.innerHTML = `<option value="">Select category</option>` + categories
+        .map(item => `<option value="${escapeHtml(item)}">${escapeHtml(item)}</option>`)
+        .join("");
+    }
+
+    async function readFileAsDataURL(file){
+      return new Promise((resolve, reject) => {
+        if(!file){
+          resolve("");
+          return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
       });
+    }
+
+    creatorName.addEventListener("input", () => {
+      updatePreviewText();
+      updateAvatarPreview();
     });
 
-    mainPhoto.addEventListener("change", () => {
-      const file = mainPhoto.files[0];
-      if(!file) return;
-
-      readImageFile(file, (src) => {
-        mainPhotoImageData = src;
-        previewMainImage.src = src;
-      });
+    category.addEventListener("change", () => {
+      updatePreviewText();
+      updatePreviewTags();
     });
 
-    [creatorName, category, photoTitle, photoDescription, photoTags].forEach(field => {
-      field.addEventListener("input", () => {
-        updatePreviewText();
-        updatePreviewTags();
-      });
-      field.addEventListener("change", () => {
-        updatePreviewText();
-        updatePreviewTags();
-      });
-    });
+    photoTitle.addEventListener("input", updatePreviewText);
+    photoDescription.addEventListener("input", updatePreviewText);
+    photoTags.addEventListener("input", updatePreviewTags);
 
     [instagramLink, xLink, facebookLink].forEach(field => {
       field.addEventListener("input", () => {
@@ -1107,13 +1152,32 @@
       });
     });
 
+    creatorProfilePhoto.addEventListener("change", async () => {
+      const file = creatorProfilePhoto.files[0];
+      creatorProfileImageData = file ? await readFileAsDataURL(file) : "";
+      updateAvatarPreview();
+    });
+
+    mainPhoto.addEventListener("change", async () => {
+      const file = mainPhoto.files[0];
+      mainPhotoImageData = file ? await readFileAsDataURL(file) : "";
+      if(mainPhotoImageData){
+        previewMainImage.src = mainPhotoImageData;
+      }else{
+        previewMainImage.src = "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&w=1200&q=80";
+      }
+    });
+
+    window.addEventListener("error", (e) => {
+      console.error("WINDOW ERROR:", e.error || e.message);
+    });
+
+    window.addEventListener("unhandledrejection", (e) => {
+      console.error("PROMISE ERROR:", e.reason);
+    });
+
     uploadForm.addEventListener("submit", async (e) => {
       e.preventDefault();
-
-      if(SUPABASE_KEY === "PASTE_YOUR_SB_PUBLISHABLE_KEY_HERE"){
-        setStatus("Paste your real Supabase publishable key into the code first.", "error");
-        return;
-      }
 
       const creatorValue = creatorName.value.trim();
       const categoryValue = category.value.trim();
@@ -1146,15 +1210,18 @@
 
       try{
         const mainPhotoPath = createFileName("photo", mainPhotoFile.name);
-        const imageUrl = await uploadToBucket("photos", mainPhotoFile, mainPhotoPath);
+        const imageUrl = await uploadToBucket(PHOTOS_BUCKET, mainPhotoFile, mainPhotoPath);
 
         let creatorPhotoUrl = "";
         if(creatorPhotoFile){
           const creatorPhotoPath = createFileName("creator", creatorPhotoFile.name);
-          creatorPhotoUrl = await uploadToBucket("creator-photos", creatorPhotoFile, creatorPhotoPath);
+          creatorPhotoUrl = await uploadToBucket(CREATOR_BUCKET, creatorPhotoFile, creatorPhotoPath);
         }
 
-        const finalTitle = titleValue || mainPhotoFile.name.replace(/\.[^/.]+$/, "").replace(/[-_]+/g, " ").trim() || "Untitled Photo";
+        const finalTitle =
+          titleValue ||
+          mainPhotoFile.name.replace(/\.[^/.]+$/, "").replace(/[-_]+/g, " ").trim() ||
+          "Untitled Photo";
 
         const { error } = await supabaseClient
           .from("photos")
@@ -1192,22 +1259,26 @@
         setSocialState(previewInstagram, "");
         setSocialState(previewX, "");
         setSocialState(previewFacebook, "");
+      }
       catch(error){
-    console.error("UPLOAD ERROR:", error);
+        console.error("UPLOAD ERROR:", error);
+        const msg = `${error?.name ? error.name + ": " : ""}${error?.message || "Upload failed"}`;
+        setStatus(msg, "error");
+        alert(msg);
+      }
+      finally{
+        submitBtn.disabled = false;
+      }
+    });
 
-    const msg = `${error?.name ? error.name + ": " : ""}${error?.message || "Upload failed"}`;
-
-    setStatus(msg, "error");
-    alert(msg);
-}
-
+    loadCategories();
     updatePreviewText();
     updatePreviewTags();
     setSocialState(previewInstagram, "");
     setSocialState(previewX, "");
     setSocialState(previewFacebook, "");
   </script>
+
 </body>
 </html>
 
- 

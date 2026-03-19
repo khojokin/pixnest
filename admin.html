@@ -1278,11 +1278,10 @@
 
   <script>
     const STORAGE_KEY = "pixnest_admin_v2";
-    const SUPABASE_URL = "https://vigczssznfvuijtdapbv.supabase.co";
-    const SUPABASE_KEY = "sb_publishable_UmF-mmVS42XeF6PqsNnCSw_wpA35wg2";
-    const PHOTOS_BUCKET = "photos";
-    const CREATOR_BUCKET = "creator-photos";
-
+const SUPABASE_URL = "https://vigczssznfvuijtdapbv.supabase.co";
+const SUPABASE_KEY = "sb_publishable_UmF-mmVS42XeF6PqsNnCSw_wpA35wg2";
+const PHOTOS_BUCKET = "photos";
+const CREATOR_BUCKET = "creator-photos";
     const { createClient } = supabase;
     const supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY);
 
@@ -1577,18 +1576,20 @@
       return data.publicUrl;
     }
 
-    async function loadSupabasePhotos(){
+     async function loadSupabasePhotos(){
   try{
-    uploadError.textContent = "Loading photos...";
+    uploadError.textContent = "Loading photos from Supabase...";
 
-    const { data, error } = await supabaseClient
+    const { data, error, status } = await supabaseClient
       .from("photos")
       .select("*")
       .order("created_at", { ascending:false });
 
     if(error){
-      console.error("Supabase error:", error);
-      uploadError.textContent = error.message || "Supabase returned an error.";
+      console.error("ADMIN SUPABASE ERROR:", error);
+      const msg = `Select failed: ${error.message}${error.code ? " | code: " + error.code : ""}${status ? " | status: " + status : ""}`;
+      uploadError.textContent = msg;
+      alert(msg);
       return;
     }
 
@@ -1596,11 +1597,14 @@
     uploadError.textContent = "";
     renderAll();
   }catch(error){
-    console.error("Fetch failed:", error);
-    uploadError.textContent = "Could not connect to Supabase. Check project URL, key, internet, or browser blocking.";
+    console.error("ADMIN FETCH FAILED:", error);
+    const msg = `${error?.name ? error.name + ": " : ""}${error?.message || "Admin load failed"}`;
+    uploadError.textContent = msg;
+    alert(msg);
   }
 }
 
+    
      
 
     function renderStats(){
