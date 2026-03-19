@@ -1,9 +1,10 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>PixNest | Full Admin Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     *{
       margin:0;
@@ -893,7 +894,7 @@
 
       <div class="page-wrap">
         <div class="notice">
-          This admin saves everything in your browser using localStorage. It now supports creator profile photos and creator Instagram, X, and Facebook links for each uploaded photo.
+          Site text and category settings save in your browser. Photo uploads, featured photos, creator profile photos, and creator socials now use Supabase.
         </div>
 
         <div class="stats">
@@ -1276,7 +1277,14 @@
   </div>
 
   <script>
-    const STORAGE_KEY = "pixnest_admin_v1";
+    const STORAGE_KEY = "pixnest_admin_v2";
+    const SUPABASE_URL = "https://vigczssznfvuijtdapbv.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_UmF-mmVS42XeF6PqsNnCSw_wpA35wg2";
+    const PHOTOS_BUCKET = "photos";
+    const CREATOR_BUCKET = "creator-photos";
+
+    const { createClient } = supabase;
+    const supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY);
 
     function createId(){
       return "id-" + Math.random().toString(36).slice(2,10) + Date.now().toString(36);
@@ -1293,6 +1301,24 @@
         .replace(/>/g, "&gt;")
         .replace(/"/g, "&quot;")
         .replace(/'/g, "&#39;");
+    }
+
+    function slugTitle(name){
+      return String(name || "")
+        .toLowerCase()
+        .replace(/\.[^/.]+$/, "")
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/(^-|-$)/g, "") || "file";
+    }
+
+    function getFileExt(name = ""){
+      const parts = String(name).split(".");
+      return parts.length > 1 ? parts.pop().toLowerCase() : "jpg";
+    }
+
+    function makeStorageName(prefix, originalName, extra = ""){
+      const ext = getFileExt(originalName);
+      return `${prefix}/${Date.now()}-${slugTitle(extra || originalName)}-${Math.random().toString(36).slice(2,8)}.${ext}`;
     }
 
     const defaultData = {
@@ -1334,14 +1360,12 @@
         {
           id: createId(),
           name: "Nature",
-          description: "Landscapes, forests, mountains, and outdoor scenes.",
-          photos: []
+          description: "Landscapes, forests, mountains, and outdoor scenes."
         },
         {
           id: createId(),
           name: "Travel",
-          description: "Road trips, city views, destinations, and cultural scenes.",
-          photos: []
+          description: "Road trips, city views, destinations, and cultural scenes."
         }
       ]
     };
@@ -1391,28 +1415,9 @@
           ? safeData.categories.map(cat => ({
               id: cat.id || createId(),
               name: cat.name || "Untitled Category",
-              description: cat.description || "",
-              photos: Array.isArray(cat.photos)
-                ? cat.photos.map(photo => ({
-                    id: photo.id || createId(),
-                    title: photo.title || "Untitled Photo",
-                    description: photo.description || "",
-                    credit: photo.credit || "",
-                    tags: photo.tags || "",
-                    image: photo.image || "",
-                    fileName: photo.fileName || "",
-                    createdAt: photo.createdAt || new Date().toISOString(),
-                    featured: Boolean(photo.featured),
-                    creatorPhoto: photo.creatorPhoto || "",
-                    creatorSocials: {
-                      instagram: photo.creatorSocials?.instagram || "",
-                      x: photo.creatorSocials?.x || "",
-                      facebook: photo.creatorSocials?.facebook || ""
-                    }
-                  }))
-                : []
+              description: cat.description || ""
             }))
-          : []
+          : deepClone(defaultData.categories)
       };
     }
 
@@ -1431,6 +1436,7 @@
     let siteData = loadData();
     let activeCategoryId = siteData.categories[0] ? siteData.categories[0].id : null;
     let creatorPhotoData = "";
+    let supabasePhotos = [];
 
     const sidebar = document.getElementById("sidebar");
     const sidebarCategoryList = document.getElementById("sidebarCategoryList");
@@ -1522,28 +1528,24 @@
           }, 2200);
         }
       }catch(error){
-        alert("Storage is full. Too many images for browser localStorage. You may need fewer images or real cloud storage later.");
+        alert("Storage is full.");
       }
-    }
-
-    function getTotalPhotos(){
-      return siteData.categories.reduce((sum, cat) => sum + cat.photos.length, 0);
-    }
-
-    function getTotalFeatured(){
-      return siteData.categories.reduce((sum, cat) => sum + cat.photos.filter(photo => photo.featured).length, 0);
     }
 
     function getActiveCategory(){
       return siteData.categories.find(cat => cat.id === activeCategoryId) || null;
     }
 
-    function slugTitle(name){
-      return name
-        .replace(/\.[^/.]+$/, "")
-        .replace(/[-_]+/g, " ")
-        .replace(/\s+/g, " ")
-        .trim();
+    function getPhotosForCategoryName(categoryName){
+      return supabasePhotos.filter(photo => (photo.category || "").trim() === String(categoryName || "").trim());
+    }
+
+    function getTotalPhotos(){
+      return supabasePhotos.length;
+    }
+
+    function getTotalFeatured(){
+      return supabasePhotos.filter(photo => photo.featured).length;
     }
 
     function readFileAsDataURL(file){
@@ -1559,6 +1561,48 @@
       });
     }
 
+    async function uploadFileToBucket(bucket, file, path){
+      const { error } = await supabaseClient.storage
+        .from(bucket)
+        .upload(path, file, {
+          cacheControl: "3600",
+          upsert: false
+        });
+
+      if(error){
+        throw error;
+      }
+
+      const { data } = supabaseClient.storage.from(bucket).getPublicUrl(path);
+      return data.publicUrl;
+    }
+
+    async function loadSupabasePhotos(){
+  try{
+    uploadError.textContent = "Loading photos...";
+
+    const { data, error } = await supabaseClient
+      .from("photos")
+      .select("*")
+      .order("created_at", { ascending:false });
+
+    if(error){
+      console.error("Supabase error:", error);
+      uploadError.textContent = error.message || "Supabase returned an error.";
+      return;
+    }
+
+    supabasePhotos = Array.isArray(data) ? data : [];
+    uploadError.textContent = "";
+    renderAll();
+  }catch(error){
+    console.error("Fetch failed:", error);
+    uploadError.textContent = "Could not connect to Supabase. Check project URL, key, internet, or browser blocking.";
+  }
+}
+
+     
+
     function renderStats(){
       totalCategories.textContent = siteData.categories.length;
       totalPhotos.textContent = getTotalPhotos();
@@ -1566,7 +1610,7 @@
 
       const active = getActiveCategory();
       activeCategoryName.textContent = active ? active.name : "None";
-      selectedCategoryCount.textContent = active ? active.photos.length : 0;
+      selectedCategoryCount.textContent = active ? getPhotosForCategoryName(active.name).length : 0;
       siteNameStat.textContent = siteData.siteName || "PixNest";
     }
 
@@ -1583,7 +1627,7 @@
         btn.className = "cat-btn" + (cat.id === activeCategoryId ? " active" : "");
         btn.innerHTML = `
           <span>${escapeHtml(cat.name)}</span>
-          <span class="cat-count">${cat.photos.length}</span>
+          <span class="cat-count">${getPhotosForCategoryName(cat.name).length}</span>
         `;
         btn.onclick = () => {
           activeCategoryId = cat.id;
@@ -1636,7 +1680,8 @@
       }
 
       siteData.categories.forEach(cat => {
-        const featuredCount = cat.photos.filter(photo => photo.featured).length;
+        const categoryPhotos = getPhotosForCategoryName(cat.name);
+        const featuredCount = categoryPhotos.filter(photo => photo.featured).length;
 
         const card = document.createElement("div");
         card.className = "category-card";
@@ -1644,7 +1689,7 @@
           <div>
             <h4>${escapeHtml(cat.name)}</h4>
             <p>${escapeHtml(cat.description || "No description added.")}</p>
-            <span class="pill">${cat.photos.length} photo${cat.photos.length === 1 ? "" : "s"}</span>
+            <span class="pill">${categoryPhotos.length} photo${categoryPhotos.length === 1 ? "" : "s"}</span>
             ${featuredCount ? `<span class="pill featured" style="margin-left:8px;">${featuredCount} featured</span>` : ""}
           </div>
         `;
@@ -1665,18 +1710,34 @@
         const deleteBtn = document.createElement("button");
         deleteBtn.className = "mini-btn danger";
         deleteBtn.textContent = "Delete";
-        deleteBtn.onclick = () => {
-          const confirmDelete = confirm(`Delete "${cat.name}" and all pictures inside it?`);
+        deleteBtn.onclick = async () => {
+          const categoryPhotos = getPhotosForCategoryName(cat.name);
+          const confirmDelete = confirm(`Delete "${cat.name}" and ${categoryPhotos.length} photo${categoryPhotos.length === 1 ? "" : "s"} inside it?`);
           if(!confirmDelete) return;
 
-          siteData.categories = siteData.categories.filter(item => item.id !== cat.id);
+          try{
+            if(categoryPhotos.length){
+              const { error } = await supabaseClient
+                .from("photos")
+                .delete()
+                .eq("category", cat.name);
 
-          if(activeCategoryId === cat.id){
-            activeCategoryId = siteData.categories[0] ? siteData.categories[0].id : null;
+              if(error){
+                throw error;
+              }
+            }
+
+            siteData.categories = siteData.categories.filter(item => item.id !== cat.id);
+
+            if(activeCategoryId === cat.id){
+              activeCategoryId = siteData.categories[0] ? siteData.categories[0].id : null;
+            }
+
+            saveData();
+            await loadSupabasePhotos();
+          }catch(error){
+            alert(error.message || "Could not delete category.");
           }
-
-          saveData();
-          renderAll();
         };
 
         actions.appendChild(selectBtn);
@@ -1719,58 +1780,70 @@
       });
     }
 
-    function toggleFeatured(categoryId, photoId){
-      const category = siteData.categories.find(cat => cat.id === categoryId);
-      if(!category) return;
+    async function toggleFeatured(photoId, currentValue){
+      try{
+        const { error } = await supabaseClient
+          .from("photos")
+          .update({ featured: !currentValue })
+          .eq("id", photoId);
 
-      const photo = category.photos.find(item => item.id === photoId);
-      if(!photo) return;
+        if(error){
+          throw error;
+        }
 
-      photo.featured = !photo.featured;
-      saveData();
-      renderAll();
+        await loadSupabasePhotos();
+      }catch(error){
+        alert(error.message || "Could not update featured status.");
+      }
     }
 
-    function deletePhoto(categoryId, photoId, title, categoryName){
-      const category = siteData.categories.find(cat => cat.id === categoryId);
-      if(!category) return;
-
+    async function deletePhoto(photoId, title, categoryName){
       const confirmDelete = confirm(`Delete "${title}" from ${categoryName}?`);
       if(!confirmDelete) return;
 
-      category.photos = category.photos.filter(item => item.id !== photoId);
-      saveData();
-      renderAll();
+      try{
+        const { error } = await supabaseClient
+          .from("photos")
+          .delete()
+          .eq("id", photoId);
+
+        if(error){
+          throw error;
+        }
+
+        await loadSupabasePhotos();
+      }catch(error){
+        alert(error.message || "Could not delete photo.");
+      }
     }
 
     function buildCreatorAvatar(photo){
       const creatorName = photo.credit || "Unknown";
-      if(photo.creatorPhoto){
-        return `<img src="${photo.creatorPhoto}" alt="${escapeHtml(creatorName)}">`;
+      if(photo.creator_photo){
+        return `<img src="${photo.creator_photo}" alt="${escapeHtml(creatorName)}">`;
       }
       return `<span>${escapeHtml(creatorName.charAt(0).toUpperCase() || "P")}</span>`;
     }
 
     function buildCreatorLinks(photo){
-      const socials = photo.creatorSocials || {};
       const links = [];
 
-      if(socials.instagram){
-        links.push(`<a href="${escapeHtml(socials.instagram)}" target="_blank" rel="noopener noreferrer" class="social-link-pill" title="Instagram">IG</a>`);
+      if(photo.instagram){
+        links.push(`<a href="${escapeHtml(photo.instagram)}" target="_blank" rel="noopener noreferrer" class="social-link-pill" title="Instagram">IG</a>`);
       }
 
-      if(socials.x){
-        links.push(`<a href="${escapeHtml(socials.x)}" target="_blank" rel="noopener noreferrer" class="social-link-pill" title="X">X</a>`);
+      if(photo.x){
+        links.push(`<a href="${escapeHtml(photo.x)}" target="_blank" rel="noopener noreferrer" class="social-link-pill" title="X">X</a>`);
       }
 
-      if(socials.facebook){
-        links.push(`<a href="${escapeHtml(socials.facebook)}" target="_blank" rel="noopener noreferrer" class="social-link-pill" title="Facebook">FB</a>`);
+      if(photo.facebook){
+        links.push(`<a href="${escapeHtml(photo.facebook)}" target="_blank" rel="noopener noreferrer" class="social-link-pill" title="Facebook">FB</a>`);
       }
 
       return links.join("");
     }
 
-    function createPhotoCard(category, photo){
+    function createPhotoCard(categoryName, photo){
       const card = document.createElement("div");
       card.className = "photo-card";
 
@@ -1779,10 +1852,10 @@
       const creatorLinks = buildCreatorLinks(photo);
 
       card.innerHTML = `
-        <img class="main-photo" src="${photo.image}" alt="${escapeHtml(photo.title)}">
+        <img class="main-photo" src="${photo.image_url}" alt="${escapeHtml(photo.title || "Photo")}">
         <div class="photo-card-content">
           <div class="photo-badges">
-            <span class="pill">${escapeHtml(category.name)}</span>
+            <span class="pill">${escapeHtml(categoryName)}</span>
             ${photo.featured ? '<span class="pill featured">Featured</span>' : ""}
           </div>
 
@@ -1794,7 +1867,7 @@
             </div>
           </div>
 
-          <h4>${escapeHtml(photo.title)}</h4>
+          <h4>${escapeHtml(photo.title || "Untitled Photo")}</h4>
           <div class="photo-meta">${escapeHtml(tagsText)}</div>
           ${creatorLinks ? `<div class="social-links-row">${creatorLinks}</div>` : ""}
           <div class="photo-desc">${escapeHtml(descText)}</div>
@@ -1808,14 +1881,14 @@
       featureBtn.className = photo.featured ? "mini-btn secondary" : "mini-btn success";
       featureBtn.textContent = photo.featured ? "Unfeature" : "Feature";
       featureBtn.onclick = () => {
-        toggleFeatured(category.id, photo.id);
+        toggleFeatured(photo.id, Boolean(photo.featured));
       };
 
       const deleteBtn = document.createElement("button");
       deleteBtn.className = "mini-btn danger";
       deleteBtn.textContent = "Delete";
       deleteBtn.onclick = () => {
-        deletePhoto(category.id, photo.id, photo.title, category.name);
+        deletePhoto(photo.id, photo.title || "Photo", categoryName);
       };
 
       actions.appendChild(featureBtn);
@@ -1828,15 +1901,7 @@
     function renderFeaturedGroups(){
       featuredGroups.innerHTML = "";
 
-      const featuredPhotos = [];
-
-      siteData.categories.forEach(cat => {
-        cat.photos.forEach(photo => {
-          if(photo.featured){
-            featuredPhotos.push({ category: cat, photo });
-          }
-        });
-      });
+      const featuredPhotos = supabasePhotos.filter(photo => photo.featured);
 
       if(!featuredPhotos.length){
         featuredGroups.innerHTML = '<div class="empty-box">No featured photos yet. Upload photos and mark them featured, or use the Feature button below.</div>';
@@ -1859,8 +1924,8 @@
       const grid = document.createElement("div");
       grid.className = "photo-grid";
 
-      featuredPhotos.forEach(item => {
-        grid.appendChild(createPhotoCard(item.category, item.photo));
+      featuredPhotos.forEach(photo => {
+        grid.appendChild(createPhotoCard(photo.category || "Uncategorized", photo));
       });
 
       group.appendChild(grid);
@@ -1886,19 +1951,18 @@
       let hasAnyPhotos = false;
 
       categoriesToShow.forEach(cat => {
-        const filteredPhotos = cat.photos.filter(photo => {
+        const filteredPhotos = getPhotosForCategoryName(cat.name).filter(photo => {
           if(!searchValue) return true;
 
-          const creatorSocials = photo.creatorSocials || {};
           const allText = [
             photo.title,
             photo.description,
             photo.credit,
             photo.tags,
-            cat.name,
-            creatorSocials.instagram,
-            creatorSocials.x,
-            creatorSocials.facebook
+            photo.category,
+            photo.instagram,
+            photo.x,
+            photo.facebook
           ].join(" ").toLowerCase();
 
           return allText.includes(searchValue);
@@ -1930,7 +1994,7 @@
         grid.className = "photo-grid";
 
         filteredPhotos.forEach(photo => {
-          grid.appendChild(createPhotoCard(cat, photo));
+          grid.appendChild(createPhotoCard(cat.name, photo));
         });
 
         group.appendChild(grid);
@@ -2034,8 +2098,7 @@
       const newCategory = {
         id: createId(),
         name,
-        description,
-        photos: []
+        description
       };
 
       siteData.categories.push(newCategory);
@@ -2085,44 +2148,60 @@
       const creatorX = photoXInput.value.trim();
       const creatorFacebook = photoFacebookInput.value.trim();
 
-      try{
-        const creatorPhoto = creatorPhotoData || await readFileAsDataURL(creatorPhotoFileInput.files[0]);
-        const imageResults = await Promise.all(files.map(file => readFileAsDataURL(file)));
+      uploadPhotosBtn.disabled = true;
+      uploadError.textContent = "Uploading to Supabase...";
 
-        imageResults.forEach((imageData, index) => {
+      try{
+        let creatorPhotoUrl = "";
+        const creatorFile = creatorPhotoFileInput.files[0];
+
+        if(creatorFile){
+          const creatorPath = makeStorageName("creator", creatorFile.name, creatorName);
+          creatorPhotoUrl = await uploadFileToBucket(CREATOR_BUCKET, creatorFile, creatorPath);
+        }
+
+        for(let index = 0; index < files.length; index++){
           const file = files[index];
-          const fallbackTitle = slugTitle(file.name) || `Photo ${category.photos.length + 1}`;
+          const fallbackTitle = file.name.replace(/\.[^/.]+$/, "").replace(/[-_]+/g, " ").trim() || `Photo ${index + 1}`;
           const title = titlePrefix
             ? files.length > 1
               ? `${titlePrefix} ${index + 1}`
               : titlePrefix
             : fallbackTitle;
 
-          category.photos.unshift({
-            id: createId(),
-            title,
-            description,
-            credit: creatorName,
-            tags,
-            image: imageData,
-            fileName: file.name,
-            createdAt: new Date().toISOString(),
-            featured,
-            creatorPhoto: creatorPhoto || "",
-            creatorSocials: {
+          const imagePath = makeStorageName("photos", file.name, title || file.name);
+          const imageUrl = await uploadFileToBucket(PHOTOS_BUCKET, file, imagePath);
+
+          const { error } = await supabaseClient
+            .from("photos")
+            .insert([{
+              title,
+              description,
+              category: category.name,
+              tags,
+              credit: creatorName,
+              creator_photo: creatorPhotoUrl,
               instagram: creatorInstagram,
               x: creatorX,
-              facebook: creatorFacebook
-            }
-          });
-        });
+              facebook: creatorFacebook,
+              image_url: imageUrl,
+              featured
+            }]);
+
+          if(error){
+            throw error;
+          }
+        }
 
         activeCategoryId = category.id;
         clearUploadFields();
-        saveData();
-        renderAll();
+        uploadError.textContent = "";
+        await loadSupabasePhotos();
       }catch(error){
-        uploadError.textContent = "Upload failed. Try again.";
+        console.error(error);
+        uploadError.textContent = error.message || "Upload failed. Try again.";
+      }finally{
+        uploadPhotosBtn.disabled = false;
       }
     }
 
@@ -2162,7 +2241,7 @@
     }
 
     function resetAll(){
-      const ok = confirm("Reset all text, categories, and pictures back to the default starter data?");
+      const ok = confirm("Reset all text and categories back to default starter data? This does not remove Supabase photos.");
       if(!ok) return;
 
       siteData = normalizeData(deepClone(defaultData));
@@ -2335,6 +2414,8 @@
 
     attachInputBindings();
     renderAll();
+    loadSupabasePhotos();
   </script>
 </body>
 </html>
+ 
