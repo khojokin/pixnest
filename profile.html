@@ -6,6 +6,7 @@
   <title>PixNest | Creator Profile</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <style>
     *{
       margin:0;
@@ -22,6 +23,9 @@
       --muted:#94a3b8;
       --accent:#facc15;
       --line:rgba(255,255,255,0.08);
+      --blue:#3b82f6;
+      --danger:#ef4444;
+      --success:#22c55e;
     }
 
     html{
@@ -51,7 +55,8 @@
 
     button,
     input,
-    select{
+    select,
+    textarea{
       font-family:Arial, Helvetica, sans-serif;
       transition:.3s;
     }
@@ -59,6 +64,10 @@
     .container{
       width:min(1200px,92%);
       margin:auto;
+    }
+
+    .hidden{
+      display:none !important;
     }
 
     header{
@@ -253,12 +262,53 @@
       margin-bottom:12px;
     }
 
+    .profile-name-row{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-bottom:8px;
+    }
+
     .profile-name{
       font-size:clamp(30px,4vw,48px);
       line-height:1.08;
       color:#fff;
-      margin-bottom:8px;
       word-break:break-word;
+    }
+
+    .verified-badge{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      width:28px;
+      height:28px;
+      border-radius:50%;
+      background:rgba(59,130,246,.14);
+      color:var(--blue);
+      border:1px solid rgba(59,130,246,.28);
+      font-size:15px;
+      flex-shrink:0;
+    }
+
+    .profile-meta-row{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-bottom:10px;
+    }
+
+    .profile-mini-pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:7px 12px;
+      border-radius:999px;
+      background:rgba(255,255,255,.07);
+      border:1px solid rgba(255,255,255,.08);
+      color:#e2e8f0;
+      font-size:12px;
+      font-weight:700;
     }
 
     .profile-bio{
@@ -273,6 +323,7 @@
       gap:12px;
       justify-content:flex-end;
       align-self:center;
+      position:relative;
     }
 
     .btn{
@@ -317,6 +368,57 @@
 
     .btn-following:hover{
       background:#253247;
+    }
+
+    .btn-disabled{
+      opacity:.7;
+      cursor:not-allowed;
+      pointer-events:none;
+    }
+
+    .profile-menu-wrap{
+      position:relative;
+    }
+
+    .profile-menu{
+      position:absolute;
+      top:calc(100% + 10px);
+      right:0;
+      width:min(290px, 82vw);
+      background:#111827;
+      border:1px solid var(--line);
+      border-radius:18px;
+      box-shadow:0 20px 40px rgba(0,0,0,.28);
+      padding:10px;
+      display:none;
+      z-index:30;
+    }
+
+    .profile-menu.show{
+      display:block;
+    }
+
+    .profile-menu button{
+      width:100%;
+      border:none;
+      background:transparent;
+      color:#e5e7eb;
+      text-align:left;
+      padding:12px 12px;
+      border-radius:12px;
+      cursor:pointer;
+      display:flex;
+      align-items:center;
+      gap:12px;
+      font-size:14px;
+    }
+
+    .profile-menu button:hover{
+      background:rgba(255,255,255,.05);
+    }
+
+    .profile-menu button.danger{
+      color:#fecaca;
     }
 
     section{
@@ -638,7 +740,8 @@
       grid-column:1 / -1;
     }
 
-    .lightbox{
+    .lightbox,
+    .popup-modal{
       position:fixed;
       inset:0;
       background:rgba(2,6,23,.86);
@@ -650,7 +753,8 @@
       z-index:2000;
     }
 
-    .lightbox.show{
+    .lightbox.show,
+    .popup-modal.show{
       display:flex;
     }
 
@@ -691,7 +795,8 @@
       background:#111827;
     }
 
-    .lightbox-close{
+    .lightbox-close,
+    .popup-close{
       position:absolute;
       top:16px;
       right:16px;
@@ -706,7 +811,8 @@
       cursor:pointer;
     }
 
-    .lightbox-close:hover{
+    .lightbox-close:hover,
+    .popup-close:hover{
       color:var(--accent);
     }
 
@@ -838,6 +944,122 @@
       color:#e5e7eb;
       font-size:14px;
       word-break:break-word;
+    }
+
+    .popup-card{
+      width:min(560px,100%);
+      background:#111827;
+      border:1px solid var(--line);
+      border-radius:24px;
+      padding:24px;
+      position:relative;
+      max-height:90vh;
+      overflow-y:auto;
+      box-shadow:0 24px 60px rgba(0,0,0,.35);
+    }
+
+    .popup-card h3{
+      font-size:28px;
+      color:#fff;
+      margin-bottom:8px;
+      padding-right:56px;
+    }
+
+    .popup-card p{
+      color:#94a3b8;
+      font-size:14px;
+      margin-bottom:18px;
+    }
+
+    .popup-grid{
+      display:grid;
+      gap:12px;
+    }
+
+    .popup-actions{
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-top:18px;
+    }
+
+    .popup-actions .btn{
+      min-width:160px;
+    }
+
+    .popup-form{
+      display:grid;
+      gap:16px;
+      margin-top:10px;
+    }
+
+    .popup-form label{
+      display:grid;
+      gap:8px;
+      color:#e5e7eb;
+      font-size:14px;
+      font-weight:700;
+    }
+
+    .popup-form input,
+    .popup-form textarea,
+    .popup-form select{
+      width:100%;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.08);
+      background:#0f172a;
+      color:#fff;
+      padding:14px 16px;
+      outline:none;
+      font-size:15px;
+    }
+
+    .popup-form textarea{
+      min-height:120px;
+      resize:vertical;
+    }
+
+    .popup-form input:focus,
+    .popup-form textarea:focus,
+    .popup-form select:focus{
+      border-color:rgba(250,204,21,.55);
+      box-shadow:0 0 0 3px rgba(250,204,21,.08);
+    }
+
+    .qr-box{
+      background:#fff;
+      border-radius:18px;
+      padding:18px;
+      width:fit-content;
+      margin:10px auto 14px;
+    }
+
+    .qr-url{
+      word-break:break-all;
+      font-size:13px;
+      color:#cbd5e1;
+      text-align:center;
+    }
+
+    .notice{
+      position:fixed;
+      left:50%;
+      bottom:26px;
+      transform:translateX(-50%);
+      background:#111827;
+      border:1px solid var(--line);
+      color:#fff;
+      padding:12px 16px;
+      border-radius:14px;
+      box-shadow:0 12px 28px rgba(0,0,0,.24);
+      z-index:2200;
+      display:none;
+      max-width:min(92vw,460px);
+      text-align:center;
+    }
+
+    .notice.show{
+      display:block;
     }
 
     footer{
@@ -979,6 +1201,11 @@
         flex-direction:column;
         align-items:flex-start;
       }
+
+      .profile-menu{
+        left:0;
+        right:auto;
+      }
     }
 
     @media(max-width:480px){
@@ -1011,7 +1238,8 @@
         width:100%;
       }
 
-      .lightbox{
+      .lightbox,
+      .popup-modal{
         padding:12px;
       }
 
@@ -1077,11 +1305,20 @@
         <div class="profile-avatar" id="profileAvatar">P</div>
 
         <div>
-          <div class="profile-label">
+          <div class="profile-label" id="profileLabel">
             <i class="fa-solid fa-camera"></i>
             Creator Profile
           </div>
-          <h1 class="profile-name" id="profileName">Creator</h1>
+
+          <div class="profile-name-row">
+            <h1 class="profile-name" id="profileName">Creator</h1>
+            <span class="verified-badge hidden" id="verifiedBadge" title="Verified account" aria-label="Verified account">
+              <i class="fa-solid fa-circle-check"></i>
+            </span>
+          </div>
+
+          <div class="profile-meta-row" id="profileMetaRow"></div>
+
           <p class="profile-bio" id="profileBio">Browse this creator’s uploads, stats, and shared visuals on PixNest.</p>
         </div>
 
@@ -1090,10 +1327,65 @@
             <i class="fa-solid fa-user-plus"></i>
             Follow
           </button>
+
           <button type="button" class="btn btn-secondary" id="shareProfileBtn">
             <i class="fa-solid fa-share-nodes"></i>
             Share Profile
           </button>
+
+          <div class="profile-menu-wrap" id="profileMenuWrap">
+            <button type="button" class="btn btn-secondary" id="profileMenuBtn">
+              <i class="fa-solid fa-ellipsis"></i>
+              More
+            </button>
+
+            <div class="profile-menu" id="profileMenu">
+              <button type="button" id="aboutAccountBtn">
+                <i class="fa-regular fa-circle-question"></i>
+                About this account
+              </button>
+
+              <button type="button" id="sharedActivityBtn">
+                <i class="fa-solid fa-user-group"></i>
+                See shared activity
+              </button>
+
+              <button type="button" id="hideStoryBtn">
+                <i class="fa-regular fa-eye-slash"></i>
+                Hide your story
+              </button>
+
+              <button type="button" id="restrictBtn">
+                <i class="fa-solid fa-user-lock"></i>
+                Restrict
+              </button>
+
+              <button type="button" id="blockBtn" class="danger">
+                <i class="fa-solid fa-ban"></i>
+                Block
+              </button>
+
+              <button type="button" id="reportBtn" class="danger">
+                <i class="fa-regular fa-flag"></i>
+                Report
+              </button>
+
+              <button type="button" id="copyProfileBtn">
+                <i class="fa-regular fa-copy"></i>
+                Copy profile URL
+              </button>
+
+              <button type="button" id="shareFromMenuBtn">
+                <i class="fa-solid fa-share-nodes"></i>
+                Share this profile
+              </button>
+
+              <button type="button" id="qrProfileBtn">
+                <i class="fa-solid fa-qrcode"></i>
+                QR code
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -1201,6 +1493,17 @@
     </div>
   </div>
 
+  <div class="popup-modal" id="popupModal">
+    <div class="popup-card">
+      <button class="popup-close" id="popupClose" aria-label="Close">×</button>
+      <h3 id="popupTitle">Info</h3>
+      <p id="popupSubtitle"></p>
+      <div id="popupBody"></div>
+    </div>
+  </div>
+
+  <div class="notice" id="noticeBar"></div>
+
   <footer>
     <div class="container footer-inner">
       <p>©️ 2026 PixNest. Discover and share powerful visual collections.</p>
@@ -1217,7 +1520,6 @@
 
   <script>
     const REACTION_KEY = "pixnest_photo_reactions_v1";
-    const FOLLOW_KEY = "pixnest_creator_follow_state_v1";
     const SUPABASE_URL = "https://vigczssznfvujttdapbv.supabase.co";
     const SUPABASE_KEY = "sb_publishable_UmF-mmVS42XeF6PqsNnCSw_wpA35wg2";
 
@@ -1229,10 +1531,16 @@
 
     const profileHero = document.getElementById("profileHero");
     const profileAvatar = document.getElementById("profileAvatar");
+    const profileLabel = document.getElementById("profileLabel");
     const profileName = document.getElementById("profileName");
+    const verifiedBadge = document.getElementById("verifiedBadge");
+    const profileMetaRow = document.getElementById("profileMetaRow");
     const profileBio = document.getElementById("profileBio");
     const followBtn = document.getElementById("followBtn");
     const shareProfileBtn = document.getElementById("shareProfileBtn");
+    const profileMenuBtn = document.getElementById("profileMenuBtn");
+    const profileMenu = document.getElementById("profileMenu");
+    const profileMenuWrap = document.getElementById("profileMenuWrap");
 
     const followersCount = document.getElementById("followersCount");
     const postsCount = document.getElementById("postsCount");
@@ -1255,11 +1563,38 @@
     const lightboxTitle = document.getElementById("lightboxTitle");
     const lightboxStatsWrap = document.getElementById("lightboxStatsWrap");
 
+    const popupModal = document.getElementById("popupModal");
+    const popupClose = document.getElementById("popupClose");
+    const popupTitle = document.getElementById("popupTitle");
+    const popupSubtitle = document.getElementById("popupSubtitle");
+    const popupBody = document.getElementById("popupBody");
+
+    const noticeBar = document.getElementById("noticeBar");
+
+    const aboutAccountBtn = document.getElementById("aboutAccountBtn");
+    const sharedActivityBtn = document.getElementById("sharedActivityBtn");
+    const hideStoryBtn = document.getElementById("hideStoryBtn");
+    const restrictBtn = document.getElementById("restrictBtn");
+    const blockBtn = document.getElementById("blockBtn");
+    const reportBtn = document.getElementById("reportBtn");
+    const copyProfileBtn = document.getElementById("copyProfileBtn");
+    const shareFromMenuBtn = document.getElementById("shareFromMenuBtn");
+    const qrProfileBtn = document.getElementById("qrProfileBtn");
+
+    let currentUser = null;
+    let currentCreatorName = "";
     let allPhotos = [];
     let creatorPhotos = [];
-    let currentCreatorName = "";
+    let creatorProfile = null;
+    let relationState = {
+      following:false,
+      followsYou:false,
+      restricted:false,
+      blocked:false,
+      hiddenStory:false,
+      followerCount:0
+    };
     let reactionState = loadReactionState();
-    let followState = loadFollowState();
     let activeLightboxPhotoId = "";
 
     if(menuToggle && navLinks){
@@ -1286,6 +1621,10 @@
           menuToggle.setAttribute("aria-expanded", "false");
         }
       }
+
+      if(profileMenu.classList.contains("show") && !profileMenuWrap.contains(e.target)){
+        profileMenu.classList.remove("show");
+      }
     });
 
     window.addEventListener("resize", () => {
@@ -1295,6 +1634,10 @@
       }
     });
 
+    profileMenuBtn.addEventListener("click", () => {
+      profileMenu.classList.toggle("show");
+    });
+
     function escapeHtml(value = ""){
       return String(value)
         .replace(/&/g, "&amp;")
@@ -1302,6 +1645,30 @@
         .replace(/>/g, "&gt;")
         .replace(/"/g, "&quot;")
         .replace(/'/g, "&#39;");
+    }
+
+    function showNotice(text){
+      noticeBar.textContent = text;
+      noticeBar.classList.add("show");
+      clearTimeout(showNotice._timer);
+      showNotice._timer = setTimeout(() => {
+        noticeBar.classList.remove("show");
+      }, 2200);
+    }
+
+    function normalize(value = ""){
+      return String(value || "").trim().toLowerCase();
+    }
+
+    function formatDate(dateValue){
+      if(!dateValue) return "—";
+      const date = new Date(dateValue);
+      if(Number.isNaN(date.getTime())) return "—";
+      return date.toLocaleDateString(undefined, {
+        year:"numeric",
+        month:"long",
+        day:"numeric"
+      });
     }
 
     function loadReactionState(){
@@ -1318,27 +1685,9 @@
       localStorage.setItem(REACTION_KEY, JSON.stringify(reactionState));
     }
 
-    function loadFollowState(){
-      try{
-        const saved = localStorage.getItem(FOLLOW_KEY);
-        const parsed = JSON.parse(saved || "{}");
-        return parsed && typeof parsed === "object" ? parsed : {};
-      }catch(error){
-        return {};
-      }
-    }
-
-    function saveFollowState(){
-      localStorage.setItem(FOLLOW_KEY, JSON.stringify(followState));
-    }
-
     function getQueryCreator(){
       const params = new URLSearchParams(window.location.search);
       return String(params.get("creator") || "").trim();
-    }
-
-    function getCreatorName(photo){
-      return String(photo.credit || "").trim();
     }
 
     function getPhotoId(photo){
@@ -1355,13 +1704,24 @@
       return allPhotos.find(photo => getPhotoId(photo) === String(photoId)) || null;
     }
 
+    function getCreatorName(photo){
+      return String(
+        photo.credit ||
+        photo.creator_name ||
+        photo.uploader_name ||
+        photo.author ||
+        ""
+      ).trim();
+    }
+
     function getSafePhotoTitle(photo){
       const possibleFields = [
         photo.display_title,
         photo.caption,
         photo.headline,
         photo.custom_title,
-        photo.public_title
+        photo.public_title,
+        photo.title
       ];
 
       const found = possibleFields.find(value => String(value || "").trim());
@@ -1544,7 +1904,7 @@
       const safeTitle = getSafePhotoTitle(photo);
       const description = getDescription(photo);
       const category = String(photo.category || "").trim();
-      const creator = String(photo.credit || "").trim();
+      const creator = String(getCreatorName(photo) || "").trim();
 
       const base =
         sanitizeFileName(safeTitle) ||
@@ -1645,8 +2005,12 @@
     }
 
     function buildCreatorAvatar(photo){
-      const creatorName = getCreatorName(photo) || "Creator";
-      const creatorPhoto = String(photo.creator_photo || "").trim();
+      const creatorName = creatorProfile?.display_name || getCreatorName(photo) || "Creator";
+      const creatorPhoto = String(
+        creatorProfile?.avatar_url ||
+        photo?.creator_photo ||
+        ""
+      ).trim();
 
       if(creatorPhoto){
         return `<img src="${escapeHtml(creatorPhoto)}" alt="${escapeHtml(creatorName)}">`;
@@ -1724,9 +2088,14 @@
       return actions.join("");
     }
 
-    async function handleNativeShare(button){
-      const url = button.getAttribute("data-share-url") || window.location.href;
-      const title = button.getAttribute("data-share-title") || "PixNest";
+    async function handleNativeShare(buttonOrConfig){
+      const url = typeof buttonOrConfig === "object" && !(buttonOrConfig instanceof HTMLElement)
+        ? buttonOrConfig.url
+        : buttonOrConfig.getAttribute("data-share-url") || window.location.href;
+
+      const title = typeof buttonOrConfig === "object" && !(buttonOrConfig instanceof HTMLElement)
+        ? buttonOrConfig.title
+        : buttonOrConfig.getAttribute("data-share-title") || "PixNest";
 
       if(navigator.share){
         try{
@@ -1736,37 +2105,34 @@
       }else{
         try{
           await navigator.clipboard.writeText(url);
-          button.innerHTML = '<i class="fa-solid fa-check"></i>';
-          setTimeout(() => {
-            button.innerHTML = '<i class="fa-solid fa-share-nodes"></i>';
-          }, 1200);
+          if(buttonOrConfig instanceof HTMLElement){
+            buttonOrConfig.innerHTML = '<i class="fa-solid fa-check"></i>';
+            setTimeout(() => {
+              buttonOrConfig.innerHTML = '<i class="fa-solid fa-share-nodes"></i>';
+            }, 1200);
+          }
+          showNotice("Profile link copied.");
         }catch(error){
           alert("Link copy failed. You can copy it manually:\n" + url);
         }
       }
     }
 
-    async function handleProfileShare(){
-      const url = window.location.href;
-      const title = `${currentCreatorName || "Creator"} on PixNest`;
-
-      if(navigator.share){
-        try{
-          await navigator.share({ title, url });
-        }catch(error){
-        }
-      }else{
-        try{
-          await navigator.clipboard.writeText(url);
-          const original = shareProfileBtn.innerHTML;
-          shareProfileBtn.innerHTML = '<i class="fa-solid fa-check"></i> Link Copied';
-          setTimeout(() => {
-            shareProfileBtn.innerHTML = original;
-          }, 1400);
-        }catch(error){
-          alert("Profile link copy failed. You can copy it manually:\n" + url);
-        }
+    async function copyProfileUrl(){
+      try{
+        await navigator.clipboard.writeText(window.location.href);
+        showNotice("Profile URL copied.");
+      }catch(error){
+        alert("Could not copy the profile URL.");
       }
+    }
+
+    async function handleProfileShare(){
+      const title = `${currentCreatorName || "Creator"} on PixNest`;
+      await handleNativeShare({
+        title,
+        url: window.location.href
+      });
     }
 
     async function handleDownloadButtonClick(button){
@@ -1839,34 +2205,167 @@
       refreshProfileView();
     }
 
-    function getCreatorFollowBaseValue(photos){
-      for(const photo of photos){
-        const value = getNumberValue(photo, [
-          "followers",
-          "follower_count",
-          "followers_count",
-          "creator_followers",
-          "creator_follower_count",
-          "total_followers"
-        ]);
-        if(value){
-          return value;
+    function isOwnProfile(){
+      return !!(currentUser && creatorProfile && normalize(currentUser.id) === normalize(creatorProfile.id));
+    }
+
+    async function getTableCount(table, column, value){
+      try{
+        const { count, error } = await supabaseClient
+          .from(table)
+          .select("*", { count:"exact", head:true })
+          .eq(column, value);
+
+        if(error){
+          throw error;
+        }
+
+        return count || 0;
+      }catch(error){
+        console.error(error);
+        return 0;
+      }
+    }
+
+    async function checkRelationRow(table, sourceColumn, targetColumn, sourceValue, targetValue){
+      try{
+        const { data, error } = await supabaseClient
+          .from(table)
+          .select("*")
+          .eq(sourceColumn, sourceValue)
+          .eq(targetColumn, targetValue)
+          .limit(1);
+
+        if(error){
+          throw error;
+        }
+
+        return Array.isArray(data) && data.length > 0;
+      }catch(error){
+        console.error(error);
+        return false;
+      }
+    }
+
+    async function loadCurrentUser(){
+      try{
+        const { data } = await supabaseClient.auth.getUser();
+        currentUser = data?.user || null;
+      }catch(error){
+        currentUser = null;
+      }
+    }
+
+    function photoBelongsToCreator(photo, profile){
+      const profileId = normalize(profile?.id);
+      const displayName = normalize(profile?.display_name);
+      const names = [
+        photo.credit,
+        photo.creator_name,
+        photo.uploader_name,
+        photo.author,
+        photo.name
+      ].map(normalize);
+
+      const ids = [
+        photo.user_id,
+        photo.owner_id,
+        photo.auth_user_id,
+        photo.profile_id,
+        photo.uploader_id
+      ].map(normalize);
+
+      return (profileId && ids.includes(profileId)) || (displayName && names.includes(displayName));
+    }
+
+    function chooseCreatorProfile(profiles){
+      const queryCreator = getQueryCreator();
+
+      if(queryCreator){
+        const exactProfile = profiles.find(profile =>
+          normalize(profile.display_name) === normalize(queryCreator)
+        );
+
+        if(exactProfile){
+          creatorProfile = exactProfile;
+          currentCreatorName = exactProfile.display_name;
+          return;
         }
       }
-      return 0;
+
+      const founderProfile = profiles.find(profile => normalize(profile.role) === "founder");
+      if(founderProfile){
+        creatorProfile = founderProfile;
+        currentCreatorName = founderProfile.display_name;
+        return;
+      }
+
+      if(profiles.length){
+        creatorProfile = profiles[0];
+        currentCreatorName = profiles[0].display_name;
+        return;
+      }
+
+      const firstPhotoWithCreator = allPhotos.find(photo => getCreatorName(photo));
+      if(firstPhotoWithCreator){
+        creatorProfile = {
+          id:"",
+          display_name:getCreatorName(firstPhotoWithCreator),
+          bio:"",
+          avatar_url:firstPhotoWithCreator.creator_photo || "",
+          role:"user",
+          badge:"",
+          is_verified:false,
+          likes_override:null,
+          followers_override:null,
+          created_at:null
+        };
+        currentCreatorName = creatorProfile.display_name;
+      }else{
+        creatorProfile = null;
+        currentCreatorName = "";
+      }
     }
 
-    function isFollowingCreator(creatorName){
-      return !!followState[String(creatorName || "").toLowerCase()];
-    }
+    async function loadRelationshipState(){
+      relationState = {
+        following:false,
+        followsYou:false,
+        restricted:false,
+        blocked:false,
+        hiddenStory:false,
+        followerCount:0
+      };
 
-    function toggleFollowCreator(){
-      if(!currentCreatorName) return;
+      if(!creatorProfile?.id){
+        return;
+      }
 
-      const key = String(currentCreatorName).toLowerCase();
-      followState[key] = !followState[key];
-      saveFollowState();
-      renderProfileHeader();
+      relationState.followerCount = await getTableCount("follows", "following_id", creatorProfile.id);
+
+      if(!currentUser || isOwnProfile()){
+        return;
+      }
+
+      const [
+        following,
+        followsYou,
+        restricted,
+        blocked,
+        hiddenStory
+      ] = await Promise.all([
+        checkRelationRow("follows", "follower_id", "following_id", currentUser.id, creatorProfile.id),
+        checkRelationRow("follows", "follower_id", "following_id", creatorProfile.id, currentUser.id),
+        checkRelationRow("restrictions", "user_id", "restricted_user_id", currentUser.id, creatorProfile.id),
+        checkRelationRow("blocks", "user_id", "blocked_user_id", currentUser.id, creatorProfile.id),
+        checkRelationRow("hidden_stories", "user_id", "hidden_user_id", currentUser.id, creatorProfile.id)
+      ]);
+
+      relationState.following = following;
+      relationState.followsYou = followsYou;
+      relationState.restricted = restricted;
+      relationState.blocked = blocked;
+      relationState.hiddenStory = hiddenStory;
     }
 
     function getCurrentCreatorAvatarHtml(){
@@ -1874,15 +2373,22 @@
       if(firstPhoto){
         return buildCreatorAvatar(firstPhoto);
       }
+
+      const creatorPhoto = String(creatorProfile?.avatar_url || "").trim();
+      if(creatorPhoto){
+        return `<img src="${escapeHtml(creatorPhoto)}" alt="${escapeHtml(currentCreatorName)}">`;
+      }
+
       const firstLetter = (currentCreatorName || "P").charAt(0).toUpperCase() || "P";
       return `<span>${escapeHtml(firstLetter)}</span>`;
     }
 
     function renderProfileHeader(){
-      if(!creatorPhotos.length){
+      if(!creatorProfile && !creatorPhotos.length){
         profileName.textContent = "Creator not found";
         profileBio.textContent = "No creator profile could be loaded from the current photos collection.";
         profileAvatar.innerHTML = "P";
+        verifiedBadge.classList.add("hidden");
         followersCount.textContent = "0";
         postsCount.textContent = "0";
         likesCount.textContent = "0";
@@ -1895,19 +2401,63 @@
 
       const featuredPhoto = creatorPhotos.find(photo => photo.featured);
       const coverPhoto = featuredPhoto || creatorPhotos[0];
-      const coverImage = coverPhoto && coverPhoto.image_url ? coverPhoto.image_url : "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&w=1600&q=80";
-      const totalLikes = creatorPhotos.reduce((sum, photo) => sum + getPhotoMetrics(photo).likes, 0);
+      const coverImage = coverPhoto && coverPhoto.image_url
+        ? coverPhoto.image_url
+        : "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&w=1600&q=80";
+
+      const calculatedLikes = creatorPhotos.reduce((sum, photo) => sum + getPhotoMetrics(photo).likes, 0);
+      const totalLikes = creatorProfile?.likes_override != null
+        ? Number(creatorProfile.likes_override)
+        : calculatedLikes;
+
       const totalFeatured = creatorPhotos.filter(photo => photo.featured).length;
-      const baseFollowers = getCreatorFollowBaseValue(creatorPhotos);
-      const followed = isFollowingCreator(currentCreatorName);
-      const totalFollowers = baseFollowers + (followed ? 1 : 0);
+      const totalFollowers = creatorProfile?.followers_override != null
+        ? Number(creatorProfile.followers_override)
+        : relationState.followerCount;
 
       profileHero.style.background =
         `linear-gradient(rgba(15,23,42,.55), rgba(15,23,42,.90)), url('${coverImage}') center/cover no-repeat`;
 
-      profileName.textContent = currentCreatorName;
-      profileBio.textContent = `Explore ${currentCreatorName}'s uploaded visuals, trending posts, and creative photo collection on PixNest.`;
+      profileName.textContent = currentCreatorName || "Creator";
+      profileBio.textContent =
+        creatorProfile?.bio?.trim()
+          ? creatorProfile.bio
+          : `Explore ${currentCreatorName}'s uploaded visuals, trending posts, and creative photo collection on PixNest.`;
+
       profileAvatar.innerHTML = getCurrentCreatorAvatarHtml();
+
+      const labelText =
+        creatorProfile?.badge?.trim() ||
+        (normalize(creatorProfile?.role) === "founder" ? "Founder" : "Creator Profile");
+
+      profileLabel.innerHTML = `
+        <i class="fa-solid fa-camera"></i>
+        ${escapeHtml(labelText)}
+      `;
+
+      if(creatorProfile?.is_verified){
+        verifiedBadge.classList.remove("hidden");
+      }else{
+        verifiedBadge.classList.add("hidden");
+      }
+
+      const metaItems = [];
+
+      if(creatorProfile?.badge?.trim()){
+        metaItems.push(`<span class="profile-mini-pill"><i class="fa-solid fa-crown"></i>${escapeHtml(creatorProfile.badge)}</span>`);
+      }else if(normalize(creatorProfile?.role) === "founder"){
+        metaItems.push(`<span class="profile-mini-pill"><i class="fa-solid fa-crown"></i>Founder</span>`);
+      }
+
+      if(creatorProfile?.is_verified){
+        metaItems.push(`<span class="profile-mini-pill"><i class="fa-solid fa-circle-check"></i>Verified</span>`);
+      }
+
+      if(creatorProfile?.created_at){
+        metaItems.push(`<span class="profile-mini-pill"><i class="fa-regular fa-calendar"></i>Joined ${escapeHtml(formatDate(creatorProfile.created_at))}</span>`);
+      }
+
+      profileMetaRow.innerHTML = metaItems.join("");
 
       followersCount.textContent = String(totalFollowers);
       postsCount.textContent = String(creatorPhotos.length);
@@ -1918,14 +2468,71 @@
       galleryText.textContent = `Browse all photos posted by ${currentCreatorName}.`;
       document.title = `PixNest | ${currentCreatorName}`;
 
-      if(followed){
+      if(isOwnProfile()){
+        followBtn.className = "btn btn-secondary btn-disabled";
+        followBtn.innerHTML = '<i class="fa-solid fa-user"></i> This is you';
+      }else if(relationState.blocked){
+        followBtn.className = "btn btn-secondary btn-disabled";
+        followBtn.innerHTML = '<i class="fa-solid fa-ban"></i> Blocked';
+      }else if(relationState.following){
         followBtn.className = "btn btn-following";
         followBtn.innerHTML = '<i class="fa-solid fa-user-check"></i> Following';
       }else{
         followBtn.className = "btn btn-primary";
         followBtn.innerHTML = '<i class="fa-solid fa-user-plus"></i> Follow';
       }
+
+      updateMenuLabels();
+      updateMenuVisibility();
     }
+
+    function updateMenuLabels(){
+      hideStoryBtn.innerHTML = relationState.hiddenStory
+        ? '<i class="fa-regular fa-eye"></i> Show your story'
+        : '<i class="fa-regular fa-eye-slash"></i> Hide your story';
+
+      restrictBtn.innerHTML = relationState.restricted
+        ? '<i class="fa-solid fa-user-check"></i> Unrestrict'
+        : '<i class="fa-solid fa-user-lock"></i> Restrict';
+
+      blockBtn.innerHTML = relationState.blocked
+        ? '<i class="fa-solid fa-user-check"></i> Unblock'
+        : '<i class="fa-solid fa-ban"></i> Block';
+    }
+
+    function updateMenuVisibility(){
+      const own = isOwnProfile();
+
+      sharedActivityBtn.style.display = own ? "none" : "flex";
+      hideStoryBtn.style.display = own ? "none" : "flex";
+      restrictBtn.style.display = own ? "none" : "flex";
+      blockBtn.style.display = own ? "none" : "flex";
+      reportBtn.style.display = own ? "none" : "flex";
+    }
+
+    function openPopup(title, subtitle, bodyHtml){
+      popupTitle.textContent = title || "";
+      popupSubtitle.textContent = subtitle || "";
+      popupBody.innerHTML = bodyHtml || "";
+      popupModal.classList.add("show");
+      document.body.style.overflow = "hidden";
+    }
+
+    function closePopup(){
+      popupModal.classList.remove("show");
+      if(!lightbox.classList.contains("show")){
+        document.body.style.overflow = "";
+      }
+      popupBody.innerHTML = "";
+    }
+
+    popupClose.addEventListener("click", closePopup);
+
+    popupModal.addEventListener("click", (e) => {
+      if(e.target === popupModal){
+        closePopup();
+      }
+    });
 
     function renderLightboxContent(photo){
       const imageUrl = photo.image_url || "";
@@ -1938,10 +2545,10 @@
       lightboxTitle.classList.toggle("is-hidden", !safeTitle);
 
       document.getElementById("lightboxCategory").textContent = photo.category || "Uncategorized";
-      document.getElementById("lightboxCredit").textContent = getCreatorName(photo) || "Unknown";
+      document.getElementById("lightboxCredit").textContent = getCreatorName(photo) || currentCreatorName || "Unknown";
       document.getElementById("lightboxTags").textContent = getPhotoTags(photo).join(", ") || "No tags";
       document.getElementById("lightboxDescription").textContent = getDescription(photo) || "No description added.";
-      document.getElementById("lightboxCreatorTop").textContent = getCreatorName(photo) || "Unknown";
+      document.getElementById("lightboxCreatorTop").textContent = getCreatorName(photo) || currentCreatorName || "Unknown";
 
       lightboxCreatorAvatar.innerHTML = buildCreatorAvatar(photo);
       lightboxStatsWrap.innerHTML = buildPhotoStats(photo, "lightbox-stats", false);
@@ -1968,7 +2575,9 @@
     function closeLightbox(){
       activeLightboxPhotoId = "";
       lightbox.classList.remove("show");
-      document.body.style.overflow = "";
+      if(!popupModal.classList.contains("show")){
+        document.body.style.overflow = "";
+      }
       lightboxActions.innerHTML = "";
       lightboxStatsWrap.innerHTML = "";
       lightboxImage.src = "";
@@ -1985,6 +2594,7 @@
 
     document.addEventListener("keydown", (e) => {
       if(e.key === "Escape"){
+        closePopup();
         closeLightbox();
       }
     });
@@ -2026,7 +2636,7 @@
     function buildPhotoCard(photo){
       const tags = getPhotoTags(photo).slice(0, 4);
       const description = getDescription(photo);
-      const creatorName = getCreatorName(photo) || "Unknown Creator";
+      const creatorName = getCreatorName(photo) || currentCreatorName || "Unknown Creator";
       const photoId = getPhotoId(photo);
 
       return `
@@ -2089,7 +2699,7 @@
           photo.description,
           photo.tags,
           photo.category,
-          photo.credit
+          getCreatorName(photo)
         ].join(" ").toLowerCase();
 
         const matchesSearch = !searchValue || text.includes(searchValue);
@@ -2121,45 +2731,350 @@
       }
     }
 
-    function chooseCreatorFromPhotos(){
-      const queryCreator = getQueryCreator();
-
-      if(queryCreator){
-        const matched = allPhotos.filter(photo =>
-          getCreatorName(photo).toLowerCase() === queryCreator.toLowerCase()
-        );
-        if(matched.length){
-          currentCreatorName = getCreatorName(matched[0]);
-          creatorPhotos = matched;
-          return;
-        }
+    async function toggleFollowCreator(){
+      if(!currentUser){
+        window.location.href = "login.html";
+        return;
       }
 
-      const firstPhotoWithCreator = allPhotos.find(photo => getCreatorName(photo));
-      if(firstPhotoWithCreator){
-        currentCreatorName = getCreatorName(firstPhotoWithCreator);
-        creatorPhotos = allPhotos.filter(photo =>
-          getCreatorName(photo).toLowerCase() === currentCreatorName.toLowerCase()
-        );
-      }else{
-        currentCreatorName = "";
-        creatorPhotos = [];
+      if(!creatorProfile?.id || isOwnProfile() || relationState.blocked){
+        return;
+      }
+
+      try{
+        if(relationState.following){
+          const { error } = await supabaseClient
+            .from("follows")
+            .delete()
+            .eq("follower_id", currentUser.id)
+            .eq("following_id", creatorProfile.id);
+
+          if(error){
+            throw error;
+          }
+        }else{
+          const { error } = await supabaseClient
+            .from("follows")
+            .insert([{
+              follower_id: currentUser.id,
+              following_id: creatorProfile.id
+            }]);
+
+          if(error){
+            throw error;
+          }
+        }
+
+        await loadRelationshipState();
+        refreshProfileView();
+      }catch(error){
+        console.error(error);
+        alert("Could not update follow status.");
       }
     }
 
-    async function loadPhotos(){
-      try{
-        const { data, error } = await supabaseClient
-          .from("photos")
-          .select("*")
-          .order("created_at", { ascending:false });
+    async function toggleRelation(tableName, targetColumn, stateKey){
+      if(!currentUser){
+        window.location.href = "login.html";
+        return;
+      }
 
-        if(error){
-          throw error;
+      if(!creatorProfile?.id || isOwnProfile()){
+        return;
+      }
+
+      try{
+        if(relationState[stateKey]){
+          const { error } = await supabaseClient
+            .from(tableName)
+            .delete()
+            .eq("user_id", currentUser.id)
+            .eq(targetColumn, creatorProfile.id);
+
+          if(error){
+            throw error;
+          }
+        }else{
+          const insertRow = {
+            user_id: currentUser.id
+          };
+          insertRow[targetColumn] = creatorProfile.id;
+
+          const { error } = await supabaseClient
+            .from(tableName)
+            .insert([insertRow]);
+
+          if(error){
+            throw error;
+          }
         }
 
-        allPhotos = Array.isArray(data) ? data : [];
-        chooseCreatorFromPhotos();
+        await loadRelationshipState();
+        refreshProfileView();
+      }catch(error){
+        console.error(error);
+        alert("Could not update this setting.");
+      }
+    }
+
+    function openAboutAccount(){
+      const calculatedLikes = creatorPhotos.reduce((sum, photo) => sum + getPhotoMetrics(photo).likes, 0);
+      const totalLikes = creatorProfile?.likes_override != null
+        ? Number(creatorProfile.likes_override)
+        : calculatedLikes;
+
+      const totalFollowers = creatorProfile?.followers_override != null
+        ? Number(creatorProfile.followers_override)
+        : relationState.followerCount;
+
+      openPopup(
+        "About this account",
+        "Public information and account details.",
+        `
+          <div class="popup-grid">
+            <div class="detail-item">
+              <strong>Name</strong>
+              <span>${escapeHtml(currentCreatorName || "Unknown")}</span>
+            </div>
+            <div class="detail-item">
+              <strong>Badge</strong>
+              <span>${escapeHtml(creatorProfile?.badge || (normalize(creatorProfile?.role) === "founder" ? "Founder" : "Creator"))}</span>
+            </div>
+            <div class="detail-item">
+              <strong>Verified</strong>
+              <span>${creatorProfile?.is_verified ? "Yes" : "No"}</span>
+            </div>
+            <div class="detail-item">
+              <strong>Joined</strong>
+              <span>${escapeHtml(formatDate(creatorProfile?.created_at))}</span>
+            </div>
+            <div class="detail-item">
+              <strong>Followers</strong>
+              <span>${escapeHtml(String(totalFollowers))}</span>
+            </div>
+            <div class="detail-item">
+              <strong>Total Posts</strong>
+              <span>${escapeHtml(String(creatorPhotos.length))}</span>
+            </div>
+            <div class="detail-item">
+              <strong>Total Likes</strong>
+              <span>${escapeHtml(String(totalLikes))}</span>
+            </div>
+          </div>
+        `
+      );
+    }
+
+    function openSharedActivity(){
+      if(!currentUser){
+        window.location.href = "login.html";
+        return;
+      }
+
+      if(isOwnProfile()){
+        openPopup(
+          "See shared activity",
+          "This is your own profile.",
+          `
+            <div class="popup-grid">
+              <div class="detail-item">
+                <strong>Status</strong>
+                <span>You are viewing your own profile.</span>
+              </div>
+            </div>
+          `
+        );
+        return;
+      }
+
+      const likedCount = creatorPhotos.filter(photo => {
+        const state = getPhotoReactionState(getPhotoId(photo));
+        return !!state.liked;
+      }).length;
+
+      const favouritedCount = creatorPhotos.filter(photo => {
+        const state = getPhotoReactionState(getPhotoId(photo));
+        return !!state.favourited;
+      }).length;
+
+      openPopup(
+        "See shared activity",
+        "A quick look at your connection with this account.",
+        `
+          <div class="popup-grid">
+            <div class="detail-item">
+              <strong>You follow this account</strong>
+              <span>${relationState.following ? "Yes" : "No"}</span>
+            </div>
+            <div class="detail-item">
+              <strong>This account follows you</strong>
+              <span>${relationState.followsYou ? "Yes" : "No"}</span>
+            </div>
+            <div class="detail-item">
+              <strong>Photos you liked</strong>
+              <span>${escapeHtml(String(likedCount))}</span>
+            </div>
+            <div class="detail-item">
+              <strong>Photos you favourited</strong>
+              <span>${escapeHtml(String(favouritedCount))}</span>
+            </div>
+            <div class="detail-item">
+              <strong>Story hidden</strong>
+              <span>${relationState.hiddenStory ? "Yes" : "No"}</span>
+            </div>
+            <div class="detail-item">
+              <strong>Restricted by you</strong>
+              <span>${relationState.restricted ? "Yes" : "No"}</span>
+            </div>
+            <div class="detail-item">
+              <strong>Blocked by you</strong>
+              <span>${relationState.blocked ? "Yes" : "No"}</span>
+            </div>
+          </div>
+        `
+      );
+    }
+
+    function openQrCode(){
+      openPopup(
+        "QR code",
+        "Scan to open this profile quickly.",
+        `
+          <div class="qr-box">
+            <div id="qrCodeBox"></div>
+          </div>
+          <div class="qr-url">${escapeHtml(window.location.href)}</div>
+          <div class="popup-actions">
+            <button type="button" class="btn btn-secondary" id="copyQrUrlBtn">
+              <i class="fa-regular fa-copy"></i>
+              Copy URL
+            </button>
+            <button type="button" class="btn btn-primary" id="shareQrUrlBtn">
+              <i class="fa-solid fa-share-nodes"></i>
+              Share Profile
+            </button>
+          </div>
+        `
+      );
+
+      const qrCodeBox = document.getElementById("qrCodeBox");
+      qrCodeBox.innerHTML = "";
+
+      new QRCode(qrCodeBox, {
+        text: window.location.href,
+        width: 220,
+        height: 220,
+        colorDark: "#111827",
+        colorLight: "#ffffff"
+      });
+
+      document.getElementById("copyQrUrlBtn").addEventListener("click", copyProfileUrl);
+      document.getElementById("shareQrUrlBtn").addEventListener("click", handleProfileShare);
+    }
+
+    function openReportModal(){
+      if(!currentUser){
+        window.location.href = "login.html";
+        return;
+      }
+
+      if(isOwnProfile()){
+        alert("You cannot report your own account.");
+        return;
+      }
+
+      openPopup(
+        "Report this account",
+        "Send a report to PixNest about this profile.",
+        `
+          <form class="popup-form" id="reportForm">
+            <label>
+              Reason
+              <select id="reportReason" required>
+                <option value="">Choose a reason</option>
+                <option value="spam">Spam</option>
+                <option value="fake-account">Fake account</option>
+                <option value="harassment">Harassment</option>
+                <option value="impersonation">Impersonation</option>
+                <option value="unsafe-content">Unsafe content</option>
+                <option value="other">Other</option>
+              </select>
+            </label>
+
+            <label>
+              Details
+              <textarea id="reportDetails" placeholder="Write more details if needed"></textarea>
+            </label>
+
+            <div class="popup-actions">
+              <button type="submit" class="btn btn-primary">
+                <i class="fa-regular fa-flag"></i>
+                Submit Report
+              </button>
+            </div>
+          </form>
+        `
+      );
+
+      const reportForm = document.getElementById("reportForm");
+      reportForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const reason = document.getElementById("reportReason").value;
+        const details = document.getElementById("reportDetails").value.trim();
+
+        try{
+          const { error } = await supabaseClient
+            .from("reports")
+            .insert([{
+              reporter_id: currentUser.id,
+              reported_user_id: creatorProfile.id,
+              reason,
+              details
+            }]);
+
+          if(error){
+            throw error;
+          }
+
+          closePopup();
+          showNotice("Report submitted.");
+        }catch(error){
+          console.error(error);
+          alert("Could not submit the report.");
+        }
+      });
+    }
+
+    async function loadPageData(){
+      try{
+        await loadCurrentUser();
+
+        const [profilesRes, photosRes] = await Promise.all([
+          supabaseClient.from("profiles").select("*").order("created_at", { ascending:true }),
+          supabaseClient.from("photos").select("*").order("created_at", { ascending:false })
+        ]);
+
+        if(profilesRes.error){
+          throw profilesRes.error;
+        }
+
+        if(photosRes.error){
+          throw photosRes.error;
+        }
+
+        allPhotos = Array.isArray(photosRes.data) ? photosRes.data : [];
+        const profiles = Array.isArray(profilesRes.data) ? profilesRes.data : [];
+
+        chooseCreatorProfile(profiles);
+
+        if(creatorProfile){
+          creatorPhotos = allPhotos.filter(photo => photoBelongsToCreator(photo, creatorProfile));
+        }else{
+          creatorPhotos = [];
+        }
+
+        await loadRelationshipState();
         refreshProfileView();
       }catch(error){
         console.error(error);
@@ -2172,6 +3087,51 @@
     followBtn.addEventListener("click", toggleFollowCreator);
     shareProfileBtn.addEventListener("click", handleProfileShare);
 
+    aboutAccountBtn.addEventListener("click", () => {
+      profileMenu.classList.remove("show");
+      openAboutAccount();
+    });
+
+    sharedActivityBtn.addEventListener("click", () => {
+      profileMenu.classList.remove("show");
+      openSharedActivity();
+    });
+
+    hideStoryBtn.addEventListener("click", async () => {
+      profileMenu.classList.remove("show");
+      await toggleRelation("hidden_stories", "hidden_user_id", "hiddenStory");
+    });
+
+    restrictBtn.addEventListener("click", async () => {
+      profileMenu.classList.remove("show");
+      await toggleRelation("restrictions", "restricted_user_id", "restricted");
+    });
+
+    blockBtn.addEventListener("click", async () => {
+      profileMenu.classList.remove("show");
+      await toggleRelation("blocks", "blocked_user_id", "blocked");
+    });
+
+    reportBtn.addEventListener("click", () => {
+      profileMenu.classList.remove("show");
+      openReportModal();
+    });
+
+    copyProfileBtn.addEventListener("click", async () => {
+      profileMenu.classList.remove("show");
+      await copyProfileUrl();
+    });
+
+    shareFromMenuBtn.addEventListener("click", async () => {
+      profileMenu.classList.remove("show");
+      await handleProfileShare();
+    });
+
+    qrProfileBtn.addEventListener("click", () => {
+      profileMenu.classList.remove("show");
+      openQrCode();
+    });
+
     searchBtn.addEventListener("click", renderPhotos);
 
     searchInput.addEventListener("keydown", (e) => {
@@ -2183,9 +3143,8 @@
 
     filterSelect.addEventListener("change", renderPhotos);
 
-    loadPhotos();
+    loadPageData();
   </script>
 </body>
 </html>
-
  

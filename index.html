@@ -22,6 +22,9 @@
       --muted:#94a3b8;
       --accent:#facc15;
       --line:rgba(255,255,255,0.08);
+      --blue:#3b82f6;
+      --success:#22c55e;
+      --danger:#ef4444;
     }
 
     html{
@@ -50,7 +53,9 @@
     }
 
     button,
-    input{
+    input,
+    select,
+    textarea{
       font-family:Arial, Helvetica, sans-serif;
       transition:.3s;
     }
@@ -58,6 +63,10 @@
     .container{
       width:min(1200px,92%);
       margin:auto;
+    }
+
+    .hidden{
+      display:none !important;
     }
 
     header{
@@ -125,6 +134,13 @@
       white-space:nowrap;
     }
 
+    .nav-right{
+      display:flex;
+      align-items:center;
+      gap:18px;
+      flex-wrap:wrap;
+    }
+
     .nav-links{
       display:flex;
       align-items:center;
@@ -153,6 +169,72 @@
       height:2px;
       background:var(--accent);
       border-radius:999px;
+    }
+
+    .auth-links{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    .nav-chip{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 12px;
+      border-radius:999px;
+      background:rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.08);
+      color:#e5e7eb;
+      font-size:12px;
+      font-weight:700;
+    }
+
+    .nav-chip.founder{
+      background:rgba(250,204,21,.12);
+      border-color:rgba(250,204,21,.2);
+      color:var(--accent);
+    }
+
+    .nav-chip.verified{
+      background:rgba(59,130,246,.12);
+      border-color:rgba(59,130,246,.2);
+      color:var(--blue);
+    }
+
+    .nav-auth-btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      min-height:42px;
+      padding:10px 14px;
+      border-radius:12px;
+      font-size:14px;
+      font-weight:700;
+      border:none;
+      cursor:pointer;
+    }
+
+    .nav-auth-btn.primary{
+      background:var(--accent);
+      color:#111827;
+    }
+
+    .nav-auth-btn.primary:hover{
+      transform:translateY(-2px);
+      box-shadow:0 10px 24px rgba(250,204,21,.18);
+    }
+
+    .nav-auth-btn.secondary{
+      background:transparent;
+      color:#fff;
+      border:1px solid rgba(255,255,255,.15);
+    }
+
+    .nav-auth-btn.secondary:hover{
+      background:rgba(255,255,255,.06);
     }
 
     .menu-toggle{
@@ -203,6 +285,37 @@
       margin-bottom:18px;
     }
 
+    .auth-status{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-bottom:18px;
+    }
+
+    .auth-pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 14px;
+      border-radius:999px;
+      font-size:13px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(255,255,255,.06);
+      color:#e2e8f0;
+    }
+
+    .auth-pill.founder{
+      color:var(--accent);
+      background:rgba(250,204,21,.12);
+      border-color:rgba(250,204,21,.22);
+    }
+
+    .auth-pill.verified{
+      color:var(--blue);
+      background:rgba(59,130,246,.12);
+      border-color:rgba(59,130,246,.2);
+    }
+
     .hero h1{
       font-size:clamp(36px,5vw,62px);
       line-height:1.04;
@@ -227,6 +340,7 @@
       display:inline-flex;
       align-items:center;
       justify-content:center;
+      gap:10px;
       padding:14px 22px;
       border-radius:14px;
       font-weight:800;
@@ -451,11 +565,11 @@
       display:inline-flex;
       align-items:center;
       justify-content:center;
-      padding:5px 9px;
+      padding:6px 10px;
       border-radius:999px;
-      font-size:11px;
-      background:rgba(255,255,255,.10);
-      border:1px solid rgba(255,255,255,.10);
+      font-size:12px;
+      background:rgba(255,255,255,.12);
+      border:1px solid rgba(255,255,255,.12);
       color:#fff;
       backdrop-filter:blur(6px);
     }
@@ -464,6 +578,12 @@
       background:rgba(16,185,129,.14);
       border-color:rgba(16,185,129,.20);
       color:#86efac;
+    }
+
+    .pill.premium{
+      background:rgba(59,130,246,.12);
+      border-color:rgba(59,130,246,.24);
+      color:#93c5fd;
     }
 
     .photo-grid{
@@ -497,6 +617,11 @@
       background:#1e293b;
     }
 
+    .visual-card.locked-card img{
+      filter:blur(10px) brightness(.55);
+      transform:scale(1.05);
+    }
+
     .visual-card::after{
       content:"";
       position:absolute;
@@ -509,6 +634,20 @@
         rgba(15,23,42,.26) 66%,
         rgba(15,23,42,.05) 100%
       );
+    }
+
+    .visual-card.locked-card::before{
+      content:"Premium";
+      position:absolute;
+      top:16px;
+      right:16px;
+      z-index:3;
+      background:#facc15;
+      color:#111827;
+      font-size:12px;
+      font-weight:800;
+      padding:6px 10px;
+      border-radius:999px;
     }
 
     .photo-overlay{
@@ -595,17 +734,6 @@
 
     .photo-stat.react-btn.active i{
       color:var(--accent);
-    }
-
-    .lightbox-stats{
-      margin-bottom:18px;
-    }
-
-    .lightbox-stats .photo-stat{
-      background:#0f172a;
-      border-color:var(--line);
-      font-size:12px;
-      padding:8px 12px;
     }
 
     .overlay-actions{
@@ -709,7 +837,7 @@
     }
 
     .lightbox-image-wrap{
-      background:var(--bg);
+      background:#020617;
       min-height:300px;
       display:flex;
       align-items:center;
@@ -722,7 +850,7 @@
       height:100%;
       object-fit:contain;
       max-height:calc(90vh - 36px);
-      background:var(--bg);
+      background:#020617;
       border-radius:18px;
     }
 
@@ -730,7 +858,6 @@
       padding:24px;
       overflow-y:auto;
       position:relative;
-      background:#111827;
     }
 
     .lightbox-close{
@@ -809,6 +936,17 @@
       display:none;
     }
 
+    .lightbox-stats{
+      margin-bottom:18px;
+    }
+
+    .lightbox-stats .photo-stat{
+      background:#0f172a;
+      border-color:var(--line);
+      font-size:12px;
+      padding:8px 12px;
+    }
+
     .lightbox-actions{
       display:flex;
       align-items:center;
@@ -871,6 +1009,27 @@
       word-break:break-word;
     }
 
+    .notice{
+      position:fixed;
+      left:50%;
+      bottom:24px;
+      transform:translateX(-50%);
+      background:#111827;
+      border:1px solid var(--line);
+      color:#fff;
+      padding:12px 16px;
+      border-radius:14px;
+      box-shadow:0 12px 28px rgba(0,0,0,.24);
+      z-index:2200;
+      display:none;
+      max-width:min(92vw,460px);
+      text-align:center;
+    }
+
+    .notice.show{
+      display:block;
+    }
+
     footer{
       background:#020617;
       border-top:1px solid var(--line);
@@ -921,9 +1080,23 @@
       }
     }
 
+    @media(max-width:900px){
+      .nav-right{
+        gap:12px;
+      }
+
+      .nav-links{
+        gap:14px;
+      }
+    }
+
     @media(max-width:768px){
       .menu-toggle{
         display:flex;
+      }
+
+      .nav-right{
+        width:auto;
       }
 
       .nav-links{
@@ -946,10 +1119,25 @@
         display:flex;
       }
 
-      .nav-links a{
+      .nav-links a,
+      .nav-links .nav-chip{
         width:100%;
+      }
+
+      .nav-links a{
         padding:12px 10px;
         border-radius:10px;
+      }
+
+      .auth-links{
+        width:100%;
+        flex-direction:column;
+        align-items:stretch;
+        padding-top:8px;
+      }
+
+      .nav-auth-btn{
+        width:100%;
       }
 
       .nav-links a.active::after{
@@ -1046,24 +1234,8 @@
         padding:18px;
       }
 
-      .lightbox-image-wrap{
-        padding:12px;
-      }
-
       .visual-card{
         min-height:400px;
-      }
-
-      .overlay-desc{
-        font-size:12px;
-      }
-
-      .credit{
-        font-size:12px;
-      }
-
-      .pill{
-        font-size:10px;
       }
     }
   </style>
@@ -1080,20 +1252,23 @@
         </span>
       </a>
 
-      <button class="menu-toggle" id="menuToggle" aria-label="Open menu" aria-expanded="false">
-        <span></span>
-        <span></span>
-        <span></span>
-      </button>
+      <div class="nav-right">
+        <button class="menu-toggle" id="menuToggle" aria-label="Open menu" aria-expanded="false">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
 
-      <nav class="nav-links" id="navLinks">
-        <a href="index.html" class="active">Home</a>
-        <a href="explore.html">Explore</a>
-        <a href="category.html">Categories</a>
-        <a href="about.html">About</a>
-        <a href="upload.html">Upload</a>
-        <a href="contact.html">Contact</a>
-      </nav>
+        <nav class="nav-links" id="navLinks">
+          <a href="index.html" class="active">Home</a>
+          <a href="explore.html">Explore</a>
+          <a href="category.html">Categories</a>
+          <a href="premium.html">Premium</a>
+          <a href="about.html">About</a>
+          <a href="contact.html">Contact</a>
+          <div class="auth-links" id="authNavLinks"></div>
+        </nav>
+      </div>
     </div>
   </header>
 
@@ -1101,9 +1276,13 @@
     <div class="container">
       <div class="hero-content">
         <div class="hero-tag" id="heroTag">Discover fresh visual collections</div>
+
+        <div class="auth-status" id="authStatus"></div>
+
         <h1 id="heroTitle">Discover beautiful photos for creative projects, brands, and inspiration.</h1>
         <p id="heroText">Browse categories, explore standout visuals, and find photos for websites, design work, social media, and creative ideas.</p>
-        <div class="hero-actions">
+
+        <div class="hero-actions" id="heroActions">
           <a href="explore.html" class="btn btn-primary">Explore Photos</a>
           <a href="#featured" class="btn btn-secondary">View Featured</a>
         </div>
@@ -1186,9 +1365,9 @@
     <div class="container">
       <h2 id="ctaTitle">Start exploring the PixNest collection today.</h2>
       <p id="ctaText">Browse curated categories, discover standout images, and enjoy a growing library of free and premium visuals.</p>
-      <div class="cta-actions">
+      <div class="cta-actions" id="ctaActions">
         <a href="explore.html" class="btn btn-primary">Explore Gallery</a>
-        <a href="upload.html" class="btn btn-secondary">Upload Your Work</a>
+        <a href="signup.html" class="btn btn-secondary">Create Account</a>
       </div>
     </div>
   </section>
@@ -1241,6 +1420,8 @@
     </div>
   </div>
 
+  <div class="notice" id="noticeBar"></div>
+
   <footer>
     <div class="container footer-inner">
       <p id="footerText">©️ 2026 PixNest. Discover and share powerful visual collections.</p>
@@ -1262,11 +1443,37 @@
     const SUPABASE_KEY = "sb_publishable_UmF-mmVS42XeF6PqsNnCSw_wpA35wg2";
     const FALLBACK_CATEGORY_IMAGE = "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&w=1200&q=80";
 
+    const LOCKED_SVG =
+      "data:image/svg+xml;charset=UTF-8," +
+      encodeURIComponent(`
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800">
+          <defs>
+            <linearGradient id="g" x1="0" x2="1" y1="0" y2="1">
+              <stop offset="0%" stop-color="#0f172a"/>
+              <stop offset="100%" stop-color="#1e293b"/>
+            </linearGradient>
+          </defs>
+          <rect width="800" height="800" fill="url(#g)"/>
+          <circle cx="400" cy="300" r="95" fill="rgba(250,204,21,0.12)" stroke="rgba(250,204,21,0.35)" stroke-width="6"/>
+          <path d="M350 300v-34c0-28 22-50 50-50s50 22 50 50v34" fill="none" stroke="#facc15" stroke-width="20" stroke-linecap="round"/>
+          <rect x="320" y="300" rx="24" ry="24" width="160" height="150" fill="#111827" stroke="rgba(250,204,21,0.28)" stroke-width="6"/>
+          <circle cx="400" cy="370" r="18" fill="#facc15"/>
+          <rect x="390" y="388" width="20" height="34" rx="10" fill="#facc15"/>
+          <text x="400" y="540" text-anchor="middle" fill="#f8fafc" font-size="38" font-family="Arial, Helvetica, sans-serif" font-weight="700">Premium Photo</text>
+          <text x="400" y="585" text-anchor="middle" fill="#94a3b8" font-size="22" font-family="Arial, Helvetica, sans-serif">Unlock with membership</text>
+        </svg>
+      `);
+
     const { createClient } = supabase;
     const supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY);
 
     const menuToggle = document.getElementById("menuToggle");
     const navLinks = document.getElementById("navLinks");
+
+    const authNavLinks = document.getElementById("authNavLinks");
+    const authStatus = document.getElementById("authStatus");
+    const heroActions = document.getElementById("heroActions");
+    const ctaActions = document.getElementById("ctaActions");
 
     const homeSearchInput = document.getElementById("homeSearchInput");
     const homeSearchBtn = document.getElementById("homeSearchBtn");
@@ -1297,10 +1504,23 @@
     const lightboxTitle = document.getElementById("lightboxTitle");
     const lightboxStatsWrap = document.getElementById("lightboxStatsWrap");
 
+    const noticeBar = document.getElementById("noticeBar");
+
+    let currentUser = null;
+    let rawPhotos = [];
     let allPhotos = [];
-    let siteData = loadAdminData();
     let reactionState = loadReactionState();
     let activeLightboxPhotoId = "";
+    let siteData = loadAdminData();
+
+    function showNotice(text){
+      noticeBar.textContent = text;
+      noticeBar.classList.add("show");
+      clearTimeout(showNotice._timer);
+      showNotice._timer = setTimeout(() => {
+        noticeBar.classList.remove("show");
+      }, 2200);
+    }
 
     function escapeHtml(value = ""){
       return String(value)
@@ -1309,6 +1529,10 @@
         .replace(/>/g, "&gt;")
         .replace(/"/g, "&quot;")
         .replace(/'/g, "&#39;");
+    }
+
+    function normalize(value = ""){
+      return String(value || "").trim().toLowerCase();
     }
 
     function loadAdminData(){
@@ -1353,41 +1577,40 @@
       localStorage.setItem(REACTION_KEY, JSON.stringify(reactionState));
     }
 
-    function getPhotoId(photo){
+    function getMembershipPlan(user){
       return String(
-        photo.id ||
-        photo.photo_id ||
-        photo.image_url ||
-        photo.created_at ||
-        `${photo.category || ""}-${photo.credit || ""}`
-      );
+        user?.app_metadata?.membership_plan ||
+        user?.app_metadata?.plan ||
+        user?.user_metadata?.membership_plan ||
+        user?.user_metadata?.plan ||
+        ""
+      ).trim().toLowerCase();
     }
 
-    function getPhotoById(photoId){
-      return allPhotos.find(photo => getPhotoId(photo) === String(photoId)) || null;
+    function isPremiumMember(user){
+      const plan = getMembershipPlan(user);
+      return ["premium", "premium-monthly", "premium-yearly"].includes(plan);
     }
 
-    function getPhotoReactionState(photoId){
-      return reactionState[String(photoId)] || { liked:false, favourited:false };
+    function isFounder(user){
+      return normalize(user?.app_metadata?.role) === "founder" || user?.app_metadata?.is_admin === true;
     }
 
-    function toggleReaction(photoId, reactionType){
-      const key = reactionType === "like" ? "liked" : "favourited";
-      const current = {
-        liked: !!getPhotoReactionState(photoId).liked,
-        favourited: !!getPhotoReactionState(photoId).favourited
-      };
+    function getDisplayName(user){
+      return String(
+        user?.user_metadata?.full_name ||
+        user?.user_metadata?.name ||
+        user?.email?.split("@")[0] ||
+        "User"
+      ).trim();
+    }
 
-      current[key] = !current[key];
-
-      if(!current.liked && !current.favourited){
-        delete reactionState[String(photoId)];
-      }else{
-        reactionState[String(photoId)] = current;
-      }
-
-      saveReactionState();
-      refreshPhotoDisplays();
+    function getUserAvatar(user){
+      return String(
+        user?.user_metadata?.avatar_url ||
+        user?.user_metadata?.picture ||
+        ""
+      ).trim();
     }
 
     function applyAdminText(){
@@ -1405,6 +1628,172 @@
       if(homepage.ctaTitle) ctaTitle.textContent = homepage.ctaTitle;
       if(homepage.ctaText) ctaText.textContent = homepage.ctaText;
       if(siteData.footerText) footerText.textContent = siteData.footerText;
+    }
+
+    function updateAuthUI(){
+      const founder = isFounder(currentUser);
+      const premium = isPremiumMember(currentUser);
+      const displayName = currentUser ? getDisplayName(currentUser) : "";
+
+      authStatus.innerHTML = "";
+      authNavLinks.innerHTML = "";
+
+      if(currentUser){
+        const authPills = [];
+
+        authPills.push(`
+          <span class="auth-pill">
+            <i class="fa-solid fa-user"></i>
+            Welcome back, ${escapeHtml(displayName)}
+          </span>
+        `);
+
+        if(founder){
+          authPills.push(`
+            <span class="auth-pill founder">
+              <i class="fa-solid fa-crown"></i>
+              Founder
+            </span>
+          `);
+
+          authPills.push(`
+            <span class="auth-pill verified">
+              <i class="fa-solid fa-circle-check"></i>
+              Verified
+            </span>
+          `);
+        }else if(premium){
+          authPills.push(`
+            <span class="auth-pill verified">
+              <i class="fa-solid fa-gem"></i>
+              Premium
+            </span>
+          `);
+        }
+
+        authStatus.innerHTML = authPills.join("");
+
+        const navBits = [];
+
+        if(founder){
+          navBits.push(`<span class="nav-chip founder"><i class="fa-solid fa-crown"></i>Founder</span>`);
+          navBits.push(`<span class="nav-chip verified"><i class="fa-solid fa-circle-check"></i>Verified</span>`);
+        }else if(premium){
+          navBits.push(`<span class="nav-chip verified"><i class="fa-solid fa-gem"></i>Premium</span>`);
+        }
+
+        navBits.push(`
+          <a href="account.html" class="nav-auth-btn secondary">
+            <i class="fa-solid fa-user"></i>
+            Account
+          </a>
+        `);
+
+        navBits.push(`
+          <a href="upload.html" class="nav-auth-btn primary">
+            <i class="fa-solid fa-upload"></i>
+            Upload
+          </a>
+        `);
+
+        navBits.push(`
+          <button type="button" class="nav-auth-btn secondary" id="logoutBtn">
+            <i class="fa-solid fa-right-from-bracket"></i>
+            Logout
+          </button>
+        `);
+
+        authNavLinks.innerHTML = navBits.join("");
+
+        heroActions.innerHTML = `
+          <a href="explore.html" class="btn btn-primary">
+            <i class="fa-solid fa-compass"></i>
+            Explore Photos
+          </a>
+          <a href="account.html" class="btn btn-secondary">
+            <i class="fa-solid fa-user"></i>
+            My Account
+          </a>
+        `;
+
+        ctaActions.innerHTML = `
+          <a href="explore.html" class="btn btn-primary">
+            <i class="fa-solid fa-images"></i>
+            Explore Gallery
+          </a>
+          <a href="upload.html" class="btn btn-secondary">
+            <i class="fa-solid fa-upload"></i>
+            Upload Your Work
+          </a>
+        `;
+
+        const logoutBtn = document.getElementById("logoutBtn");
+        if(logoutBtn){
+          logoutBtn.addEventListener("click", handleLogout);
+        }
+      }else{
+        authStatus.innerHTML = `
+          <span class="auth-pill">
+            <i class="fa-solid fa-user-group"></i>
+            Public visitor mode
+          </span>
+        `;
+
+        authNavLinks.innerHTML = `
+          <a href="login.html" class="nav-auth-btn secondary">
+            <i class="fa-solid fa-right-to-bracket"></i>
+            Login
+          </a>
+          <a href="signup.html" class="nav-auth-btn primary">
+            <i class="fa-solid fa-user-plus"></i>
+            Sign Up
+          </a>
+        `;
+
+        heroActions.innerHTML = `
+          <a href="explore.html" class="btn btn-primary">
+            <i class="fa-solid fa-compass"></i>
+            Explore Photos
+          </a>
+          <a href="signup.html" class="btn btn-secondary">
+            <i class="fa-solid fa-user-plus"></i>
+            Create Account
+          </a>
+        `;
+
+        ctaActions.innerHTML = `
+          <a href="explore.html" class="btn btn-primary">
+            <i class="fa-solid fa-images"></i>
+            Explore Gallery
+          </a>
+          <a href="signup.html" class="btn btn-secondary">
+            <i class="fa-solid fa-user-plus"></i>
+            Join PixNest
+          </a>
+        `;
+      }
+    }
+
+    async function handleLogout(){
+      try{
+        await supabaseClient.auth.signOut();
+        currentUser = null;
+        updateAuthUI();
+        await loadPhotos();
+        showNotice("Logged out successfully.");
+      }catch(error){
+        console.error(error);
+        alert("Could not log out.");
+      }
+    }
+
+    async function initCurrentUser(){
+      try{
+        const { data } = await supabaseClient.auth.getUser();
+        currentUser = data?.user || null;
+      }catch(error){
+        currentUser = null;
+      }
     }
 
     function runHomeSearch(){
@@ -1437,36 +1826,24 @@
       });
     }
 
-    document.querySelectorAll(".nav-links a").forEach(link => {
-      link.addEventListener("click", () => {
-        if(window.innerWidth <= 768){
-          navLinks.classList.remove("show");
-          menuToggle.setAttribute("aria-expanded", "false");
-        }
-      });
-    });
+    function getPhotoId(photo){
+      return String(
+        photo.id ||
+        photo.photo_id ||
+        photo.image_url ||
+        photo.created_at ||
+        `${photo.category || ""}-${photo.credit || ""}`
+      );
+    }
 
-    document.addEventListener("click", (e) => {
-      if(window.innerWidth <= 768 && navLinks.classList.contains("show")){
-        if(!navLinks.contains(e.target) && !menuToggle.contains(e.target)){
-          navLinks.classList.remove("show");
-          menuToggle.setAttribute("aria-expanded", "false");
-        }
-      }
-    });
-
-    window.addEventListener("resize", () => {
-      if(window.innerWidth > 768){
-        navLinks.classList.remove("show");
-        menuToggle.setAttribute("aria-expanded", "false");
-      }
-    });
-
-    function getPhotoTags(photo){
-      return (photo.tags || "")
-        .split(/[,|]/)
-        .map(tag => tag.trim())
-        .filter(Boolean);
+    function getCreatorName(photo){
+      return String(
+        photo.credit ||
+        photo.creator_name ||
+        photo.uploader_name ||
+        photo.author ||
+        "Unknown Creator"
+      ).trim();
     }
 
     function getSafePhotoTitle(photo){
@@ -1475,7 +1852,8 @@
         photo.caption,
         photo.headline,
         photo.custom_title,
-        photo.public_title
+        photo.public_title,
+        photo.title
       ];
 
       const found = possibleFields.find(value => String(value || "").trim());
@@ -1490,6 +1868,10 @@
       return getSafePhotoTitle(photo) || "";
     }
 
+    function getPhotoAlt(photo){
+      return getSafePhotoTitle(photo) || getDescription(photo) || String(photo.category || "PixNest photo");
+    }
+
     function getShareTitle(photo){
       const safeTitle = getSafePhotoTitle(photo);
       const description = getDescription(photo);
@@ -1501,8 +1883,11 @@
       return "Photo on PixNest";
     }
 
-    function getPhotoAlt(photo){
-      return getSafePhotoTitle(photo) || getDescription(photo) || String(photo.category || "PixNest photo");
+    function getPhotoTags(photo){
+      return (photo.tags || "")
+        .split(/[,|]/)
+        .map(tag => tag.trim())
+        .filter(Boolean);
     }
 
     function getNumberValue(photo, keys = []){
@@ -1517,7 +1902,6 @@
           return Number(value);
         }
       }
-
       return 0;
     }
 
@@ -1567,6 +1951,10 @@
         ]),
         favourites: getFavouriteBaseValue(photo)
       };
+    }
+
+    function getPhotoReactionState(photoId){
+      return reactionState[String(photoId)] || { liked:false, favourited:false };
     }
 
     function getPhotoMetrics(photo){
@@ -1623,46 +2011,6 @@
       `;
     }
 
-    function buildCreatorAvatar(photo){
-      const creatorName = (photo.credit || "Unknown").trim();
-      const creatorPhoto = (photo.creator_photo || "").trim();
-
-      if(creatorPhoto){
-        return `<img src="${escapeHtml(creatorPhoto)}" alt="${escapeHtml(creatorName)}">`;
-      }
-
-      const firstLetter = creatorName.charAt(0).toUpperCase() || "P";
-      return `<span>${escapeHtml(firstLetter)}</span>`;
-    }
-
-    function buildSocialButton(url, iconClass, label){
-      if(url){
-        return `
-          <a
-            class="lightbox-social"
-            href="${escapeHtml(url)}"
-            target="_blank"
-            rel="noopener noreferrer"
-            title="${escapeHtml(label)}"
-            aria-label="${escapeHtml(label)}"
-          >
-            <i class="${escapeHtml(iconClass)}"></i>
-          </a>
-        `;
-      }
-
-      return `
-        <button
-          type="button"
-          class="lightbox-social disabled"
-          title="${escapeHtml(label)} unavailable"
-          aria-label="${escapeHtml(label)} unavailable"
-        >
-          <i class="${escapeHtml(iconClass)}"></i>
-        </button>
-      `;
-    }
-
     function sanitizeFileName(value = ""){
       return String(value)
         .toLowerCase()
@@ -1688,7 +2036,7 @@
       const safeTitle = getSafePhotoTitle(photo);
       const description = getDescription(photo);
       const category = String(photo.category || "").trim();
-      const creator = String(photo.credit || "").trim();
+      const creator = String(getCreatorName(photo) || "").trim();
 
       const base =
         sanitizeFileName(safeTitle) ||
@@ -1788,9 +2136,120 @@
       }
     }
 
+    function buildCreatorAvatar(photo){
+      const creatorName = getCreatorName(photo);
+      const creatorPhoto = String(photo.creator_photo || "").trim();
+
+      if(creatorPhoto){
+        return `<img src="${escapeHtml(creatorPhoto)}" alt="${escapeHtml(creatorName)}">`;
+      }
+
+      const firstLetter = creatorName.charAt(0).toUpperCase() || "P";
+      return `<span>${escapeHtml(firstLetter)}</span>`;
+    }
+
+    function isPremiumPhoto(photo){
+      return Boolean(photo?.is_premium || photo?.premium_only);
+    }
+
+    function isOwner(photo){
+      if(!currentUser) return false;
+      const userId = normalize(currentUser.id);
+
+      const ids = [
+        photo.user_id,
+        photo.owner_id,
+        photo.auth_user_id,
+        photo.profile_id,
+        photo.uploader_id
+      ].map(normalize);
+
+      return ids.includes(userId);
+    }
+
+    async function getSignedImageUrl(photo){
+      const bucket = String(photo.storage_bucket || "premium-photos");
+      const path = String(photo.storage_path || "");
+
+      if(!path){
+        return "";
+      }
+
+      try{
+        const { data, error } = await supabaseClient.storage
+          .from(bucket)
+          .createSignedUrl(path, 3600);
+
+        if(error){
+          throw error;
+        }
+
+        return data?.signedUrl || "";
+      }catch(error){
+        console.error("Signed URL error:", error);
+        return "";
+      }
+    }
+
+    async function preparePhotoForDisplay(photo){
+      const premium = isPremiumPhoto(photo);
+      const unlocked = !premium || isPremiumMember(currentUser) || isOwner(photo);
+
+      let resolvedImageUrl = photo.image_url || "";
+
+      if(premium){
+        if(unlocked){
+          resolvedImageUrl = await getSignedImageUrl(photo);
+          if(!resolvedImageUrl && photo.image_url){
+            resolvedImageUrl = photo.image_url;
+          }
+          if(!resolvedImageUrl){
+            resolvedImageUrl = LOCKED_SVG;
+          }
+        }else{
+          resolvedImageUrl = LOCKED_SVG;
+        }
+      }
+
+      return {
+        ...photo,
+        _isPremium: premium,
+        _isLocked: premium && !unlocked,
+        _resolvedImageUrl: resolvedImageUrl || FALLBACK_CATEGORY_IMAGE
+      };
+    }
+
+    function buildSocialButton(url, iconClass, label){
+      if(url){
+        return `
+          <a
+            class="lightbox-social"
+            href="${escapeHtml(url)}"
+            target="_blank"
+            rel="noopener noreferrer"
+            title="${escapeHtml(label)}"
+            aria-label="${escapeHtml(label)}"
+          >
+            <i class="${escapeHtml(iconClass)}"></i>
+          </a>
+        `;
+      }
+
+      return `
+        <button
+          type="button"
+          class="lightbox-social disabled"
+          title="${escapeHtml(label)} unavailable"
+          aria-label="${escapeHtml(label)} unavailable"
+        >
+          <i class="${escapeHtml(iconClass)}"></i>
+        </button>
+      `;
+    }
+
     function buildLightboxActions(photo){
       const shareTitle = getShareTitle(photo);
-      const imageUrl = photo.image_url || "";
+      const imageUrl = photo._resolvedImageUrl || photo.image_url || "";
       const downloadName = getDownloadFileName(photo, imageUrl);
       const actions = [];
 
@@ -1844,6 +2303,7 @@
           setTimeout(() => {
             button.innerHTML = '<i class="fa-solid fa-share-nodes"></i>';
           }, 1200);
+          showNotice("Link copied.");
         }catch(error){
           alert("Link copy failed. You can copy it manually:\n" + url);
         }
@@ -1854,7 +2314,7 @@
       const url = button.getAttribute("data-download-url") || "";
       const fileName = button.getAttribute("data-download-name") || "pixnest-photo.jpg";
 
-      if(!url){
+      if(!url || url === LOCKED_SVG){
         alert("This image is not available for download.");
         return;
       }
@@ -1901,8 +2361,39 @@
       });
     }
 
+    function toggleReaction(photoId, reactionType){
+      const key = reactionType === "like" ? "liked" : "favourited";
+      const current = {
+        liked: !!getPhotoReactionState(photoId).liked,
+        favourited: !!getPhotoReactionState(photoId).favourited
+      };
+
+      current[key] = !current[key];
+
+      if(!current.liked && !current.favourited){
+        delete reactionState[String(photoId)];
+      }else{
+        reactionState[String(photoId)] = current;
+      }
+
+      saveReactionState();
+      refreshPhotoSections();
+    }
+
+    function openLightbox(photo){
+      if(photo._isLocked){
+        window.location.href = "premium.html";
+        return;
+      }
+
+      activeLightboxPhotoId = getPhotoId(photo);
+      renderLightboxContent(photo);
+      lightbox.classList.add("show");
+      document.body.style.overflow = "hidden";
+    }
+
     function renderLightboxContent(photo){
-      const imageUrl = photo.image_url || "";
+      const imageUrl = photo._resolvedImageUrl || photo.image_url || "";
       const safeTitle = getDisplayHeading(photo);
 
       lightboxImage.src = imageUrl;
@@ -1912,10 +2403,10 @@
       lightboxTitle.classList.toggle("is-hidden", !safeTitle);
 
       document.getElementById("lightboxCategory").textContent = photo.category || "Uncategorized";
-      document.getElementById("lightboxCredit").textContent = photo.credit || "Unknown";
+      document.getElementById("lightboxCredit").textContent = getCreatorName(photo) || "Unknown";
       document.getElementById("lightboxTags").textContent = getPhotoTags(photo).join(", ") || "No tags";
       document.getElementById("lightboxDescription").textContent = getDescription(photo) || "No description added.";
-      document.getElementById("lightboxCreatorTop").textContent = photo.credit || "Unknown";
+      document.getElementById("lightboxCreatorTop").textContent = getCreatorName(photo) || "Unknown";
 
       creatorAvatar.innerHTML = buildCreatorAvatar(photo);
       lightboxStatsWrap.innerHTML = buildPhotoStats(photo, "lightbox-stats", false);
@@ -1930,13 +2421,6 @@
 
       bindReactionButtons(lightboxStatsWrap);
       bindDownloadButtons(lightboxActions);
-    }
-
-    function openLightbox(photo){
-      activeLightboxPhotoId = getPhotoId(photo);
-      renderLightboxContent(photo);
-      lightbox.classList.add("show");
-      document.body.style.overflow = "hidden";
     }
 
     function closeLightbox(){
@@ -1964,8 +2448,24 @@
     });
 
     function createOverlayActions(photo){
+      if(photo._isLocked){
+        return `
+          <div class="overlay-actions">
+            <a
+              class="action-icon"
+              href="premium.html"
+              aria-label="Unlock premium"
+              title="Unlock premium"
+              data-stop-card
+            >
+              <i class="fa-solid fa-crown"></i>
+            </a>
+          </div>
+        `;
+      }
+
       const shareText = getShareTitle(photo);
-      const imageUrl = photo.image_url || "";
+      const imageUrl = photo._resolvedImageUrl || photo.image_url || "";
       const downloadName = getDownloadFileName(photo, imageUrl);
 
       return `
@@ -1999,22 +2499,23 @@
 
     function buildPhotoCard(photo){
       const tags = getPhotoTags(photo).slice(0, 4);
-      const description = getDescription(photo);
-      const creatorName = (photo.credit || "Unknown Creator").trim();
+      const description = photo._isLocked ? "Premium members only." : getDescription(photo);
+      const creatorName = getCreatorName(photo) || "Unknown Creator";
       const photoId = getPhotoId(photo);
 
       return `
-        <article class="visual-card" data-photo-id="${escapeHtml(photoId)}">
-          <img src="${escapeHtml(photo.image_url || "")}" alt="${escapeHtml(getPhotoAlt(photo))}">
+        <article class="visual-card ${photo._isLocked ? "locked-card" : ""}" data-photo-id="${escapeHtml(photoId)}">
+          <img src="${escapeHtml(photo._resolvedImageUrl || photo.image_url || "")}" alt="${escapeHtml(photo._isLocked ? "Premium photo" : getPhotoAlt(photo))}">
           <div class="photo-overlay">
             <div class="meta">
               <span class="pill">${escapeHtml(photo.category || "Photo")}</span>
               ${photo.featured ? `<span class="pill featured">Featured</span>` : ``}
-              ${tags.map(tag => `<span class="pill">${escapeHtml(tag)}</span>`).join("")}
+              ${photo._isPremium ? `<span class="pill premium">Premium</span>` : ``}
+              ${!photo._isLocked ? tags.map(tag => `<span class="pill">${escapeHtml(tag)}</span>`).join("") : ``}
             </div>
             ${description ? `<p class="overlay-desc">${escapeHtml(description)}</p>` : ""}
             <div class="credit">By ${escapeHtml(creatorName)}</div>
-            ${buildPhotoStats(photo)}
+            ${!photo._isLocked ? buildPhotoStats(photo) : ""}
             ${createOverlayActions(photo)}
           </div>
         </article>
@@ -2049,7 +2550,7 @@
 
     function renderStats(){
       const categoryCount = new Set(allPhotos.map(photo => (photo.category || "").trim()).filter(Boolean)).size;
-      const creatorCount = new Set(allPhotos.map(photo => (photo.credit || "").trim()).filter(Boolean)).size;
+      const creatorCount = new Set(allPhotos.map(photo => getCreatorName(photo)).filter(Boolean)).size;
       const featuredCount = allPhotos.filter(photo => photo.featured).length;
 
       statsWrap.innerHTML = `
@@ -2126,10 +2627,11 @@
 
       categoryGrid.innerHTML = categories.map(category => {
         const items = Array.isArray(category.photos) ? category.photos : [];
-        const featuredPhoto = items.find(item => item.featured);
-        const cover = featuredPhoto || items[0];
+        const featuredPhoto = items.find(item => item.featured && !item._isLocked);
+        const cover = featuredPhoto || items.find(item => !item._isLocked) || items[0];
         const featuredCount = items.filter(item => item.featured).length;
-        const coverImage = cover && cover.image_url ? cover.image_url : FALLBACK_CATEGORY_IMAGE;
+        const premiumCount = items.filter(item => item._isPremium).length;
+        const coverImage = cover && (cover._resolvedImageUrl || cover.image_url) ? (cover._resolvedImageUrl || cover.image_url) : FALLBACK_CATEGORY_IMAGE;
 
         return `
           <a href="category.html?category=${encodeURIComponent(category.name)}" class="category-card">
@@ -2140,6 +2642,7 @@
               <div class="category-meta">
                 <span class="pill">${items.length} photo${items.length === 1 ? "" : "s"}</span>
                 ${featuredCount ? `<span class="pill featured">${featuredCount} featured</span>` : ``}
+                ${premiumCount ? `<span class="pill premium">${premiumCount} premium</span>` : ``}
               </div>
               <h3>${escapeHtml(category.name)}</h3>
               <p>${escapeHtml(category.description || `Browse photos in the ${category.name} collection.`)}</p>
@@ -2181,12 +2684,14 @@
       activatePhotoCards(rows, trendingGrid);
     }
 
-    function refreshPhotoDisplays(){
+    function refreshPhotoSections(){
+      renderStats();
+      renderCategories();
       renderFeatured();
       renderTrending();
 
       if(activeLightboxPhotoId && lightbox.classList.contains("show")){
-        const activePhoto = getPhotoById(activeLightboxPhotoId);
+        const activePhoto = allPhotos.find(photo => getPhotoId(photo) === String(activeLightboxPhotoId));
         if(activePhoto){
           renderLightboxContent(activePhoto);
         }
@@ -2204,13 +2709,11 @@
           throw error;
         }
 
-        allPhotos = Array.isArray(data) ? data : [];
+        rawPhotos = Array.isArray(data) ? data : [];
+        allPhotos = await Promise.all(rawPhotos.map(preparePhotoForDisplay));
 
         applyAdminText();
-        renderStats();
-        renderCategories();
-        renderFeatured();
-        renderTrending();
+        refreshPhotoSections();
       }catch(error){
         console.error(error);
         categoryGrid.innerHTML = `<div class="empty-box">Could not load categories from Supabase.</div>`;
@@ -2219,10 +2722,19 @@
       }
     }
 
-    applyAdminText();
-    loadPhotos();
+    supabaseClient.auth.onAuthStateChange(async () => {
+      await initCurrentUser();
+      updateAuthUI();
+      await loadPhotos();
+    });
+
+    (async function init(){
+      await initCurrentUser();
+      updateAuthUI();
+      applyAdminText();
+      await loadPhotos();
+    })();
   </script>
 </body>
 </html>
-
  
