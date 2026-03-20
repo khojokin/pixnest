@@ -568,10 +568,16 @@
       padding:6px 10px;
       border-radius:999px;
       font-size:12px;
-      background:rgba(255,255,255,.12);
+      background:rgba(0,0,0,.68);
       border:1px solid rgba(255,255,255,.12);
       color:#fff;
-      backdrop-filter:blur(6px);
+      backdrop-filter:blur(8px);
+    }
+
+    .pill.category-tag{
+      background:rgba(0,0,0,.76);
+      color:#fff;
+      border:1px solid rgba(255,255,255,.14);
     }
 
     .pill.featured{
@@ -581,9 +587,10 @@
     }
 
     .pill.premium{
-      background:rgba(59,130,246,.12);
-      border-color:rgba(59,130,246,.24);
-      color:#93c5fd;
+      background:rgba(250,204,21,.18);
+      border:1px solid rgba(250,204,21,.38);
+      color:#fde68a;
+      box-shadow:0 8px 22px rgba(250,204,21,.12);
     }
 
     .photo-grid{
@@ -642,12 +649,15 @@
       top:16px;
       right:16px;
       z-index:3;
-      background:#facc15;
-      color:#111827;
+      background:rgba(250,204,21,.18);
+      border:1px solid rgba(250,204,21,.42);
+      color:#fde68a;
       font-size:12px;
       font-weight:800;
-      padding:6px 10px;
+      padding:7px 12px;
       border-radius:999px;
+      backdrop-filter:blur(10px);
+      box-shadow:0 10px 24px rgba(250,204,21,.12);
     }
 
     .photo-overlay{
@@ -719,6 +729,7 @@
 
     .photo-stat.react-btn{
       cursor:pointer;
+      border:none;
     }
 
     .photo-stat.react-btn:hover{
@@ -873,23 +884,57 @@
       color:#fff;
       font-size:20px;
       cursor:pointer;
+      z-index:10;
     }
 
     .lightbox-close:hover{
       color:var(--accent);
     }
 
+    .creator-profile-shell{
+      background:#0f172a;
+      border:1px solid var(--line);
+      border-radius:22px;
+      overflow:hidden;
+      margin-bottom:18px;
+    }
+
+    .creator-cover{
+      height:150px;
+      background:center/cover no-repeat #1e293b;
+      position:relative;
+    }
+
+    .creator-cover::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:linear-gradient(to bottom, rgba(15,23,42,.16), rgba(15,23,42,.78));
+    }
+
+    .creator-profile-card{
+      position:relative;
+      margin-top:-34px;
+      padding:0 18px 18px;
+    }
+
     .creator-top{
       display:flex;
-      align-items:center;
+      align-items:flex-end;
       gap:14px;
-      margin-bottom:18px;
+      flex-wrap:wrap;
+      margin-bottom:14px;
       padding-right:56px;
     }
 
+    .creator-top-text{
+      flex:1;
+      min-width:180px;
+    }
+
     .creator-avatar{
-      width:58px;
-      height:58px;
+      width:72px;
+      height:72px;
       border-radius:50%;
       overflow:hidden;
       background:linear-gradient(135deg,#facc15,#fb7185);
@@ -897,10 +942,11 @@
       display:flex;
       align-items:center;
       justify-content:center;
-      font-size:22px;
+      font-size:24px;
       font-weight:800;
       flex-shrink:0;
-      border:2px solid rgba(255,255,255,.12);
+      border:3px solid rgba(255,255,255,.14);
+      box-shadow:0 10px 24px rgba(0,0,0,.2);
     }
 
     .creator-avatar img{
@@ -923,6 +969,87 @@
       font-size:18px;
       line-height:1.3;
       word-break:break-word;
+    }
+
+    .creator-main-link{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      min-height:42px;
+      padding:10px 14px;
+      border-radius:12px;
+      background:rgba(250,204,21,.14);
+      border:1px solid rgba(250,204,21,.28);
+      color:#fde68a;
+      font-size:13px;
+      font-weight:700;
+    }
+
+    .creator-main-link:hover{
+      transform:translateY(-2px);
+    }
+
+    .creator-social-proof{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-bottom:12px;
+    }
+
+    .creator-count{
+      min-width:92px;
+      padding:10px 12px;
+      border-radius:14px;
+      background:#111827;
+      border:1px solid var(--line);
+    }
+
+    .creator-count strong{
+      display:block;
+      color:#ffffff;
+      font-size:16px;
+      line-height:1.1;
+    }
+
+    .creator-count span{
+      display:block;
+      color:var(--muted);
+      font-size:12px;
+      margin-top:4px;
+    }
+
+    .creator-menu-actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    .creator-action-btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      min-height:40px;
+      padding:10px 14px;
+      border-radius:12px;
+      background:#111827;
+      border:1px solid var(--line);
+      color:#e5e7eb;
+      font-size:13px;
+      font-weight:700;
+      cursor:pointer;
+    }
+
+    .creator-action-btn:hover{
+      transform:translateY(-2px);
+      border-color:rgba(250,204,21,.24);
+      color:var(--accent);
+    }
+
+    .creator-action-btn.danger:hover{
+      color:#fca5a5;
+      border-color:rgba(239,68,68,.26);
     }
 
     .lightbox-title{
@@ -1007,6 +1134,67 @@
       color:#e5e7eb;
       font-size:14px;
       word-break:break-word;
+    }
+
+    .creator-posts-wrap{
+      margin-top:20px;
+    }
+
+    .creator-posts-title{
+      font-size:18px;
+      color:#fff;
+      margin-bottom:12px;
+    }
+
+    .creator-posts-grid{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:10px;
+    }
+
+    .creator-post-card{
+      border:none;
+      background:#0f172a;
+      border:1px solid var(--line);
+      border-radius:16px;
+      overflow:hidden;
+      cursor:pointer;
+      text-align:left;
+      color:#fff;
+    }
+
+    .creator-post-card:hover{
+      transform:translateY(-3px);
+      border-color:rgba(250,204,21,.24);
+    }
+
+    .creator-post-card img{
+      width:100%;
+      height:110px;
+      object-fit:cover;
+      background:#1e293b;
+    }
+
+    .creator-post-info{
+      padding:10px;
+    }
+
+    .creator-post-info small{
+      display:block;
+      color:#cbd5e1;
+      font-size:12px;
+      line-height:1.35;
+    }
+
+    .creator-post-empty{
+      grid-column:1 / -1;
+      background:#0f172a;
+      border:1px dashed var(--line);
+      border-radius:16px;
+      padding:14px;
+      color:var(--muted);
+      text-align:center;
+      font-size:14px;
     }
 
     .notice{
@@ -1160,7 +1348,8 @@
       .stats,
       .category-grid,
       .photo-grid,
-      .search-bar{
+      .search-bar,
+      .creator-posts-grid{
         grid-template-columns:1fr;
       }
 
@@ -1236,6 +1425,24 @@
 
       .visual-card{
         min-height:400px;
+      }
+
+      .creator-top{
+        align-items:flex-start;
+      }
+
+      .creator-main-link{
+        width:100%;
+      }
+
+      .creator-social-proof,
+      .creator-menu-actions{
+        flex-direction:column;
+      }
+
+      .creator-count,
+      .creator-action-btn{
+        width:100%;
       }
     }
   </style>
@@ -1381,11 +1588,26 @@
       <div class="lightbox-info">
         <button class="lightbox-close" id="lightboxClose" aria-label="Close">×</button>
 
-        <div class="creator-top">
-          <div class="creator-avatar" id="creatorAvatar"></div>
-          <div>
-            <small>Creator</small>
-            <strong id="lightboxCreatorTop">Unknown</strong>
+        <div class="creator-profile-shell">
+          <div class="creator-cover" id="creatorCover"></div>
+
+          <div class="creator-profile-card">
+            <div class="creator-top">
+              <div class="creator-avatar" id="creatorAvatar"></div>
+
+              <div class="creator-top-text">
+                <small>Creator</small>
+                <strong id="lightboxCreatorTop">Unknown</strong>
+              </div>
+
+              <a href="#" class="creator-main-link" id="openCreatorProfileBtn">
+                <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                Open Profile
+              </a>
+            </div>
+
+            <div class="creator-social-proof" id="creatorSocialProof"></div>
+            <div class="creator-menu-actions" id="creatorMenuActions"></div>
           </div>
         </div>
 
@@ -1416,6 +1638,11 @@
             <span id="lightboxDescription">—</span>
           </div>
         </div>
+
+        <div class="creator-posts-wrap">
+          <h4 class="creator-posts-title">More from this creator</h4>
+          <div class="creator-posts-grid" id="creatorPostsGrid"></div>
+        </div>
       </div>
     </div>
   </div>
@@ -1439,6 +1666,8 @@
   <script>
     const STORAGE_KEY = "pixnest_admin_v2";
     const REACTION_KEY = "pixnest_photo_reactions_v1";
+    const CREATOR_PREFS_KEY = "pixnest_creator_prefs_v1";
+    const VIEWED_SESSION_KEY = "pixnest_viewed_session_v1";
     const SUPABASE_URL = "https://vigczssznfvujttdapbv.supabase.co";
     const SUPABASE_KEY = "sb_publishable_UmF-mmVS42XeF6PqsNnCSw_wpA35wg2";
     const FALLBACK_CATEGORY_IMAGE = "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&w=1200&q=80";
@@ -1500,6 +1729,11 @@
     const lightboxClose = document.getElementById("lightboxClose");
     const lightboxImage = document.getElementById("lightboxImage");
     const creatorAvatar = document.getElementById("creatorAvatar");
+    const creatorCover = document.getElementById("creatorCover");
+    const creatorSocialProof = document.getElementById("creatorSocialProof");
+    const creatorMenuActions = document.getElementById("creatorMenuActions");
+    const creatorPostsGrid = document.getElementById("creatorPostsGrid");
+    const openCreatorProfileBtn = document.getElementById("openCreatorProfileBtn");
     const lightboxActions = document.getElementById("lightboxActions");
     const lightboxTitle = document.getElementById("lightboxTitle");
     const lightboxStatsWrap = document.getElementById("lightboxStatsWrap");
@@ -1510,6 +1744,8 @@
     let rawPhotos = [];
     let allPhotos = [];
     let reactionState = loadReactionState();
+    let creatorPrefs = loadCreatorPrefs();
+    let viewedSession = loadViewedSession();
     let activeLightboxPhotoId = "";
     let siteData = loadAdminData();
 
@@ -1533,6 +1769,14 @@
 
     function normalize(value = ""){
       return String(value || "").trim().toLowerCase();
+    }
+
+    function compactNumber(value){
+      try{
+        return new Intl.NumberFormat("en", { notation:"compact", maximumFractionDigits:1 }).format(Number(value || 0));
+      }catch(error){
+        return String(value || 0);
+      }
     }
 
     function loadAdminData(){
@@ -1575,6 +1819,34 @@
 
     function saveReactionState(){
       localStorage.setItem(REACTION_KEY, JSON.stringify(reactionState));
+    }
+
+    function loadCreatorPrefs(){
+      try{
+        const saved = localStorage.getItem(CREATOR_PREFS_KEY);
+        const parsed = JSON.parse(saved || "{}");
+        return parsed && typeof parsed === "object" ? parsed : {};
+      }catch(error){
+        return {};
+      }
+    }
+
+    function saveCreatorPrefs(){
+      localStorage.setItem(CREATOR_PREFS_KEY, JSON.stringify(creatorPrefs));
+    }
+
+    function loadViewedSession(){
+      try{
+        const saved = sessionStorage.getItem(VIEWED_SESSION_KEY);
+        const parsed = JSON.parse(saved || "{}");
+        return parsed && typeof parsed === "object" ? parsed : {};
+      }catch(error){
+        return {};
+      }
+    }
+
+    function saveViewedSession(){
+      sessionStorage.setItem(VIEWED_SESSION_KEY, JSON.stringify(viewedSession));
     }
 
     function getMembershipPlan(user){
@@ -1844,6 +2116,38 @@
         photo.author ||
         "Unknown Creator"
       ).trim();
+    }
+
+    function getCreatorKey(photo){
+      return String(
+        photo.creator_id ||
+        photo.profile_id ||
+        photo.user_id ||
+        photo.owner_id ||
+        photo.auth_user_id ||
+        getCreatorName(photo)
+      ).trim().toLowerCase();
+    }
+
+    function getCreatorPref(photo){
+      return creatorPrefs[getCreatorKey(photo)] || {};
+    }
+
+    function isCreatorBlocked(photo){
+      return !!getCreatorPref(photo).blocked;
+    }
+
+    function isCreatorHidden(photo){
+      return !!getCreatorPref(photo).hidden;
+    }
+
+    function updateCreatorPref(photo, updates = {}){
+      const key = getCreatorKey(photo);
+      creatorPrefs[key] = {
+        ...(creatorPrefs[key] || {}),
+        ...updates
+      };
+      saveCreatorPrefs();
     }
 
     function getSafePhotoTitle(photo){
@@ -2138,7 +2442,13 @@
 
     function buildCreatorAvatar(photo){
       const creatorName = getCreatorName(photo);
-      const creatorPhoto = String(photo.creator_photo || "").trim();
+      const creatorPhoto = String(
+        photo.creator_photo ||
+        photo.creator_avatar ||
+        photo.avatar_url ||
+        photo.profile_photo ||
+        ""
+      ).trim();
 
       if(creatorPhoto){
         return `<img src="${escapeHtml(creatorPhoto)}" alt="${escapeHtml(creatorName)}">`;
@@ -2245,6 +2555,138 @@
           <i class="${escapeHtml(iconClass)}"></i>
         </button>
       `;
+    }
+
+    function getCreatorProfileHref(photo){
+      if(isOwner(photo)){
+        return "account.html";
+      }
+
+      const creatorKey = getCreatorKey(photo);
+      const creatorName = getCreatorName(photo);
+      return `profile.html?creator=${encodeURIComponent(creatorKey)}&name=${encodeURIComponent(creatorName)}`;
+    }
+
+    function getCreatorCoverImage(photo){
+      return String(
+        photo.creator_cover ||
+        photo.creator_cover_url ||
+        photo.cover_image ||
+        photo.creator_banner ||
+        photo.creator_background ||
+        photo.creator_background_image ||
+        photo._resolvedImageUrl ||
+        photo.image_url ||
+        FALLBACK_CATEGORY_IMAGE
+      ).trim();
+    }
+
+    function getCreatorPhotos(photo){
+      const creatorKey = getCreatorKey(photo);
+      return allPhotos.filter(item => getCreatorKey(item) === creatorKey);
+    }
+
+    function getCreatorMetricValue(photo, keys = []){
+      const creatorPhotos = getCreatorPhotos(photo);
+      for(const item of creatorPhotos){
+        const value = getNumberValue(item, keys);
+        if(value) return value;
+      }
+      return getNumberValue(photo, keys);
+    }
+
+    function buildCreatorSocialProof(photo){
+      const posts = getCreatorPhotos(photo).length;
+      const followers = getCreatorMetricValue(photo, [
+        "creator_followers",
+        "followers",
+        "followers_count",
+        "follower_count",
+        "creator_follower_count"
+      ]);
+      const following = getCreatorMetricValue(photo, [
+        "creator_following",
+        "following",
+        "following_count",
+        "creator_following_count"
+      ]);
+
+      return `
+        <div class="creator-count">
+          <strong>${escapeHtml(compactNumber(followers))}</strong>
+          <span>Followers</span>
+        </div>
+        <div class="creator-count">
+          <strong>${escapeHtml(compactNumber(following))}</strong>
+          <span>Following</span>
+        </div>
+        <div class="creator-count">
+          <strong>${escapeHtml(compactNumber(posts))}</strong>
+          <span>Posts</span>
+        </div>
+      `;
+    }
+
+    function buildCreatorMenuActions(photo){
+      const blocked = isCreatorBlocked(photo);
+      const hidden = isCreatorHidden(photo);
+
+      return `
+        <button type="button" class="creator-action-btn danger" data-creator-action="block">
+          <i class="fa-solid fa-ban"></i>
+          ${blocked ? "Unblock Creator" : "Block Creator"}
+        </button>
+
+        <button type="button" class="creator-action-btn danger" data-creator-action="report">
+          <i class="fa-solid fa-flag"></i>
+          Report Profile
+        </button>
+
+        <button type="button" class="creator-action-btn" data-creator-action="share-profile">
+          <i class="fa-solid fa-share-nodes"></i>
+          Share Profile
+        </button>
+
+        <button type="button" class="creator-action-btn" data-creator-action="hide">
+          <i class="fa-solid fa-eye-slash"></i>
+          ${hidden ? "Unhide Profile" : "Hide Profile"}
+        </button>
+      `;
+    }
+
+    function renderCreatorPosts(photo){
+      const currentId = getPhotoId(photo);
+      const rows = getCreatorPhotos(photo)
+        .filter(item => getPhotoId(item) !== currentId)
+        .slice(0, 6);
+
+      if(!rows.length){
+        creatorPostsGrid.innerHTML = `<div class="creator-post-empty">No other posts from this creator yet.</div>`;
+        return;
+      }
+
+      creatorPostsGrid.innerHTML = rows.map(item => {
+        const title = getDisplayHeading(item) || getDescription(item) || item.category || "PixNest photo";
+        const thumb = item._resolvedImageUrl || item.image_url || FALLBACK_CATEGORY_IMAGE;
+        return `
+          <button type="button" class="creator-post-card" data-creator-photo-id="${escapeHtml(getPhotoId(item))}">
+            <img src="${escapeHtml(thumb)}" alt="${escapeHtml(getPhotoAlt(item))}">
+            <div class="creator-post-info">
+              <small>${escapeHtml(title)}</small>
+            </div>
+          </button>
+        `;
+      }).join("");
+
+      creatorPostsGrid.querySelectorAll(".creator-post-card").forEach(button => {
+        button.addEventListener("click", async () => {
+          const photoId = button.getAttribute("data-creator-photo-id");
+          const selected = allPhotos.find(item => getPhotoId(item) === String(photoId));
+          if(selected){
+            await openLightbox(selected);
+          }
+        });
+      });
     }
 
     function buildLightboxActions(photo){
@@ -2380,16 +2822,163 @@
       refreshPhotoSections();
     }
 
-    function openLightbox(photo){
+    function getVisiblePhotos(){
+      return allPhotos.filter(photo => !isCreatorBlocked(photo) && !isCreatorHidden(photo));
+    }
+
+    function getViewColumnName(photo){
+      if(Object.prototype.hasOwnProperty.call(photo, "views")) return "views";
+      if(Object.prototype.hasOwnProperty.call(photo, "view_count")) return "view_count";
+      if(Object.prototype.hasOwnProperty.call(photo, "views_count")) return "views_count";
+      if(Object.prototype.hasOwnProperty.call(photo, "total_views")) return "total_views";
+      return "views";
+    }
+
+    function applyLocalViewIncrement(photo){
+      const photoId = getPhotoId(photo);
+      const column = getViewColumnName(photo);
+
+      rawPhotos = rawPhotos.map(item => {
+        if(getPhotoId(item) !== photoId) return item;
+        return {
+          ...item,
+          [column]: getNumberValue(item, [column]) + 1
+        };
+      });
+
+      allPhotos = allPhotos.map(item => {
+        if(getPhotoId(item) !== photoId) return item;
+        return {
+          ...item,
+          [column]: getNumberValue(item, [column]) + 1
+        };
+      });
+    }
+
+    async function incrementPhotoViews(photo){
+      if(photo._isLocked) return;
+
+      const stableId = String(photo.id || getPhotoId(photo));
+      if(viewedSession[stableId]) return;
+
+      viewedSession[stableId] = true;
+      saveViewedSession();
+
+      applyLocalViewIncrement(photo);
+
+      if(lightbox.classList.contains("show")){
+        const activePhoto = allPhotos.find(item => getPhotoId(item) === getPhotoId(photo));
+        if(activePhoto){
+          renderLightboxContent(activePhoto);
+        }
+      }
+
+      refreshPhotoSections();
+
+      if(!photo.id){
+        return;
+      }
+
+      try{
+        const column = getViewColumnName(photo);
+        const currentValue = getNumberValue(photo, [column]);
+        const nextValue = currentValue + 1;
+
+        const { error } = await supabaseClient
+          .from("photos")
+          .update({ [column]: nextValue })
+          .eq("id", photo.id);
+
+        if(error){
+          console.error("View update failed:", error);
+        }
+      }catch(error){
+        console.error("View increment error:", error);
+      }
+    }
+
+    async function openLightbox(photo){
       if(photo._isLocked){
         window.location.href = "premium.html";
         return;
       }
 
-      activeLightboxPhotoId = getPhotoId(photo);
-      renderLightboxContent(photo);
+      await incrementPhotoViews(photo);
+
+      const freshPhoto = allPhotos.find(item => getPhotoId(item) === getPhotoId(photo)) || photo;
+      activeLightboxPhotoId = getPhotoId(freshPhoto);
+      renderLightboxContent(freshPhoto);
       lightbox.classList.add("show");
       document.body.style.overflow = "hidden";
+    }
+
+    async function shareProfileLink(photo, button){
+      const href = new URL(getCreatorProfileHref(photo), window.location.href).href;
+      const title = `${getCreatorName(photo)} on PixNest`;
+
+      if(navigator.share){
+        try{
+          await navigator.share({ title, url: href });
+        }catch(error){
+        }
+      }else{
+        try{
+          await navigator.clipboard.writeText(href);
+          if(button){
+            const old = button.innerHTML;
+            button.innerHTML = '<i class="fa-solid fa-check"></i> Copied';
+            setTimeout(() => {
+              button.innerHTML = old;
+            }, 1200);
+          }
+          showNotice("Profile link copied.");
+        }catch(error){
+          alert("Could not copy profile link.");
+        }
+      }
+    }
+
+    function bindCreatorMenuActions(photo){
+      creatorMenuActions.querySelectorAll("[data-creator-action]").forEach(button => {
+        button.addEventListener("click", async () => {
+          const action = button.getAttribute("data-creator-action");
+
+          if(action === "block"){
+            const blocked = isCreatorBlocked(photo);
+            updateCreatorPref(photo, { blocked: !blocked });
+            if(!blocked){
+              showNotice("Creator blocked.");
+              closeLightbox();
+            }else{
+              showNotice("Creator unblocked.");
+            }
+            refreshPhotoSections();
+            return;
+          }
+
+          if(action === "hide"){
+            const hidden = isCreatorHidden(photo);
+            updateCreatorPref(photo, { hidden: !hidden });
+            if(!hidden){
+              showNotice("Profile hidden from your feed.");
+              closeLightbox();
+            }else{
+              showNotice("Profile visible again.");
+            }
+            refreshPhotoSections();
+            return;
+          }
+
+          if(action === "report"){
+            showNotice("Profile reported.");
+            return;
+          }
+
+          if(action === "share-profile"){
+            await shareProfileLink(photo, button);
+          }
+        });
+      });
     }
 
     function renderLightboxContent(photo){
@@ -2409,6 +2998,12 @@
       document.getElementById("lightboxCreatorTop").textContent = getCreatorName(photo) || "Unknown";
 
       creatorAvatar.innerHTML = buildCreatorAvatar(photo);
+      creatorCover.style.backgroundImage = `url("${getCreatorCoverImage(photo).replace(/"/g, '\\"')}")`;
+      creatorSocialProof.innerHTML = buildCreatorSocialProof(photo);
+      creatorMenuActions.innerHTML = buildCreatorMenuActions(photo);
+
+      openCreatorProfileBtn.href = getCreatorProfileHref(photo);
+
       lightboxStatsWrap.innerHTML = buildPhotoStats(photo, "lightbox-stats", false);
       lightboxActions.innerHTML = buildLightboxActions(photo);
 
@@ -2419,6 +3014,8 @@
         });
       }
 
+      bindCreatorMenuActions(photo);
+      renderCreatorPosts(photo);
       bindReactionButtons(lightboxStatsWrap);
       bindDownloadButtons(lightboxActions);
     }
@@ -2429,6 +3026,10 @@
       document.body.style.overflow = "";
       lightboxActions.innerHTML = "";
       lightboxStatsWrap.innerHTML = "";
+      creatorSocialProof.innerHTML = "";
+      creatorMenuActions.innerHTML = "";
+      creatorPostsGrid.innerHTML = "";
+      creatorCover.style.backgroundImage = "";
       lightboxImage.src = "";
       lightboxImage.alt = "Large view";
     }
@@ -2508,10 +3109,10 @@
           <img src="${escapeHtml(photo._resolvedImageUrl || photo.image_url || "")}" alt="${escapeHtml(photo._isLocked ? "Premium photo" : getPhotoAlt(photo))}">
           <div class="photo-overlay">
             <div class="meta">
-              <span class="pill">${escapeHtml(photo.category || "Photo")}</span>
+              <span class="pill category-tag">${escapeHtml(photo.category || "Photo")}</span>
               ${photo.featured ? `<span class="pill featured">Featured</span>` : ``}
               ${photo._isPremium ? `<span class="pill premium">Premium</span>` : ``}
-              ${!photo._isLocked ? tags.map(tag => `<span class="pill">${escapeHtml(tag)}</span>`).join("") : ``}
+              ${!photo._isLocked ? tags.map(tag => `<span class="pill category-tag">${escapeHtml(tag)}</span>`).join("") : ``}
             </div>
             ${description ? `<p class="overlay-desc">${escapeHtml(description)}</p>` : ""}
             <div class="credit">By ${escapeHtml(creatorName)}</div>
@@ -2528,11 +3129,11 @@
         const photo = rows.find(item => getPhotoId(item) === String(photoId));
         if(!photo) return;
 
-        card.addEventListener("click", (e) => {
+        card.addEventListener("click", async (e) => {
           if(e.target.closest("[data-stop-card]")){
             return;
           }
-          openLightbox(photo);
+          await openLightbox(photo);
         });
       });
 
@@ -2549,13 +3150,14 @@
     }
 
     function renderStats(){
-      const categoryCount = new Set(allPhotos.map(photo => (photo.category || "").trim()).filter(Boolean)).size;
-      const creatorCount = new Set(allPhotos.map(photo => getCreatorName(photo)).filter(Boolean)).size;
-      const featuredCount = allPhotos.filter(photo => photo.featured).length;
+      const visiblePhotos = getVisiblePhotos();
+      const categoryCount = new Set(visiblePhotos.map(photo => (photo.category || "").trim()).filter(Boolean)).size;
+      const creatorCount = new Set(visiblePhotos.map(photo => getCreatorName(photo)).filter(Boolean)).size;
+      const featuredCount = visiblePhotos.filter(photo => photo.featured).length;
 
       statsWrap.innerHTML = `
         <div class="stat">
-          <strong>${allPhotos.length}+</strong>
+          <strong>${visiblePhotos.length}+</strong>
           <span>Uploaded Photos</span>
         </div>
         <div class="stat">
@@ -2584,9 +3186,10 @@
     }
 
     function renderCategories(){
+      const visiblePhotos = getVisiblePhotos();
       const grouped = {};
 
-      allPhotos.forEach(photo => {
+      visiblePhotos.forEach(photo => {
         const category = (photo.category || "").trim();
         if(!category) return;
 
@@ -2640,7 +3243,7 @@
             </div>
             <div class="category-content">
               <div class="category-meta">
-                <span class="pill">${items.length} photo${items.length === 1 ? "" : "s"}</span>
+                <span class="pill category-tag">${items.length} photo${items.length === 1 ? "" : "s"}</span>
                 ${featuredCount ? `<span class="pill featured">${featuredCount} featured</span>` : ``}
                 ${premiumCount ? `<span class="pill premium">${premiumCount} premium</span>` : ``}
               </div>
@@ -2657,7 +3260,8 @@
     }
 
     function renderFeatured(){
-      const rows = allPhotos.filter(photo => photo.featured).slice(0, 6);
+      const visiblePhotos = getVisiblePhotos();
+      const rows = visiblePhotos.filter(photo => photo.featured).slice(0, 6);
 
       if(!rows.length){
         featuredGrid.innerHTML = `<div class="empty-box">Featured photos will appear here when available.</div>`;
@@ -2669,11 +3273,17 @@
     }
 
     function renderTrending(){
-      let rows = allPhotos.filter(photo => !photo.featured).slice(0, 6);
+      const visiblePhotos = getVisiblePhotos();
 
-      if(!rows.length){
-        rows = allPhotos.slice(0, 6);
-      }
+      const rows = [...visiblePhotos]
+        .sort((a, b) => {
+          const aMetrics = getPhotoMetrics(a);
+          const bMetrics = getPhotoMetrics(b);
+          const aScore = (aMetrics.views * 2) + (aMetrics.likes * 2) + (aMetrics.favourites * 2) + (a.featured ? 1 : 0);
+          const bScore = (bMetrics.views * 2) + (bMetrics.likes * 2) + (bMetrics.favourites * 2) + (b.featured ? 1 : 0);
+          return bScore - aScore;
+        })
+        .slice(0, 6);
 
       if(!rows.length){
         trendingGrid.innerHTML = `<div class="empty-box">Trending photos will appear here when the collection is loaded.</div>`;
@@ -2737,4 +3347,8 @@
   </script>
 </body>
 </html>
+ 
+
+
+
  
