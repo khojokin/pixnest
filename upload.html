@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -734,6 +734,7 @@
         <a href="index.html">Home</a>
         <a href="explore.html">Explore</a>
         <a href="category.html">Categories</a>
+        <a href="about.html">About</a>
         <a href="upload.html" class="active">Upload</a>
         <a href="contact.html">Contact</a>
       </nav>
@@ -911,389 +912,410 @@
       </div>
     </div>
   </footer>
+<script>
+  const STORAGE_KEY = "pixnest_admin_v2";
+  const SUPABASE_URL = "https://vigczssznfvujttdapbv.supabase.co";
+  const SUPABASE_KEY = "sb_publishable_UmF-mmVS42XeF6PqsNnCSw_wpA35wg2";
+  const PHOTOS_BUCKET = "photos";
+  const CREATOR_BUCKET = "creator-photos";
+  const DEFAULT_PREVIEW_IMAGE = "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&w=1200&q=80";
 
-  <script>
-    const SUPABASE_URL = "https://vigczssznfvuijttdapbv.supabase.co";
-const SUPABASE_KEY = "sb_publishable_UmF-mmVS42XeF6PqsNnCSw_wpA35wg2";
-     const PHOTOS_BUCKET = "photos";
-    const CREATOR_BUCKET = "creator-photos";
-    const ADMIN_STORAGE_KEY = "pixnest_admin_v2";
+  const { createClient } = supabase;
+  const supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    const { createClient } = supabase;
-    const supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY);
+  const menuToggle = document.getElementById("menuToggle");
+  const navLinks = document.getElementById("navLinks");
 
-    const menuToggle = document.getElementById("menuToggle");
-    const navLinks = document.getElementById("navLinks");
+  const uploadForm = document.getElementById("uploadForm");
+  const creatorName = document.getElementById("creatorName");
+  const category = document.getElementById("category");
+  const photoTitle = document.getElementById("photoTitle");
+  const photoDescription = document.getElementById("photoDescription");
+  const photoTags = document.getElementById("photoTags");
+  const instagramLink = document.getElementById("instagramLink");
+  const xLink = document.getElementById("xLink");
+  const facebookLink = document.getElementById("facebookLink");
+  const creatorProfilePhoto = document.getElementById("creatorProfilePhoto");
+  const mainPhoto = document.getElementById("mainPhoto");
+  const submitBtn = document.getElementById("submitBtn");
+  const statusMessage = document.getElementById("statusMessage");
 
-    const uploadForm = document.getElementById("uploadForm");
-    const creatorName = document.getElementById("creatorName");
-    const category = document.getElementById("category");
-    const photoTitle = document.getElementById("photoTitle");
-    const photoDescription = document.getElementById("photoDescription");
-    const photoTags = document.getElementById("photoTags");
-    const instagramLink = document.getElementById("instagramLink");
-    const xLink = document.getElementById("xLink");
-    const facebookLink = document.getElementById("facebookLink");
-    const creatorProfilePhoto = document.getElementById("creatorProfilePhoto");
-    const mainPhoto = document.getElementById("mainPhoto");
-    const submitBtn = document.getElementById("submitBtn");
-    const statusMessage = document.getElementById("statusMessage");
+  const previewMainImage = document.getElementById("previewMainImage");
+  const previewAvatar = document.getElementById("previewAvatar");
+  const previewCreatorName = document.getElementById("previewCreatorName");
+  const previewTitle = document.getElementById("previewTitle");
+  const previewDescription = document.getElementById("previewDescription");
+  const previewTags = document.getElementById("previewTags");
+  const previewInstagram = document.getElementById("previewInstagram");
+  const previewX = document.getElementById("previewX");
+  const previewFacebook = document.getElementById("previewFacebook");
+  const previewCategory = document.getElementById("previewCategory");
 
-    const previewMainImage = document.getElementById("previewMainImage");
-    const previewAvatar = document.getElementById("previewAvatar");
-    const previewCreatorName = document.getElementById("previewCreatorName");
-    const previewTitle = document.getElementById("previewTitle");
-    const previewDescription = document.getElementById("previewDescription");
-    const previewTags = document.getElementById("previewTags");
-    const previewCategory = document.getElementById("previewCategory");
-    const previewInstagram = document.getElementById("previewInstagram");
-    const previewX = document.getElementById("previewX");
-    const previewFacebook = document.getElementById("previewFacebook");
+  let creatorProfileImageData = "";
 
-    let creatorProfileImageData = "";
-    let mainPhotoImageData = "";
-
+  if(menuToggle && navLinks){
     menuToggle.addEventListener("click", () => {
-      navLinks.classList.toggle("show");
-      const expanded = menuToggle.getAttribute("aria-expanded") === "true";
-      menuToggle.setAttribute("aria-expanded", String(!expanded));
+      const isOpen = navLinks.classList.toggle("show");
+      menuToggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
     });
+  }
 
-    document.querySelectorAll(".nav-links a").forEach(link => {
-      link.addEventListener("click", () => {
-        if(window.innerWidth <= 768){
-          navLinks.classList.remove("show");
-          menuToggle.setAttribute("aria-expanded", "false");
-        }
-      });
-    });
+  function escapeHtml(value = ""){
+    return String(value)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+  }
 
-    window.addEventListener("resize", () => {
-      if(window.innerWidth > 768){
-        navLinks.classList.remove("show");
-        menuToggle.setAttribute("aria-expanded", "false");
+  function setStatus(message, type){
+    statusMessage.textContent = message || "";
+    statusMessage.className = "status-message" + (type ? " " + type : "");
+  }
+
+  function safeTitleFromFile(fileName){
+    return String(fileName || "")
+      .replace(/\.[^/.]+$/, "")
+      .replace(/[-_]+/g, " ")
+      .trim();
+  }
+
+  function slugTitle(name){
+    return String(name || "")
+      .toLowerCase()
+      .replace(/\.[^/.]+$/, "")
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)/g, "") || "file";
+  }
+
+  function getFileExt(name = ""){
+    const parts = String(name).split(".");
+    return parts.length > 1 ? parts.pop().toLowerCase() : "jpg";
+  }
+
+  function makeStorageName(prefix, originalName, extra = ""){
+    const ext = getFileExt(originalName);
+    return `${prefix}/${Date.now()}-${slugTitle(extra || originalName)}-${Math.random().toString(36).slice(2,8)}.${ext}`;
+  }
+
+  function fileToDataUrl(file){
+    return new Promise((resolve, reject) => {
+      if(!file){
+        resolve("");
+        return;
       }
+
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+
+  function loadAdminCategories(){
+    try{
+      const saved = localStorage.getItem(STORAGE_KEY);
+
+      if(!saved){
+        return [];
+      }
+
+      const parsed = JSON.parse(saved);
+
+      if(!parsed || !Array.isArray(parsed.categories)){
+        return [];
+      }
+
+      return parsed.categories
+        .filter(cat => cat && typeof cat === "object" && cat.name)
+        .map(cat => ({
+          id: cat.id || "",
+          name: String(cat.name || "").trim(),
+          description: String(cat.description || "").trim()
+        }))
+        .filter(cat => cat.name);
+    }catch(error){
+      console.error("Could not load admin categories:", error);
+      return [];
+    }
+  }
+
+  function populateCategories(){
+    const categories = loadAdminCategories();
+    const currentValue = category.value;
+
+    category.innerHTML = "";
+
+    const placeholder = document.createElement("option");
+    placeholder.value = "";
+    placeholder.textContent = categories.length ? "Select a category" : "No categories available";
+    category.appendChild(placeholder);
+
+    categories.forEach(cat => {
+      const option = document.createElement("option");
+      option.value = cat.name;
+      option.textContent = cat.name;
+      if(cat.name === currentValue){
+        option.selected = true;
+      }
+      category.appendChild(option);
     });
 
-    function setStatus(message, type){
-      statusMessage.textContent = message || "";
-      statusMessage.className = "status-message" + (type ? " " + type : "");
+    if(categories.length && !currentValue){
+      category.selectedIndex = 0;
     }
 
-    function escapeHtml(value = ""){
-      return String(value)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#39;");
+    updatePreviewCategory();
+  }
+
+  async function uploadToBucket(bucket, file, path){
+    const { data: signedData, error: signedError } = await supabaseClient
+      .storage
+      .from(bucket)
+      .createSignedUploadUrl(path);
+
+    if(signedError){
+      throw signedError;
     }
 
-    function slugTitle(name){
-      return String(name || "")
-        .toLowerCase()
-        .replace(/\.[^/.]+$/, "")
-        .replace(/[^a-z0-9]+/g, "-")
-        .replace(/(^-|-$)/g, "") || "file";
-    }
-
-    function getFileExt(name = ""){
-      const parts = String(name).split(".");
-      return parts.length > 1 ? parts.pop().toLowerCase() : "jpg";
-    }
-
-    function createFileName(prefix, originalName){
-      const ext = getFileExt(originalName);
-      return `${prefix}/${Date.now()}-${slugTitle(originalName)}-${Math.random().toString(36).slice(2,8)}.${ext}`;
-    }
-
-    async function uploadToBucket(bucket, file, path){
-  const { data: signedData, error: signedError } = await supabaseClient
-    .storage
-    .from(bucket)
-    .createSignedUploadUrl(path);
-
-  if (signedError) throw signedError;
-
-  const { error: uploadError } = await supabaseClient
-    .storage
-    .from(bucket)
-    .uploadToSignedUrl(
-      path,
-      signedData.token,
-      file,
-      {
+    const { error: uploadError } = await supabaseClient
+      .storage
+      .from(bucket)
+      .uploadToSignedUrl(path, signedData.token, file, {
         contentType: file.type || "application/octet-stream"
-      }
-    );
+      });
 
-  if (uploadError) throw uploadError;
-
-  const { data } = supabaseClient.storage.from(bucket).getPublicUrl(path);
-  return data.publicUrl;
-}
-
-    
-
-
-     
-
-    function setSocialState(element, value){
-      const url = (value || "").trim();
-
-      if(url){
-        element.href = url;
-        element.classList.remove("disabled");
-      }else{
-        element.href = "#";
-        element.classList.add("disabled");
-      }
+    if(uploadError){
+      throw uploadError;
     }
 
-    function updatePreviewText(){
-      previewCreatorName.textContent = creatorName.value.trim() || "Creator Name";
-      previewTitle.textContent = photoTitle.value.trim() || "Your photo title";
-      previewDescription.textContent = photoDescription.value.trim() || "Your description will appear here.";
-      previewCategory.textContent = category.value.trim() || "No category selected";
+    const { data } = supabaseClient.storage.from(bucket).getPublicUrl(path);
+    return data.publicUrl;
+  }
+
+  function updatePreviewTags(){
+    const pills = [];
+    const categoryValue = category.value.trim();
+    const rawTags = photoTags.value.trim();
+
+    if(categoryValue){
+      pills.push(categoryValue);
     }
 
-    function updatePreviewTags(){
-      const selectedCategory = category.value.trim();
-      const tags = photoTags.value
+    if(rawTags){
+      rawTags
         .split(",")
         .map(tag => tag.trim())
         .filter(Boolean)
-        .slice(0, 5);
-
-      const pills = [];
-
-      if(selectedCategory){
-        pills.push(`<span class="pill">${escapeHtml(selectedCategory)}</span>`);
-      }
-
-      if(tags.length){
-        tags.forEach(tag => {
-          pills.push(`<span class="pill">${escapeHtml(tag)}</span>`);
-        });
-      }
-
-      if(!pills.length){
-        pills.push(`<span class="pill">Category</span>`);
-        pills.push(`<span class="pill">Tag</span>`);
-      }
-
-      previewTags.innerHTML = pills.join("");
+        .slice(0, 6)
+        .forEach(tag => pills.push(tag));
     }
 
-    function updateAvatarPreview(){
-      const value = creatorName.value.trim();
-      const letter = value ? value.charAt(0).toUpperCase() : "P";
-
-      if(creatorProfileImageData){
-        previewAvatar.innerHTML = `<img src="${creatorProfileImageData}" alt="${escapeHtml(value || "Creator")}">`;
-      }else{
-        previewAvatar.textContent = letter;
-      }
+    if(!pills.length){
+      previewTags.innerHTML = '<span class="pill">No tags yet</span>';
+      return;
     }
 
-    function loadCategories(){
-      const fallbackCategories = [
-        "Nature",
-        "Travel",
-        "Cars",
-        "Architecture",
-        "Street",
-        "Portraits"
-      ];
+    previewTags.innerHTML = pills
+      .map(item => `<span class="pill">${escapeHtml(item)}</span>`)
+      .join("");
+  }
 
-      let categories = [];
+  function updatePreviewText(){
+    const creatorValue = creatorName.value.trim();
+    const titleValue = photoTitle.value.trim();
+    const descriptionValue = photoDescription.value.trim();
 
-      try{
-        const saved = localStorage.getItem(ADMIN_STORAGE_KEY);
-        if(saved){
-          const parsed = JSON.parse(saved);
-          if(parsed && Array.isArray(parsed.categories)){
-            categories = parsed.categories
-              .map(item => typeof item === "string" ? item : item.name)
-              .filter(Boolean);
-          }
-        }
-      }catch(error){
-        console.error("Category load error:", error);
-      }
+    previewCreatorName.textContent = creatorValue || "Creator Name";
+    previewTitle.textContent = titleValue || "Your photo title";
+    previewDescription.textContent = descriptionValue || "Your description will appear here after you start typing.";
 
-      if(!categories.length){
-        categories = fallbackCategories;
-      }
-
-      category.innerHTML = `<option value="">Select category</option>` + categories
-        .map(item => `<option value="${escapeHtml(item)}">${escapeHtml(item)}</option>`)
-        .join("");
+    if(!creatorProfileImageData){
+      previewAvatar.textContent = (creatorValue || "P").charAt(0).toUpperCase();
     }
+  }
 
-    async function readFileAsDataURL(file){
-      return new Promise((resolve, reject) => {
-        if(!file){
-          resolve("");
-          return;
-        }
-
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
-      });
-    }
-
-    creatorName.addEventListener("input", () => {
-      updatePreviewText();
-      updateAvatarPreview();
-    });
-
-    category.addEventListener("change", () => {
-      updatePreviewText();
-      updatePreviewTags();
-    });
-
-    photoTitle.addEventListener("input", updatePreviewText);
-    photoDescription.addEventListener("input", updatePreviewText);
-    photoTags.addEventListener("input", updatePreviewTags);
-
-    [instagramLink, xLink, facebookLink].forEach(field => {
-      field.addEventListener("input", () => {
-        setSocialState(previewInstagram, instagramLink.value);
-        setSocialState(previewX, xLink.value);
-        setSocialState(previewFacebook, facebookLink.value);
-      });
-    });
-
-    creatorProfilePhoto.addEventListener("change", async () => {
-      const file = creatorProfilePhoto.files[0];
-      creatorProfileImageData = file ? await readFileAsDataURL(file) : "";
-      updateAvatarPreview();
-    });
-
-    mainPhoto.addEventListener("change", async () => {
-      const file = mainPhoto.files[0];
-      mainPhotoImageData = file ? await readFileAsDataURL(file) : "";
-      if(mainPhotoImageData){
-        previewMainImage.src = mainPhotoImageData;
-      }else{
-        previewMainImage.src = "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&w=1200&q=80";
-      }
-    });
-
-    window.addEventListener("error", (e) => {
-      console.error("WINDOW ERROR:", e.error || e.message);
-    });
-
-    window.addEventListener("unhandledrejection", (e) => {
-      console.error("PROMISE ERROR:", e.reason);
-    });
-
-    uploadForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
-
-      const creatorValue = creatorName.value.trim();
-      const categoryValue = category.value.trim();
-      const titleValue = photoTitle.value.trim();
-      const descriptionValue = photoDescription.value.trim();
-      const tagsValue = photoTags.value.trim();
-      const instagramValue = instagramLink.value.trim();
-      const xValue = xLink.value.trim();
-      const facebookValue = facebookLink.value.trim();
-      const mainPhotoFile = mainPhoto.files[0];
-      const creatorPhotoFile = creatorProfilePhoto.files[0];
-
-      if(!creatorValue){
-        setStatus("Please enter the creator name.", "error");
-        return;
-      }
-
-      if(!categoryValue){
-        setStatus("Please choose a category.", "error");
-        return;
-      }
-
-      if(!mainPhotoFile){
-        setStatus("Please upload the main photo.", "error");
-        return;
-      }
-
-      submitBtn.disabled = true;
-      setStatus("Uploading to PixNest...", "success");
-
-      try{
-        const mainPhotoPath = createFileName("photo", mainPhotoFile.name);
-        const imageUrl = await uploadToBucket(PHOTOS_BUCKET, mainPhotoFile, mainPhotoPath);
-
-        let creatorPhotoUrl = "";
-        if(creatorPhotoFile){
-          const creatorPhotoPath = createFileName("creator", creatorPhotoFile.name);
-          creatorPhotoUrl = await uploadToBucket(CREATOR_BUCKET, creatorPhotoFile, creatorPhotoPath);
-        }
-
-        const finalTitle =
-          titleValue ||
-          mainPhotoFile.name.replace(/\.[^/.]+$/, "").replace(/[-_]+/g, " ").trim() ||
-          "Untitled Photo";
-
-        const { error } = await supabaseClient
-          .from("photos")
-          .insert([
-            {
-              title: finalTitle,
-              description: descriptionValue,
-              category: categoryValue,
-              tags: tagsValue,
-              credit: creatorValue,
-              creator_photo: creatorPhotoUrl,
-              instagram: instagramValue,
-              x: xValue,
-              facebook: facebookValue,
-              image_url: imageUrl,
-              featured: false
-            }
-          ]);
-
-        if(error){
-          throw error;
-        }
-
-        setStatus("Upload submitted successfully.", "success");
-        uploadForm.reset();
-
-        creatorProfileImageData = "";
-        mainPhotoImageData = "";
-
-        previewMainImage.src = "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&w=1200&q=80";
-        previewAvatar.innerHTML = "P";
-
-        updatePreviewText();
-        updatePreviewTags();
-        setSocialState(previewInstagram, "");
-        setSocialState(previewX, "");
-        setSocialState(previewFacebook, "");
-      }
-      catch(error){
-        console.error("UPLOAD ERROR:", error);
-        const msg = `${error?.name ? error.name + ": " : ""}${error?.message || "Upload failed"}`;
-        setStatus(msg, "error");
-        alert(msg);
-      }
-      finally{
-        submitBtn.disabled = false;
-      }
-    });
-
-    loadCategories();
-    updatePreviewText();
+  function updatePreviewCategory(){
+    previewCategory.textContent = category.value.trim() || "No category selected";
     updatePreviewTags();
-    setSocialState(previewInstagram, "");
-    setSocialState(previewX, "");
-    setSocialState(previewFacebook, "");
-  </script>
+  }
+
+  function setSocialLinkState(element, value){
+    if(value){
+      element.href = value;
+      element.classList.remove("disabled");
+    }else{
+      element.href = "#";
+      element.classList.add("disabled");
+    }
+  }
+
+  function resetPreview(){
+    previewMainImage.src = DEFAULT_PREVIEW_IMAGE;
+    previewAvatar.textContent = "P";
+    previewCreatorName.textContent = "Creator Name";
+    previewTitle.textContent = "Your photo title";
+    previewDescription.textContent = "Your description will appear here after you start typing.";
+    previewTags.innerHTML = '<span class="pill">No tags yet</span>';
+    previewCategory.textContent = "No category selected";
+    setSocialLinkState(previewInstagram, "");
+    setSocialLinkState(previewX, "");
+    setSocialLinkState(previewFacebook, "");
+  }
+
+  creatorName.addEventListener("input", updatePreviewText);
+  photoTitle.addEventListener("input", updatePreviewText);
+  photoDescription.addEventListener("input", updatePreviewText);
+  photoTags.addEventListener("input", updatePreviewTags);
+  category.addEventListener("change", updatePreviewCategory);
+
+  instagramLink.addEventListener("input", () => {
+    setSocialLinkState(previewInstagram, instagramLink.value.trim());
+  });
+
+  xLink.addEventListener("input", () => {
+    setSocialLinkState(previewX, xLink.value.trim());
+  });
+
+  facebookLink.addEventListener("input", () => {
+    setSocialLinkState(previewFacebook, facebookLink.value.trim());
+  });
+
+  creatorProfilePhoto.addEventListener("change", async () => {
+    const file = creatorProfilePhoto.files[0];
+    creatorProfileImageData = file ? await fileToDataUrl(file) : "";
+
+    if(creatorProfileImageData){
+      previewAvatar.innerHTML = `<img src="${creatorProfileImageData}" alt="Creator preview">`;
+    }else{
+      previewAvatar.textContent = (creatorName.value.trim() || "P").charAt(0).toUpperCase();
+    }
+  });
+
+  mainPhoto.addEventListener("change", async () => {
+    const file = mainPhoto.files[0];
+
+    if(!file){
+      previewMainImage.src = DEFAULT_PREVIEW_IMAGE;
+      return;
+    }
+
+    const dataUrl = await fileToDataUrl(file);
+
+    if(dataUrl){
+      previewMainImage.src = dataUrl;
+    }
+
+    if(!photoTitle.value.trim()){
+      previewTitle.textContent = safeTitleFromFile(file.name) || "Your photo title";
+    }
+  });
+
+  uploadForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const creatorValue = creatorName.value.trim();
+    const categoryValue = category.value.trim();
+    const titleValue = photoTitle.value.trim();
+    const descriptionValue = photoDescription.value.trim();
+    const tagsValue = photoTags.value.trim();
+    const instagramValue = instagramLink.value.trim();
+    const xValue = xLink.value.trim();
+    const facebookValue = facebookLink.value.trim();
+    const mainPhotoFile = mainPhoto.files[0];
+    const creatorPhotoFile = creatorProfilePhoto.files[0];
+
+    if(!loadAdminCategories().length){
+      setStatus("No categories found. Add categories first from the admin page.", "error");
+      return;
+    }
+
+    if(!creatorValue){
+      setStatus("Please enter the creator name.", "error");
+      return;
+    }
+
+    if(!categoryValue){
+      setStatus("Please choose a category.", "error");
+      return;
+    }
+
+    if(!mainPhotoFile){
+      setStatus("Please upload the main photo.", "error");
+      return;
+    }
+
+    const allowedTypes = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
+
+    if(mainPhotoFile.type && !allowedTypes.includes(mainPhotoFile.type)){
+      setStatus("Use JPG, PNG, or WEBP first.", "error");
+      return;
+    }
+
+    submitBtn.disabled = true;
+    setStatus("Uploading to PixNest...", "success");
+
+    try{
+      const finalTitle = titleValue || safeTitleFromFile(mainPhotoFile.name) || "Untitled Photo";
+
+      const mainPhotoPath = makeStorageName("photos", mainPhotoFile.name, finalTitle);
+      const imageUrl = await uploadToBucket(PHOTOS_BUCKET, mainPhotoFile, mainPhotoPath);
+
+      let creatorPhotoUrl = "";
+
+      if(creatorPhotoFile){
+        if(creatorPhotoFile.type && !allowedTypes.includes(creatorPhotoFile.type)){
+          throw new Error("Creator profile image must be JPG, PNG, or WEBP.");
+        }
+
+        const creatorPhotoPath = makeStorageName("creator", creatorPhotoFile.name, creatorValue);
+        creatorPhotoUrl = await uploadToBucket(CREATOR_BUCKET, creatorPhotoFile, creatorPhotoPath);
+      }
+
+      const { error } = await supabaseClient
+        .from("photos")
+        .insert([
+          {
+            title: finalTitle,
+            description: descriptionValue,
+            category: categoryValue,
+            tags: tagsValue,
+            credit: creatorValue,
+            creator_photo: creatorPhotoUrl,
+            instagram: instagramValue,
+            x: xValue,
+            facebook: facebookValue,
+            image_url: imageUrl,
+            featured: false
+          }
+        ]);
+
+      if(error){
+        throw error;
+      }
+
+      setStatus("Upload submitted successfully.", "success");
+      uploadForm.reset();
+      creatorProfileImageData = "";
+      populateCategories();
+      resetPreview();
+    }catch(error){
+      console.error("UPLOAD ERROR:", error);
+      const message = `${error?.name ? error.name + ": " : ""}${error?.message || "Upload failed"}`;
+      setStatus(message, "error");
+    }finally{
+      submitBtn.disabled = false;
+    }
+  });
+
+  populateCategories();
+  updatePreviewText();
+  updatePreviewCategory();
+  setSocialLinkState(previewInstagram, "");
+  setSocialLinkState(previewX, "");
+  setSocialLinkState(previewFacebook, "");
+</script>
 
 </body>
 </html>
-

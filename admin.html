@@ -1276,1161 +1276,1171 @@
     </main>
   </div>
 
-  <script>
-    const STORAGE_KEY = "pixnest_admin_v2";
-const SUPABASE_URL = "https://vigczssznfvuijttdapbv.supabase.co";
-const SUPABASE_KEY = "sb_publishable_UmF-mmVS42XeF6PqsNnCSw_wpA35wg2";
-const PHOTOS_BUCKET = "photos";
-const CREATOR_BUCKET = "creator-photos";
-    const { createClient } = supabase;
-    const supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY);
+   <script>
+  const STORAGE_KEY = "pixnest_admin_v2";
+  const SUPABASE_URL = "https://vigczssznfvujttdapbv.supabase.co";
+  const SUPABASE_KEY = "sb_publishable_UmF-mmVS42XeF6PqsNnCSw_wpA35wg2";
+  const PHOTOS_BUCKET = "photos";
+  const CREATOR_BUCKET = "creator-photos";
 
-    function createId(){
-      return "id-" + Math.random().toString(36).slice(2,10) + Date.now().toString(36);
-    }
+  const { createClient } = supabase;
+  const supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    function deepClone(value){
-      return JSON.parse(JSON.stringify(value));
-    }
+  function createId(){
+    return "id-" + Math.random().toString(36).slice(2,10) + Date.now().toString(36);
+  }
 
-    function escapeHtml(value = ""){
-      return String(value)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#39;");
-    }
+  function deepClone(value){
+    return JSON.parse(JSON.stringify(value));
+  }
 
-    function slugTitle(name){
-      return String(name || "")
-        .toLowerCase()
-        .replace(/\.[^/.]+$/, "")
-        .replace(/[^a-z0-9]+/g, "-")
-        .replace(/(^-|-$)/g, "") || "file";
-    }
+  function escapeHtml(value = ""){
+    return String(value)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+  }
 
-    function getFileExt(name = ""){
-      const parts = String(name).split(".");
-      return parts.length > 1 ? parts.pop().toLowerCase() : "jpg";
-    }
+  function slugTitle(name){
+    return String(name || "")
+      .toLowerCase()
+      .replace(/\.[^/.]+$/, "")
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)/g, "") || "file";
+  }
 
-    function makeStorageName(prefix, originalName, extra = ""){
-      const ext = getFileExt(originalName);
-      return `${prefix}/${Date.now()}-${slugTitle(extra || originalName)}-${Math.random().toString(36).slice(2,8)}.${ext}`;
-    }
+  function getFileExt(name = ""){
+    const parts = String(name).split(".");
+    return parts.length > 1 ? parts.pop().toLowerCase() : "jpg";
+  }
 
-    const defaultData = {
-      siteName: "PixNest",
-      siteTagline: "Free and premium photo collections",
-      footerText: "© 2026 PixNest. Discover and share powerful visual collections.",
+  function makeStorageName(prefix, originalName, extra = ""){
+    const ext = getFileExt(originalName);
+    return `${prefix}/${Date.now()}-${slugTitle(extra || originalName)}-${Math.random().toString(36).slice(2,8)}.${ext}`;
+  }
+
+  const defaultData = {
+    siteName: "PixNest",
+    siteTagline: "Free and premium photo collections",
+    footerText: "©️ 2026 PixNest. Discover and share powerful visual collections.",
+    homepage: {
+      heroTag: "Discover fresh visual collections",
+      heroTitle: "Discover beautiful photos for creative projects, brands, and inspiration.",
+      heroText: "Browse categories, explore standout visuals, and find photos for websites, design work, social media, and creative ideas.",
+      categoriesTitle: "All Categories",
+      categoriesText: "Explore visual collections across different styles, themes, and creative topics.",
+      featuredTitle: "Featured Photos",
+      featuredText: "Latest standout visuals selected for the PixNest collection.",
+      trendingTitle: "Trending This Week",
+      trendingText: "Fresh visual picks to explore across multiple styles and categories.",
+      ctaTitle: "Start exploring the PixNest collection today.",
+      ctaText: "Browse curated categories, discover standout images, and enjoy a growing library of free and premium visuals."
+    },
+    contactPage: {
+      heading: "Get in Touch",
+      intro: "Use the contact details or the form below to reach the PixNest team.",
+      email: "hello@pixnest.com",
+      phone: "+44 0000 000000",
+      location: "United Kingdom",
+      responseTime: "Usually within 24 to 48 hours",
+      instagram: "#",
+      x: "#",
+      facebook: "#",
+      tiktok: "#"
+    },
+    aboutPage: {
+      heroTitle: "About PixNest",
+      heroText: "PixNest is a growing photo platform built to help people discover strong visuals across free and premium collections.",
+      bodyTitle: "Our Story",
+      bodyText: "PixNest brings together visual collections across different categories, styles, and creative topics for inspiration, design work, and modern digital projects."
+    },
+    categories: [
+      {
+        id: createId(),
+        name: "Nature",
+        description: "Landscapes, forests, mountains, and outdoor scenes."
+      },
+      {
+        id: createId(),
+        name: "Travel",
+        description: "Road trips, city views, destinations, and cultural scenes."
+      }
+    ]
+  };
+
+  function normalizeData(data){
+    const safeData = data && typeof data === "object" ? data : {};
+    const homepage = safeData.homepage || {};
+    const contactPage = safeData.contactPage || {};
+    const aboutPage = safeData.aboutPage || {};
+
+    return {
+      siteName: safeData.siteName || defaultData.siteName,
+      siteTagline: safeData.siteTagline || defaultData.siteTagline,
+      footerText: safeData.footerText || defaultData.footerText,
       homepage: {
-        heroTag: "Discover fresh visual collections",
-        heroTitle: "Discover beautiful photos for creative projects, brands, and inspiration.",
-        heroText: "Browse categories, explore standout visuals, and find photos for websites, design work, social media, and creative ideas.",
-        categoriesTitle: "All Categories",
-        categoriesText: "Explore visual collections across different styles, themes, and creative topics.",
-        featuredTitle: "Featured Photos",
-        featuredText: "Latest standout visuals selected for the PixNest collection.",
-        trendingTitle: "Trending This Week",
-        trendingText: "Fresh visual picks to explore across multiple styles and categories.",
-        ctaTitle: "Start exploring the PixNest collection today.",
-        ctaText: "Browse curated categories, discover standout images, and enjoy a growing library of free and premium visuals."
+        heroTag: homepage.heroTag || defaultData.homepage.heroTag,
+        heroTitle: homepage.heroTitle || defaultData.homepage.heroTitle,
+        heroText: homepage.heroText || defaultData.homepage.heroText,
+        categoriesTitle: homepage.categoriesTitle || defaultData.homepage.categoriesTitle,
+        categoriesText: homepage.categoriesText || defaultData.homepage.categoriesText,
+        featuredTitle: homepage.featuredTitle || defaultData.homepage.featuredTitle,
+        featuredText: homepage.featuredText || defaultData.homepage.featuredText,
+        trendingTitle: homepage.trendingTitle || defaultData.homepage.trendingTitle,
+        trendingText: homepage.trendingText || defaultData.homepage.trendingText,
+        ctaTitle: homepage.ctaTitle || defaultData.homepage.ctaTitle,
+        ctaText: homepage.ctaText || defaultData.homepage.ctaText
       },
       contactPage: {
-        heading: "Get in Touch",
-        intro: "Use the contact details or the form below to reach the PixNest team.",
-        email: "hello@pixnest.com",
-        phone: "+44 0000 000000",
-        location: "United Kingdom",
-        responseTime: "Usually within 24 to 48 hours",
-        instagram: "#",
-        x: "#",
-        facebook: "#",
-        tiktok: "#"
+        heading: contactPage.heading || defaultData.contactPage.heading,
+        intro: contactPage.intro || defaultData.contactPage.intro,
+        email: contactPage.email || defaultData.contactPage.email,
+        phone: contactPage.phone || defaultData.contactPage.phone,
+        location: contactPage.location || defaultData.contactPage.location,
+        responseTime: contactPage.responseTime || defaultData.contactPage.responseTime,
+        instagram: contactPage.instagram || defaultData.contactPage.instagram,
+        x: contactPage.x || defaultData.contactPage.x,
+        facebook: contactPage.facebook || defaultData.contactPage.facebook,
+        tiktok: contactPage.tiktok || defaultData.contactPage.tiktok
       },
       aboutPage: {
-        heroTitle: "About PixNest",
-        heroText: "PixNest is a growing photo platform built to help people discover strong visuals across free and premium collections.",
-        bodyTitle: "Our Story",
-        bodyText: "PixNest brings together visual collections across different categories, styles, and creative topics for inspiration, design work, and modern digital projects."
+        heroTitle: aboutPage.heroTitle || defaultData.aboutPage.heroTitle,
+        heroText: aboutPage.heroText || defaultData.aboutPage.heroText,
+        bodyTitle: aboutPage.bodyTitle || defaultData.aboutPage.bodyTitle,
+        bodyText: aboutPage.bodyText || defaultData.aboutPage.bodyText
       },
-      categories: [
-        {
-          id: createId(),
-          name: "Nature",
-          description: "Landscapes, forests, mountains, and outdoor scenes."
-        },
-        {
-          id: createId(),
-          name: "Travel",
-          description: "Road trips, city views, destinations, and cultural scenes."
-        }
-      ]
+      categories: Array.isArray(safeData.categories)
+        ? safeData.categories.map(cat => ({
+            id: cat.id || createId(),
+            name: cat.name || "Untitled Category",
+            description: cat.description || ""
+          }))
+        : deepClone(defaultData.categories)
     };
+  }
 
-    function normalizeData(data){
-      const safeData = data && typeof data === "object" ? data : {};
-      const homepage = safeData.homepage || {};
-      const contactPage = safeData.contactPage || {};
-      const aboutPage = safeData.aboutPage || {};
-
-      return {
-        siteName: safeData.siteName || defaultData.siteName,
-        siteTagline: safeData.siteTagline || defaultData.siteTagline,
-        footerText: safeData.footerText || defaultData.footerText,
-        homepage: {
-          heroTag: homepage.heroTag || defaultData.homepage.heroTag,
-          heroTitle: homepage.heroTitle || defaultData.homepage.heroTitle,
-          heroText: homepage.heroText || defaultData.homepage.heroText,
-          categoriesTitle: homepage.categoriesTitle || defaultData.homepage.categoriesTitle,
-          categoriesText: homepage.categoriesText || defaultData.homepage.categoriesText,
-          featuredTitle: homepage.featuredTitle || defaultData.homepage.featuredTitle,
-          featuredText: homepage.featuredText || defaultData.homepage.featuredText,
-          trendingTitle: homepage.trendingTitle || defaultData.homepage.trendingTitle,
-          trendingText: homepage.trendingText || defaultData.homepage.trendingText,
-          ctaTitle: homepage.ctaTitle || defaultData.homepage.ctaTitle,
-          ctaText: homepage.ctaText || defaultData.homepage.ctaText
-        },
-        contactPage: {
-          heading: contactPage.heading || defaultData.contactPage.heading,
-          intro: contactPage.intro || defaultData.contactPage.intro,
-          email: contactPage.email || defaultData.contactPage.email,
-          phone: contactPage.phone || defaultData.contactPage.phone,
-          location: contactPage.location || defaultData.contactPage.location,
-          responseTime: contactPage.responseTime || defaultData.contactPage.responseTime,
-          instagram: contactPage.instagram || defaultData.contactPage.instagram,
-          x: contactPage.x || defaultData.contactPage.x,
-          facebook: contactPage.facebook || defaultData.contactPage.facebook,
-          tiktok: contactPage.tiktok || defaultData.contactPage.tiktok
-        },
-        aboutPage: {
-          heroTitle: aboutPage.heroTitle || defaultData.aboutPage.heroTitle,
-          heroText: aboutPage.heroText || defaultData.aboutPage.heroText,
-          bodyTitle: aboutPage.bodyTitle || defaultData.aboutPage.bodyTitle,
-          bodyText: aboutPage.bodyText || defaultData.aboutPage.bodyText
-        },
-        categories: Array.isArray(safeData.categories)
-          ? safeData.categories.map(cat => ({
-              id: cat.id || createId(),
-              name: cat.name || "Untitled Category",
-              description: cat.description || ""
-            }))
-          : deepClone(defaultData.categories)
-      };
-    }
-
-    function loadData(){
-      try{
-        const saved = localStorage.getItem(STORAGE_KEY);
-        if(saved){
-          return normalizeData(JSON.parse(saved));
-        }
-      }catch(error){
-        console.error("Failed to load PixNest admin data", error);
+  function loadData(){
+    try{
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if(saved){
+        return normalizeData(JSON.parse(saved));
       }
-      return normalizeData(deepClone(defaultData));
+    }catch(error){
+      console.error("Failed to load PixNest admin data", error);
     }
+    return normalizeData(deepClone(defaultData));
+  }
 
-    let siteData = loadData();
-    let activeCategoryId = siteData.categories[0] ? siteData.categories[0].id : null;
-    let creatorPhotoData = "";
-    let supabasePhotos = [];
+  let siteData = loadData();
+  let activeCategoryId = siteData.categories[0] ? siteData.categories[0].id : null;
+  let creatorPhotoData = "";
+  let supabasePhotos = [];
 
-    const sidebar = document.getElementById("sidebar");
-    const sidebarCategoryList = document.getElementById("sidebarCategoryList");
-    const categoryCards = document.getElementById("categoryCards");
-    const uploadCategory = document.getElementById("uploadCategory");
-    const filterCategory = document.getElementById("filterCategory");
-    const photoGroups = document.getElementById("photoGroups");
-    const featuredGroups = document.getElementById("featuredGroups");
-    const uploadPreview = document.getElementById("uploadPreview");
+  const sidebar = document.getElementById("sidebar");
+  const sidebarCategoryList = document.getElementById("sidebarCategoryList");
+  const categoryCards = document.getElementById("categoryCards");
+  const uploadCategory = document.getElementById("uploadCategory");
+  const filterCategory = document.getElementById("filterCategory");
+  const photoGroups = document.getElementById("photoGroups");
+  const featuredGroups = document.getElementById("featuredGroups");
+  const uploadPreview = document.getElementById("uploadPreview");
 
-    const totalCategories = document.getElementById("totalCategories");
-    const totalPhotos = document.getElementById("totalPhotos");
-    const totalFeatured = document.getElementById("totalFeatured");
-    const activeCategoryName = document.getElementById("activeCategoryName");
-    const selectedCategoryCount = document.getElementById("selectedCategoryCount");
-    const siteNameStat = document.getElementById("siteNameStat");
+  const totalCategories = document.getElementById("totalCategories");
+  const totalPhotos = document.getElementById("totalPhotos");
+  const totalFeatured = document.getElementById("totalFeatured");
+  const activeCategoryName = document.getElementById("activeCategoryName");
+  const selectedCategoryCount = document.getElementById("selectedCategoryCount");
+  const siteNameStat = document.getElementById("siteNameStat");
 
-    const siteNameInput = document.getElementById("siteName");
-    const siteTaglineInput = document.getElementById("siteTagline");
-    const footerTextInput = document.getElementById("footerText");
+  const siteNameInput = document.getElementById("siteName");
+  const siteTaglineInput = document.getElementById("siteTagline");
+  const footerTextInput = document.getElementById("footerText");
 
-    const aboutHeroTitleInput = document.getElementById("aboutHeroTitle");
-    const aboutHeroTextInput = document.getElementById("aboutHeroText");
-    const aboutBodyTitleInput = document.getElementById("aboutBodyTitle");
-    const aboutBodyTextInput = document.getElementById("aboutBodyText");
+  const aboutHeroTitleInput = document.getElementById("aboutHeroTitle");
+  const aboutHeroTextInput = document.getElementById("aboutHeroText");
+  const aboutBodyTitleInput = document.getElementById("aboutBodyTitle");
+  const aboutBodyTextInput = document.getElementById("aboutBodyText");
 
-    const homeHeroTagInput = document.getElementById("homeHeroTag");
-    const homeHeroTitleInput = document.getElementById("homeHeroTitle");
-    const homeHeroTextInput = document.getElementById("homeHeroText");
-    const categoriesTitleInput = document.getElementById("categoriesTitle");
-    const categoriesTextInput = document.getElementById("categoriesText");
-    const featuredTitleInput = document.getElementById("featuredTitle");
-    const featuredTextInput = document.getElementById("featuredText");
-    const trendingTitleInput = document.getElementById("trendingTitle");
-    const trendingTextInput = document.getElementById("trendingText");
-    const ctaTitleInput = document.getElementById("ctaTitle");
-    const ctaTextInput = document.getElementById("ctaText");
+  const homeHeroTagInput = document.getElementById("homeHeroTag");
+  const homeHeroTitleInput = document.getElementById("homeHeroTitle");
+  const homeHeroTextInput = document.getElementById("homeHeroText");
+  const categoriesTitleInput = document.getElementById("categoriesTitle");
+  const categoriesTextInput = document.getElementById("categoriesText");
+  const featuredTitleInput = document.getElementById("featuredTitle");
+  const featuredTextInput = document.getElementById("featuredText");
+  const trendingTitleInput = document.getElementById("trendingTitle");
+  const trendingTextInput = document.getElementById("trendingText");
+  const ctaTitleInput = document.getElementById("ctaTitle");
+  const ctaTextInput = document.getElementById("ctaText");
 
-    const contactHeadingInput = document.getElementById("contactHeading");
-    const contactIntroInput = document.getElementById("contactIntro");
-    const contactEmailInput = document.getElementById("contactEmail");
-    const contactPhoneInput = document.getElementById("contactPhone");
-    const contactLocationInput = document.getElementById("contactLocation");
-    const contactResponseTimeInput = document.getElementById("contactResponseTime");
-    const instagramUrlInput = document.getElementById("instagramUrl");
-    const xUrlInput = document.getElementById("xUrl");
-    const facebookUrlInput = document.getElementById("facebookUrl");
-    const tiktokUrlInput = document.getElementById("tiktokUrl");
+  const contactHeadingInput = document.getElementById("contactHeading");
+  const contactIntroInput = document.getElementById("contactIntro");
+  const contactEmailInput = document.getElementById("contactEmail");
+  const contactPhoneInput = document.getElementById("contactPhone");
+  const contactLocationInput = document.getElementById("contactLocation");
+  const contactResponseTimeInput = document.getElementById("contactResponseTime");
+  const instagramUrlInput = document.getElementById("instagramUrl");
+  const xUrlInput = document.getElementById("xUrl");
+  const facebookUrlInput = document.getElementById("facebookUrl");
+  const tiktokUrlInput = document.getElementById("tiktokUrl");
 
-    const categoryNameInput = document.getElementById("categoryName");
-    const categoryDescInput = document.getElementById("categoryDesc");
-    const addCategoryBtn = document.getElementById("addCategoryBtn");
+  const categoryNameInput = document.getElementById("categoryName");
+  const categoryDescInput = document.getElementById("categoryDesc");
+  const addCategoryBtn = document.getElementById("addCategoryBtn");
 
-    const photoTitleInput = document.getElementById("photoTitle");
-    const photoDescInput = document.getElementById("photoDesc");
-    const photoCreditInput = document.getElementById("photoCredit");
-    const photoTagsInput = document.getElementById("photoTags");
-    const photoFilesInput = document.getElementById("photoFiles");
-    const creatorPhotoFileInput = document.getElementById("creatorPhotoFile");
-    const photoFeaturedInput = document.getElementById("photoFeatured");
-    const photoInstagramInput = document.getElementById("photoInstagram");
-    const photoXInput = document.getElementById("photoX");
-    const photoFacebookInput = document.getElementById("photoFacebook");
-    const uploadPhotosBtn = document.getElementById("uploadPhotosBtn");
+  const photoTitleInput = document.getElementById("photoTitle");
+  const photoDescInput = document.getElementById("photoDesc");
+  const photoCreditInput = document.getElementById("photoCredit");
+  const photoTagsInput = document.getElementById("photoTags");
+  const photoFilesInput = document.getElementById("photoFiles");
+  const creatorPhotoFileInput = document.getElementById("creatorPhotoFile");
+  const photoFeaturedInput = document.getElementById("photoFeatured");
+  const photoInstagramInput = document.getElementById("photoInstagram");
+  const photoXInput = document.getElementById("photoX");
+  const photoFacebookInput = document.getElementById("photoFacebook");
+  const uploadPhotosBtn = document.getElementById("uploadPhotosBtn");
 
-    const categoryError = document.getElementById("categoryError");
-    const uploadError = document.getElementById("uploadError");
-    const saveMessage = document.getElementById("saveMessage");
-    const searchInput = document.getElementById("searchInput");
+  const categoryError = document.getElementById("categoryError");
+  const uploadError = document.getElementById("uploadError");
+  const saveMessage = document.getElementById("saveMessage");
+  const searchInput = document.getElementById("searchInput");
 
-    const previewSiteName = document.getElementById("previewSiteName");
-    const previewTagline = document.getElementById("previewTagline");
-    const previewCategoriesTitle = document.getElementById("previewCategoriesTitle");
-    const previewFeaturedTitle = document.getElementById("previewFeaturedTitle");
-    const previewFeaturedText = document.getElementById("previewFeaturedText");
-    const previewTrendingTitle = document.getElementById("previewTrendingTitle");
-    const previewTrendingText = document.getElementById("previewTrendingText");
+  const previewSiteName = document.getElementById("previewSiteName");
+  const previewTagline = document.getElementById("previewTagline");
+  const previewCategoriesTitle = document.getElementById("previewCategoriesTitle");
+  const previewFeaturedTitle = document.getElementById("previewFeaturedTitle");
+  const previewFeaturedText = document.getElementById("previewFeaturedText");
+  const previewTrendingTitle = document.getElementById("previewTrendingTitle");
+  const previewTrendingText = document.getElementById("previewTrendingText");
 
-    const creatorPreviewAvatar = document.getElementById("creatorPreviewAvatar");
-    const creatorPreviewName = document.getElementById("creatorPreviewName");
+  const creatorPreviewAvatar = document.getElementById("creatorPreviewAvatar");
+  const creatorPreviewName = document.getElementById("creatorPreviewName");
 
-    function saveData(showMessage = false){
-      try{
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(siteData));
-        if(showMessage){
-          saveMessage.textContent = "Saved successfully.";
-          setTimeout(() => {
-            saveMessage.textContent = "";
-          }, 2200);
-        }
-      }catch(error){
-        alert("Storage is full.");
+  function saveData(showMessage = false){
+    try{
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(siteData));
+      if(showMessage){
+        saveMessage.textContent = "Saved successfully.";
+        setTimeout(() => {
+          saveMessage.textContent = "";
+        }, 2200);
       }
+    }catch(error){
+      alert("Storage is full.");
     }
+  }
 
-    function getActiveCategory(){
-      return siteData.categories.find(cat => cat.id === activeCategoryId) || null;
-    }
+  function getActiveCategory(){
+    return siteData.categories.find(cat => cat.id === activeCategoryId) || null;
+  }
 
-    function getPhotosForCategoryName(categoryName){
-      return supabasePhotos.filter(photo => (photo.category || "").trim() === String(categoryName || "").trim());
-    }
+  function getPhotosForCategoryName(categoryName){
+    return supabasePhotos.filter(photo => (photo.category || "").trim() === String(categoryName || "").trim());
+  }
 
-    function getTotalPhotos(){
-      return supabasePhotos.length;
-    }
+  function getTotalPhotos(){
+    return supabasePhotos.length;
+  }
 
-    function getTotalFeatured(){
-      return supabasePhotos.filter(photo => photo.featured).length;
-    }
+  function getTotalFeatured(){
+    return supabasePhotos.filter(photo => photo.featured).length;
+  }
 
-    function readFileAsDataURL(file){
-      return new Promise((resolve, reject) => {
-        if(!file){
-          resolve("");
-          return;
-        }
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
-      });
-    }
-
-    async function uploadToBucket(bucket, file, path){
-  const { data: signedData, error: signedError } = await supabaseClient
-    .storage
-    .from(bucket)
-    .createSignedUploadUrl(path);
-
-  if (signedError) throw signedError;
-
-  const { error: uploadError } = await supabaseClient
-    .storage
-    .from(bucket)
-    .uploadToSignedUrl(
-      path,
-      signedData.token,
-      file,
-      {
-        contentType: file.type || "application/octet-stream"
+  function readFileAsDataURL(file){
+    return new Promise((resolve, reject) => {
+      if(!file){
+        resolve("");
+        return;
       }
-    );
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
 
-  if (uploadError) throw uploadError;
+  async function uploadToBucket(bucket, file, path){
+    const { data: signedData, error: signedError } = await supabaseClient
+      .storage
+      .from(bucket)
+      .createSignedUploadUrl(path);
 
-  const { data } = supabaseClient.storage.from(bucket).getPublicUrl(path);
-  return data.publicUrl;
-}
-     
+    if(signedError){
+      throw signedError;
+    }
 
-     async function loadSupabasePhotos(){
-  try{
-    uploadError.textContent = "Loading photos from Supabase...";
+    const { error: uploadSignedError } = await supabaseClient
+      .storage
+      .from(bucket)
+      .uploadToSignedUrl(
+        path,
+        signedData.token,
+        file,
+        {
+          contentType: file.type || "application/octet-stream"
+        }
+      );
 
-    const { data, error, status } = await supabaseClient
-      .from("photos")
-      .select("*")
-      .order("created_at", { ascending:false });
+    if(uploadSignedError){
+      throw uploadSignedError;
+    }
 
-    if(error){
-      console.error("ADMIN SUPABASE ERROR:", error);
-      const msg = `Select failed: ${error.message}${error.code ? " | code: " + error.code : ""}${status ? " | status: " + status : ""}`;
+    const { data } = supabaseClient.storage.from(bucket).getPublicUrl(path);
+    return data.publicUrl;
+  }
+
+  async function loadSupabasePhotos(){
+    try{
+      uploadError.textContent = "Loading photos from Supabase...";
+
+      const { data, error, status } = await supabaseClient
+        .from("photos")
+        .select("*")
+        .order("created_at", { ascending:false });
+
+      if(error){
+        console.error("ADMIN SUPABASE ERROR:", error);
+        const msg = `Select failed: ${error.message}${error.code ? " | code: " + error.code : ""}${status ? " | status: " + status : ""}`;
+        uploadError.textContent = msg;
+        return;
+      }
+
+      supabasePhotos = Array.isArray(data) ? data : [];
+      uploadError.textContent = "";
+      renderAll();
+    }catch(error){
+      console.error("ADMIN FETCH FAILED:", error);
+      const msg = `${error?.name ? error.name + ": " : ""}${error?.message || "Admin load failed"}`;
       uploadError.textContent = msg;
-      alert(msg);
+    }
+  }
+
+  function renderStats(){
+    totalCategories.textContent = siteData.categories.length;
+    totalPhotos.textContent = getTotalPhotos();
+    totalFeatured.textContent = getTotalFeatured();
+
+    const active = getActiveCategory();
+    activeCategoryName.textContent = active ? active.name : "None";
+    selectedCategoryCount.textContent = active ? getPhotosForCategoryName(active.name).length : 0;
+    siteNameStat.textContent = siteData.siteName || "PixNest";
+  }
+
+  function renderSidebar(){
+    sidebarCategoryList.innerHTML = "";
+
+    if(!siteData.categories.length){
+      sidebarCategoryList.innerHTML = '<div class="empty-box">No categories yet.</div>';
       return;
     }
 
-    supabasePhotos = Array.isArray(data) ? data : [];
-    uploadError.textContent = "";
-    renderAll();
-  }catch(error){
-    console.error("ADMIN FETCH FAILED:", error);
-    const msg = `${error?.name ? error.name + ": " : ""}${error?.message || "Admin load failed"}`;
-    uploadError.textContent = msg;
-    alert(msg);
+    siteData.categories.forEach(cat => {
+      const btn = document.createElement("button");
+      btn.className = "cat-btn" + (cat.id === activeCategoryId ? " active" : "");
+      btn.innerHTML = `
+        <span>${escapeHtml(cat.name)}</span>
+        <span class="cat-count">${getPhotosForCategoryName(cat.name).length}</span>
+      `;
+      btn.onclick = () => {
+        activeCategoryId = cat.id;
+        renderAll();
+        if(window.innerWidth <= 900){
+          sidebar.classList.remove("show");
+        }
+      };
+      sidebarCategoryList.appendChild(btn);
+    });
   }
-}
 
-    
-     
+  function renderCategorySelects(){
+    const previousUpload = uploadCategory.value || activeCategoryId || "";
+    const previousFilter = filterCategory.value || "all";
 
-    function renderStats(){
-      totalCategories.textContent = siteData.categories.length;
-      totalPhotos.textContent = getTotalPhotos();
-      totalFeatured.textContent = getTotalFeatured();
+    uploadCategory.innerHTML = "";
+    filterCategory.innerHTML = '<option value="all">All Categories</option>';
 
-      const active = getActiveCategory();
-      activeCategoryName.textContent = active ? active.name : "None";
-      selectedCategoryCount.textContent = active ? getPhotosForCategoryName(active.name).length : 0;
-      siteNameStat.textContent = siteData.siteName || "PixNest";
+    if(!siteData.categories.length){
+      uploadCategory.innerHTML = '<option value="">No categories available</option>';
+      return;
     }
 
-    function renderSidebar(){
-      sidebarCategoryList.innerHTML = "";
-
-      if(!siteData.categories.length){
-        sidebarCategoryList.innerHTML = '<div class="empty-box">No categories yet.</div>';
-        return;
+    siteData.categories.forEach(cat => {
+      const option1 = document.createElement("option");
+      option1.value = cat.id;
+      option1.textContent = cat.name;
+      if(cat.id === previousUpload || (!previousUpload && cat.id === activeCategoryId)){
+        option1.selected = true;
       }
+      uploadCategory.appendChild(option1);
 
-      siteData.categories.forEach(cat => {
-        const btn = document.createElement("button");
-        btn.className = "cat-btn" + (cat.id === activeCategoryId ? " active" : "");
-        btn.innerHTML = `
-          <span>${escapeHtml(cat.name)}</span>
-          <span class="cat-count">${getPhotosForCategoryName(cat.name).length}</span>
-        `;
-        btn.onclick = () => {
-          activeCategoryId = cat.id;
-          renderAll();
-          if(window.innerWidth <= 900){
-            sidebar.classList.remove("show");
-          }
-        };
-        sidebarCategoryList.appendChild(btn);
-      });
+      const option2 = document.createElement("option");
+      option2.value = cat.id;
+      option2.textContent = cat.name;
+      filterCategory.appendChild(option2);
+    });
+
+    const filterExists = [...filterCategory.options].some(option => option.value === previousFilter);
+    filterCategory.value = filterExists ? previousFilter : "all";
+  }
+
+  function renderCategoryCards(){
+    categoryCards.innerHTML = "";
+
+    if(!siteData.categories.length){
+      categoryCards.innerHTML = '<div class="empty-box">Create your first category to start uploading pictures.</div>';
+      return;
     }
 
-    function renderCategorySelects(){
-      const previousUpload = uploadCategory.value || activeCategoryId || "";
-      const previousFilter = filterCategory.value || "all";
+    siteData.categories.forEach(cat => {
+      const categoryPhotos = getPhotosForCategoryName(cat.name);
+      const featuredCount = categoryPhotos.filter(photo => photo.featured).length;
 
-      uploadCategory.innerHTML = "";
-      filterCategory.innerHTML = '<option value="all">All Categories</option>';
-
-      if(!siteData.categories.length){
-        uploadCategory.innerHTML = '<option value="">No categories available</option>';
-        return;
-      }
-
-      siteData.categories.forEach(cat => {
-        const option1 = document.createElement("option");
-        option1.value = cat.id;
-        option1.textContent = cat.name;
-        if(cat.id === previousUpload || (!previousUpload && cat.id === activeCategoryId)){
-          option1.selected = true;
-        }
-        uploadCategory.appendChild(option1);
-
-        const option2 = document.createElement("option");
-        option2.value = cat.id;
-        option2.textContent = cat.name;
-        filterCategory.appendChild(option2);
-      });
-
-      const filterExists = [...filterCategory.options].some(option => option.value === previousFilter);
-      filterCategory.value = filterExists ? previousFilter : "all";
-    }
-
-    function renderCategoryCards(){
-      categoryCards.innerHTML = "";
-
-      if(!siteData.categories.length){
-        categoryCards.innerHTML = '<div class="empty-box">Create your first category to start uploading pictures.</div>';
-        return;
-      }
-
-      siteData.categories.forEach(cat => {
-        const categoryPhotos = getPhotosForCategoryName(cat.name);
-        const featuredCount = categoryPhotos.filter(photo => photo.featured).length;
-
-        const card = document.createElement("div");
-        card.className = "category-card";
-        card.innerHTML = `
-          <div>
-            <h4>${escapeHtml(cat.name)}</h4>
-            <p>${escapeHtml(cat.description || "No description added.")}</p>
-            <span class="pill">${categoryPhotos.length} photo${categoryPhotos.length === 1 ? "" : "s"}</span>
-            ${featuredCount ? `<span class="pill featured" style="margin-left:8px;">${featuredCount} featured</span>` : ""}
-          </div>
-        `;
-
-        const actions = document.createElement("div");
-        actions.style.display = "flex";
-        actions.style.gap = "10px";
-        actions.style.flexWrap = "wrap";
-
-        const selectBtn = document.createElement("button");
-        selectBtn.className = "mini-btn secondary";
-        selectBtn.textContent = "Open";
-        selectBtn.onclick = () => {
-          activeCategoryId = cat.id;
-          renderAll();
-        };
-
-        const deleteBtn = document.createElement("button");
-        deleteBtn.className = "mini-btn danger";
-        deleteBtn.textContent = "Delete";
-        deleteBtn.onclick = async () => {
-          const categoryPhotos = getPhotosForCategoryName(cat.name);
-          const confirmDelete = confirm(`Delete "${cat.name}" and ${categoryPhotos.length} photo${categoryPhotos.length === 1 ? "" : "s"} inside it?`);
-          if(!confirmDelete) return;
-
-          try{
-            if(categoryPhotos.length){
-              const { error } = await supabaseClient
-                .from("photos")
-                .delete()
-                .eq("category", cat.name);
-
-              if(error){
-                throw error;
-              }
-            }
-
-            siteData.categories = siteData.categories.filter(item => item.id !== cat.id);
-
-            if(activeCategoryId === cat.id){
-              activeCategoryId = siteData.categories[0] ? siteData.categories[0].id : null;
-            }
-
-            saveData();
-            await loadSupabasePhotos();
-          }catch(error){
-            alert(error.message || "Could not delete category.");
-          }
-        };
-
-        actions.appendChild(selectBtn);
-        actions.appendChild(deleteBtn);
-        card.appendChild(actions);
-        categoryCards.appendChild(card);
-      });
-    }
-
-    function renderCreatorPreview(){
-      const creatorName = photoCreditInput.value.trim() || "Creator Name";
-
-      creatorPreviewName.textContent = creatorName;
-
-      if(creatorPhotoData){
-        creatorPreviewAvatar.innerHTML = `<img src="${creatorPhotoData}" alt="${escapeHtml(creatorName)}">`;
-      }else{
-        creatorPreviewAvatar.textContent = creatorName.charAt(0).toUpperCase() || "P";
-      }
-    }
-
-    function renderUploadPreview(){
-      uploadPreview.innerHTML = "";
-      const files = [...photoFilesInput.files];
-
-      if(!files.length) return;
-
-      files.forEach(file => {
-        const reader = new FileReader();
-        reader.onload = e => {
-          const div = document.createElement("div");
-          div.className = "thumb";
-          div.innerHTML = `
-            <img src="${e.target.result}" alt="${escapeHtml(file.name)}">
-            <p>${escapeHtml(file.name)}</p>
-          `;
-          uploadPreview.appendChild(div);
-        };
-        reader.readAsDataURL(file);
-      });
-    }
-
-    async function toggleFeatured(photoId, currentValue){
-      try{
-        const { error } = await supabaseClient
-          .from("photos")
-          .update({ featured: !currentValue })
-          .eq("id", photoId);
-
-        if(error){
-          throw error;
-        }
-
-        await loadSupabasePhotos();
-      }catch(error){
-        alert(error.message || "Could not update featured status.");
-      }
-    }
-
-    async function deletePhoto(photoId, title, categoryName){
-      const confirmDelete = confirm(`Delete "${title}" from ${categoryName}?`);
-      if(!confirmDelete) return;
-
-      try{
-        const { error } = await supabaseClient
-          .from("photos")
-          .delete()
-          .eq("id", photoId);
-
-        if(error){
-          throw error;
-        }
-
-        await loadSupabasePhotos();
-      }catch(error){
-        alert(error.message || "Could not delete photo.");
-      }
-    }
-
-    function buildCreatorAvatar(photo){
-      const creatorName = photo.credit || "Unknown";
-      if(photo.creator_photo){
-        return `<img src="${photo.creator_photo}" alt="${escapeHtml(creatorName)}">`;
-      }
-      return `<span>${escapeHtml(creatorName.charAt(0).toUpperCase() || "P")}</span>`;
-    }
-
-    function buildCreatorLinks(photo){
-      const links = [];
-
-      if(photo.instagram){
-        links.push(`<a href="${escapeHtml(photo.instagram)}" target="_blank" rel="noopener noreferrer" class="social-link-pill" title="Instagram">IG</a>`);
-      }
-
-      if(photo.x){
-        links.push(`<a href="${escapeHtml(photo.x)}" target="_blank" rel="noopener noreferrer" class="social-link-pill" title="X">X</a>`);
-      }
-
-      if(photo.facebook){
-        links.push(`<a href="${escapeHtml(photo.facebook)}" target="_blank" rel="noopener noreferrer" class="social-link-pill" title="Facebook">FB</a>`);
-      }
-
-      return links.join("");
-    }
-
-    function createPhotoCard(categoryName, photo){
       const card = document.createElement("div");
-      card.className = "photo-card";
-
-      const tagsText = photo.tags && photo.tags.trim() ? photo.tags.trim() : "No tags";
-      const descText = photo.description && photo.description.trim() ? photo.description.trim() : "No description added.";
-      const creatorLinks = buildCreatorLinks(photo);
-
+      card.className = "category-card";
       card.innerHTML = `
-        <img class="main-photo" src="${photo.image_url}" alt="${escapeHtml(photo.title || "Photo")}">
-        <div class="photo-card-content">
-          <div class="photo-badges">
-            <span class="pill">${escapeHtml(categoryName)}</span>
-            ${photo.featured ? '<span class="pill featured">Featured</span>' : ""}
-          </div>
-
-          <div class="creator-mini">
-            <div class="creator-mini-avatar">${buildCreatorAvatar(photo)}</div>
-            <div>
-              <small>Creator</small>
-              <strong>${escapeHtml(photo.credit || "Unknown")}</strong>
-            </div>
-          </div>
-
-          <h4>${escapeHtml(photo.title || "Untitled Photo")}</h4>
-          <div class="photo-meta">${escapeHtml(tagsText)}</div>
-          ${creatorLinks ? `<div class="social-links-row">${creatorLinks}</div>` : ""}
-          <div class="photo-desc">${escapeHtml(descText)}</div>
+        <div>
+          <h4>${escapeHtml(cat.name)}</h4>
+          <p>${escapeHtml(cat.description || "No description added.")}</p>
+          <span class="pill">${categoryPhotos.length} photo${categoryPhotos.length === 1 ? "" : "s"}</span>
+          ${featuredCount ? `<span class="pill featured" style="margin-left:8px;">${featuredCount} featured</span>` : ""}
         </div>
       `;
 
       const actions = document.createElement("div");
-      actions.className = "photo-actions";
+      actions.style.display = "flex";
+      actions.style.gap = "10px";
+      actions.style.flexWrap = "wrap";
 
-      const featureBtn = document.createElement("button");
-      featureBtn.className = photo.featured ? "mini-btn secondary" : "mini-btn success";
-      featureBtn.textContent = photo.featured ? "Unfeature" : "Feature";
-      featureBtn.onclick = () => {
-        toggleFeatured(photo.id, Boolean(photo.featured));
+      const selectBtn = document.createElement("button");
+      selectBtn.className = "mini-btn secondary";
+      selectBtn.textContent = "Open";
+      selectBtn.onclick = () => {
+        activeCategoryId = cat.id;
+        renderAll();
       };
 
       const deleteBtn = document.createElement("button");
       deleteBtn.className = "mini-btn danger";
       deleteBtn.textContent = "Delete";
-      deleteBtn.onclick = () => {
-        deletePhoto(photo.id, photo.title || "Photo", categoryName);
+      deleteBtn.onclick = async () => {
+        const categoryPhotos = getPhotosForCategoryName(cat.name);
+        const confirmDelete = confirm(`Delete "${cat.name}" and ${categoryPhotos.length} photo${categoryPhotos.length === 1 ? "" : "s"} inside it?`);
+        if(!confirmDelete) return;
+
+        try{
+          if(categoryPhotos.length){
+            const { error } = await supabaseClient
+              .from("photos")
+              .delete()
+              .eq("category", cat.name);
+
+            if(error){
+              throw error;
+            }
+          }
+
+          siteData.categories = siteData.categories.filter(item => item.id !== cat.id);
+
+          if(activeCategoryId === cat.id){
+            activeCategoryId = siteData.categories[0] ? siteData.categories[0].id : null;
+          }
+
+          saveData();
+          await loadSupabasePhotos();
+        }catch(error){
+          alert(error.message || "Could not delete category.");
+        }
       };
 
-      actions.appendChild(featureBtn);
+      actions.appendChild(selectBtn);
       actions.appendChild(deleteBtn);
-      card.querySelector(".photo-card-content").appendChild(actions);
+      card.appendChild(actions);
+      categoryCards.appendChild(card);
+    });
+  }
 
-      return card;
+  function renderCreatorPreview(){
+    const creatorName = photoCreditInput.value.trim() || "Creator Name";
+
+    creatorPreviewName.textContent = creatorName;
+
+    if(creatorPhotoData){
+      creatorPreviewAvatar.innerHTML = `<img src="${creatorPhotoData}" alt="${escapeHtml(creatorName)}">`;
+    }else{
+      creatorPreviewAvatar.textContent = creatorName.charAt(0).toUpperCase() || "P";
+    }
+  }
+
+  function renderUploadPreview(){
+    uploadPreview.innerHTML = "";
+    const files = [...photoFilesInput.files];
+
+    if(!files.length) return;
+
+    files.forEach(file => {
+      const reader = new FileReader();
+      reader.onload = e => {
+        const div = document.createElement("div");
+        div.className = "thumb";
+        div.innerHTML = `
+          <img src="${e.target.result}" alt="${escapeHtml(file.name)}">
+          <p>${escapeHtml(file.name)}</p>
+        `;
+        uploadPreview.appendChild(div);
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  async function toggleFeatured(photoId, currentValue){
+    try{
+      const { error } = await supabaseClient
+        .from("photos")
+        .update({ featured: !currentValue })
+        .eq("id", photoId);
+
+      if(error){
+        throw error;
+      }
+
+      await loadSupabasePhotos();
+    }catch(error){
+      alert(error.message || "Could not update featured status.");
+    }
+  }
+
+  async function deletePhoto(photoId, title, categoryName){
+    const confirmDelete = confirm(`Delete "${title}" from ${categoryName}?`);
+    if(!confirmDelete) return;
+
+    try{
+      const { error } = await supabaseClient
+        .from("photos")
+        .delete()
+        .eq("id", photoId);
+
+      if(error){
+        throw error;
+      }
+
+      await loadSupabasePhotos();
+    }catch(error){
+      alert(error.message || "Could not delete photo.");
+    }
+  }
+
+  function buildCreatorAvatar(photo){
+    const creatorName = photo.credit || "Unknown";
+    if(photo.creator_photo){
+      return `<img src="${photo.creator_photo}" alt="${escapeHtml(creatorName)}">`;
+    }
+    return `<span>${escapeHtml(creatorName.charAt(0).toUpperCase() || "P")}</span>`;
+  }
+
+  function buildCreatorLinks(photo){
+    const links = [];
+
+    if(photo.instagram){
+      links.push(`<a href="${escapeHtml(photo.instagram)}" target="_blank" rel="noopener noreferrer" class="social-link-pill" title="Instagram">IG</a>`);
     }
 
-    function renderFeaturedGroups(){
-      featuredGroups.innerHTML = "";
+    if(photo.x){
+      links.push(`<a href="${escapeHtml(photo.x)}" target="_blank" rel="noopener noreferrer" class="social-link-pill" title="X">X</a>`);
+    }
 
-      const featuredPhotos = supabasePhotos.filter(photo => photo.featured);
+    if(photo.facebook){
+      links.push(`<a href="${escapeHtml(photo.facebook)}" target="_blank" rel="noopener noreferrer" class="social-link-pill" title="Facebook">FB</a>`);
+    }
 
-      if(!featuredPhotos.length){
-        featuredGroups.innerHTML = '<div class="empty-box">No featured photos yet. Upload photos and mark them featured, or use the Feature button below.</div>';
-        return;
-      }
+    return links.join("");
+  }
+
+  function createPhotoCard(categoryName, photo){
+    const card = document.createElement("div");
+    card.className = "photo-card";
+
+    const tagsText = photo.tags && photo.tags.trim() ? photo.tags.trim() : "No tags";
+    const descText = photo.description && photo.description.trim() ? photo.description.trim() : "No description added.";
+    const creatorLinks = buildCreatorLinks(photo);
+
+    card.innerHTML = `
+      <img class="main-photo" src="${photo.image_url}" alt="${escapeHtml(photo.title || "Photo")}">
+      <div class="photo-card-content">
+        <div class="photo-badges">
+          <span class="pill">${escapeHtml(categoryName)}</span>
+          ${photo.featured ? '<span class="pill featured">Featured</span>' : ""}
+        </div>
+
+        <div class="creator-mini">
+          <div class="creator-mini-avatar">${buildCreatorAvatar(photo)}</div>
+          <div>
+            <small>Creator</small>
+            <strong>${escapeHtml(photo.credit || "Unknown")}</strong>
+          </div>
+        </div>
+
+        <h4>${escapeHtml(photo.title || "Untitled Photo")}</h4>
+        <div class="photo-meta">${escapeHtml(tagsText)}</div>
+        ${creatorLinks ? `<div class="social-links-row">${creatorLinks}</div>` : ""}
+        <div class="photo-desc">${escapeHtml(descText)}</div>
+      </div>
+    `;
+
+    const actions = document.createElement("div");
+    actions.className = "photo-actions";
+
+    const featureBtn = document.createElement("button");
+    featureBtn.className = photo.featured ? "mini-btn secondary" : "mini-btn success";
+    featureBtn.textContent = photo.featured ? "Unfeature" : "Feature";
+    featureBtn.onclick = () => {
+      toggleFeatured(photo.id, Boolean(photo.featured));
+    };
+
+    const deleteBtn = document.createElement("button");
+    deleteBtn.className = "mini-btn danger";
+    deleteBtn.textContent = "Delete";
+    deleteBtn.onclick = () => {
+      deletePhoto(photo.id, photo.title || "Photo", categoryName);
+    };
+
+    actions.appendChild(featureBtn);
+    actions.appendChild(deleteBtn);
+    card.querySelector(".photo-card-content").appendChild(actions);
+
+    return card;
+  }
+
+  function renderFeaturedGroups(){
+    featuredGroups.innerHTML = "";
+
+    const featuredPhotos = supabasePhotos.filter(photo => photo.featured);
+
+    if(!featuredPhotos.length){
+      featuredGroups.innerHTML = '<div class="empty-box">No featured photos yet. Upload photos and mark them featured, or use the Feature button below.</div>';
+      return;
+    }
+
+    const group = document.createElement("div");
+    group.className = "photo-group";
+
+    group.innerHTML = `
+      <div class="photo-group-head">
+        <div>
+          <h3>Featured Photo Collection</h3>
+          <p style="color:var(--muted); font-size:14px;">These are all photos marked as featured.</p>
+        </div>
+        <span class="pill featured">${featuredPhotos.length} featured</span>
+      </div>
+    `;
+
+    const grid = document.createElement("div");
+    grid.className = "photo-grid";
+
+    featuredPhotos.forEach(photo => {
+      grid.appendChild(createPhotoCard(photo.category || "Uncategorized", photo));
+    });
+
+    group.appendChild(grid);
+    featuredGroups.appendChild(group);
+  }
+
+  function renderPhotoGroups(){
+    photoGroups.innerHTML = "";
+
+    if(!siteData.categories.length){
+      photoGroups.innerHTML = '<div class="empty-box">No categories yet. Add a category first.</div>';
+      return;
+    }
+
+    const searchValue = searchInput.value.toLowerCase().trim();
+    const selectedFilter = filterCategory.value;
+
+    const categoriesToShow = siteData.categories.filter(cat => {
+      if(selectedFilter === "all") return true;
+      return cat.id === selectedFilter;
+    });
+
+    let hasAnyPhotos = false;
+
+    categoriesToShow.forEach(cat => {
+      const filteredPhotos = getPhotosForCategoryName(cat.name).filter(photo => {
+        if(!searchValue) return true;
+
+        const allText = [
+          photo.title,
+          photo.description,
+          photo.credit,
+          photo.tags,
+          photo.category,
+          photo.instagram,
+          photo.x,
+          photo.facebook
+        ].join(" ").toLowerCase();
+
+        return allText.includes(searchValue);
+      });
+
+      if(!filteredPhotos.length) return;
+
+      hasAnyPhotos = true;
 
       const group = document.createElement("div");
       group.className = "photo-group";
 
+      const featuredCount = filteredPhotos.filter(photo => photo.featured).length;
+
       group.innerHTML = `
         <div class="photo-group-head">
           <div>
-            <h3>Featured Photo Collection</h3>
-            <p style="color:var(--muted); font-size:14px;">These are all photos marked as featured.</p>
+            <h3>${escapeHtml(cat.name)}</h3>
+            <p style="color:var(--muted); font-size:14px;">${escapeHtml(cat.description || "No description.")}</p>
           </div>
-          <span class="pill featured">${featuredPhotos.length} featured</span>
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <span class="pill">${filteredPhotos.length} photo${filteredPhotos.length === 1 ? "" : "s"}</span>
+            ${featuredCount ? `<span class="pill featured">${featuredCount} featured</span>` : ""}
+          </div>
         </div>
       `;
 
       const grid = document.createElement("div");
       grid.className = "photo-grid";
 
-      featuredPhotos.forEach(photo => {
-        grid.appendChild(createPhotoCard(photo.category || "Uncategorized", photo));
+      filteredPhotos.forEach(photo => {
+        grid.appendChild(createPhotoCard(cat.name, photo));
       });
 
       group.appendChild(grid);
-      featuredGroups.appendChild(group);
-    }
-
-    function renderPhotoGroups(){
-      photoGroups.innerHTML = "";
-
-      if(!siteData.categories.length){
-        photoGroups.innerHTML = '<div class="empty-box">No categories yet. Add a category first.</div>';
-        return;
-      }
-
-      const searchValue = searchInput.value.toLowerCase().trim();
-      const selectedFilter = filterCategory.value;
-
-      const categoriesToShow = siteData.categories.filter(cat => {
-        if(selectedFilter === "all") return true;
-        return cat.id === selectedFilter;
-      });
-
-      let hasAnyPhotos = false;
-
-      categoriesToShow.forEach(cat => {
-        const filteredPhotos = getPhotosForCategoryName(cat.name).filter(photo => {
-          if(!searchValue) return true;
-
-          const allText = [
-            photo.title,
-            photo.description,
-            photo.credit,
-            photo.tags,
-            photo.category,
-            photo.instagram,
-            photo.x,
-            photo.facebook
-          ].join(" ").toLowerCase();
-
-          return allText.includes(searchValue);
-        });
-
-        if(!filteredPhotos.length) return;
-
-        hasAnyPhotos = true;
-
-        const group = document.createElement("div");
-        group.className = "photo-group";
-
-        const featuredCount = filteredPhotos.filter(photo => photo.featured).length;
-
-        group.innerHTML = `
-          <div class="photo-group-head">
-            <div>
-              <h3>${escapeHtml(cat.name)}</h3>
-              <p style="color:var(--muted); font-size:14px;">${escapeHtml(cat.description || "No description.")}</p>
-            </div>
-            <div style="display:flex; gap:8px; flex-wrap:wrap;">
-              <span class="pill">${filteredPhotos.length} photo${filteredPhotos.length === 1 ? "" : "s"}</span>
-              ${featuredCount ? `<span class="pill featured">${featuredCount} featured</span>` : ""}
-            </div>
-          </div>
-        `;
-
-        const grid = document.createElement("div");
-        grid.className = "photo-grid";
-
-        filteredPhotos.forEach(photo => {
-          grid.appendChild(createPhotoCard(cat.name, photo));
-        });
-
-        group.appendChild(grid);
-        photoGroups.appendChild(group);
-      });
-
-      if(!hasAnyPhotos){
-        photoGroups.innerHTML = '<div class="empty-box">No pictures found for this search or category.</div>';
-      }
-    }
-
-    function renderContentInputs(){
-      siteNameInput.value = siteData.siteName || "";
-      siteTaglineInput.value = siteData.siteTagline || "";
-      footerTextInput.value = siteData.footerText || "";
-
-      homeHeroTagInput.value = siteData.homepage.heroTag || "";
-      homeHeroTitleInput.value = siteData.homepage.heroTitle || "";
-      homeHeroTextInput.value = siteData.homepage.heroText || "";
-      categoriesTitleInput.value = siteData.homepage.categoriesTitle || "";
-      categoriesTextInput.value = siteData.homepage.categoriesText || "";
-      featuredTitleInput.value = siteData.homepage.featuredTitle || "";
-      featuredTextInput.value = siteData.homepage.featuredText || "";
-      trendingTitleInput.value = siteData.homepage.trendingTitle || "";
-      trendingTextInput.value = siteData.homepage.trendingText || "";
-      ctaTitleInput.value = siteData.homepage.ctaTitle || "";
-      ctaTextInput.value = siteData.homepage.ctaText || "";
-
-      contactHeadingInput.value = siteData.contactPage.heading || "";
-      contactIntroInput.value = siteData.contactPage.intro || "";
-      contactEmailInput.value = siteData.contactPage.email || "";
-      contactPhoneInput.value = siteData.contactPage.phone || "";
-      contactLocationInput.value = siteData.contactPage.location || "";
-      contactResponseTimeInput.value = siteData.contactPage.responseTime || "";
-      instagramUrlInput.value = siteData.contactPage.instagram || "";
-      xUrlInput.value = siteData.contactPage.x || "";
-      facebookUrlInput.value = siteData.contactPage.facebook || "";
-      tiktokUrlInput.value = siteData.contactPage.tiktok || "";
-
-      aboutHeroTitleInput.value = siteData.aboutPage.heroTitle || "";
-      aboutHeroTextInput.value = siteData.aboutPage.heroText || "";
-      aboutBodyTitleInput.value = siteData.aboutPage.bodyTitle || "";
-      aboutBodyTextInput.value = siteData.aboutPage.bodyText || "";
-    }
-
-    function renderTextPreview(){
-      previewSiteName.textContent = siteData.siteName || "PixNest";
-      previewTagline.textContent = siteData.siteTagline || "";
-      previewCategoriesTitle.textContent = siteData.homepage.categoriesTitle || "All Categories";
-      previewFeaturedTitle.textContent = siteData.homepage.featuredTitle || "Featured Photos";
-      previewFeaturedText.textContent = siteData.homepage.featuredText || "";
-      previewTrendingTitle.textContent = siteData.homepage.trendingTitle || "Trending This Week";
-      previewTrendingText.textContent = siteData.homepage.trendingText || "";
-    }
-
-    function clearUploadFields(){
-      photoTitleInput.value = "";
-      photoDescInput.value = "";
-      photoCreditInput.value = "";
-      photoTagsInput.value = "";
-      photoInstagramInput.value = "";
-      photoXInput.value = "";
-      photoFacebookInput.value = "";
-      photoFilesInput.value = "";
-      creatorPhotoFileInput.value = "";
-      photoFeaturedInput.checked = false;
-      creatorPhotoData = "";
-      uploadPreview.innerHTML = "";
-      renderCreatorPreview();
-    }
-
-    function renderAll(){
-      renderContentInputs();
-      renderSidebar();
-      renderStats();
-      renderCategorySelects();
-      renderCategoryCards();
-      renderTextPreview();
-      renderFeaturedGroups();
-      renderPhotoGroups();
-      renderCreatorPreview();
-    }
-
-    function addCategory(){
-      categoryError.textContent = "";
-
-      const name = categoryNameInput.value.trim();
-      const description = categoryDescInput.value.trim();
-
-      if(!name){
-        categoryError.textContent = "Please enter a category name.";
-        return;
-      }
-
-      const alreadyExists = siteData.categories.some(cat => cat.name.toLowerCase() === name.toLowerCase());
-      if(alreadyExists){
-        categoryError.textContent = "That category already exists.";
-        return;
-      }
-
-      const newCategory = {
-        id: createId(),
-        name,
-        description
-      };
-
-      siteData.categories.push(newCategory);
-      activeCategoryId = newCategory.id;
-
-      categoryNameInput.value = "";
-      categoryDescInput.value = "";
-
-      saveData();
-      renderAll();
-    }
-
-    async function uploadPhotos(){
-      uploadError.textContent = "";
-
-      if(!siteData.categories.length){
-        uploadError.textContent = "Create a category before uploading pictures.";
-        return;
-      }
-
-      const categoryId = uploadCategory.value;
-      const category = siteData.categories.find(cat => cat.id === categoryId);
-
-      if(!category){
-        uploadError.textContent = "Please choose a category.";
-        return;
-      }
-
-      const files = [...photoFilesInput.files];
-      if(!files.length){
-        uploadError.textContent = "Please choose at least one picture.";
-        return;
-      }
-
-      const creatorName = photoCreditInput.value.trim();
-      if(!creatorName){
-        uploadError.textContent = "Please enter the creator name.";
-        return;
-      }
-
-      const titlePrefix = photoTitleInput.value.trim();
-      const description = photoDescInput.value.trim();
-      const tags = photoTagsInput.value.trim();
-      const featured = photoFeaturedInput.checked;
-
-      const creatorInstagram = photoInstagramInput.value.trim();
-      const creatorX = photoXInput.value.trim();
-      const creatorFacebook = photoFacebookInput.value.trim();
-
-      uploadPhotosBtn.disabled = true;
-      uploadError.textContent = "Uploading to Supabase...";
-
-      try{
-        let creatorPhotoUrl = "";
-        const creatorFile = creatorPhotoFileInput.files[0];
-
-        if(creatorFile){
-          const creatorPath = makeStorageName("creator", creatorFile.name, creatorName);
-          creatorPhotoUrl = await uploadToBucket(CREATOR_BUCKET, creatorFile, creatorPath);
-        }
-
-        for(let index = 0; index < files.length; index++){
-          const file = files[index];
-          const fallbackTitle = file.name.replace(/\.[^/.]+$/, "").replace(/[-_]+/g, " ").trim() || `Photo ${index + 1}`;
-          const title = titlePrefix
-            ? files.length > 1
-              ? `${titlePrefix} ${index + 1}`
-              : titlePrefix
-            : fallbackTitle;
-
-          const imagePath = makeStorageName("photos", file.name, title || file.name);
-          const imageUrl = await uploadToBucket(PHOTOS_BUCKET, file, imagePath);
-
-          const { error } = await supabaseClient
-            .from("photos")
-            .insert([{
-              title,
-              description,
-              category: category.name,
-              tags,
-              credit: creatorName,
-              creator_photo: creatorPhotoUrl,
-              instagram: creatorInstagram,
-              x: creatorX,
-              facebook: creatorFacebook,
-              image_url: imageUrl,
-              featured
-            }]);
-
-          if(error){
-            throw error;
-          }
-        }
-
-        activeCategoryId = category.id;
-        clearUploadFields();
-        uploadError.textContent = "";
-        await loadSupabasePhotos();
-      }catch(error){
-        console.error(error);
-        uploadError.textContent = error.message || "Upload failed. Try again.";
-      }finally{
-        uploadPhotosBtn.disabled = false;
-      }
-    }
-
-    function exportBackup(){
-      const blob = new Blob([JSON.stringify(siteData, null, 2)], { type:"application/json" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "pixnest-full-admin-backup.json";
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      URL.revokeObjectURL(url);
-    }
-
-    function importBackup(file){
-      const reader = new FileReader();
-      reader.onload = e => {
-        try{
-          const imported = JSON.parse(e.target.result);
-
-          if(!imported || !Array.isArray(imported.categories)){
-            alert("Invalid backup file.");
-            return;
-          }
-
-          siteData = normalizeData(imported);
-          activeCategoryId = siteData.categories[0] ? siteData.categories[0].id : null;
-          saveData();
-          renderAll();
-          alert("Backup imported successfully.");
-        }catch(error){
-          alert("Could not import backup.");
-        }
-      };
-      reader.readAsText(file);
-    }
-
-    function resetAll(){
-      const ok = confirm("Reset all text and categories back to default starter data? This does not remove Supabase photos.");
-      if(!ok) return;
-
-      siteData = normalizeData(deepClone(defaultData));
-      activeCategoryId = siteData.categories[0] ? siteData.categories[0].id : null;
-      clearUploadFields();
-      saveData();
-      renderAll();
-    }
-
-    function attachInputBindings(){
-      siteNameInput.addEventListener("input", () => {
-        siteData.siteName = siteNameInput.value;
-        renderTextPreview();
-        renderStats();
-      });
-
-      siteTaglineInput.addEventListener("input", () => {
-        siteData.siteTagline = siteTaglineInput.value;
-        renderTextPreview();
-      });
-
-      footerTextInput.addEventListener("input", () => {
-        siteData.footerText = footerTextInput.value;
-      });
-
-      homeHeroTagInput.addEventListener("input", () => {
-        siteData.homepage.heroTag = homeHeroTagInput.value;
-      });
-
-      homeHeroTitleInput.addEventListener("input", () => {
-        siteData.homepage.heroTitle = homeHeroTitleInput.value;
-      });
-
-      homeHeroTextInput.addEventListener("input", () => {
-        siteData.homepage.heroText = homeHeroTextInput.value;
-      });
-
-      categoriesTitleInput.addEventListener("input", () => {
-        siteData.homepage.categoriesTitle = categoriesTitleInput.value;
-        renderTextPreview();
-      });
-
-      categoriesTextInput.addEventListener("input", () => {
-        siteData.homepage.categoriesText = categoriesTextInput.value;
-      });
-
-      featuredTitleInput.addEventListener("input", () => {
-        siteData.homepage.featuredTitle = featuredTitleInput.value;
-        renderTextPreview();
-      });
-
-      featuredTextInput.addEventListener("input", () => {
-        siteData.homepage.featuredText = featuredTextInput.value;
-        renderTextPreview();
-      });
-
-      trendingTitleInput.addEventListener("input", () => {
-        siteData.homepage.trendingTitle = trendingTitleInput.value;
-        renderTextPreview();
-      });
-
-      trendingTextInput.addEventListener("input", () => {
-        siteData.homepage.trendingText = trendingTextInput.value;
-        renderTextPreview();
-      });
-
-      ctaTitleInput.addEventListener("input", () => {
-        siteData.homepage.ctaTitle = ctaTitleInput.value;
-      });
-
-      ctaTextInput.addEventListener("input", () => {
-        siteData.homepage.ctaText = ctaTextInput.value;
-      });
-
-      contactHeadingInput.addEventListener("input", () => {
-        siteData.contactPage.heading = contactHeadingInput.value;
-      });
-
-      contactIntroInput.addEventListener("input", () => {
-        siteData.contactPage.intro = contactIntroInput.value;
-      });
-
-      contactEmailInput.addEventListener("input", () => {
-        siteData.contactPage.email = contactEmailInput.value;
-      });
-
-      contactPhoneInput.addEventListener("input", () => {
-        siteData.contactPage.phone = contactPhoneInput.value;
-      });
-
-      contactLocationInput.addEventListener("input", () => {
-        siteData.contactPage.location = contactLocationInput.value;
-      });
-
-      contactResponseTimeInput.addEventListener("input", () => {
-        siteData.contactPage.responseTime = contactResponseTimeInput.value;
-      });
-
-      instagramUrlInput.addEventListener("input", () => {
-        siteData.contactPage.instagram = instagramUrlInput.value;
-      });
-
-      xUrlInput.addEventListener("input", () => {
-        siteData.contactPage.x = xUrlInput.value;
-      });
-
-      facebookUrlInput.addEventListener("input", () => {
-        siteData.contactPage.facebook = facebookUrlInput.value;
-      });
-
-      tiktokUrlInput.addEventListener("input", () => {
-        siteData.contactPage.tiktok = tiktokUrlInput.value;
-      });
-
-      aboutHeroTitleInput.addEventListener("input", () => {
-        siteData.aboutPage.heroTitle = aboutHeroTitleInput.value;
-      });
-
-      aboutHeroTextInput.addEventListener("input", () => {
-        siteData.aboutPage.heroText = aboutHeroTextInput.value;
-      });
-
-      aboutBodyTitleInput.addEventListener("input", () => {
-        siteData.aboutPage.bodyTitle = aboutBodyTitleInput.value;
-      });
-
-      aboutBodyTextInput.addEventListener("input", () => {
-        siteData.aboutPage.bodyText = aboutBodyTextInput.value;
-      });
-
-      photoCreditInput.addEventListener("input", renderCreatorPreview);
-    }
-
-    addCategoryBtn.addEventListener("click", addCategory);
-    uploadPhotosBtn.addEventListener("click", uploadPhotos);
-
-    photoFilesInput.addEventListener("change", renderUploadPreview);
-
-    creatorPhotoFileInput.addEventListener("change", async () => {
-      const file = creatorPhotoFileInput.files[0];
-      creatorPhotoData = file ? await readFileAsDataURL(file) : "";
-      renderCreatorPreview();
+      photoGroups.appendChild(group);
     });
 
-    document.getElementById("saveBtn").addEventListener("click", () => {
-      saveData(true);
-    });
+    if(!hasAnyPhotos){
+      photoGroups.innerHTML = '<div class="empty-box">No pictures found for this search or category.</div>';
+    }
+  }
 
-    document.getElementById("exportBtn").addEventListener("click", exportBackup);
+  function renderContentInputs(){
+    siteNameInput.value = siteData.siteName || "";
+    siteTaglineInput.value = siteData.siteTagline || "";
+    footerTextInput.value = siteData.footerText || "";
 
-    document.getElementById("importBtn").addEventListener("click", () => {
-      document.getElementById("importFile").click();
-    });
+    homeHeroTagInput.value = siteData.homepage.heroTag || "";
+    homeHeroTitleInput.value = siteData.homepage.heroTitle || "";
+    homeHeroTextInput.value = siteData.homepage.heroText || "";
+    categoriesTitleInput.value = siteData.homepage.categoriesTitle || "";
+    categoriesTextInput.value = siteData.homepage.categoriesText || "";
+    featuredTitleInput.value = siteData.homepage.featuredTitle || "";
+    featuredTextInput.value = siteData.homepage.featuredText || "";
+    trendingTitleInput.value = siteData.homepage.trendingTitle || "";
+    trendingTextInput.value = siteData.homepage.trendingText || "";
+    ctaTitleInput.value = siteData.homepage.ctaTitle || "";
+    ctaTextInput.value = siteData.homepage.ctaText || "";
 
-    document.getElementById("importFile").addEventListener("change", e => {
-      const file = e.target.files[0];
-      if(file){
-        importBackup(file);
-      }
-    });
+    contactHeadingInput.value = siteData.contactPage.heading || "";
+    contactIntroInput.value = siteData.contactPage.intro || "";
+    contactEmailInput.value = siteData.contactPage.email || "";
+    contactPhoneInput.value = siteData.contactPage.phone || "";
+    contactLocationInput.value = siteData.contactPage.location || "";
+    contactResponseTimeInput.value = siteData.contactPage.responseTime || "";
+    instagramUrlInput.value = siteData.contactPage.instagram || "";
+    xUrlInput.value = siteData.contactPage.x || "";
+    facebookUrlInput.value = siteData.contactPage.facebook || "";
+    tiktokUrlInput.value = siteData.contactPage.tiktok || "";
 
-    document.getElementById("resetBtn").addEventListener("click", resetAll);
+    aboutHeroTitleInput.value = siteData.aboutPage.heroTitle || "";
+    aboutHeroTextInput.value = siteData.aboutPage.heroText || "";
+    aboutBodyTitleInput.value = siteData.aboutPage.bodyTitle || "";
+    aboutBodyTextInput.value = siteData.aboutPage.bodyText || "";
+  }
 
-    searchInput.addEventListener("input", renderPhotoGroups);
-    filterCategory.addEventListener("change", renderPhotoGroups);
+  function renderTextPreview(){
+    previewSiteName.textContent = siteData.siteName || "PixNest";
+    previewTagline.textContent = siteData.siteTagline || "";
+    previewCategoriesTitle.textContent = siteData.homepage.categoriesTitle || "All Categories";
+    previewFeaturedTitle.textContent = siteData.homepage.featuredTitle || "Featured Photos";
+    previewFeaturedText.textContent = siteData.homepage.featuredText || "";
+    previewTrendingTitle.textContent = siteData.homepage.trendingTitle || "Trending This Week";
+    previewTrendingText.textContent = siteData.homepage.trendingText || "";
+  }
 
-    document.getElementById("mobileToggle").addEventListener("click", () => {
-      sidebar.classList.toggle("show");
-    });
+  function clearUploadFields(){
+    photoTitleInput.value = "";
+    photoDescInput.value = "";
+    photoCreditInput.value = "";
+    photoTagsInput.value = "";
+    photoInstagramInput.value = "";
+    photoXInput.value = "";
+    photoFacebookInput.value = "";
+    photoFilesInput.value = "";
+    creatorPhotoFileInput.value = "";
+    photoFeaturedInput.checked = false;
+    creatorPhotoData = "";
+    uploadPreview.innerHTML = "";
+    renderCreatorPreview();
+  }
 
-    attachInputBindings();
+  function renderAll(){
+    renderContentInputs();
+    renderSidebar();
+    renderStats();
+    renderCategorySelects();
+    renderCategoryCards();
+    renderTextPreview();
+    renderFeaturedGroups();
+    renderPhotoGroups();
+    renderCreatorPreview();
+  }
+
+  function addCategory(){
+    categoryError.textContent = "";
+
+    const name = categoryNameInput.value.trim();
+    const description = categoryDescInput.value.trim();
+
+    if(!name){
+      categoryError.textContent = "Please enter a category name.";
+      return;
+    }
+
+    const alreadyExists = siteData.categories.some(cat => cat.name.toLowerCase() === name.toLowerCase());
+    if(alreadyExists){
+      categoryError.textContent = "That category already exists.";
+      return;
+    }
+
+    const newCategory = {
+      id: createId(),
+      name,
+      description
+    };
+
+    siteData.categories.push(newCategory);
+    activeCategoryId = newCategory.id;
+
+    categoryNameInput.value = "";
+    categoryDescInput.value = "";
+
+    saveData();
     renderAll();
-    loadSupabasePhotos();
-  </script>
+  }
+
+  async function uploadPhotos(){
+    uploadError.textContent = "";
+
+    if(!siteData.categories.length){
+      uploadError.textContent = "Create a category before uploading pictures.";
+      return;
+    }
+
+    const categoryId = uploadCategory.value;
+    const category = siteData.categories.find(cat => cat.id === categoryId);
+
+    if(!category){
+      uploadError.textContent = "Please choose a category.";
+      return;
+    }
+
+    const files = [...photoFilesInput.files];
+    if(!files.length){
+      uploadError.textContent = "Please choose at least one picture.";
+      return;
+    }
+
+    const creatorName = photoCreditInput.value.trim();
+    if(!creatorName){
+      uploadError.textContent = "Please enter the creator name.";
+      return;
+    }
+
+    const allowedTypes = ["image/jpeg","image/jpg","image/png","image/webp"];
+
+    const titlePrefix = photoTitleInput.value.trim();
+    const description = photoDescInput.value.trim();
+    const tags = photoTagsInput.value.trim();
+    const featured = photoFeaturedInput.checked;
+
+    const creatorInstagram = photoInstagramInput.value.trim();
+    const creatorX = photoXInput.value.trim();
+    const creatorFacebook = photoFacebookInput.value.trim();
+
+    uploadPhotosBtn.disabled = true;
+    uploadError.textContent = "Uploading to Supabase...";
+
+    try{
+      let creatorPhotoUrl = "";
+      const creatorFile = creatorPhotoFileInput.files[0];
+
+      if(creatorFile){
+        if(creatorFile.type && !allowedTypes.includes(creatorFile.type)){
+          throw new Error("Creator profile image must be JPG, PNG, or WEBP.");
+        }
+
+        const creatorPath = makeStorageName("creator", creatorFile.name, creatorName);
+        creatorPhotoUrl = await uploadToBucket(CREATOR_BUCKET, creatorFile, creatorPath);
+      }
+
+      for(let index = 0; index < files.length; index++){
+        const file = files[index];
+
+        if(file.type && !allowedTypes.includes(file.type)){
+          throw new Error(`"${file.name}" must be JPG, PNG, or WEBP.`);
+        }
+
+        const fallbackTitle = file.name.replace(/\.[^/.]+$/, "").replace(/[-_]+/g, " ").trim() || `Photo ${index + 1}`;
+        const title = titlePrefix
+          ? files.length > 1
+            ? `${titlePrefix} ${index + 1}`
+            : titlePrefix
+          : fallbackTitle;
+
+        const imagePath = makeStorageName("photos", file.name, title || file.name);
+        const imageUrl = await uploadToBucket(PHOTOS_BUCKET, file, imagePath);
+
+        const { error } = await supabaseClient
+          .from("photos")
+          .insert([{
+            title,
+            description,
+            category: category.name,
+            tags,
+            credit: creatorName,
+            creator_photo: creatorPhotoUrl,
+            instagram: creatorInstagram,
+            x: creatorX,
+            facebook: creatorFacebook,
+            image_url: imageUrl,
+            featured
+          }]);
+
+        if(error){
+          throw error;
+        }
+      }
+
+      activeCategoryId = category.id;
+      clearUploadFields();
+      uploadError.textContent = "";
+      await loadSupabasePhotos();
+    }catch(error){
+      console.error(error);
+      uploadError.textContent = error.message || "Upload failed. Try again.";
+    }finally{
+      uploadPhotosBtn.disabled = false;
+    }
+  }
+
+  function exportBackup(){
+    const blob = new Blob([JSON.stringify(siteData, null, 2)], { type:"application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "pixnest-full-admin-backup.json";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  }
+
+  function importBackup(file){
+    const reader = new FileReader();
+    reader.onload = e => {
+      try{
+        const imported = JSON.parse(e.target.result);
+
+        if(!imported || !Array.isArray(imported.categories)){
+          alert("Invalid backup file.");
+          return;
+        }
+
+        siteData = normalizeData(imported);
+        activeCategoryId = siteData.categories[0] ? siteData.categories[0].id : null;
+        saveData();
+        renderAll();
+        alert("Backup imported successfully.");
+      }catch(error){
+        alert("Could not import backup.");
+      }
+    };
+    reader.readAsText(file);
+  }
+
+  function resetAll(){
+    const ok = confirm("Reset all text and categories back to default starter data? This does not remove Supabase photos.");
+    if(!ok) return;
+
+    siteData = normalizeData(deepClone(defaultData));
+    activeCategoryId = siteData.categories[0] ? siteData.categories[0].id : null;
+    clearUploadFields();
+    saveData();
+    renderAll();
+  }
+
+  function attachInputBindings(){
+    siteNameInput.addEventListener("input", () => {
+      siteData.siteName = siteNameInput.value;
+      renderTextPreview();
+      renderStats();
+    });
+
+    siteTaglineInput.addEventListener("input", () => {
+      siteData.siteTagline = siteTaglineInput.value;
+      renderTextPreview();
+    });
+
+    footerTextInput.addEventListener("input", () => {
+      siteData.footerText = footerTextInput.value;
+    });
+
+    homeHeroTagInput.addEventListener("input", () => {
+      siteData.homepage.heroTag = homeHeroTagInput.value;
+    });
+
+    homeHeroTitleInput.addEventListener("input", () => {
+      siteData.homepage.heroTitle = homeHeroTitleInput.value;
+    });
+
+    homeHeroTextInput.addEventListener("input", () => {
+      siteData.homepage.heroText = homeHeroTextInput.value;
+    });
+
+    categoriesTitleInput.addEventListener("input", () => {
+      siteData.homepage.categoriesTitle = categoriesTitleInput.value;
+      renderTextPreview();
+    });
+
+    categoriesTextInput.addEventListener("input", () => {
+      siteData.homepage.categoriesText = categoriesTextInput.value;
+    });
+
+    featuredTitleInput.addEventListener("input", () => {
+      siteData.homepage.featuredTitle = featuredTitleInput.value;
+      renderTextPreview();
+    });
+
+    featuredTextInput.addEventListener("input", () => {
+      siteData.homepage.featuredText = featuredTextInput.value;
+      renderTextPreview();
+    });
+
+    trendingTitleInput.addEventListener("input", () => {
+      siteData.homepage.trendingTitle = trendingTitleInput.value;
+      renderTextPreview();
+    });
+
+    trendingTextInput.addEventListener("input", () => {
+      siteData.homepage.trendingText = trendingTextInput.value;
+      renderTextPreview();
+    });
+
+    ctaTitleInput.addEventListener("input", () => {
+      siteData.homepage.ctaTitle = ctaTitleInput.value;
+    });
+
+    ctaTextInput.addEventListener("input", () => {
+      siteData.homepage.ctaText = ctaTextInput.value;
+    });
+
+    contactHeadingInput.addEventListener("input", () => {
+      siteData.contactPage.heading = contactHeadingInput.value;
+    });
+
+    contactIntroInput.addEventListener("input", () => {
+      siteData.contactPage.intro = contactIntroInput.value;
+    });
+
+    contactEmailInput.addEventListener("input", () => {
+      siteData.contactPage.email = contactEmailInput.value;
+    });
+
+    contactPhoneInput.addEventListener("input", () => {
+      siteData.contactPage.phone = contactPhoneInput.value;
+    });
+
+    contactLocationInput.addEventListener("input", () => {
+      siteData.contactPage.location = contactLocationInput.value;
+    });
+
+    contactResponseTimeInput.addEventListener("input", () => {
+      siteData.contactPage.responseTime = contactResponseTimeInput.value;
+    });
+
+    instagramUrlInput.addEventListener("input", () => {
+      siteData.contactPage.instagram = instagramUrlInput.value;
+    });
+
+    xUrlInput.addEventListener("input", () => {
+      siteData.contactPage.x = xUrlInput.value;
+    });
+
+    facebookUrlInput.addEventListener("input", () => {
+      siteData.contactPage.facebook = facebookUrlInput.value;
+    });
+
+    tiktokUrlInput.addEventListener("input", () => {
+      siteData.contactPage.tiktok = tiktokUrlInput.value;
+    });
+
+    aboutHeroTitleInput.addEventListener("input", () => {
+      siteData.aboutPage.heroTitle = aboutHeroTitleInput.value;
+    });
+
+    aboutHeroTextInput.addEventListener("input", () => {
+      siteData.aboutPage.heroText = aboutHeroTextInput.value;
+    });
+
+    aboutBodyTitleInput.addEventListener("input", () => {
+      siteData.aboutPage.bodyTitle = aboutBodyTitleInput.value;
+    });
+
+    aboutBodyTextInput.addEventListener("input", () => {
+      siteData.aboutPage.bodyText = aboutBodyTextInput.value;
+    });
+
+    photoCreditInput.addEventListener("input", renderCreatorPreview);
+  }
+
+  addCategoryBtn.addEventListener("click", addCategory);
+  uploadPhotosBtn.addEventListener("click", uploadPhotos);
+
+  photoFilesInput.addEventListener("change", renderUploadPreview);
+
+  creatorPhotoFileInput.addEventListener("change", async () => {
+    const file = creatorPhotoFileInput.files[0];
+    creatorPhotoData = file ? await readFileAsDataURL(file) : "";
+    renderCreatorPreview();
+  });
+
+  document.getElementById("saveBtn").addEventListener("click", () => {
+    saveData(true);
+  });
+
+  document.getElementById("exportBtn").addEventListener("click", exportBackup);
+
+  document.getElementById("importBtn").addEventListener("click", () => {
+    document.getElementById("importFile").click();
+  });
+
+  document.getElementById("importFile").addEventListener("change", e => {
+    const file = e.target.files[0];
+    if(file){
+      importBackup(file);
+    }
+  });
+
+  document.getElementById("resetBtn").addEventListener("click", resetAll);
+
+  searchInput.addEventListener("input", renderPhotoGroups);
+  filterCategory.addEventListener("change", renderPhotoGroups);
+
+  document.getElementById("mobileToggle").addEventListener("click", () => {
+    sidebar.classList.toggle("show");
+  });
+
+  attachInputBindings();
+  renderAll();
+  loadSupabasePhotos();
+</script>
 </body>
 </html>
  
