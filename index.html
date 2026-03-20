@@ -26,9 +26,12 @@
 
     html{
       scroll-behavior:smooth;
+      min-height:100%;
+      background:var(--bg);
     }
 
     body{
+      min-height:100%;
       background:var(--bg);
       color:var(--text);
       line-height:1.6;
@@ -448,11 +451,11 @@
       display:inline-flex;
       align-items:center;
       justify-content:center;
-      padding:6px 10px;
+      padding:5px 9px;
       border-radius:999px;
-      font-size:12px;
-      background:rgba(255,255,255,.12);
-      border:1px solid rgba(255,255,255,.12);
+      font-size:11px;
+      background:rgba(255,255,255,.10);
+      border:1px solid rgba(255,255,255,.10);
       color:#fff;
       backdrop-filter:blur(6px);
     }
@@ -471,7 +474,7 @@
 
     .visual-card{
       position:relative;
-      min-height:460px;
+      min-height:430px;
       border-radius:22px;
       overflow:hidden;
       border:1px solid var(--line);
@@ -514,45 +517,108 @@
       right:0;
       bottom:0;
       z-index:2;
-      padding:18px;
+      padding:14px;
       display:flex;
       flex-direction:column;
-      gap:10px;
+      gap:8px;
       background:transparent;
     }
 
     .meta{
       display:flex;
       flex-wrap:wrap;
-      gap:10px;
+      gap:8px;
     }
 
     .overlay-desc{
       color:#fff;
-      font-size:16px;
-      line-height:1.5;
+      font-size:13px;
+      line-height:1.45;
       margin:0;
       text-shadow:0 2px 10px rgba(0,0,0,.35);
+      display:-webkit-box;
+      -webkit-line-clamp:2;
+      -webkit-box-orient:vertical;
+      overflow:hidden;
     }
 
     .credit{
       color:#e2e8f0;
-      font-size:14px;
+      font-size:13px;
       font-weight:700;
       text-shadow:0 2px 10px rgba(0,0,0,.35);
+      line-height:1.35;
+    }
+
+    .photo-stats{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      flex-wrap:wrap;
+      margin-top:2px;
+    }
+
+    .photo-stat{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding:7px 10px;
+      border-radius:999px;
+      font-size:11px;
+      font-weight:700;
+      color:#fff;
+      background:rgba(255,255,255,.12);
+      border:1px solid rgba(255,255,255,.14);
+      backdrop-filter:blur(8px);
+      line-height:1;
+    }
+
+    .photo-stat i{
+      color:var(--accent);
+      font-size:11px;
+    }
+
+    .photo-stat.react-btn{
+      cursor:pointer;
+    }
+
+    .photo-stat.react-btn:hover{
+      transform:translateY(-2px);
+      border-color:rgba(250,204,21,.3);
+    }
+
+    .photo-stat.react-btn.active{
+      background:rgba(250,204,21,.16);
+      border-color:rgba(250,204,21,.35);
+      color:#fff;
+    }
+
+    .photo-stat.react-btn.active i{
+      color:var(--accent);
+    }
+
+    .lightbox-stats{
+      margin-bottom:18px;
+    }
+
+    .lightbox-stats .photo-stat{
+      background:#0f172a;
+      border-color:var(--line);
+      font-size:12px;
+      padding:8px 12px;
     }
 
     .overlay-actions{
       display:flex;
       align-items:center;
-      gap:10px;
+      gap:8px;
       flex-wrap:wrap;
-      margin-top:4px;
+      margin-top:2px;
     }
 
     .action-icon{
-      width:40px;
-      height:40px;
+      width:36px;
+      height:36px;
       border-radius:50%;
       display:flex;
       align-items:center;
@@ -562,7 +628,7 @@
       color:#fff;
       cursor:pointer;
       backdrop-filter:blur(8px);
-      font-size:15px;
+      font-size:14px;
       text-decoration:none;
     }
 
@@ -570,6 +636,12 @@
       color:var(--accent);
       border-color:rgba(250,204,21,.3);
       transform:translateY(-2px);
+    }
+
+    .action-icon.is-loading,
+    .lightbox-social.is-loading{
+      opacity:.7;
+      pointer-events:none;
     }
 
     .cta{
@@ -637,25 +709,28 @@
     }
 
     .lightbox-image-wrap{
-      background:#020617;
+      background:var(--bg);
       min-height:300px;
       display:flex;
       align-items:center;
       justify-content:center;
+      padding:18px;
     }
 
     .lightbox-image-wrap img{
       width:100%;
       height:100%;
       object-fit:contain;
-      max-height:90vh;
-      background:#020617;
+      max-height:calc(90vh - 36px);
+      background:var(--bg);
+      border-radius:18px;
     }
 
     .lightbox-info{
       padding:24px;
       overflow-y:auto;
       position:relative;
+      background:#111827;
     }
 
     .lightbox-close{
@@ -724,10 +799,14 @@
     }
 
     .lightbox-title{
-      font-size:30px;
+      font-size:28px;
       color:#fff;
       margin-bottom:10px;
       word-break:break-word;
+    }
+
+    .lightbox-title.is-hidden{
+      display:none;
     }
 
     .lightbox-actions{
@@ -966,6 +1045,26 @@
       .lightbox-info{
         padding:18px;
       }
+
+      .lightbox-image-wrap{
+        padding:12px;
+      }
+
+      .visual-card{
+        min-height:400px;
+      }
+
+      .overlay-desc{
+        font-size:12px;
+      }
+
+      .credit{
+        font-size:12px;
+      }
+
+      .pill{
+        font-size:10px;
+      }
     }
   </style>
 </head>
@@ -1111,7 +1210,9 @@
           </div>
         </div>
 
-        <h3 class="lightbox-title" id="lightboxTitle">Photo</h3>
+        <h3 class="lightbox-title" id="lightboxTitle"></h3>
+
+        <div id="lightboxStatsWrap"></div>
 
         <div class="lightbox-actions" id="lightboxActions"></div>
 
@@ -1156,6 +1257,7 @@
 
   <script>
     const STORAGE_KEY = "pixnest_admin_v2";
+    const REACTION_KEY = "pixnest_photo_reactions_v1";
     const SUPABASE_URL = "https://vigczssznfvujttdapbv.supabase.co";
     const SUPABASE_KEY = "sb_publishable_UmF-mmVS42XeF6PqsNnCSw_wpA35wg2";
     const FALLBACK_CATEGORY_IMAGE = "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&w=1200&q=80";
@@ -1192,9 +1294,13 @@
     const lightboxImage = document.getElementById("lightboxImage");
     const creatorAvatar = document.getElementById("creatorAvatar");
     const lightboxActions = document.getElementById("lightboxActions");
+    const lightboxTitle = document.getElementById("lightboxTitle");
+    const lightboxStatsWrap = document.getElementById("lightboxStatsWrap");
 
     let allPhotos = [];
     let siteData = loadAdminData();
+    let reactionState = loadReactionState();
+    let activeLightboxPhotoId = "";
 
     function escapeHtml(value = ""){
       return String(value)
@@ -1231,6 +1337,57 @@
           footerText: ""
         };
       }
+    }
+
+    function loadReactionState(){
+      try{
+        const saved = localStorage.getItem(REACTION_KEY);
+        const parsed = JSON.parse(saved || "{}");
+        return parsed && typeof parsed === "object" ? parsed : {};
+      }catch(error){
+        return {};
+      }
+    }
+
+    function saveReactionState(){
+      localStorage.setItem(REACTION_KEY, JSON.stringify(reactionState));
+    }
+
+    function getPhotoId(photo){
+      return String(
+        photo.id ||
+        photo.photo_id ||
+        photo.image_url ||
+        photo.created_at ||
+        `${photo.category || ""}-${photo.credit || ""}`
+      );
+    }
+
+    function getPhotoById(photoId){
+      return allPhotos.find(photo => getPhotoId(photo) === String(photoId)) || null;
+    }
+
+    function getPhotoReactionState(photoId){
+      return reactionState[String(photoId)] || { liked:false, favourited:false };
+    }
+
+    function toggleReaction(photoId, reactionType){
+      const key = reactionType === "like" ? "liked" : "favourited";
+      const current = {
+        liked: !!getPhotoReactionState(photoId).liked,
+        favourited: !!getPhotoReactionState(photoId).favourited
+      };
+
+      current[key] = !current[key];
+
+      if(!current.liked && !current.favourited){
+        delete reactionState[String(photoId)];
+      }else{
+        reactionState[String(photoId)] = current;
+      }
+
+      saveReactionState();
+      refreshPhotoDisplays();
     }
 
     function applyAdminText(){
@@ -1289,6 +1446,15 @@
       });
     });
 
+    document.addEventListener("click", (e) => {
+      if(window.innerWidth <= 768 && navLinks.classList.contains("show")){
+        if(!navLinks.contains(e.target) && !menuToggle.contains(e.target)){
+          navLinks.classList.remove("show");
+          menuToggle.setAttribute("aria-expanded", "false");
+        }
+      }
+    });
+
     window.addEventListener("resize", () => {
       if(window.innerWidth > 768){
         navLinks.classList.remove("show");
@@ -1303,10 +1469,158 @@
         .filter(Boolean);
     }
 
-    function getDisplayTitle(photo){
-      const description = (photo.description || "").trim();
-      const title = (photo.title || "").trim();
-      return description || title || "Photo";
+    function getSafePhotoTitle(photo){
+      const possibleFields = [
+        photo.display_title,
+        photo.caption,
+        photo.headline,
+        photo.custom_title,
+        photo.public_title
+      ];
+
+      const found = possibleFields.find(value => String(value || "").trim());
+      return String(found || "").trim();
+    }
+
+    function getDescription(photo){
+      return String(photo.description || "").trim();
+    }
+
+    function getDisplayHeading(photo){
+      return getSafePhotoTitle(photo) || "";
+    }
+
+    function getShareTitle(photo){
+      const safeTitle = getSafePhotoTitle(photo);
+      const description = getDescription(photo);
+      const category = String(photo.category || "").trim();
+
+      if(safeTitle) return `${safeTitle} on PixNest`;
+      if(description) return `${description} on PixNest`;
+      if(category) return `${category} photo on PixNest`;
+      return "Photo on PixNest";
+    }
+
+    function getPhotoAlt(photo){
+      return getSafePhotoTitle(photo) || getDescription(photo) || String(photo.category || "PixNest photo");
+    }
+
+    function getNumberValue(photo, keys = []){
+      for(const key of keys){
+        const value = photo[key];
+
+        if(typeof value === "number" && Number.isFinite(value)){
+          return value;
+        }
+
+        if(typeof value === "string" && value.trim() !== "" && !Number.isNaN(Number(value))){
+          return Number(value);
+        }
+      }
+
+      return 0;
+    }
+
+    function getFavouriteBaseValue(photo){
+      const numericFavourite = getNumberValue(photo, [
+        "favourites",
+        "favorites",
+        "favourite_count",
+        "favorite_count",
+        "favourites_count",
+        "favorites_count",
+        "total_favourites",
+        "total_favorites"
+      ]);
+
+      if(numericFavourite) return numericFavourite;
+
+      const booleanKeys = [
+        "favourite",
+        "favorite",
+        "is_favourite",
+        "is_favorite"
+      ];
+
+      for(const key of booleanKeys){
+        if(typeof photo[key] === "boolean"){
+          return photo[key] ? 1 : 0;
+        }
+      }
+
+      return 0;
+    }
+
+    function getBasePhotoMetrics(photo){
+      return {
+        likes: getNumberValue(photo, [
+          "likes",
+          "like_count",
+          "likes_count",
+          "total_likes"
+        ]),
+        views: getNumberValue(photo, [
+          "views",
+          "view_count",
+          "views_count",
+          "total_views"
+        ]),
+        favourites: getFavouriteBaseValue(photo)
+      };
+    }
+
+    function getPhotoMetrics(photo){
+      const id = getPhotoId(photo);
+      const state = getPhotoReactionState(id);
+      const base = getBasePhotoMetrics(photo);
+
+      return {
+        likes: base.likes + (state.liked ? 1 : 0),
+        views: base.views,
+        favourites: base.favourites + (state.favourited ? 1 : 0)
+      };
+    }
+
+    function buildPhotoStats(photo, extraClass = "", stopCard = true){
+      const id = getPhotoId(photo);
+      const state = getPhotoReactionState(id);
+      const metrics = getPhotoMetrics(photo);
+      const stopCardAttr = stopCard ? "data-stop-card" : "";
+
+      return `
+        <div class="photo-stats ${escapeHtml(extraClass)}">
+          <button
+            type="button"
+            class="photo-stat react-btn ${state.liked ? "active" : ""}"
+            data-photo-id="${escapeHtml(id)}"
+            data-reaction="like"
+            aria-label="Like photo"
+            title="Like photo"
+            ${stopCardAttr}
+          >
+            <i class="fa-solid fa-heart"></i>
+            <span>${escapeHtml(String(metrics.likes))}</span>
+          </button>
+
+          <span class="photo-stat" aria-label="Views">
+            <i class="fa-solid fa-eye"></i>
+            <span>${escapeHtml(String(metrics.views))}</span>
+          </span>
+
+          <button
+            type="button"
+            class="photo-stat react-btn ${state.favourited ? "active" : ""}"
+            data-photo-id="${escapeHtml(id)}"
+            data-reaction="favourite"
+            aria-label="Favourite photo"
+            title="Favourite photo"
+            ${stopCardAttr}
+          >
+            <i class="fa-solid fa-star"></i>
+            <span>${escapeHtml(String(metrics.favourites))}</span>
+          </button>
+        </div>
+      `;
     }
 
     function buildCreatorAvatar(photo){
@@ -1349,8 +1663,135 @@
       `;
     }
 
+    function sanitizeFileName(value = ""){
+      return String(value)
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "")
+        .slice(0, 60);
+    }
+
+    function getUrlExtension(url = ""){
+      try{
+        const pathname = new URL(url).pathname;
+        const cleanPath = pathname.split("?")[0];
+        const match = cleanPath.match(/\.([a-zA-Z0-9]+)$/);
+        if(match){
+          return match[1].toLowerCase();
+        }
+      }catch(error){
+      }
+      return "jpg";
+    }
+
+    function getDownloadFileName(photo, url = ""){
+      const safeTitle = getSafePhotoTitle(photo);
+      const description = getDescription(photo);
+      const category = String(photo.category || "").trim();
+      const creator = String(photo.credit || "").trim();
+
+      const base =
+        sanitizeFileName(safeTitle) ||
+        sanitizeFileName(description.split(" ").slice(0, 6).join(" ")) ||
+        sanitizeFileName(category) ||
+        sanitizeFileName(creator) ||
+        "pixnest-photo";
+
+      const extension = getUrlExtension(url);
+      return `${base}.${extension}`;
+    }
+
+    function parseSupabaseStorageUrl(url = ""){
+      try{
+        const parsed = new URL(url);
+        const marker = "/storage/v1/object/public/";
+        const markerIndex = parsed.pathname.indexOf(marker);
+
+        if(markerIndex === -1){
+          return null;
+        }
+
+        const remainder = parsed.pathname.slice(markerIndex + marker.length);
+        const parts = remainder.split("/").filter(Boolean);
+
+        if(parts.length < 2){
+          return null;
+        }
+
+        const bucket = parts.shift();
+        const path = parts.join("/");
+
+        if(!bucket || !path){
+          return null;
+        }
+
+        return {
+          bucket,
+          path: decodeURIComponent(path)
+        };
+      }catch(error){
+        return null;
+      }
+    }
+
+    function triggerBlobDownload(blob, fileName){
+      const blobUrl = URL.createObjectURL(blob);
+      const anchor = document.createElement("a");
+      anchor.href = blobUrl;
+      anchor.download = fileName;
+      document.body.appendChild(anchor);
+      anchor.click();
+      anchor.remove();
+
+      setTimeout(() => {
+        URL.revokeObjectURL(blobUrl);
+      }, 1000);
+    }
+
+    async function downloadPhoto(url, fileName){
+      if(!url) throw new Error("No image URL");
+
+      const storageInfo = parseSupabaseStorageUrl(url);
+
+      if(storageInfo){
+        const { data, error } = await supabaseClient
+          .storage
+          .from(storageInfo.bucket)
+          .download(storageInfo.path);
+
+        if(!error && data){
+          triggerBlobDownload(data, fileName);
+          return;
+        }
+      }
+
+      const response = await fetch(url, { mode:"cors" });
+
+      if(!response.ok){
+        throw new Error("Download failed");
+      }
+
+      const blob = await response.blob();
+      triggerBlobDownload(blob, fileName);
+    }
+
+    function setButtonLoadingState(button, isLoading){
+      if(!button) return;
+
+      button.classList.toggle("is-loading", isLoading);
+
+      if(isLoading){
+        button.dataset.originalHtml = button.innerHTML;
+        button.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+      }else if(button.dataset.originalHtml){
+        button.innerHTML = button.dataset.originalHtml;
+      }
+    }
+
     function buildLightboxActions(photo){
-      const shareTitle = `${getDisplayTitle(photo)} on PixNest`;
+      const shareTitle = getShareTitle(photo);
+      const imageUrl = photo.image_url || "";
+      const downloadName = getDownloadFileName(photo, imageUrl);
       const actions = [];
 
       actions.push(buildSocialButton(photo.instagram || "", "fa-brands fa-instagram", "Creator Instagram"));
@@ -1362,7 +1803,7 @@
           type="button"
           class="lightbox-social"
           id="lightboxShareBtn"
-          data-share-url="${escapeHtml(photo.image_url || window.location.href)}"
+          data-share-url="${escapeHtml(imageUrl || window.location.href)}"
           data-share-title="${escapeHtml(shareTitle)}"
           title="Share"
           aria-label="Share"
@@ -1372,15 +1813,16 @@
       `);
 
       actions.push(`
-        <a
-          class="lightbox-social"
-          href="${escapeHtml(photo.image_url || "")}"
-          download
+        <button
+          type="button"
+          class="lightbox-social download-btn"
+          data-download-url="${escapeHtml(imageUrl)}"
+          data-download-name="${escapeHtml(downloadName)}"
           title="Download image"
           aria-label="Download image"
         >
           <i class="fa-solid fa-download"></i>
-        </a>
+        </button>
       `);
 
       return actions.join("");
@@ -1408,18 +1850,75 @@
       }
     }
 
-    function openLightbox(photo){
-      lightboxImage.src = photo.image_url || "";
-      lightboxImage.alt = getDisplayTitle(photo);
+    async function handleDownloadButtonClick(button){
+      const url = button.getAttribute("data-download-url") || "";
+      const fileName = button.getAttribute("data-download-name") || "pixnest-photo.jpg";
 
-      document.getElementById("lightboxTitle").textContent = getDisplayTitle(photo);
+      if(!url){
+        alert("This image is not available for download.");
+        return;
+      }
+
+      try{
+        setButtonLoadingState(button, true);
+        await downloadPhoto(url, fileName);
+      }catch(error){
+        console.error(error);
+        alert("Download could not start. Please try again.");
+      }finally{
+        setButtonLoadingState(button, false);
+      }
+    }
+
+    function bindDownloadButtons(scope){
+      scope.querySelectorAll(".download-btn").forEach(button => {
+        if(button.dataset.downloadBound === "true") return;
+        button.dataset.downloadBound = "true";
+
+        button.addEventListener("click", async (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          await handleDownloadButtonClick(button);
+        });
+      });
+    }
+
+    function bindReactionButtons(scope){
+      scope.querySelectorAll(".react-btn").forEach(button => {
+        if(button.dataset.reactionBound === "true") return;
+        button.dataset.reactionBound = "true";
+
+        button.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+
+          const photoId = button.getAttribute("data-photo-id");
+          const reactionType = button.getAttribute("data-reaction");
+
+          if(!photoId || !reactionType) return;
+          toggleReaction(photoId, reactionType);
+        });
+      });
+    }
+
+    function renderLightboxContent(photo){
+      const imageUrl = photo.image_url || "";
+      const safeTitle = getDisplayHeading(photo);
+
+      lightboxImage.src = imageUrl;
+      lightboxImage.alt = getPhotoAlt(photo);
+
+      lightboxTitle.textContent = safeTitle;
+      lightboxTitle.classList.toggle("is-hidden", !safeTitle);
+
       document.getElementById("lightboxCategory").textContent = photo.category || "Uncategorized";
       document.getElementById("lightboxCredit").textContent = photo.credit || "Unknown";
       document.getElementById("lightboxTags").textContent = getPhotoTags(photo).join(", ") || "No tags";
-      document.getElementById("lightboxDescription").textContent = photo.description || "No description added.";
+      document.getElementById("lightboxDescription").textContent = getDescription(photo) || "No description added.";
       document.getElementById("lightboxCreatorTop").textContent = photo.credit || "Unknown";
 
       creatorAvatar.innerHTML = buildCreatorAvatar(photo);
+      lightboxStatsWrap.innerHTML = buildPhotoStats(photo, "lightbox-stats", false);
       lightboxActions.innerHTML = buildLightboxActions(photo);
 
       const lightboxShareBtn = document.getElementById("lightboxShareBtn");
@@ -1429,14 +1928,25 @@
         });
       }
 
+      bindReactionButtons(lightboxStatsWrap);
+      bindDownloadButtons(lightboxActions);
+    }
+
+    function openLightbox(photo){
+      activeLightboxPhotoId = getPhotoId(photo);
+      renderLightboxContent(photo);
       lightbox.classList.add("show");
       document.body.style.overflow = "hidden";
     }
 
     function closeLightbox(){
+      activeLightboxPhotoId = "";
       lightbox.classList.remove("show");
       document.body.style.overflow = "";
       lightboxActions.innerHTML = "";
+      lightboxStatsWrap.innerHTML = "";
+      lightboxImage.src = "";
+      lightboxImage.alt = "Large view";
     }
 
     lightboxClose.addEventListener("click", closeLightbox);
@@ -1454,8 +1964,9 @@
     });
 
     function createOverlayActions(photo){
-      const shareText = `${getDisplayTitle(photo)} on PixNest`;
+      const shareText = getShareTitle(photo);
       const imageUrl = photo.image_url || "";
+      const downloadName = getDownloadFileName(photo, imageUrl);
 
       return `
         <div class="overlay-actions">
@@ -1471,28 +1982,30 @@
             <i class="fa-solid fa-share-nodes"></i>
           </button>
 
-          <a
-            class="action-icon"
-            href="${escapeHtml(imageUrl)}"
-            download
+          <button
+            type="button"
+            class="action-icon download-btn"
+            data-download-url="${escapeHtml(imageUrl)}"
+            data-download-name="${escapeHtml(downloadName)}"
             aria-label="Download image"
             title="Download image"
             data-stop-card
           >
             <i class="fa-solid fa-download"></i>
-          </a>
+          </button>
         </div>
       `;
     }
 
     function buildPhotoCard(photo){
       const tags = getPhotoTags(photo).slice(0, 4);
-      const description = (photo.description || "").trim();
+      const description = getDescription(photo);
       const creatorName = (photo.credit || "Unknown Creator").trim();
+      const photoId = getPhotoId(photo);
 
       return `
-        <article class="visual-card" data-photo-id="${escapeHtml(String(photo.id || ""))}">
-          <img src="${escapeHtml(photo.image_url || "")}" alt="${escapeHtml(photo.title || "Photo")}">
+        <article class="visual-card" data-photo-id="${escapeHtml(photoId)}">
+          <img src="${escapeHtml(photo.image_url || "")}" alt="${escapeHtml(getPhotoAlt(photo))}">
           <div class="photo-overlay">
             <div class="meta">
               <span class="pill">${escapeHtml(photo.category || "Photo")}</span>
@@ -1501,32 +2014,24 @@
             </div>
             ${description ? `<p class="overlay-desc">${escapeHtml(description)}</p>` : ""}
             <div class="credit">By ${escapeHtml(creatorName)}</div>
+            ${buildPhotoStats(photo)}
             ${createOverlayActions(photo)}
           </div>
         </article>
       `;
     }
 
-    function goToPhotoCategory(photo){
-      const categoryName = String(photo.category || "").trim();
-      if(categoryName){
-        window.location.href = `category.html?category=${encodeURIComponent(categoryName)}`;
-      }else{
-        openLightbox(photo);
-      }
-    }
-
     function activatePhotoCards(rows, container){
       container.querySelectorAll(".visual-card").forEach(card => {
         const photoId = card.getAttribute("data-photo-id");
-        const photo = rows.find(item => String(item.id) === String(photoId));
+        const photo = rows.find(item => getPhotoId(item) === String(photoId));
         if(!photo) return;
 
         card.addEventListener("click", (e) => {
           if(e.target.closest("[data-stop-card]")){
             return;
           }
-          goToPhotoCategory(photo);
+          openLightbox(photo);
         });
       });
 
@@ -1537,6 +2042,9 @@
           await handleNativeShare(btn);
         });
       });
+
+      bindDownloadButtons(container);
+      bindReactionButtons(container);
     }
 
     function renderStats(){
@@ -1671,6 +2179,18 @@
 
       trendingGrid.innerHTML = rows.map(buildPhotoCard).join("");
       activatePhotoCards(rows, trendingGrid);
+    }
+
+    function refreshPhotoDisplays(){
+      renderFeatured();
+      renderTrending();
+
+      if(activeLightboxPhotoId && lightbox.classList.contains("show")){
+        const activePhoto = getPhotoById(activeLightboxPhotoId);
+        if(activePhoto){
+          renderLightboxContent(activePhoto);
+        }
+      }
     }
 
     async function loadPhotos(){
