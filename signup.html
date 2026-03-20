@@ -6,7 +6,6 @@
   <title>PixNest | Sign Up</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
   <style>
     *{
       margin:0;
@@ -23,17 +22,18 @@
       --muted:#94a3b8;
       --accent:#facc15;
       --line:rgba(255,255,255,0.08);
-      --white:#ffffff;
-      --cardText:#111827;
-      --cardMuted:#6b7280;
-      --cardLine:#e5e7eb;
+      --success:#22c55e;
+      --danger:#ef4444;
     }
 
     html{
       scroll-behavior:smooth;
+      min-height:100%;
+      background:var(--bg);
     }
 
     body{
+      min-height:100%;
       background:var(--bg);
       color:var(--text);
       line-height:1.6;
@@ -180,238 +180,260 @@
       display:block;
     }
 
-    .hero{
+    .auth-wrap{
+      min-height:calc(100vh - 86px);
+      display:grid;
+      grid-template-columns:1.1fr .9fr;
+    }
+
+    .auth-showcase{
+      position:relative;
+      display:flex;
+      align-items:center;
       background:
         linear-gradient(rgba(15,23,42,.68), rgba(15,23,42,.90)),
-        url('https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1600&q=80') center/cover no-repeat;
-      min-height:68vh;
-      display:flex;
-      align-items:flex-start;
+        url('https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&w=1600&q=80') center/cover no-repeat;
+      padding:56px min(6vw, 72px);
     }
 
-    .hero-content{
-      max-width:860px;
-      padding:90px 0 180px;
+    .auth-showcase-content{
+      max-width:620px;
     }
 
-    .hero-tag{
-      display:inline-block;
-      background:rgba(250,204,21,.12);
-      color:var(--accent);
+    .auth-badge{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
       padding:8px 14px;
       border-radius:999px;
-      font-size:14px;
-      border:1px solid rgba(250,204,21,.22);
+      background:rgba(250,204,21,.12);
+      color:var(--accent);
+      border:1px solid rgba(250,204,21,.18);
+      font-size:13px;
+      font-weight:700;
       margin-bottom:18px;
     }
 
-    .hero h1{
-      font-size:clamp(36px,5vw,62px);
-      line-height:1.04;
-      margin-bottom:18px;
+    .auth-showcase h1{
+      font-size:clamp(36px,4vw,58px);
+      line-height:1.05;
       color:#fff;
-      max-width:760px;
+      margin-bottom:18px;
     }
 
-    .hero p{
-      font-size:18px;
+    .auth-showcase p{
       color:#cbd5e1;
-      max-width:760px;
-      margin-bottom:26px;
+      font-size:17px;
+      max-width:560px;
+      margin-bottom:24px;
     }
 
-    .hero-points{
+    .auth-benefits{
       display:grid;
       gap:14px;
-      max-width:720px;
+      margin-top:14px;
     }
 
-    .hero-point{
-      background:rgba(255,255,255,.06);
-      border:1px solid rgba(255,255,255,.10);
-      border-radius:18px;
-      padding:16px 18px;
-      backdrop-filter:blur(6px);
-    }
-
-    .hero-point strong{
-      display:block;
-      color:#fff;
-      margin-bottom:4px;
+    .auth-benefit{
+      display:flex;
+      align-items:flex-start;
+      gap:12px;
+      color:#e2e8f0;
       font-size:15px;
     }
 
-    .hero-point span{
-      color:#cbd5e1;
-      font-size:14px;
+    .auth-benefit i{
+      color:var(--accent);
+      margin-top:3px;
+      flex-shrink:0;
     }
 
-    .auth-wrap{
-      position:relative;
-      margin-top:-120px;
-      z-index:5;
-      padding-bottom:80px;
-    }
-
-    .auth-grid{
-      display:grid;
-      grid-template-columns:minmax(0,1.7fr) minmax(280px,.9fr);
-      gap:24px;
-      align-items:start;
-    }
-
-    .auth-card,
-    .auth-side{
-      background:var(--white);
-      color:var(--cardText);
-      border-radius:28px;
-      border:1px solid rgba(17,24,39,.08);
-      box-shadow:0 24px 60px rgba(0,0,0,.18);
+    .auth-panel{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:40px 20px;
+      background:var(--bg);
     }
 
     .auth-card{
-      padding:34px 30px;
-    }
-
-    .auth-side{
-      padding:28px 22px;
+      width:min(520px,100%);
+      background:var(--panel);
+      border:1px solid var(--line);
+      border-radius:26px;
+      padding:30px;
+      box-shadow:0 20px 40px rgba(0,0,0,.18);
     }
 
     .auth-card h2{
-      font-size:40px;
-      line-height:1.08;
-      margin-bottom:10px;
-      color:#111827;
-    }
-
-    .auth-card p{
-      color:var(--cardMuted);
-      margin-bottom:24px;
-      font-size:15px;
-    }
-
-    .form-group{
-      margin-bottom:18px;
-    }
-
-    .form-group label{
-      display:block;
-      font-size:14px;
-      font-weight:700;
-      color:#374151;
+      color:#fff;
+      font-size:32px;
       margin-bottom:8px;
     }
 
-    .form-group input{
+    .auth-card p{
+      color:var(--muted);
+      font-size:14px;
+      margin-bottom:24px;
+    }
+
+    .form-grid{
+      display:grid;
+      gap:16px;
+    }
+
+    .field{
+      display:grid;
+      gap:8px;
+    }
+
+    .field label{
+      color:#e5e7eb;
+      font-size:14px;
+      font-weight:700;
+    }
+
+    .input-wrap{
+      position:relative;
+    }
+
+    .input-wrap i.left-icon{
+      position:absolute;
+      left:16px;
+      top:50%;
+      transform:translateY(-50%);
+      color:#94a3b8;
+      font-size:14px;
+      pointer-events:none;
+    }
+
+    .input-wrap input{
       width:100%;
       min-height:54px;
-      border:1px solid #d1d5db;
-      border-radius:16px;
-      padding:14px 16px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.08);
+      background:#0f172a;
+      color:#fff;
+      padding:14px 16px 14px 46px;
       outline:none;
-      background:#fff;
-      color:#111827;
       font-size:15px;
     }
 
-    .form-group input:focus{
-      border-color:#facc15;
-      box-shadow:0 0 0 4px rgba(250,204,21,.12);
+    .input-wrap input.with-toggle{
+      padding-right:52px;
     }
 
-    .submit-btn{
-      width:100%;
-      min-height:56px;
+    .input-wrap input:focus{
+      border-color:rgba(250,204,21,.55);
+      box-shadow:0 0 0 3px rgba(250,204,21,.08);
+    }
+
+    .toggle-password{
+      position:absolute;
+      right:12px;
+      top:50%;
+      transform:translateY(-50%);
+      width:34px;
+      height:34px;
       border:none;
-      border-radius:999px;
-      background:linear-gradient(135deg,#facc15,#f59e0b);
-      color:#111827;
-      font-weight:800;
-      font-size:15px;
+      background:transparent;
+      color:#94a3b8;
       cursor:pointer;
-      box-shadow:0 12px 24px rgba(250,204,21,.22);
+      border-radius:8px;
+    }
+
+    .toggle-password:hover{
+      color:var(--accent);
+      background:rgba(255,255,255,.04);
+    }
+
+    .hint{
+      color:#94a3b8;
+      font-size:12px;
+      margin-top:-2px;
+    }
+
+    .terms{
+      display:flex;
+      align-items:flex-start;
+      gap:10px;
+      margin-top:2px;
+    }
+
+    .terms input{
+      margin-top:4px;
+      accent-color:#facc15;
+    }
+
+    .terms label{
+      color:#cbd5e1;
+      font-size:13px;
+      line-height:1.5;
+    }
+
+    .terms a{
+      color:var(--accent);
+    }
+
+    .auth-btn{
+      width:100%;
+      min-height:54px;
+      border:none;
+      border-radius:14px;
+      background:var(--accent);
+      color:#111827;
+      font-size:15px;
+      font-weight:800;
+      cursor:pointer;
       margin-top:4px;
     }
 
-    .submit-btn:hover{
+    .auth-btn:hover{
       transform:translateY(-2px);
+      box-shadow:0 12px 28px rgba(250,204,21,.18);
     }
 
-    .auth-bottom{
-      margin-top:18px;
-      text-align:center;
-      color:#6b7280;
-      font-size:14px;
+    .auth-btn:disabled{
+      opacity:.7;
+      cursor:not-allowed;
+      transform:none;
+      box-shadow:none;
     }
 
-    .auth-bottom a{
-      color:#111827;
-      font-weight:800;
-    }
-
-    .auth-bottom a:hover{
-      color:#f59e0b;
-    }
-
-    .status-message{
-      margin-top:16px;
-      padding:13px 15px;
-      border-radius:14px;
-      font-size:14px;
+    .message{
       display:none;
-    }
-
-    .status-message.success{
-      display:block;
-      background:#ecfdf3;
-      color:#166534;
-      border:1px solid #bbf7d0;
-    }
-
-    .status-message.error{
-      display:block;
-      background:#fef2f2;
-      color:#991b1b;
-      border:1px solid #fecaca;
-    }
-
-    .auth-side h3{
-      font-size:38px;
-      line-height:1.08;
-      margin-bottom:10px;
-      color:#111827;
-    }
-
-    .auth-side > p{
-      color:#6b7280;
-      margin-bottom:18px;
-      font-size:15px;
-    }
-
-    .side-boxes{
-      display:grid;
-      gap:14px;
-    }
-
-    .side-box{
-      border:1px solid var(--cardLine);
-      border-radius:18px;
-      padding:16px 15px;
-      background:#fafafa;
-    }
-
-    .side-box strong{
-      display:block;
-      font-size:15px;
-      color:#111827;
-      margin-bottom:5px;
-    }
-
-    .side-box span{
-      display:block;
-      color:#6b7280;
+      border-radius:14px;
+      padding:14px 16px;
       font-size:14px;
-      line-height:1.55;
+      margin-bottom:18px;
+    }
+
+    .message.show{
+      display:block;
+    }
+
+    .message.success{
+      background:rgba(34,197,94,.12);
+      border:1px solid rgba(34,197,94,.18);
+      color:#bbf7d0;
+    }
+
+    .message.error{
+      background:rgba(239,68,68,.12);
+      border:1px solid rgba(239,68,68,.18);
+      color:#fecaca;
+    }
+
+    .auth-footer{
+      margin-top:20px;
+      text-align:center;
+      color:#94a3b8;
+      font-size:14px;
+    }
+
+    .auth-footer a{
+      color:var(--accent);
+      font-weight:700;
     }
 
     footer{
@@ -448,13 +470,13 @@
       color:var(--accent);
     }
 
-    @media(max-width:1024px){
-      .auth-grid{
+    @media(max-width:900px){
+      .auth-wrap{
         grid-template-columns:1fr;
       }
 
-      .hero-content{
-        padding:80px 0 160px;
+      .auth-showcase{
+        min-height:420px;
       }
     }
 
@@ -498,14 +520,6 @@
         background:rgba(250,204,21,.12);
       }
 
-      .hero{
-        min-height:auto;
-      }
-
-      .hero-content{
-        padding:70px 0 130px;
-      }
-
       .logo-mark{
         width:46px;
         height:46px;
@@ -531,12 +545,25 @@
         width:min(1200px,94%);
       }
 
-      .hero h1{
+      .auth-showcase{
+        padding:40px 20px;
+        min-height:360px;
+      }
+
+      .auth-showcase h1{
         font-size:34px;
       }
 
-      .hero p{
-        font-size:16px;
+      .auth-showcase p{
+        font-size:15px;
+      }
+
+      .auth-card{
+        padding:22px 18px;
+      }
+
+      .auth-card h2{
+        font-size:28px;
       }
 
       .logo-title{
@@ -545,25 +572,6 @@
 
       .logo-sub{
         font-size:9px;
-      }
-
-      .auth-card{
-        padding:24px 18px;
-        border-radius:22px;
-      }
-
-      .auth-side{
-        padding:22px 18px;
-        border-radius:22px;
-      }
-
-      .auth-card h2,
-      .auth-side h3{
-        font-size:30px;
-      }
-
-      .auth-wrap{
-        margin-top:-90px;
       }
     }
   </style>
@@ -590,106 +598,104 @@
         <a href="index.html">Home</a>
         <a href="explore.html">Explore</a>
         <a href="category.html">Categories</a>
-        <a href="about.html">About</a>
-        <a href="upload.html">Upload</a>
-        <a href="contact.html">Contact</a>
+        <a href="premium.html">Premium</a>
         <a href="login.html">Log In</a>
         <a href="signup.html" class="active">Sign Up</a>
       </nav>
     </div>
   </header>
 
-  <section class="hero">
-    <div class="container">
-      <div class="hero-content">
-        <div class="hero-tag">Create an account and unlock more on PixNest</div>
-        <h1>Create your PixNest account.</h1>
-        <p>
-          Sign up to upload your work, follow the platform as it grows, and get ready
-          for premium member-only photo access.
-        </p>
+  <main class="auth-wrap">
+    <section class="auth-showcase">
+      <div class="auth-showcase-content">
+        <div class="auth-badge">
+          <i class="fa-solid fa-user-plus"></i>
+          Join PixNest
+        </div>
+        <h1>Create your account and start exploring premium visuals.</h1>
+        <p>Sign up to save favourites, follow creators, unlock membership features, and build your visual experience on PixNest.</p>
 
-        <div class="hero-points">
-          <div class="hero-point">
-            <strong>Join as a creator or collector</strong>
-            <span>Build your place on PixNest whether you upload visuals or browse curated photo collections.</span>
+        <div class="auth-benefits">
+          <div class="auth-benefit">
+            <i class="fa-solid fa-check"></i>
+            <span>Save your favourite photos and collections</span>
           </div>
-
-          <div class="hero-point">
-            <strong>Prepare for premium access</strong>
-            <span>Your account is the base for premium memberships and locked photo collections later.</span>
+          <div class="auth-benefit">
+            <i class="fa-solid fa-check"></i>
+            <span>Follow creators and view your profile activity</span>
           </div>
-
-          <div class="hero-point">
-            <strong>Clean page style</strong>
-            <span>The page keeps the PixNest home structure while giving the sign-up card the cleaner look you wanted.</span>
+          <div class="auth-benefit">
+            <i class="fa-solid fa-check"></i>
+            <span>Upgrade later to access premium-only content</span>
           </div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <section class="auth-wrap">
-    <div class="container auth-grid">
+    <section class="auth-panel">
       <div class="auth-card">
-        <h2>Create your account</h2>
-        <p>Enter your details below to sign up for PixNest.</p>
+        <h2>Create account</h2>
+        <p>Fill in your details to sign up for PixNest.</p>
 
-        <form id="signupForm">
-          <div class="form-group">
-            <label for="fullName">Full Name</label>
-            <input type="text" id="fullName" placeholder="Enter your full name" required />
+        <div class="message" id="formMessage"></div>
+
+        <form id="signupForm" class="form-grid">
+          <div class="field">
+            <label for="fullName">Full name</label>
+            <div class="input-wrap">
+              <i class="fa-solid fa-user left-icon"></i>
+              <input type="text" id="fullName" placeholder="Enter your full name" required />
+            </div>
           </div>
 
-          <div class="form-group">
-            <label for="email">Email Address</label>
-            <input type="email" id="email" placeholder="you@example.com" required />
+          <div class="field">
+            <label for="email">Email address</label>
+            <div class="input-wrap">
+              <i class="fa-solid fa-envelope left-icon"></i>
+              <input type="email" id="email" placeholder="Enter your email address" required />
+            </div>
           </div>
 
-          <div class="form-group">
+          <div class="field">
             <label for="password">Password</label>
-            <input type="password" id="password" placeholder="Create password" required />
+            <div class="input-wrap">
+              <i class="fa-solid fa-lock left-icon"></i>
+              <input type="password" id="password" class="with-toggle" placeholder="Create a password" required />
+              <button type="button" class="toggle-password" data-target="password" aria-label="Show password">
+                <i class="fa-solid fa-eye"></i>
+              </button>
+            </div>
+            <div class="hint">Use at least 6 characters.</div>
           </div>
 
-          <div class="form-group">
-            <label for="confirmPassword">Confirm Password</label>
-            <input type="password" id="confirmPassword" placeholder="Confirm password" required />
+          <div class="field">
+            <label for="confirmPassword">Confirm password</label>
+            <div class="input-wrap">
+              <i class="fa-solid fa-lock left-icon"></i>
+              <input type="password" id="confirmPassword" class="with-toggle" placeholder="Confirm your password" required />
+              <button type="button" class="toggle-password" data-target="confirmPassword" aria-label="Show password">
+                <i class="fa-solid fa-eye"></i>
+              </button>
+            </div>
           </div>
 
-          <button type="submit" class="submit-btn" id="signupBtn">Sign Up</button>
+          <div class="terms">
+            <input type="checkbox" id="agreeTerms" required />
+            <label for="agreeTerms">
+              I agree to the <a href="terms.html">Terms</a> and <a href="privacy.html">Privacy Policy</a>.
+            </label>
+          </div>
 
-          <div id="statusMessage" class="status-message"></div>
+          <button type="submit" class="auth-btn" id="signupBtn">Create Account</button>
         </form>
 
-        <div class="auth-bottom">
+        <div class="auth-footer">
           Already have an account?
-          <a href="login.html">Log in here</a>
+          <a href="login.html">Log in</a>
         </div>
       </div>
-
-      <div class="auth-side">
-        <h3>Why sign up?</h3>
-        <p>A PixNest account helps turn the site into a stronger platform for creators and premium members.</p>
-
-        <div class="side-boxes">
-          <div class="side-box">
-            <strong>Upload and manage later</strong>
-            <span>Your account prepares PixNest for creator tools, profile features, and better upload management.</span>
-          </div>
-
-          <div class="side-box">
-            <strong>Premium-ready setup</strong>
-            <span>Locked collections and premium photos can later connect directly to your membership.</span>
-          </div>
-
-          <div class="side-box">
-            <strong>Grow with the platform</strong>
-            <span>As PixNest expands, your account can tie together uploads, membership, and browsing activity.</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
+    </section>
+  </main>
 
   <footer>
     <div class="container footer-inner">
@@ -715,6 +721,15 @@
     const menuToggle = document.getElementById("menuToggle");
     const navLinks = document.getElementById("navLinks");
 
+    const signupForm = document.getElementById("signupForm");
+    const signupBtn = document.getElementById("signupBtn");
+    const formMessage = document.getElementById("formMessage");
+
+    const fullNameInput = document.getElementById("fullName");
+    const emailInput = document.getElementById("email");
+    const passwordInput = document.getElementById("password");
+    const confirmPasswordInput = document.getElementById("confirmPassword");
+
     if(menuToggle && navLinks){
       menuToggle.addEventListener("click", () => {
         navLinks.classList.toggle("show");
@@ -732,6 +747,15 @@
       });
     });
 
+    document.addEventListener("click", (e) => {
+      if(window.innerWidth <= 768 && navLinks.classList.contains("show")){
+        if(!navLinks.contains(e.target) && !menuToggle.contains(e.target)){
+          navLinks.classList.remove("show");
+          menuToggle.setAttribute("aria-expanded", "false");
+        }
+      }
+    });
+
     window.addEventListener("resize", () => {
       if(window.innerWidth > 768){
         navLinks.classList.remove("show");
@@ -739,65 +763,94 @@
       }
     });
 
-    const signupForm = document.getElementById("signupForm");
-    const signupBtn = document.getElementById("signupBtn");
-    const statusMessage = document.getElementById("statusMessage");
-
-    function showMessage(message, type){
-      statusMessage.textContent = message;
-      statusMessage.className = "status-message " + type;
+    function showMessage(text, type = "error"){
+      formMessage.className = `message show ${type}`;
+      formMessage.textContent = text;
     }
+
+    function clearMessage(){
+      formMessage.className = "message";
+      formMessage.textContent = "";
+    }
+
+    function setLoading(isLoading){
+      signupBtn.disabled = isLoading;
+      signupBtn.textContent = isLoading ? "Creating account..." : "Create Account";
+    }
+
+    document.querySelectorAll(".toggle-password").forEach(button => {
+      button.addEventListener("click", () => {
+        const targetId = button.getAttribute("data-target");
+        const input = document.getElementById(targetId);
+        const icon = button.querySelector("i");
+
+        if(!input) return;
+
+        const isPassword = input.type === "password";
+        input.type = isPassword ? "text" : "password";
+        icon.className = isPassword ? "fa-solid fa-eye-slash" : "fa-solid fa-eye";
+      });
+    });
 
     signupForm.addEventListener("submit", async (e) => {
       e.preventDefault();
+      clearMessage();
 
-      const fullName = document.getElementById("fullName").value.trim();
-      const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value;
-      const confirmPassword = document.getElementById("confirmPassword").value;
+      const fullName = fullNameInput.value.trim();
+      const email = emailInput.value.trim();
+      const password = passwordInput.value;
+      const confirmPassword = confirmPasswordInput.value;
 
-      if(password !== confirmPassword){
-        showMessage("Passwords do not match.", "error");
+      if(!fullName){
+        showMessage("Please enter your full name.");
         return;
       }
 
       if(password.length < 6){
-        showMessage("Password should be at least 6 characters.", "error");
+        showMessage("Password must be at least 6 characters long.");
         return;
       }
 
-      signupBtn.disabled = true;
-      signupBtn.textContent = "Creating account...";
+      if(password !== confirmPassword){
+        showMessage("Passwords do not match.");
+        return;
+      }
 
-      const { data, error } = await supabaseClient.auth.signUp({
-        email,
-        password,
-        options:{
-          data:{
-            full_name: fullName
+      try{
+        setLoading(true);
+
+        const { data, error } = await supabaseClient.auth.signUp({
+          email,
+          password,
+          options:{
+            data:{
+              full_name: fullName
+            }
           }
+        });
+
+        if(error){
+          throw error;
         }
-      });
 
-      if(error){
-        showMessage(error.message, "error");
-        signupBtn.disabled = false;
-        signupBtn.textContent = "Sign Up";
-        return;
-      }
+        if(data?.user){
+          showMessage("Account created successfully. Check your email to verify your account before logging in.", "success");
+          signupForm.reset();
 
-      if(data && data.session){
-        showMessage("Account created successfully. Redirecting...", "success");
-        setTimeout(() => {
-          window.location.href = "index.html";
-        }, 1000);
-      }else{
-        showMessage("Account created. Check your email to confirm your account.", "success");
-        signupBtn.disabled = false;
-        signupBtn.textContent = "Sign Up";
-        signupForm.reset();
+          setTimeout(() => {
+            window.location.href = "login.html";
+          }, 2200);
+        }else{
+          showMessage("Signup completed. Please check your email for confirmation.", "success");
+        }
+      }catch(error){
+        showMessage(error.message || "Something went wrong while creating your account.");
+      }finally{
+        setLoading(false);
       }
     });
   </script>
 </body>
 </html>
+
+ 

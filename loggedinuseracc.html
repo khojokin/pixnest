@@ -1,9 +1,26 @@
+Yep — here’s the logged-in user account page in one piece.
+
+It does these:
+	•	checks if the user is logged in
+	•	redirects to login.html if not logged in
+	•	shows the user’s name, email, joined date, plan
+	•	shows uploaded photos, total likes, saved favourites, following
+	•	includes sign out
+	•	includes view public profile
+	•	includes edit profile and saves to Supabase Auth metadata
+	•	shows the user’s uploads in the same PixNest style
+	•	keeps likes / favourites clickable
+	•	keeps download working
+	•	keeps raw file name hidden
+
+Save it as account.html:
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PixNest | Categories</title>
+  <title>PixNest | My Account</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
@@ -22,6 +39,8 @@
       --muted:#94a3b8;
       --accent:#facc15;
       --line:rgba(255,255,255,0.08);
+      --success:#22c55e;
+      --danger:#ef4444;
     }
 
     html{
@@ -51,6 +70,7 @@
 
     button,
     input,
+    textarea,
     select{
       font-family:Arial, Helvetica, sans-serif;
       transition:.3s;
@@ -183,93 +203,298 @@
       display:block;
     }
 
-    .hero{
+    .account-hero{
+      position:relative;
+      min-height:54vh;
+      display:flex;
+      align-items:end;
       background:
-        linear-gradient(rgba(15,23,42,.70), rgba(15,23,42,.92)),
+        linear-gradient(rgba(15,23,42,.55), rgba(15,23,42,.90)),
         url('https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&w=1600&q=80') center/cover no-repeat;
-      min-height:58vh;
+    }
+
+    .account-hero::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:linear-gradient(to top, rgba(15,23,42,.95), rgba(15,23,42,.18));
+    }
+
+    .account-hero-content{
+      position:relative;
+      z-index:1;
+      width:100%;
+      padding:90px 0 40px;
+    }
+
+    .account-card{
+      display:grid;
+      grid-template-columns:auto 1fr auto;
+      gap:24px;
+      align-items:end;
+      background:rgba(17,24,39,.74);
+      border:1px solid rgba(255,255,255,.08);
+      backdrop-filter:blur(10px);
+      border-radius:26px;
+      padding:24px;
+      box-shadow:0 18px 40px rgba(0,0,0,.22);
+    }
+
+    .account-avatar{
+      width:112px;
+      height:112px;
+      border-radius:50%;
+      overflow:hidden;
+      background:linear-gradient(135deg,#facc15,#fb7185);
       display:flex;
       align-items:center;
+      justify-content:center;
+      color:#111827;
+      font-size:40px;
+      font-weight:800;
+      border:3px solid rgba(255,255,255,.12);
+      flex-shrink:0;
     }
 
-    .hero-content{
-      max-width:860px;
-      padding:90px 0 60px;
+    .account-avatar img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
     }
 
-    .hero-tag{
-      display:inline-block;
-      background:rgba(250,204,21,.12);
-      color:var(--accent);
+    .account-badge{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      width:fit-content;
       padding:8px 14px;
       border-radius:999px;
-      font-size:14px;
-      border:1px solid rgba(250,204,21,.22);
-      margin-bottom:18px;
+      background:rgba(250,204,21,.12);
+      border:1px solid rgba(250,204,21,.18);
+      color:var(--accent);
+      font-size:13px;
+      font-weight:700;
+      margin-bottom:12px;
     }
 
-    .hero h1{
-      font-size:clamp(36px,5vw,58px);
-      line-height:1.06;
-      margin-bottom:18px;
+    .account-name{
+      font-size:clamp(30px,4vw,48px);
+      line-height:1.08;
       color:#fff;
+      margin-bottom:8px;
+      word-break:break-word;
     }
 
-    .hero p{
-      font-size:18px;
+    .account-email{
       color:#cbd5e1;
+      font-size:15px;
+      margin-bottom:8px;
+      word-break:break-word;
+    }
+
+    .account-bio{
+      color:#cbd5e1;
+      font-size:15px;
       max-width:760px;
     }
 
-    .hero-meta{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      margin-top:18px;
-    }
-
-    .hero-actions{
+    .account-actions{
       display:flex;
       flex-wrap:wrap;
       gap:12px;
-      margin-top:22px;
+      justify-content:flex-end;
+      align-self:center;
     }
 
-    .mini-btn{
+    .btn{
       display:inline-flex;
       align-items:center;
       justify-content:center;
-      padding:12px 18px;
-      border-radius:12px;
-      font-weight:700;
+      gap:10px;
+      padding:14px 20px;
+      border-radius:14px;
+      font-weight:800;
       font-size:14px;
       border:none;
       cursor:pointer;
       text-align:center;
     }
 
-    .mini-btn.primary{
+    .btn-primary{
       background:var(--accent);
       color:#111827;
     }
 
-    .mini-btn.primary:hover{
+    .btn-primary:hover{
       transform:translateY(-2px);
       box-shadow:0 10px 24px rgba(250,204,21,.2);
     }
 
-    .mini-btn.secondary{
+    .btn-secondary{
       background:transparent;
       color:#fff;
       border:1px solid rgba(255,255,255,.18);
     }
 
-    .mini-btn.secondary:hover{
+    .btn-secondary:hover{
       background:rgba(255,255,255,.06);
+    }
+
+    .btn-danger{
+      background:#1e293b;
+      border:1px solid rgba(239,68,68,.20);
+      color:#fff;
+    }
+
+    .btn-danger:hover{
+      background:rgba(239,68,68,.10);
+      border-color:rgba(239,68,68,.30);
     }
 
     section{
       padding:74px 0;
+    }
+
+    .stats-grid{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:16px;
+    }
+
+    .stat-card{
+      background:var(--panel);
+      border:1px solid var(--line);
+      border-radius:22px;
+      padding:20px;
+      box-shadow:0 14px 28px rgba(0,0,0,.14);
+    }
+
+    .stat-card strong{
+      display:block;
+      color:var(--accent);
+      font-size:30px;
+      margin-bottom:6px;
+    }
+
+    .stat-card span{
+      color:var(--muted);
+      font-size:14px;
+    }
+
+    .account-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:24px;
+    }
+
+    .panel-card{
+      background:#111827;
+      border:1px solid var(--line);
+      border-radius:24px;
+      padding:24px;
+      box-shadow:0 14px 30px rgba(0,0,0,.14);
+    }
+
+    .panel-card h3{
+      color:#fff;
+      font-size:24px;
+      margin-bottom:8px;
+    }
+
+    .panel-card p{
+      color:#94a3b8;
+      font-size:14px;
+      margin-bottom:20px;
+    }
+
+    .detail-list{
+      display:grid;
+      gap:12px;
+    }
+
+    .detail-item{
+      background:#0f172a;
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:14px 16px;
+    }
+
+    .detail-item strong{
+      display:block;
+      color:var(--accent);
+      font-size:13px;
+      margin-bottom:4px;
+      text-transform:uppercase;
+      letter-spacing:.8px;
+    }
+
+    .detail-item span{
+      color:#e5e7eb;
+      font-size:14px;
+      word-break:break-word;
+    }
+
+    .form-grid{
+      display:grid;
+      gap:16px;
+    }
+
+    .field{
+      display:grid;
+      gap:8px;
+    }
+
+    .field label{
+      color:#e5e7eb;
+      font-size:14px;
+      font-weight:700;
+    }
+
+    .field input,
+    .field textarea{
+      width:100%;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.08);
+      background:#0f172a;
+      color:#fff;
+      padding:14px 16px;
+      outline:none;
+      font-size:15px;
+    }
+
+    .field textarea{
+      min-height:120px;
+      resize:vertical;
+    }
+
+    .field input:focus,
+    .field textarea:focus{
+      border-color:rgba(250,204,21,.55);
+      box-shadow:0 0 0 3px rgba(250,204,21,.08);
+    }
+
+    .message{
+      display:none;
+      border-radius:14px;
+      padding:14px 16px;
+      font-size:14px;
+      margin-bottom:16px;
+    }
+
+    .message.show{
+      display:block;
+    }
+
+    .message.success{
+      background:rgba(34,197,94,.12);
+      border:1px solid rgba(34,197,94,.18);
+      color:#bbf7d0;
+    }
+
+    .message.error{
+      background:rgba(239,68,68,.12);
+      border:1px solid rgba(239,68,68,.18);
+      color:#fecaca;
     }
 
     .section-head{
@@ -294,7 +519,7 @@
 
     .search-bar{
       display:grid;
-      grid-template-columns:1.2fr 0.8fr 120px;
+      grid-template-columns:1.1fr .8fr 120px;
       gap:12px;
       margin-bottom:28px;
       background:#111827;
@@ -365,107 +590,6 @@
       margin:6px 0 24px;
     }
 
-    .category-grid{
-      display:grid;
-      grid-template-columns:repeat(3,1fr);
-      gap:24px;
-    }
-
-    .category-card{
-      display:block;
-      background:#111827;
-      border:1px solid var(--line);
-      border-radius:22px;
-      overflow:hidden;
-      transition:.3s;
-      min-height:100%;
-      box-shadow:0 14px 30px rgba(0,0,0,.14);
-    }
-
-    .category-card:hover{
-      transform:translateY(-6px);
-      box-shadow:0 18px 36px rgba(0,0,0,.2);
-    }
-
-    .category-image-wrap{
-      position:relative;
-      height:240px;
-      overflow:hidden;
-      background:#1e293b;
-    }
-
-    .category-image-wrap img{
-      width:100%;
-      height:100%;
-      object-fit:cover;
-    }
-
-    .category-image-wrap::after{
-      content:"";
-      position:absolute;
-      inset:0;
-      background:linear-gradient(to top, rgba(15,23,42,.55), rgba(15,23,42,.08));
-    }
-
-    .category-content{
-      padding:20px;
-      display:flex;
-      flex-direction:column;
-      gap:12px;
-    }
-
-    .category-content h3{
-      color:#fff;
-      font-size:24px;
-      line-height:1.2;
-    }
-
-    .category-content p{
-      color:#cbd5e1;
-      font-size:14px;
-      line-height:1.6;
-    }
-
-    .category-meta{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      margin-top:2px;
-    }
-
-    .category-link{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      color:var(--accent);
-      font-size:14px;
-      font-weight:700;
-      margin-top:6px;
-    }
-
-    .category-link:hover{
-      gap:12px;
-    }
-
-    .pill{
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      padding:5px 9px;
-      border-radius:999px;
-      font-size:11px;
-      background:rgba(255,255,255,.10);
-      border:1px solid rgba(255,255,255,.10);
-      color:#fff;
-      backdrop-filter:blur(6px);
-    }
-
-    .pill.featured{
-      background:rgba(16,185,129,.14);
-      border-color:rgba(16,185,129,.20);
-      color:#86efac;
-    }
-
     .photo-grid{
       display:grid;
       grid-template-columns:repeat(3,1fr);
@@ -528,6 +652,25 @@
       display:flex;
       flex-wrap:wrap;
       gap:8px;
+    }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      padding:5px 9px;
+      border-radius:999px;
+      font-size:11px;
+      background:rgba(255,255,255,.10);
+      border:1px solid rgba(255,255,255,.10);
+      color:#fff;
+      backdrop-filter:blur(6px);
+    }
+
+    .pill.featured{
+      background:rgba(16,185,129,.14);
+      border-color:rgba(16,185,129,.20);
+      color:#86efac;
     }
 
     .overlay-desc{
@@ -595,17 +738,6 @@
 
     .photo-stat.react-btn.active i{
       color:var(--accent);
-    }
-
-    .lightbox-stats{
-      margin-bottom:18px;
-    }
-
-    .lightbox-stats .photo-stat{
-      background:#0f172a;
-      border-color:var(--line);
-      font-size:12px;
-      padding:8px 12px;
     }
 
     .overlay-actions{
@@ -734,7 +866,7 @@
       padding-right:56px;
     }
 
-    .creator-avatar{
+    .creator-avatar-lightbox{
       width:58px;
       height:58px;
       border-radius:50%;
@@ -750,7 +882,7 @@
       border:2px solid rgba(255,255,255,.12);
     }
 
-    .creator-avatar img{
+    .creator-avatar-lightbox img{
       width:100%;
       height:100%;
       object-fit:cover;
@@ -781,6 +913,17 @@
 
     .lightbox-title.is-hidden{
       display:none;
+    }
+
+    .lightbox-stats{
+      margin-bottom:18px;
+    }
+
+    .lightbox-stats .photo-stat{
+      background:#0f172a;
+      border-color:var(--line);
+      font-size:12px;
+      padding:8px 12px;
     }
 
     .lightbox-actions{
@@ -815,34 +958,6 @@
       opacity:.45;
       cursor:not-allowed;
       pointer-events:none;
-    }
-
-    .detail-list{
-      display:grid;
-      gap:12px;
-      margin-top:6px;
-    }
-
-    .detail-item{
-      background:#0f172a;
-      border:1px solid var(--line);
-      border-radius:16px;
-      padding:14px 16px;
-    }
-
-    .detail-item strong{
-      display:block;
-      color:var(--accent);
-      font-size:13px;
-      margin-bottom:4px;
-      text-transform:uppercase;
-      letter-spacing:.8px;
-    }
-
-    .detail-item span{
-      color:#e5e7eb;
-      font-size:14px;
-      word-break:break-word;
     }
 
     footer{
@@ -880,13 +995,29 @@
     }
 
     @media(max-width:1024px){
-      .category-grid,
+      .stats-grid{
+        grid-template-columns:repeat(2,1fr);
+      }
+
+      .account-grid{
+        grid-template-columns:1fr;
+      }
+
       .photo-grid{
         grid-template-columns:repeat(2,1fr);
       }
 
       .search-bar{
         grid-template-columns:1fr 1fr 120px;
+      }
+
+      .account-card{
+        grid-template-columns:auto 1fr;
+      }
+
+      .account-actions{
+        grid-column:1 / -1;
+        justify-content:flex-start;
       }
 
       .lightbox-panel{
@@ -938,22 +1069,19 @@
         background:rgba(250,204,21,.12);
       }
 
-      .hero{
-        min-height:auto;
+      .account-card{
+        grid-template-columns:1fr;
+        align-items:start;
       }
 
-      .hero-content{
-        padding:70px 0 40px;
+      .account-actions{
+        justify-content:flex-start;
       }
 
-      .category-grid,
+      .stats-grid,
       .photo-grid,
       .search-bar{
         grid-template-columns:1fr;
-      }
-
-      .section-head h2{
-        font-size:28px;
       }
 
       .logo-mark{
@@ -970,6 +1098,10 @@
         letter-spacing:1.2px;
       }
 
+      .section-head h2{
+        font-size:28px;
+      }
+
       .footer-inner{
         flex-direction:column;
         align-items:flex-start;
@@ -981,12 +1113,12 @@
         width:min(1200px,94%);
       }
 
-      .hero h1{
+      .account-name{
         font-size:34px;
       }
 
-      .hero p{
-        font-size:16px;
+      .account-bio{
+        font-size:14px;
       }
 
       .logo-title{
@@ -997,8 +1129,13 @@
         font-size:9px;
       }
 
-      .section-head h2{
-        font-size:25px;
+      .btn{
+        width:100%;
+      }
+
+      .account-actions{
+        flex-direction:column;
+        width:100%;
       }
 
       .lightbox{
@@ -1052,89 +1189,154 @@
       <nav class="nav-links" id="navLinks">
         <a href="index.html">Home</a>
         <a href="explore.html">Explore</a>
-        <a href="category.html" class="active">Categories</a>
-        <a href="about.html">About</a>
+        <a href="category.html">Categories</a>
+        <a href="premium.html">Premium</a>
+        <a href="account.html" class="active">Account</a>
         <a href="upload.html">Upload</a>
         <a href="contact.html">Contact</a>
       </nav>
     </div>
   </header>
 
-  <section class="hero" id="heroSection">
-    <div class="container">
-      <div class="hero-content">
-        <div class="hero-tag" id="heroTag">Category Gallery</div>
-        <h1 id="heroTitle">All Categories</h1>
-        <p id="heroDescription">Explore visual collections across different styles, themes, and creative topics.</p>
-        <div class="hero-meta" id="heroMeta"></div>
-        <div class="hero-actions hidden" id="heroActions">
-          <a href="category.html" class="mini-btn secondary">Back to Categories</a>
-          <a href="explore.html" class="mini-btn primary">Explore All Photos</a>
+  <section class="account-hero" id="accountHero">
+    <div class="container account-hero-content">
+      <div class="account-card">
+        <div class="account-avatar" id="accountAvatar">P</div>
+
+        <div>
+          <div class="account-badge" id="accountBadge">
+            <i class="fa-solid fa-user"></i>
+            My Account
+          </div>
+          <h1 class="account-name" id="accountName">Loading...</h1>
+          <div class="account-email" id="accountEmail">Checking your account...</div>
+          <p class="account-bio" id="accountBio">Manage your PixNest profile, uploads, and account activity here.</p>
+        </div>
+
+        <div class="account-actions">
+          <a href="#" class="btn btn-secondary" id="publicProfileBtn">
+            <i class="fa-solid fa-user"></i>
+            View Public Profile
+          </a>
+          <button type="button" class="btn btn-danger" id="signOutBtn">
+            <i class="fa-solid fa-right-from-bracket"></i>
+            Sign Out
+          </button>
         </div>
       </div>
     </div>
   </section>
 
-  <section id="overviewSection">
+  <section>
+    <div class="container">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <strong id="postsCount">0</strong>
+          <span>Uploaded Photos</span>
+        </div>
+        <div class="stat-card">
+          <strong id="likesCount">0</strong>
+          <span>Total Likes</span>
+        </div>
+        <div class="stat-card">
+          <strong id="savedFavouritesCount">0</strong>
+          <span>Saved Favourites</span>
+        </div>
+        <div class="stat-card">
+          <strong id="followingCount">0</strong>
+          <span>Following</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="container account-grid">
+      <div class="panel-card">
+        <h3>Account Details</h3>
+        <p>Your current account information on PixNest.</p>
+
+        <div class="detail-list">
+          <div class="detail-item">
+            <strong>Full Name</strong>
+            <span id="detailFullName">—</span>
+          </div>
+
+          <div class="detail-item">
+            <strong>Email</strong>
+            <span id="detailEmail">—</span>
+          </div>
+
+          <div class="detail-item">
+            <strong>Membership Plan</strong>
+            <span id="detailPlan">—</span>
+          </div>
+
+          <div class="detail-item">
+            <strong>Joined</strong>
+            <span id="detailJoined">—</span>
+          </div>
+
+          <div class="detail-item">
+            <strong>Account ID</strong>
+            <span id="detailUserId">—</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel-card">
+        <h3>Edit Profile</h3>
+        <p>Update your account display details.</p>
+
+        <div class="message" id="profileMessage"></div>
+
+        <form class="form-grid" id="profileForm">
+          <div class="field">
+            <label for="profileFullName">Full name</label>
+            <input type="text" id="profileFullName" placeholder="Your full name" />
+          </div>
+
+          <div class="field">
+            <label for="profileBioInput">Bio</label>
+            <textarea id="profileBioInput" placeholder="Write a short profile bio"></textarea>
+          </div>
+
+          <button type="submit" class="btn btn-primary" id="saveProfileBtn">
+            <i class="fa-solid fa-floppy-disk"></i>
+            Save Profile
+          </button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <section>
     <div class="container">
       <div class="section-head">
         <div>
-          <h2 id="overviewHeading">All Categories</h2>
-          <p id="overviewText">Explore visual collections across different styles, themes, and creative topics.</p>
+          <h2 id="galleryHeading">Your Uploads</h2>
+          <p id="galleryText">Photos connected to your account and creator details.</p>
         </div>
       </div>
 
       <div class="search-bar">
         <div class="search-input-wrap">
           <i class="fa-solid fa-magnifying-glass"></i>
-          <input type="text" id="overviewSearchInput" placeholder="Search categories by name or description">
+          <input type="text" id="searchInput" placeholder="Search your uploads">
         </div>
 
-        <select id="overviewFilter" class="search-select">
-          <option value="all">All Categories</option>
-          <option value="with-photos">With Photos</option>
-          <option value="featured">Featured Categories</option>
-          <option value="empty">Empty Categories</option>
-        </select>
-
-        <button type="button" class="search-btn" id="overviewSearchBtn">Search</button>
-      </div>
-
-      <div class="filter-note" id="overviewNote"></div>
-
-      <div class="category-grid" id="categoryGrid">
-        <div class="empty-box">Categories will appear here when the collection is loaded.</div>
-      </div>
-    </div>
-  </section>
-
-  <section id="detailSection" class="hidden">
-    <div class="container">
-      <div class="section-head">
-        <div>
-          <h2 id="detailHeading">Category Photos</h2>
-          <p id="detailText">Browse the photos in this category below.</p>
-        </div>
-      </div>
-
-      <div class="search-bar">
-        <div class="search-input-wrap">
-          <i class="fa-solid fa-magnifying-glass"></i>
-          <input type="text" id="detailSearchInput" placeholder="Search photos in this category">
-        </div>
-
-        <select id="detailFilter" class="search-select">
+        <select id="filterSelect" class="search-select">
           <option value="all">All Photos</option>
           <option value="featured">Featured Only</option>
         </select>
 
-        <button type="button" class="search-btn" id="detailSearchBtn">Search</button>
+        <button type="button" class="search-btn" id="searchBtn">Search</button>
       </div>
 
-      <div class="filter-note" id="detailNote"></div>
+      <div class="filter-note" id="filterNote"></div>
 
-      <div class="photo-grid" id="detailPhotoGrid">
-        <div class="empty-box">Photos will appear here when the category is loaded.</div>
+      <div class="photo-grid" id="photoGrid">
+        <div class="empty-box">Loading your account uploads...</div>
       </div>
     </div>
   </section>
@@ -1149,7 +1351,7 @@
         <button class="lightbox-close" id="lightboxClose" aria-label="Close">×</button>
 
         <div class="creator-top">
-          <div class="creator-avatar" id="creatorAvatar"></div>
+          <div class="creator-avatar-lightbox" id="lightboxCreatorAvatar"></div>
           <div>
             <small>Creator</small>
             <strong id="lightboxCreatorTop">Unknown</strong>
@@ -1189,7 +1391,7 @@
 
   <footer>
     <div class="container footer-inner">
-      <p id="footerText">©️ 2026 PixNest. Discover and share powerful visual collections.</p>
+      <p>©️ 2026 PixNest. Discover and share powerful visual collections.</p>
 
       <div class="footer-links">
         <a href="about.html">About</a>
@@ -1202,12 +1404,10 @@
   </footer>
 
   <script>
-    const STORAGE_KEY = "pixnest_admin_v2";
     const REACTION_KEY = "pixnest_photo_reactions_v1";
+    const FOLLOW_KEY = "pixnest_creator_follow_state_v1";
     const SUPABASE_URL = "https://vigczssznfvujttdapbv.supabase.co";
     const SUPABASE_KEY = "sb_publishable_UmF-mmVS42XeF6PqsNnCSw_wpA35wg2";
-    const DEFAULT_HERO_IMAGE = "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&w=1600&q=80";
-    const DEFAULT_CATEGORY_IMAGE = "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&w=1200&q=80";
 
     const { createClient } = supabase;
     const supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -1215,46 +1415,52 @@
     const menuToggle = document.getElementById("menuToggle");
     const navLinks = document.getElementById("navLinks");
 
-    const heroSection = document.getElementById("heroSection");
-    const heroTag = document.getElementById("heroTag");
-    const heroTitle = document.getElementById("heroTitle");
-    const heroDescription = document.getElementById("heroDescription");
-    const heroMeta = document.getElementById("heroMeta");
-    const heroActions = document.getElementById("heroActions");
+    const accountHero = document.getElementById("accountHero");
+    const accountAvatar = document.getElementById("accountAvatar");
+    const accountName = document.getElementById("accountName");
+    const accountEmail = document.getElementById("accountEmail");
+    const accountBio = document.getElementById("accountBio");
+    const publicProfileBtn = document.getElementById("publicProfileBtn");
+    const signOutBtn = document.getElementById("signOutBtn");
 
-    const overviewSection = document.getElementById("overviewSection");
-    const detailSection = document.getElementById("detailSection");
+    const postsCount = document.getElementById("postsCount");
+    const likesCount = document.getElementById("likesCount");
+    const savedFavouritesCount = document.getElementById("savedFavouritesCount");
+    const followingCount = document.getElementById("followingCount");
 
-    const overviewHeading = document.getElementById("overviewHeading");
-    const overviewText = document.getElementById("overviewText");
-    const overviewSearchInput = document.getElementById("overviewSearchInput");
-    const overviewFilter = document.getElementById("overviewFilter");
-    const overviewSearchBtn = document.getElementById("overviewSearchBtn");
-    const overviewNote = document.getElementById("overviewNote");
-    const categoryGrid = document.getElementById("categoryGrid");
+    const detailFullName = document.getElementById("detailFullName");
+    const detailEmail = document.getElementById("detailEmail");
+    const detailPlan = document.getElementById("detailPlan");
+    const detailJoined = document.getElementById("detailJoined");
+    const detailUserId = document.getElementById("detailUserId");
 
-    const detailHeading = document.getElementById("detailHeading");
-    const detailText = document.getElementById("detailText");
-    const detailSearchInput = document.getElementById("detailSearchInput");
-    const detailFilter = document.getElementById("detailFilter");
-    const detailSearchBtn = document.getElementById("detailSearchBtn");
-    const detailNote = document.getElementById("detailNote");
-    const detailPhotoGrid = document.getElementById("detailPhotoGrid");
+    const profileForm = document.getElementById("profileForm");
+    const profileMessage = document.getElementById("profileMessage");
+    const saveProfileBtn = document.getElementById("saveProfileBtn");
+    const profileFullName = document.getElementById("profileFullName");
+    const profileBioInput = document.getElementById("profileBioInput");
 
-    const footerText = document.getElementById("footerText");
+    const galleryHeading = document.getElementById("galleryHeading");
+    const galleryText = document.getElementById("galleryText");
+    const searchInput = document.getElementById("searchInput");
+    const filterSelect = document.getElementById("filterSelect");
+    const searchBtn = document.getElementById("searchBtn");
+    const filterNote = document.getElementById("filterNote");
+    const photoGrid = document.getElementById("photoGrid");
 
     const lightbox = document.getElementById("lightbox");
     const lightboxClose = document.getElementById("lightboxClose");
     const lightboxImage = document.getElementById("lightboxImage");
-    const creatorAvatar = document.getElementById("creatorAvatar");
+    const lightboxCreatorAvatar = document.getElementById("lightboxCreatorAvatar");
     const lightboxActions = document.getElementById("lightboxActions");
     const lightboxTitle = document.getElementById("lightboxTitle");
     const lightboxStatsWrap = document.getElementById("lightboxStatsWrap");
 
-    let siteData = loadAdminData();
+    let currentUser = null;
     let allPhotos = [];
-    let activeCategoryName = "";
+    let userUploads = [];
     let reactionState = loadReactionState();
+    let followState = loadFollowState();
     let activeLightboxPhotoId = "";
 
     if(menuToggle && navLinks){
@@ -1299,34 +1505,6 @@
         .replace(/'/g, "&#39;");
     }
 
-    function loadAdminData(){
-      try{
-        const saved = localStorage.getItem(STORAGE_KEY);
-        if(!saved){
-          return {
-            categories: [],
-            homepage: {},
-            footerText: ""
-          };
-        }
-
-        const parsed = JSON.parse(saved);
-
-        return {
-          categories: Array.isArray(parsed.categories) ? parsed.categories : [],
-          homepage: parsed.homepage && typeof parsed.homepage === "object" ? parsed.homepage : {},
-          footerText: parsed.footerText || ""
-        };
-      }catch(error){
-        console.error("Failed to load admin data:", error);
-        return {
-          categories: [],
-          homepage: {},
-          footerText: ""
-        };
-      }
-    }
-
     function loadReactionState(){
       try{
         const saved = localStorage.getItem(REACTION_KEY);
@@ -1341,6 +1519,99 @@
       localStorage.setItem(REACTION_KEY, JSON.stringify(reactionState));
     }
 
+    function loadFollowState(){
+      try{
+        const saved = localStorage.getItem(FOLLOW_KEY);
+        const parsed = JSON.parse(saved || "{}");
+        return parsed && typeof parsed === "object" ? parsed : {};
+      }catch(error){
+        return {};
+      }
+    }
+
+    function getSavedFollowingCount(){
+      return Object.values(followState).filter(Boolean).length;
+    }
+
+    function getSavedFavouriteCount(){
+      return Object.values(reactionState).filter(item => item && item.favourited).length;
+    }
+
+    function showProfileMessage(text, type = "error"){
+      profileMessage.className = `message show ${type}`;
+      profileMessage.textContent = text;
+    }
+
+    function clearProfileMessage(){
+      profileMessage.className = "message";
+      profileMessage.textContent = "";
+    }
+
+    function setSaveLoading(isLoading){
+      saveProfileBtn.disabled = isLoading;
+      saveProfileBtn.innerHTML = isLoading
+        ? '<i class="fa-solid fa-spinner fa-spin"></i> Saving...'
+        : '<i class="fa-solid fa-floppy-disk"></i> Save Profile';
+    }
+
+    function getUserDisplayName(user){
+      if(!user) return "User";
+      return String(
+        user.user_metadata?.full_name ||
+        user.user_metadata?.name ||
+        user.email?.split("@")[0] ||
+        "User"
+      ).trim();
+    }
+
+    function getUserBio(user){
+      if(!user) return "";
+      return String(
+        user.user_metadata?.bio ||
+        "Manage your PixNest profile, uploads, and account activity here."
+      ).trim();
+    }
+
+    function getUserAvatar(user){
+      if(!user) return "";
+      return String(
+        user.user_metadata?.avatar_url ||
+        user.user_metadata?.picture ||
+        ""
+      ).trim();
+    }
+
+    function getUserPlan(user){
+      if(!user) return "Free";
+      const meta = user.user_metadata || {};
+
+      if(meta.membership_plan) return String(meta.membership_plan);
+      if(meta.plan) return String(meta.plan);
+      if(meta.subscription_plan) return String(meta.subscription_plan);
+      if(meta.premium === true || meta.is_premium === true || meta.subscribed === true) return "Premium";
+
+      return "Free";
+    }
+
+    function formatDate(dateValue){
+      if(!dateValue) return "—";
+      const date = new Date(dateValue);
+      if(Number.isNaN(date.getTime())) return "—";
+
+      return date.toLocaleDateString(undefined, {
+        year:"numeric",
+        month:"long",
+        day:"numeric"
+      });
+    }
+
+    function shortUserId(id = ""){
+      const value = String(id || "");
+      if(!value) return "—";
+      if(value.length <= 12) return value;
+      return `${value.slice(0,8)}...${value.slice(-6)}`;
+    }
+
     function getPhotoId(photo){
       return String(
         photo.id ||
@@ -1353,133 +1624,6 @@
 
     function getPhotoById(photoId){
       return allPhotos.find(photo => getPhotoId(photo) === String(photoId)) || null;
-    }
-
-    function getPhotoReactionState(photoId){
-      return reactionState[String(photoId)] || { liked:false, favourited:false };
-    }
-
-    function toggleReaction(photoId, reactionType){
-      const key = reactionType === "like" ? "liked" : "favourited";
-      const current = {
-        liked: !!getPhotoReactionState(photoId).liked,
-        favourited: !!getPhotoReactionState(photoId).favourited
-      };
-
-      current[key] = !current[key];
-
-      if(!current.liked && !current.favourited){
-        delete reactionState[String(photoId)];
-      }else{
-        reactionState[String(photoId)] = current;
-      }
-
-      saveReactionState();
-      refreshPhotoDisplays();
-    }
-
-    function applyFooterText(){
-      if(siteData.footerText){
-        footerText.textContent = siteData.footerText;
-      }
-    }
-
-    function getSavedCategories(){
-      return (siteData.categories || [])
-        .map(cat => ({
-          id: cat.id || "",
-          name: String(cat.name || "").trim(),
-          description: String(cat.description || "").trim()
-        }))
-        .filter(cat => cat.name);
-    }
-
-    function getGroupedPhotos(){
-      const grouped = {};
-
-      allPhotos.forEach(photo => {
-        const categoryName = String(photo.category || "").trim();
-        if(!categoryName) return;
-
-        if(!grouped[categoryName]){
-          grouped[categoryName] = [];
-        }
-
-        grouped[categoryName].push(photo);
-      });
-
-      return grouped;
-    }
-
-    function getMergedCategories(){
-      const grouped = getGroupedPhotos();
-      const map = new Map();
-
-      getSavedCategories().forEach(category => {
-        map.set(category.name.toLowerCase(), {
-          name: category.name,
-          description: category.description,
-          photos: grouped[category.name] || []
-        });
-      });
-
-      Object.keys(grouped).forEach(categoryName => {
-        const key = categoryName.toLowerCase();
-        if(!map.has(key)){
-          map.set(key, {
-            name: categoryName,
-            description: "",
-            photos: grouped[categoryName] || []
-          });
-        }
-      });
-
-      return [...map.values()].sort((a, b) => a.name.localeCompare(b.name));
-    }
-
-    function getRequestedCategory(){
-      const params = new URLSearchParams(window.location.search);
-      return decodeURIComponent(params.get("category") || "").trim();
-    }
-
-    function updateHeroImage(imageUrl){
-      heroSection.style.background =
-        `linear-gradient(rgba(15,23,42,0.70), rgba(15,23,42,0.92)), url('${imageUrl}') center/cover no-repeat`;
-    }
-
-    function renderOverviewHero(){
-      const homepage = siteData.homepage || {};
-      heroTag.textContent = "Category Gallery";
-      heroTitle.textContent = homepage.categoriesTitle || "All Categories";
-      heroDescription.textContent = homepage.categoriesText || "Explore visual collections across different styles, themes, and creative topics.";
-      heroMeta.innerHTML = "";
-      heroActions.classList.add("hidden");
-      updateHeroImage(DEFAULT_HERO_IMAGE);
-
-      overviewHeading.textContent = homepage.categoriesTitle || "All Categories";
-      overviewText.textContent = homepage.categoriesText || "Explore visual collections across different styles, themes, and creative topics.";
-      document.title = "PixNest | Categories";
-    }
-
-    function renderDetailHero(category){
-      const featuredPhoto = category.photos.find(photo => photo.featured);
-      const coverPhoto = featuredPhoto || category.photos[0];
-      const coverImage = coverPhoto && coverPhoto.image_url ? coverPhoto.image_url : DEFAULT_HERO_IMAGE;
-      const featuredCount = category.photos.filter(photo => photo.featured).length;
-
-      heroTag.textContent = "Category Collection";
-      heroTitle.textContent = category.name;
-      heroDescription.textContent = category.description || `Browse the ${category.name} collection and explore the visuals inside this category.`;
-      heroMeta.innerHTML = `
-        <span class="pill">${category.photos.length} photo${category.photos.length === 1 ? "" : "s"}</span>
-        ${featuredCount ? `<span class="pill featured">${featuredCount} featured</span>` : ``}
-      `;
-      heroActions.classList.remove("hidden");
-      updateHeroImage(coverImage);
-
-      detailHeading.textContent = `${category.name} Photos`;
-      detailText.textContent = category.description || `Browse all photos in the ${category.name} collection below.`;
-      document.title = `PixNest | ${category.name}`;
     }
 
     function getSafePhotoTitle(photo){
@@ -1537,7 +1681,6 @@
           return Number(value);
         }
       }
-
       return 0;
     }
 
@@ -1587,6 +1730,10 @@
         ]),
         favourites: getFavouriteBaseValue(photo)
       };
+    }
+
+    function getPhotoReactionState(photoId){
+      return reactionState[String(photoId)] || { liked:false, favourited:false };
     }
 
     function getPhotoMetrics(photo){
@@ -1640,46 +1787,6 @@
             <span>${escapeHtml(String(metrics.favourites))}</span>
           </button>
         </div>
-      `;
-    }
-
-    function buildCreatorAvatar(photo){
-      const creatorName = (photo.credit || "Unknown").trim();
-      const creatorPhoto = (photo.creator_photo || "").trim();
-
-      if(creatorPhoto){
-        return `<img src="${escapeHtml(creatorPhoto)}" alt="${escapeHtml(creatorName)}">`;
-      }
-
-      const firstLetter = creatorName.charAt(0).toUpperCase() || "P";
-      return `<span>${escapeHtml(firstLetter)}</span>`;
-    }
-
-    function buildSocialButton(url, iconClass, label){
-      if(url){
-        return `
-          <a
-            class="lightbox-social"
-            href="${escapeHtml(url)}"
-            target="_blank"
-            rel="noopener noreferrer"
-            title="${escapeHtml(label)}"
-            aria-label="${escapeHtml(label)}"
-          >
-            <i class="${escapeHtml(iconClass)}"></i>
-          </a>
-        `;
-      }
-
-      return `
-        <button
-          type="button"
-          class="lightbox-social disabled"
-          title="${escapeHtml(label)} unavailable"
-          aria-label="${escapeHtml(label)} unavailable"
-        >
-          <i class="${escapeHtml(iconClass)}"></i>
-        </button>
       `;
     }
 
@@ -1808,6 +1915,46 @@
       }
     }
 
+    function buildCreatorAvatar(photo){
+      const creatorName = String(photo.credit || getUserDisplayName(currentUser) || "Creator").trim();
+      const creatorPhoto = String(photo.creator_photo || getUserAvatar(currentUser) || "").trim();
+
+      if(creatorPhoto){
+        return `<img src="${escapeHtml(creatorPhoto)}" alt="${escapeHtml(creatorName)}">`;
+      }
+
+      const firstLetter = creatorName.charAt(0).toUpperCase() || "P";
+      return `<span>${escapeHtml(firstLetter)}</span>`;
+    }
+
+    function buildSocialButton(url, iconClass, label){
+      if(url){
+        return `
+          <a
+            class="lightbox-social"
+            href="${escapeHtml(url)}"
+            target="_blank"
+            rel="noopener noreferrer"
+            title="${escapeHtml(label)}"
+            aria-label="${escapeHtml(label)}"
+          >
+            <i class="${escapeHtml(iconClass)}"></i>
+          </a>
+        `;
+      }
+
+      return `
+        <button
+          type="button"
+          class="lightbox-social disabled"
+          title="${escapeHtml(label)} unavailable"
+          aria-label="${escapeHtml(label)} unavailable"
+        >
+          <i class="${escapeHtml(iconClass)}"></i>
+        </button>
+      `;
+    }
+
     function buildLightboxActions(photo){
       const shareTitle = getShareTitle(photo);
       const imageUrl = photo.image_url || "";
@@ -1921,6 +2068,120 @@
       });
     }
 
+    function toggleReaction(photoId, reactionType){
+      const key = reactionType === "like" ? "liked" : "favourited";
+      const current = {
+        liked: !!getPhotoReactionState(photoId).liked,
+        favourited: !!getPhotoReactionState(photoId).favourited
+      };
+
+      current[key] = !current[key];
+
+      if(!current.liked && !current.favourited){
+        delete reactionState[String(photoId)];
+      }else{
+        reactionState[String(photoId)] = current;
+      }
+
+      saveReactionState();
+      refreshAccountView();
+    }
+
+    function getMatchingUploads(user, photos){
+      if(!user) return [];
+
+      const userId = String(user.id || "").trim().toLowerCase();
+      const email = String(user.email || "").trim().toLowerCase();
+      const fullName = getUserDisplayName(user).trim().toLowerCase();
+      const emailName = email.split("@")[0] || "";
+
+      return photos.filter(photo => {
+        const possibleIds = [
+          photo.user_id,
+          photo.owner_id,
+          photo.auth_user_id,
+          photo.profile_id,
+          photo.uploader_id
+        ].map(value => String(value || "").trim().toLowerCase());
+
+        const possibleEmails = [
+          photo.email,
+          photo.user_email,
+          photo.owner_email,
+          photo.uploader_email
+        ].map(value => String(value || "").trim().toLowerCase());
+
+        const possibleNames = [
+          photo.credit,
+          photo.creator_name,
+          photo.uploader_name,
+          photo.author,
+          photo.name
+        ].map(value => String(value || "").trim().toLowerCase());
+
+        const idMatch = userId && possibleIds.includes(userId);
+        const emailMatch = email && possibleEmails.includes(email);
+        const nameMatch = fullName && possibleNames.includes(fullName);
+        const emailNameMatch = emailName && possibleNames.includes(emailName);
+
+        return idMatch || emailMatch || nameMatch || emailNameMatch;
+      });
+    }
+
+    function renderAccountHeader(){
+      if(!currentUser){
+        accountName.textContent = "Account not found";
+        accountEmail.textContent = "Please log in.";
+        accountBio.textContent = "You need to be logged in to view this page.";
+        return;
+      }
+
+      const displayName = getUserDisplayName(currentUser);
+      const email = String(currentUser.email || "");
+      const bio = getUserBio(currentUser);
+      const avatarUrl = getUserAvatar(currentUser);
+      const plan = getUserPlan(currentUser);
+      const totalLikes = userUploads.reduce((sum, photo) => sum + getPhotoMetrics(photo).likes, 0);
+
+      accountName.textContent = displayName;
+      accountEmail.textContent = email;
+      accountBio.textContent = bio;
+
+      if(avatarUrl){
+        accountAvatar.innerHTML = `<img src="${escapeHtml(avatarUrl)}" alt="${escapeHtml(displayName)}">`;
+      }else{
+        accountAvatar.textContent = displayName.charAt(0).toUpperCase() || "P";
+      }
+
+      detailFullName.textContent = displayName;
+      detailEmail.textContent = email || "—";
+      detailPlan.textContent = plan;
+      detailJoined.textContent = formatDate(currentUser.created_at);
+      detailUserId.textContent = shortUserId(currentUser.id);
+
+      profileFullName.value = displayName;
+      profileBioInput.value = bio;
+
+      postsCount.textContent = String(userUploads.length);
+      likesCount.textContent = String(totalLikes);
+      savedFavouritesCount.textContent = String(getSavedFavouriteCount());
+      followingCount.textContent = String(getSavedFollowingCount());
+
+      galleryHeading.textContent = "Your Uploads";
+      galleryText.textContent = `Photos connected to ${displayName}'s account.`;
+
+      publicProfileBtn.href = `profile.html?creator=${encodeURIComponent(displayName)}`;
+      document.title = `PixNest | ${displayName}`;
+
+      const coverPhoto = userUploads.find(photo => photo.featured) || userUploads[0];
+      const heroImage = coverPhoto && coverPhoto.image_url
+        ? coverPhoto.image_url
+        : "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&w=1600&q=80";
+
+      accountHero.style.background =
+        `linear-gradient(rgba(15,23,42,.55), rgba(15,23,42,.90)), url('${heroImage}') center/cover no-repeat`;
+    }
+
     function renderLightboxContent(photo){
       const imageUrl = photo.image_url || "";
       const safeTitle = getDisplayHeading(photo);
@@ -1932,12 +2193,12 @@
       lightboxTitle.classList.toggle("is-hidden", !safeTitle);
 
       document.getElementById("lightboxCategory").textContent = photo.category || "Uncategorized";
-      document.getElementById("lightboxCredit").textContent = photo.credit || "Unknown";
+      document.getElementById("lightboxCredit").textContent = String(photo.credit || getUserDisplayName(currentUser) || "Unknown");
       document.getElementById("lightboxTags").textContent = getPhotoTags(photo).join(", ") || "No tags";
       document.getElementById("lightboxDescription").textContent = getDescription(photo) || "No description added.";
-      document.getElementById("lightboxCreatorTop").textContent = photo.credit || "Unknown";
+      document.getElementById("lightboxCreatorTop").textContent = String(photo.credit || getUserDisplayName(currentUser) || "Unknown");
 
-      creatorAvatar.innerHTML = buildCreatorAvatar(photo);
+      lightboxCreatorAvatar.innerHTML = buildCreatorAvatar(photo);
       lightboxStatsWrap.innerHTML = buildPhotoStats(photo, "lightbox-stats", false);
       lightboxActions.innerHTML = buildLightboxActions(photo);
 
@@ -2020,7 +2281,7 @@
     function buildPhotoCard(photo){
       const tags = getPhotoTags(photo).slice(0, 4);
       const description = getDescription(photo);
-      const creatorName = (photo.credit || "Unknown Creator").trim();
+      const creatorName = String(photo.credit || getUserDisplayName(currentUser) || "Unknown Creator").trim();
       const photoId = getPhotoId(photo);
 
       return `
@@ -2067,147 +2328,45 @@
       bindReactionButtons(container);
     }
 
-    function renderOverviewCategories(){
-      const searchValue = overviewSearchInput.value.trim().toLowerCase();
-      const filterValue = overviewFilter.value;
-      const categories = getMergedCategories();
-
-      const filtered = categories.filter(category => {
-        const photoCount = category.photos.length;
-        const featuredCount = category.photos.filter(photo => photo.featured).length;
-
-        const matchesText = !searchValue || [
-          category.name,
-          category.description
-        ].join(" ").toLowerCase().includes(searchValue);
-
-        let matchesFilter = true;
-
-        if(filterValue === "with-photos"){
-          matchesFilter = photoCount > 0;
-        }else if(filterValue === "featured"){
-          matchesFilter = featuredCount > 0;
-        }else if(filterValue === "empty"){
-          matchesFilter = photoCount === 0;
-        }
-
-        return matchesText && matchesFilter;
-      });
-
-      overviewNote.textContent = `${filtered.length} categor${filtered.length === 1 ? "y" : "ies"} found.`;
-
-      if(!filtered.length){
-        categoryGrid.innerHTML = '<div class="empty-box">No categories found for this search.</div>';
+    function renderUploads(){
+      if(!userUploads.length){
+        photoGrid.innerHTML = '<div class="empty-box">No uploads matched your account yet.</div>';
+        filterNote.textContent = "0 photos found.";
         return;
       }
 
-      categoryGrid.innerHTML = filtered.map(category => {
-        const cover = category.photos.find(photo => photo.featured) || category.photos[0];
-        const photoCount = category.photos.length;
-        const featuredCount = category.photos.filter(photo => photo.featured).length;
-        const coverImage = cover && cover.image_url ? cover.image_url : DEFAULT_CATEGORY_IMAGE;
+      const searchValue = searchInput.value.trim().toLowerCase();
+      const filterValue = filterSelect.value;
 
-        return `
-          <a href="category.html?category=${encodeURIComponent(category.name)}" class="category-card">
-            <div class="category-image-wrap">
-              <img src="${escapeHtml(coverImage)}" alt="${escapeHtml(category.name)}">
-            </div>
-
-            <div class="category-content">
-              <div class="category-meta">
-                <span class="pill">${photoCount} photo${photoCount === 1 ? "" : "s"}</span>
-                ${featuredCount ? `<span class="pill featured">${featuredCount} featured</span>` : ``}
-              </div>
-
-              <h3>${escapeHtml(category.name)}</h3>
-              <p>${escapeHtml(category.description || `Browse photos in the ${category.name} collection.`)}</p>
-
-              <span class="category-link">
-                Open Collection
-                <i class="fa-solid fa-arrow-right"></i>
-              </span>
-            </div>
-          </a>
-        `;
-      }).join("");
-    }
-
-    function renderDetailPhotos(){
-      const categories = getMergedCategories();
-      const activeCategory = categories.find(category => category.name === activeCategoryName);
-
-      if(!activeCategory){
-        detailPhotoGrid.innerHTML = '<div class="empty-box">Category not found.</div>';
-        return;
-      }
-
-      const searchValue = detailSearchInput.value.trim().toLowerCase();
-      const filterValue = detailFilter.value;
-
-      let rows = activeCategory.photos.filter(photo => {
+      const filtered = userUploads.filter(photo => {
         const text = [
           getSafePhotoTitle(photo),
           photo.description,
           photo.tags,
-          photo.credit,
-          photo.category
+          photo.category,
+          photo.credit
         ].join(" ").toLowerCase();
 
-        const matchesText = !searchValue || text.includes(searchValue);
+        const matchesSearch = !searchValue || text.includes(searchValue);
         const matchesFilter = filterValue === "featured" ? Boolean(photo.featured) : true;
 
-        return matchesText && matchesFilter;
+        return matchesSearch && matchesFilter;
       });
 
-      detailNote.textContent = `${rows.length} photo${rows.length === 1 ? "" : "s"} found in ${activeCategory.name}.`;
+      filterNote.textContent = `${filtered.length} photo${filtered.length === 1 ? "" : "s"} found in your account.`;
 
-      if(!rows.length){
-        detailPhotoGrid.innerHTML = '<div class="empty-box">No photos found for this category search.</div>';
+      if(!filtered.length){
+        photoGrid.innerHTML = '<div class="empty-box">No uploads found for this search.</div>';
         return;
       }
 
-      detailPhotoGrid.innerHTML = rows.map(buildPhotoCard).join("");
-      activatePhotoCards(rows, detailPhotoGrid);
+      photoGrid.innerHTML = filtered.map(buildPhotoCard).join("");
+      activatePhotoCards(filtered, photoGrid);
     }
 
-    function showOverviewMode(){
-      overviewSection.classList.remove("hidden");
-      detailSection.classList.add("hidden");
-      activeCategoryName = "";
-      renderOverviewHero();
-      renderOverviewCategories();
-    }
-
-    function showDetailMode(categoryName){
-      const categories = getMergedCategories();
-      const activeCategory = categories.find(category => category.name.toLowerCase() === categoryName.toLowerCase());
-
-      if(!activeCategory){
-        showOverviewMode();
-        return;
-      }
-
-      activeCategoryName = activeCategory.name;
-      overviewSection.classList.add("hidden");
-      detailSection.classList.remove("hidden");
-      renderDetailHero(activeCategory);
-      renderDetailPhotos();
-    }
-
-    function decideMode(){
-      const requestedCategory = getRequestedCategory();
-
-      if(requestedCategory){
-        showDetailMode(requestedCategory);
-      }else{
-        showOverviewMode();
-      }
-    }
-
-    function refreshPhotoDisplays(){
-      if(activeCategoryName){
-        renderDetailPhotos();
-      }
+    function refreshAccountView(){
+      renderAccountHeader();
+      renderUploads();
 
       if(activeLightboxPhotoId && lightbox.classList.contains("show")){
         const activePhoto = getPhotoById(activeLightboxPhotoId);
@@ -2217,8 +2376,75 @@
       }
     }
 
-    async function loadPhotos(){
+    async function saveProfile(e){
+      e.preventDefault();
+      clearProfileMessage();
+
+      if(!currentUser){
+        showProfileMessage("You must be logged in to update your profile.");
+        return;
+      }
+
+      const fullName = profileFullName.value.trim();
+      const bio = profileBioInput.value.trim();
+
+      if(!fullName){
+        showProfileMessage("Full name cannot be empty.");
+        return;
+      }
+
       try{
+        setSaveLoading(true);
+
+        const { data, error } = await supabaseClient.auth.updateUser({
+          data:{
+            ...currentUser.user_metadata,
+            full_name: fullName,
+            bio
+          }
+        });
+
+        if(error){
+          throw error;
+        }
+
+        currentUser = data.user || currentUser;
+
+        userUploads = getMatchingUploads(currentUser, allPhotos);
+        refreshAccountView();
+        showProfileMessage("Profile updated successfully.", "success");
+      }catch(error){
+        showProfileMessage(error.message || "Could not update your profile.");
+      }finally{
+        setSaveLoading(false);
+      }
+    }
+
+    async function signOut(){
+      try{
+        await supabaseClient.auth.signOut();
+        window.location.href = "login.html";
+      }catch(error){
+        alert("Could not sign out. Please try again.");
+      }
+    }
+
+    async function requireUser(){
+      const { data, error } = await supabaseClient.auth.getUser();
+
+      if(error || !data?.user){
+        window.location.href = "login.html";
+        return null;
+      }
+
+      return data.user;
+    }
+
+    async function loadAccount(){
+      try{
+        currentUser = await requireUser();
+        if(!currentUser) return;
+
         const { data, error } = await supabaseClient
           .from("photos")
           .select("*")
@@ -2229,41 +2455,33 @@
         }
 
         allPhotos = Array.isArray(data) ? data : [];
-        applyFooterText();
-        decideMode();
+        userUploads = getMatchingUploads(currentUser, allPhotos);
+        refreshAccountView();
       }catch(error){
         console.error(error);
-        categoryGrid.innerHTML = '<div class="empty-box">Could not load categories from Supabase.</div>';
-        detailPhotoGrid.innerHTML = '<div class="empty-box">Could not load category photos from Supabase.</div>';
+        accountName.textContent = "Account unavailable";
+        accountEmail.textContent = "Could not load your account right now.";
+        accountBio.textContent = "Please refresh and try again.";
+        photoGrid.innerHTML = '<div class="empty-box">Could not load your account data from Supabase.</div>';
       }
     }
 
-    overviewSearchBtn.addEventListener("click", renderOverviewCategories);
+    searchBtn.addEventListener("click", renderUploads);
 
-    overviewSearchInput.addEventListener("keydown", (e) => {
+    searchInput.addEventListener("keydown", (e) => {
       if(e.key === "Enter"){
         e.preventDefault();
-        renderOverviewCategories();
+        renderUploads();
       }
     });
 
-    overviewFilter.addEventListener("change", renderOverviewCategories);
+    filterSelect.addEventListener("change", renderUploads);
+    profileForm.addEventListener("submit", saveProfile);
+    signOutBtn.addEventListener("click", signOut);
 
-    detailSearchBtn.addEventListener("click", renderDetailPhotos);
-
-    detailSearchInput.addEventListener("keydown", (e) => {
-      if(e.key === "Enter"){
-        e.preventDefault();
-        renderDetailPhotos();
-      }
-    });
-
-    detailFilter.addEventListener("change", renderDetailPhotos);
-
-    applyFooterText();
-    loadPhotos();
+    loadAccount();
   </script>
 </body>
 </html>
 
- 
+After this, the clean next step is making the upload page automatically save the logged-in user’s ID, email, and name into Supabase so this account page can match uploads perfectly.

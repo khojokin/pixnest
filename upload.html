@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -20,17 +20,20 @@
       --panel2:#1e293b;
       --text:#e5e7eb;
       --muted:#94a3b8;
-      --line:rgba(255,255,255,0.08);
       --accent:#facc15;
-      --success:#10b981;
-      --danger:#f87171;
+      --line:rgba(255,255,255,0.08);
+      --success:#22c55e;
+      --danger:#ef4444;
     }
 
     html{
       scroll-behavior:smooth;
+      min-height:100%;
+      background:var(--bg);
     }
 
     body{
+      min-height:100%;
       background:var(--bg);
       color:var(--text);
       line-height:1.6;
@@ -57,8 +60,12 @@
     }
 
     .container{
-      width:min(1200px, 92%);
+      width:min(1200px,92%);
       margin:auto;
+    }
+
+    .hidden{
+      display:none !important;
     }
 
     header{
@@ -113,7 +120,8 @@
       font-size:27px;
       font-weight:800;
       color:var(--accent);
-      letter-spacing:0.4px;
+      letter-spacing:.4px;
+      white-space:nowrap;
     }
 
     .logo-sub{
@@ -122,6 +130,7 @@
       letter-spacing:1.7px;
       text-transform:uppercase;
       margin-top:4px;
+      white-space:nowrap;
     }
 
     .nav-links{
@@ -159,7 +168,7 @@
       width:46px;
       height:46px;
       border-radius:12px;
-      border:1px solid rgba(250,204,21,0.35);
+      border:1px solid rgba(250,204,21,.35);
       background:#111827;
       color:var(--accent);
       align-items:center;
@@ -167,7 +176,6 @@
       cursor:pointer;
       flex-direction:column;
       gap:5px;
-      box-shadow:0 0 12px rgba(250,204,21,0.12);
     }
 
     .menu-toggle span{
@@ -180,98 +188,99 @@
 
     .hero{
       background:
-        linear-gradient(rgba(15,23,42,0.72), rgba(15,23,42,0.94)),
+        linear-gradient(rgba(15,23,42,.68), rgba(15,23,42,.92)),
         url('https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&w=1600&q=80') center/cover no-repeat;
-      min-height:48vh;
+      min-height:46vh;
       display:flex;
       align-items:center;
     }
 
     .hero-content{
-      max-width:840px;
-      padding:78px 0 58px;
+      max-width:860px;
+      padding:90px 0 50px;
     }
 
     .hero-tag{
       display:inline-block;
-      background:rgba(250,204,21,0.12);
+      background:rgba(250,204,21,.12);
       color:var(--accent);
       padding:8px 14px;
       border-radius:999px;
       font-size:14px;
-      border:1px solid rgba(250,204,21,0.22);
+      border:1px solid rgba(250,204,21,.22);
       margin-bottom:18px;
     }
 
     .hero h1{
-      font-size:clamp(34px, 5vw, 56px);
-      line-height:1.08;
-      margin-bottom:18px;
-      color:#ffffff;
+      font-size:clamp(34px,5vw,56px);
+      line-height:1.05;
+      margin-bottom:16px;
+      color:#fff;
     }
 
     .hero p{
-      font-size:18px;
+      font-size:17px;
       color:#cbd5e1;
-      max-width:720px;
+      max-width:760px;
     }
 
     section{
       padding:74px 0;
     }
 
-    .section-head{
-      display:flex;
-      align-items:end;
-      justify-content:space-between;
-      gap:20px;
-      flex-wrap:wrap;
-      margin-bottom:28px;
-    }
-
-    .section-head h2{
-      font-size:32px;
-      color:#ffffff;
-      margin-bottom:8px;
-    }
-
-    .section-head p{
-      color:var(--muted);
-      max-width:720px;
-    }
-
-    .upload-grid{
+    .upload-layout{
       display:grid;
-      grid-template-columns:1.08fr .92fr;
+      grid-template-columns:1fr .9fr;
       gap:24px;
-      align-items:start;
     }
 
-    .panel{
+    .panel-card{
       background:#111827;
       border:1px solid var(--line);
       border-radius:24px;
       padding:24px;
-      box-shadow:0 14px 30px rgba(0,0,0,0.14);
+      box-shadow:0 14px 30px rgba(0,0,0,.14);
     }
 
-    .panel h3{
-      font-size:26px;
+    .panel-card h2{
       color:#fff;
-      margin-bottom:12px;
+      font-size:28px;
+      margin-bottom:8px;
     }
 
-    .panel p{
-      color:#cbd5e1;
-      font-size:15px;
-      margin-bottom:16px;
+    .panel-card p{
+      color:#94a3b8;
+      font-size:14px;
+      margin-bottom:20px;
     }
 
-    .field-grid{
+    .message{
+      display:none;
+      border-radius:14px;
+      padding:14px 16px;
+      font-size:14px;
+      margin-bottom:18px;
+    }
+
+    .message.show{
+      display:block;
+    }
+
+    .message.success{
+      background:rgba(34,197,94,.12);
+      border:1px solid rgba(34,197,94,.18);
+      color:#bbf7d0;
+    }
+
+    .message.error{
+      background:rgba(239,68,68,.12);
+      border:1px solid rgba(239,68,68,.18);
+      color:#fecaca;
+    }
+
+    .form-grid{
       display:grid;
-      grid-template-columns:repeat(2,1fr);
       gap:16px;
-      margin-top:18px;
     }
 
     .field{
@@ -279,128 +288,117 @@
       gap:8px;
     }
 
-    .field.full{
-      grid-column:1 / -1;
-    }
-
-    label{
-      color:#ffffff;
+    .field label{
+      color:#e5e7eb;
       font-size:14px;
       font-weight:700;
     }
 
-    input,
-    textarea,
-    select{
+    .field input,
+    .field textarea,
+    .field select{
       width:100%;
-      background:#0f172a;
-      border:1px solid rgba(255,255,255,0.08);
       border-radius:14px;
+      border:1px solid rgba(255,255,255,.08);
+      background:#0f172a;
+      color:#fff;
       padding:14px 16px;
-      color:#ffffff;
       outline:none;
       font-size:15px;
     }
 
-    input:focus,
-    textarea:focus,
-    select:focus{
-      border-color:rgba(250,204,21,0.6);
-      box-shadow:0 0 0 3px rgba(250,204,21,0.08);
-    }
-
-    textarea{
+    .field textarea{
       min-height:120px;
       resize:vertical;
     }
 
-    .file-box{
-      background:#0f172a;
-      border:1px dashed rgba(255,255,255,0.14);
-      border-radius:16px;
-      padding:14px;
+    .field input:focus,
+    .field textarea:focus,
+    .field select:focus{
+      border-color:rgba(250,204,21,.55);
+      box-shadow:0 0 0 3px rgba(250,204,21,.08);
     }
 
-    .file-help{
-      color:var(--muted);
-      font-size:13px;
-      margin-top:8px;
+    .field small{
+      color:#94a3b8;
+      font-size:12px;
     }
 
-    .submit-btn{
-      display:inline-block;
+    .checkbox-row{
+      display:flex;
+      align-items:flex-start;
+      gap:10px;
+      color:#cbd5e1;
+      font-size:14px;
+    }
+
+    .checkbox-row input{
+      margin-top:4px;
+      accent-color:#facc15;
+    }
+
+    .upload-btn{
       width:100%;
-      padding:14px 22px;
-      border-radius:12px;
-      font-weight:700;
-      font-size:15px;
+      min-height:54px;
       border:none;
-      cursor:pointer;
-      background:var(--accent);
+      border-radius:14px;
+      background:#facc15;
       color:#111827;
-      margin-top:10px;
+      font-size:15px;
+      font-weight:800;
+      cursor:pointer;
     }
 
-    .submit-btn:hover{
+    .upload-btn:hover{
       transform:translateY(-2px);
-      box-shadow:0 10px 24px rgba(250,204,21,0.2);
+      box-shadow:0 12px 28px rgba(250,204,21,.18);
     }
 
-    .submit-btn:disabled{
+    .upload-btn:disabled{
       opacity:.7;
       cursor:not-allowed;
       transform:none;
       box-shadow:none;
     }
 
-    .status-message{
-      margin-top:14px;
-      font-size:14px;
-      font-weight:700;
-      min-height:22px;
-    }
-
-    .status-message.success{
-      color:#86efac;
-    }
-
-    .status-message.error{
-      color:#fca5a5;
-    }
-
-    .preview-card{
+    .preview-box{
+      background:#0f172a;
+      border:1px solid var(--line);
+      border-radius:22px;
       overflow:hidden;
-      padding:0;
     }
 
     .preview-image-wrap{
-      position:relative;
-      min-height:320px;
+      aspect-ratio:4/4;
       background:#020617;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      overflow:hidden;
     }
 
-    .preview-main-image{
+    .preview-image-wrap img{
       width:100%;
       height:100%;
-      min-height:320px;
       object-fit:cover;
-      background:#020617;
     }
 
-    .preview-overlay{
-      position:absolute;
-      left:0;
-      right:0;
-      bottom:0;
+    .preview-placeholder{
+      color:#94a3b8;
+      text-align:center;
+      padding:30px;
+    }
+
+    .preview-details{
       padding:18px;
-      background:linear-gradient(to top, rgba(15,23,42,.95), rgba(15,23,42,.45), transparent);
+      display:grid;
+      gap:12px;
     }
 
-    .preview-tags{
+    .preview-pill-row{
       display:flex;
       flex-wrap:wrap;
       gap:8px;
-      margin-bottom:10px;
     }
 
     .pill{
@@ -410,155 +408,31 @@
       padding:6px 10px;
       border-radius:999px;
       font-size:12px;
-      background:rgba(255,255,255,.12);
-      border:1px solid rgba(255,255,255,.12);
+      background:rgba(255,255,255,.10);
+      border:1px solid rgba(255,255,255,.10);
       color:#fff;
-      backdrop-filter:blur(6px);
     }
 
-    .preview-title{
-      font-size:28px;
-      color:#fff;
-      line-height:1.15;
-      margin-bottom:6px;
-      word-break:break-word;
-    }
-
-    .preview-desc{
-      color:#e2e8f0;
-      font-size:14px;
-      margin-bottom:10px;
-      word-break:break-word;
-    }
-
-    .preview-meta{
-      padding:22px;
-      display:grid;
-      gap:16px;
-    }
-
-    .creator-box{
-      display:flex;
-      align-items:center;
-      gap:14px;
-      background:#0f172a;
-      border:1px solid var(--line);
-      border-radius:18px;
-      padding:14px;
-    }
-
-    .creator-avatar{
-      width:58px;
-      height:58px;
-      border-radius:50%;
-      overflow:hidden;
-      background:linear-gradient(135deg,#facc15,#fb7185);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      color:#111827;
-      font-size:22px;
-      font-weight:800;
-      flex-shrink:0;
-    }
-
-    .creator-avatar img{
-      width:100%;
-      height:100%;
-      object-fit:cover;
-    }
-
-    .creator-box small{
-      color:var(--muted);
-      font-size:12px;
-      text-transform:uppercase;
-      letter-spacing:.8px;
-      display:block;
-      margin-bottom:2px;
-    }
-
-    .creator-box strong{
-      color:#fff;
-      font-size:18px;
-      line-height:1.2;
-      display:block;
-      margin-bottom:4px;
-    }
-
-    .social-row{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-    }
-
-    .social-icon{
-      width:42px;
-      height:42px;
-      border-radius:50%;
-      display:flex;
-      align-items:center;
-      justify-content:center;
+    .detail-item{
       background:#111827;
       border:1px solid var(--line);
-      color:#fff;
-      font-size:15px;
-      text-decoration:none;
+      border-radius:16px;
+      padding:14px 16px;
     }
 
-    .social-icon:hover{
-      color:var(--accent);
-      transform:translateY(-2px);
-    }
-
-    .social-icon.disabled{
-      opacity:.45;
-      pointer-events:none;
-    }
-
-    .info-box{
-      background:#0f172a;
-      border:1px solid var(--line);
-      border-radius:18px;
-      padding:16px;
-    }
-
-    .info-box strong{
+    .detail-item strong{
       display:block;
       color:var(--accent);
       font-size:13px;
-      margin-bottom:6px;
+      margin-bottom:4px;
       text-transform:uppercase;
       letter-spacing:.8px;
     }
 
-    .info-box span{
+    .detail-item span{
       color:#e5e7eb;
       font-size:14px;
       word-break:break-word;
-    }
-
-    .tips-grid{
-      display:grid;
-      grid-template-columns:repeat(3,1fr);
-      gap:20px;
-    }
-
-    .tip-box{
-      background:#111827;
-      border:1px solid var(--line);
-      border-radius:20px;
-      padding:22px;
-    }
-
-    .tip-box h3{
-      color:#fff;
-      font-size:20px;
-      margin-bottom:10px;
-    }
-
-    .tip-box p{
-      color:var(--muted);
-      font-size:14px;
     }
 
     footer{
@@ -596,11 +470,7 @@
     }
 
     @media(max-width:1024px){
-      .upload-grid{
-        grid-template-columns:1fr;
-      }
-
-      .tips-grid{
+      .upload-layout{
         grid-template-columns:1fr;
       }
     }
@@ -623,7 +493,7 @@
         border:1px solid var(--line);
         border-radius:16px;
         padding:12px;
-        box-shadow:0 16px 30px rgba(0,0,0,0.28);
+        box-shadow:0 16px 30px rgba(0,0,0,.28);
       }
 
       .nav-links.show{
@@ -642,23 +512,7 @@
 
       .nav-links a:hover,
       .nav-links a.active{
-        background:rgba(250,204,21,0.12);
-      }
-
-      .hero{
-        min-height:auto;
-      }
-
-      .hero-content{
-        padding:70px 0 40px;
-      }
-
-      .field-grid{
-        grid-template-columns:1fr;
-      }
-
-      .section-head h2{
-        font-size:28px;
+        background:rgba(250,204,21,.12);
       }
 
       .logo-mark{
@@ -687,11 +541,15 @@
       }
 
       .hero h1{
-        font-size:32px;
+        font-size:34px;
       }
 
       .hero p{
-        font-size:16px;
+        font-size:15px;
+      }
+
+      .panel-card{
+        padding:18px;
       }
 
       .logo-title{
@@ -700,14 +558,6 @@
 
       .logo-sub{
         font-size:9px;
-      }
-
-      .section-head h2{
-        font-size:25px;
-      }
-
-      .preview-title{
-        font-size:24px;
       }
     }
   </style>
@@ -734,7 +584,8 @@
         <a href="index.html">Home</a>
         <a href="explore.html">Explore</a>
         <a href="category.html">Categories</a>
-        <a href="about.html">About</a>
+        <a href="premium.html">Premium</a>
+        <a href="account.html">Account</a>
         <a href="upload.html" class="active">Upload</a>
         <a href="contact.html">Contact</a>
       </nav>
@@ -744,156 +595,96 @@
   <section class="hero">
     <div class="container">
       <div class="hero-content">
-        <div class="hero-tag">Submit your photo</div>
-        <h1>Share a strong visual with title, creator details, and social links.</h1>
-        <p>Upload one main image, add the creator profile photo if you want, and send it into the PixNest collection.</p>
+        <div class="hero-tag">Upload to PixNest</div>
+        <h1>Upload your photo and connect it to your account automatically.</h1>
+        <p>Your logged-in account details will be saved with the upload so your profile and account page can show the right creator posts.</p>
       </div>
     </div>
   </section>
 
   <section>
-    <div class="container">
-      <div class="section-head">
-        <div>
-          <h2>Upload to PixNest</h2>
-          <p>Use jpg, jpeg, png, or webp for the smoothest upload. The image will be stored in Supabase and added to the public collection.</p>
-        </div>
-      </div>
+    <div class="container upload-layout">
+      <div class="panel-card">
+        <h2>Upload Photo</h2>
+        <p>Fill in your photo details and publish it to PixNest.</p>
 
-      <div class="upload-grid">
-        <div class="panel">
-          <h3>Submission Form</h3>
-          <p>Fill in the details below and submit one photo into the selected category.</p>
+        <div class="message" id="formMessage"></div>
 
-          <form id="uploadForm">
-            <div class="field-grid">
-              <div class="field">
-                <label for="creatorName">Creator Name</label>
-                <input type="text" id="creatorName" placeholder="Enter creator name" />
-              </div>
-
-              <div class="field">
-                <label for="category">Category</label>
-                <select id="category"></select>
-              </div>
-
-              <div class="field full">
-                <label for="photoTitle">Photo Title</label>
-                <input type="text" id="photoTitle" placeholder="Enter photo title" />
-              </div>
-
-              <div class="field full">
-                <label for="photoDescription">Description</label>
-                <textarea id="photoDescription" placeholder="Write a short description"></textarea>
-              </div>
-
-              <div class="field full">
-                <label for="photoTags">Tags</label>
-                <input type="text" id="photoTags" placeholder="Example: sunset, road trip, luxury" />
-              </div>
-
-              <div class="field">
-                <label for="instagramLink">Instagram</label>
-                <input type="url" id="instagramLink" placeholder="https://instagram.com/creatorname" />
-              </div>
-
-              <div class="field">
-                <label for="xLink">X</label>
-                <input type="url" id="xLink" placeholder="https://x.com/creatorname" />
-              </div>
-
-              <div class="field full">
-                <label for="facebookLink">Facebook</label>
-                <input type="url" id="facebookLink" placeholder="https://facebook.com/creatorname" />
-              </div>
-
-              <div class="field full">
-                <label for="creatorProfilePhoto">Creator Profile Photo</label>
-                <div class="file-box">
-                  <input type="file" id="creatorProfilePhoto" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" />
-                  <div class="file-help">Optional creator profile image for the detail view.</div>
-                </div>
-              </div>
-
-              <div class="field full">
-                <label for="mainPhoto">Main Photo Upload</label>
-                <div class="file-box">
-                  <input type="file" id="mainPhoto" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" />
-                  <div class="file-help">Choose the main image you want to upload to PixNest.</div>
-                </div>
-              </div>
-
-              <div class="field full">
-                <button type="submit" class="submit-btn" id="submitBtn">Submit Upload</button>
-                <div id="statusMessage" class="status-message"></div>
-              </div>
-            </div>
-          </form>
-        </div>
-
-        <div class="panel preview-card">
-          <div class="preview-image-wrap">
-            <img
-              id="previewMainImage"
-              class="preview-main-image"
-              src="https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&w=1200&q=80"
-              alt="Preview"
-            />
-            <div class="preview-overlay">
-              <div class="preview-tags" id="previewTags">
-                <span class="pill">Category</span>
-                <span class="pill">Tag</span>
-              </div>
-              <h3 class="preview-title" id="previewTitle">Your photo title</h3>
-              <p class="preview-desc" id="previewDescription">Your description will appear here.</p>
-            </div>
+        <form id="uploadForm" class="form-grid">
+          <div class="field">
+            <label for="photoFile">Photo file</label>
+            <input type="file" id="photoFile" accept="image/*" required />
+            <small>Accepted: JPG, PNG, WEBP and similar image files.</small>
           </div>
 
-          <div class="preview-meta">
-            <div class="creator-box">
-              <div class="creator-avatar" id="previewAvatar">P</div>
-              <div>
-                <small>Creator Preview</small>
-                <strong id="previewCreatorName">Creator Name</strong>
-                <div class="social-row">
-                  <a href="#" id="previewInstagram" class="social-icon disabled" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-instagram"></i></a>
-                  <a href="#" id="previewX" class="social-icon disabled" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-x-twitter"></i></a>
-                  <a href="#" id="previewFacebook" class="social-icon disabled" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-facebook-f"></i></a>
-                </div>
-              </div>
+          <div class="field">
+            <label for="title">Public title</label>
+            <input type="text" id="title" placeholder="Optional public title" />
+            <small>This can be shown publicly. Raw file name stays hidden.</small>
+          </div>
+
+          <div class="field">
+            <label for="category">Category</label>
+            <input type="text" id="category" placeholder="e.g. Nature, Travel, Fashion" required />
+          </div>
+
+          <div class="field">
+            <label for="tags">Tags</label>
+            <input type="text" id="tags" placeholder="e.g. forest, green, calm" />
+          </div>
+
+          <div class="field">
+            <label for="description">Description</label>
+            <textarea id="description" placeholder="Write a short description for this photo"></textarea>
+          </div>
+
+          <div class="checkbox-row">
+            <input type="checkbox" id="featured" />
+            <label for="featured">Mark this photo as featured</label>
+          </div>
+
+          <div class="checkbox-row">
+            <input type="checkbox" id="isPremium" />
+            <label for="isPremium">Premium only (locked for non-premium members)</label>
+          </div>
+
+          <button type="submit" class="upload-btn" id="uploadBtn">Upload Photo</button>
+        </form>
+      </div>
+
+      <div class="panel-card">
+        <h2>Live Preview</h2>
+        <p>See how your upload information looks before publishing.</p>
+
+        <div class="preview-box">
+          <div class="preview-image-wrap" id="previewImageWrap">
+            <div class="preview-placeholder" id="previewPlaceholder">
+              <i class="fa-solid fa-image" style="font-size:42px; margin-bottom:12px; color:#facc15;"></i>
+              <div>Select an image to preview it here</div>
+            </div>
+            <img id="previewImage" class="hidden" alt="Upload preview">
+          </div>
+
+          <div class="preview-details">
+            <div class="preview-pill-row" id="previewPills">
+              <span class="pill">No category yet</span>
             </div>
 
-            <div class="info-box">
-              <strong>Selected Category</strong>
-              <span id="previewCategory">No category selected</span>
+            <div class="detail-item">
+              <strong>Creator</strong>
+              <span id="previewCreator">Loading account...</span>
             </div>
 
-            <div class="info-box">
-              <strong>Upload Note</strong>
-              <span>Creator profile photo, social links, and the main image will upload into Supabase.</span>
+            <div class="detail-item">
+              <strong>Public Title</strong>
+              <span id="previewTitle">No title added yet.</span>
+            </div>
+
+            <div class="detail-item">
+              <strong>Description</strong>
+              <span id="previewDescription">No description added yet.</span>
             </div>
           </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section>
-    <div class="container">
-      <div class="tips-grid">
-        <div class="tip-box">
-          <h3>Easy Submission</h3>
-          <p>Upload your best photo with a title, description, tags, and creator details in one simple form.</p>
-        </div>
-
-        <div class="tip-box">
-          <h3>Creator Spotlight</h3>
-          <p>Add your name, profile photo, and social links so viewers can connect with the creator behind the image.</p>
-        </div>
-
-        <div class="tip-box">
-          <h3>Curated Quality</h3>
-          <p>Every upload is designed to fit a clean, high-quality visual collection across multiple categories and styles.</p>
         </div>
       </div>
     </div>
@@ -912,410 +703,349 @@
       </div>
     </div>
   </footer>
-<script>
-  const STORAGE_KEY = "pixnest_admin_v2";
-  const SUPABASE_URL = "https://vigczssznfvujttdapbv.supabase.co";
-  const SUPABASE_KEY = "sb_publishable_UmF-mmVS42XeF6PqsNnCSw_wpA35wg2";
-  const PHOTOS_BUCKET = "photos";
-  const CREATOR_BUCKET = "creator-photos";
-  const DEFAULT_PREVIEW_IMAGE = "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&w=1200&q=80";
 
-  const { createClient } = supabase;
-  const supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY);
+  <script>
+    const SUPABASE_URL = "https://vigczssznfvujttdapbv.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_UmF-mmVS42XeF6PqsNnCSw_wpA35wg2";
+    const FREE_BUCKET = "photos";
+    const PREMIUM_BUCKET = "premium-photos";
 
-  const menuToggle = document.getElementById("menuToggle");
-  const navLinks = document.getElementById("navLinks");
+    const { createClient } = supabase;
+    const supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-  const uploadForm = document.getElementById("uploadForm");
-  const creatorName = document.getElementById("creatorName");
-  const category = document.getElementById("category");
-  const photoTitle = document.getElementById("photoTitle");
-  const photoDescription = document.getElementById("photoDescription");
-  const photoTags = document.getElementById("photoTags");
-  const instagramLink = document.getElementById("instagramLink");
-  const xLink = document.getElementById("xLink");
-  const facebookLink = document.getElementById("facebookLink");
-  const creatorProfilePhoto = document.getElementById("creatorProfilePhoto");
-  const mainPhoto = document.getElementById("mainPhoto");
-  const submitBtn = document.getElementById("submitBtn");
-  const statusMessage = document.getElementById("statusMessage");
+    const menuToggle = document.getElementById("menuToggle");
+    const navLinks = document.getElementById("navLinks");
 
-  const previewMainImage = document.getElementById("previewMainImage");
-  const previewAvatar = document.getElementById("previewAvatar");
-  const previewCreatorName = document.getElementById("previewCreatorName");
-  const previewTitle = document.getElementById("previewTitle");
-  const previewDescription = document.getElementById("previewDescription");
-  const previewTags = document.getElementById("previewTags");
-  const previewInstagram = document.getElementById("previewInstagram");
-  const previewX = document.getElementById("previewX");
-  const previewFacebook = document.getElementById("previewFacebook");
-  const previewCategory = document.getElementById("previewCategory");
+    const uploadForm = document.getElementById("uploadForm");
+    const uploadBtn = document.getElementById("uploadBtn");
+    const formMessage = document.getElementById("formMessage");
 
-  let creatorProfileImageData = "";
+    const photoFileInput = document.getElementById("photoFile");
+    const titleInput = document.getElementById("title");
+    const categoryInput = document.getElementById("category");
+    const tagsInput = document.getElementById("tags");
+    const descriptionInput = document.getElementById("description");
+    const featuredInput = document.getElementById("featured");
+    const premiumInput = document.getElementById("isPremium");
 
-  if(menuToggle && navLinks){
-    menuToggle.addEventListener("click", () => {
-      const isOpen = navLinks.classList.toggle("show");
-      menuToggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
+    const previewImage = document.getElementById("previewImage");
+    const previewPlaceholder = document.getElementById("previewPlaceholder");
+    const previewPills = document.getElementById("previewPills");
+    const previewCreator = document.getElementById("previewCreator");
+    const previewTitle = document.getElementById("previewTitle");
+    const previewDescription = document.getElementById("previewDescription");
+
+    let currentUser = null;
+    let previewUrl = "";
+
+    function getMembershipPlan(user){
+      return String(
+        user?.app_metadata?.membership_plan ||
+        user?.app_metadata?.plan ||
+        user?.user_metadata?.membership_plan ||
+        user?.user_metadata?.plan ||
+        ""
+      ).trim().toLowerCase();
+    }
+
+    function isPremiumMember(user){
+      const plan = getMembershipPlan(user);
+      return ["premium", "premium-monthly", "premium-yearly"].includes(plan);
+    }
+
+    if(menuToggle && navLinks){
+      menuToggle.addEventListener("click", () => {
+        navLinks.classList.toggle("show");
+        const expanded = menuToggle.getAttribute("aria-expanded") === "true";
+        menuToggle.setAttribute("aria-expanded", String(!expanded));
+      });
+    }
+
+    document.querySelectorAll(".nav-links a").forEach(link => {
+      link.addEventListener("click", () => {
+        if(window.innerWidth <= 768){
+          navLinks.classList.remove("show");
+          menuToggle.setAttribute("aria-expanded", "false");
+        }
+      });
     });
-  }
 
-  function escapeHtml(value = ""){
-    return String(value)
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#39;");
-  }
+    document.addEventListener("click", (e) => {
+      if(window.innerWidth <= 768 && navLinks.classList.contains("show")){
+        if(!navLinks.contains(e.target) && !menuToggle.contains(e.target)){
+          navLinks.classList.remove("show");
+          menuToggle.setAttribute("aria-expanded", "false");
+        }
+      }
+    });
 
-  function setStatus(message, type){
-    statusMessage.textContent = message || "";
-    statusMessage.className = "status-message" + (type ? " " + type : "");
-  }
+    window.addEventListener("resize", () => {
+      if(window.innerWidth > 768){
+        navLinks.classList.remove("show");
+        menuToggle.setAttribute("aria-expanded", "false");
+      }
+    });
 
-  function safeTitleFromFile(fileName){
-    return String(fileName || "")
-      .replace(/\.[^/.]+$/, "")
-      .replace(/[-_]+/g, " ")
-      .trim();
-  }
+    function showMessage(text, type = "error"){
+      formMessage.className = `message show ${type}`;
+      formMessage.textContent = text;
+    }
 
-  function slugTitle(name){
-    return String(name || "")
-      .toLowerCase()
-      .replace(/\.[^/.]+$/, "")
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/(^-|-$)/g, "") || "file";
-  }
+    function clearMessage(){
+      formMessage.className = "message";
+      formMessage.textContent = "";
+    }
 
-  function getFileExt(name = ""){
-    const parts = String(name).split(".");
-    return parts.length > 1 ? parts.pop().toLowerCase() : "jpg";
-  }
+    function setLoading(isLoading){
+      uploadBtn.disabled = isLoading;
+      uploadBtn.textContent = isLoading ? "Uploading..." : "Upload Photo";
+    }
 
-  function makeStorageName(prefix, originalName, extra = ""){
-    const ext = getFileExt(originalName);
-    return `${prefix}/${Date.now()}-${slugTitle(extra || originalName)}-${Math.random().toString(36).slice(2,8)}.${ext}`;
-  }
+    function getDisplayName(user){
+      return String(
+        user?.user_metadata?.full_name ||
+        user?.user_metadata?.name ||
+        user?.email?.split("@")[0] ||
+        "Creator"
+      ).trim();
+    }
 
-  function fileToDataUrl(file){
-    return new Promise((resolve, reject) => {
+    function sanitizeFileName(value = ""){
+      return String(value)
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "")
+        .slice(0, 60);
+    }
+
+    function getFileExtension(fileName = ""){
+      const parts = String(fileName).split(".");
+      return parts.length > 1 ? parts.pop().toLowerCase() : "jpg";
+    }
+
+    function updatePreview(){
+      const title = titleInput.value.trim();
+      const category = categoryInput.value.trim();
+      const tags = tagsInput.value.trim();
+      const description = descriptionInput.value.trim();
+      const featured = featuredInput.checked;
+      const isPremium = premiumInput.checked;
+
+      previewCreator.textContent = currentUser ? getDisplayName(currentUser) : "Not logged in";
+      previewTitle.textContent = title || "No title added yet.";
+      previewDescription.textContent = description || "No description added yet.";
+
+      const pills = [];
+      pills.push(`<span class="pill">${category || "No category yet"}</span>`);
+
+      tags.split(/[,|]/).map(tag => tag.trim()).filter(Boolean).slice(0,4).forEach(tag => {
+        pills.push(`<span class="pill">${tag}</span>`);
+      });
+
+      if(featured){
+        pills.push(`<span class="pill">Featured</span>`);
+      }
+
+      if(isPremium){
+        pills.push(`<span class="pill">Premium</span>`);
+      }
+
+      previewPills.innerHTML = pills.join("");
+    }
+
+    function updateImagePreview(file){
+      if(previewUrl){
+        URL.revokeObjectURL(previewUrl);
+        previewUrl = "";
+      }
+
       if(!file){
-        resolve("");
+        previewImage.classList.add("hidden");
+        previewPlaceholder.classList.remove("hidden");
+        previewImage.removeAttribute("src");
         return;
       }
 
-      const reader = new FileReader();
-      reader.onload = () => resolve(reader.result);
-      reader.onerror = reject;
-      reader.readAsDataURL(file);
-    });
-  }
+      previewUrl = URL.createObjectURL(file);
+      previewImage.src = previewUrl;
+      previewImage.classList.remove("hidden");
+      previewPlaceholder.classList.add("hidden");
+    }
 
-  function loadAdminCategories(){
-    try{
-      const saved = localStorage.getItem(STORAGE_KEY);
+    async function requireUser(){
+      const { data, error } = await supabaseClient.auth.getUser();
 
-      if(!saved){
-        return [];
+      if(error || !data?.user){
+        window.location.href = "login.html";
+        return null;
       }
 
-      const parsed = JSON.parse(saved);
-
-      if(!parsed || !Array.isArray(parsed.categories)){
-        return [];
-      }
-
-      return parsed.categories
-        .filter(cat => cat && typeof cat === "object" && cat.name)
-        .map(cat => ({
-          id: cat.id || "",
-          name: String(cat.name || "").trim(),
-          description: String(cat.description || "").trim()
-        }))
-        .filter(cat => cat.name);
-    }catch(error){
-      console.error("Could not load admin categories:", error);
-      return [];
-    }
-  }
-
-  function populateCategories(){
-    const categories = loadAdminCategories();
-    const currentValue = category.value;
-
-    category.innerHTML = "";
-
-    const placeholder = document.createElement("option");
-    placeholder.value = "";
-    placeholder.textContent = categories.length ? "Select a category" : "No categories available";
-    category.appendChild(placeholder);
-
-    categories.forEach(cat => {
-      const option = document.createElement("option");
-      option.value = cat.name;
-      option.textContent = cat.name;
-      if(cat.name === currentValue){
-        option.selected = true;
-      }
-      category.appendChild(option);
-    });
-
-    if(categories.length && !currentValue){
-      category.selectedIndex = 0;
+      return data.user;
     }
 
-    updatePreviewCategory();
-  }
+    async function uploadToStorage(file, user, isPremium){
+      const bucket = isPremium ? PREMIUM_BUCKET : FREE_BUCKET;
 
-  async function uploadToBucket(bucket, file, path){
-    const { data: signedData, error: signedError } = await supabaseClient
-      .storage
-      .from(bucket)
-      .createSignedUploadUrl(path);
+      const cleanBase =
+        sanitizeFileName(titleInput.value.trim()) ||
+        sanitizeFileName(categoryInput.value.trim()) ||
+        sanitizeFileName(file.name.replace(/\.[^/.]+$/, "")) ||
+        "pixnest-photo";
 
-    if(signedError){
-      throw signedError;
-    }
+      const extension = getFileExtension(file.name);
+      const filePath = `${user.id}/${Date.now()}-${cleanBase}.${extension}`;
 
-    const { error: uploadError } = await supabaseClient
-      .storage
-      .from(bucket)
-      .uploadToSignedUrl(path, signedData.token, file, {
-        contentType: file.type || "application/octet-stream"
-      });
-
-    if(uploadError){
-      throw uploadError;
-    }
-
-    const { data } = supabaseClient.storage.from(bucket).getPublicUrl(path);
-    return data.publicUrl;
-  }
-
-  function updatePreviewTags(){
-    const pills = [];
-    const categoryValue = category.value.trim();
-    const rawTags = photoTags.value.trim();
-
-    if(categoryValue){
-      pills.push(categoryValue);
-    }
-
-    if(rawTags){
-      rawTags
-        .split(",")
-        .map(tag => tag.trim())
-        .filter(Boolean)
-        .slice(0, 6)
-        .forEach(tag => pills.push(tag));
-    }
-
-    if(!pills.length){
-      previewTags.innerHTML = '<span class="pill">No tags yet</span>';
-      return;
-    }
-
-    previewTags.innerHTML = pills
-      .map(item => `<span class="pill">${escapeHtml(item)}</span>`)
-      .join("");
-  }
-
-  function updatePreviewText(){
-    const creatorValue = creatorName.value.trim();
-    const titleValue = photoTitle.value.trim();
-    const descriptionValue = photoDescription.value.trim();
-
-    previewCreatorName.textContent = creatorValue || "Creator Name";
-    previewTitle.textContent = titleValue || "Your photo title";
-    previewDescription.textContent = descriptionValue || "Your description will appear here after you start typing.";
-
-    if(!creatorProfileImageData){
-      previewAvatar.textContent = (creatorValue || "P").charAt(0).toUpperCase();
-    }
-  }
-
-  function updatePreviewCategory(){
-    previewCategory.textContent = category.value.trim() || "No category selected";
-    updatePreviewTags();
-  }
-
-  function setSocialLinkState(element, value){
-    if(value){
-      element.href = value;
-      element.classList.remove("disabled");
-    }else{
-      element.href = "#";
-      element.classList.add("disabled");
-    }
-  }
-
-  function resetPreview(){
-    previewMainImage.src = DEFAULT_PREVIEW_IMAGE;
-    previewAvatar.textContent = "P";
-    previewCreatorName.textContent = "Creator Name";
-    previewTitle.textContent = "Your photo title";
-    previewDescription.textContent = "Your description will appear here after you start typing.";
-    previewTags.innerHTML = '<span class="pill">No tags yet</span>';
-    previewCategory.textContent = "No category selected";
-    setSocialLinkState(previewInstagram, "");
-    setSocialLinkState(previewX, "");
-    setSocialLinkState(previewFacebook, "");
-  }
-
-  creatorName.addEventListener("input", updatePreviewText);
-  photoTitle.addEventListener("input", updatePreviewText);
-  photoDescription.addEventListener("input", updatePreviewText);
-  photoTags.addEventListener("input", updatePreviewTags);
-  category.addEventListener("change", updatePreviewCategory);
-
-  instagramLink.addEventListener("input", () => {
-    setSocialLinkState(previewInstagram, instagramLink.value.trim());
-  });
-
-  xLink.addEventListener("input", () => {
-    setSocialLinkState(previewX, xLink.value.trim());
-  });
-
-  facebookLink.addEventListener("input", () => {
-    setSocialLinkState(previewFacebook, facebookLink.value.trim());
-  });
-
-  creatorProfilePhoto.addEventListener("change", async () => {
-    const file = creatorProfilePhoto.files[0];
-    creatorProfileImageData = file ? await fileToDataUrl(file) : "";
-
-    if(creatorProfileImageData){
-      previewAvatar.innerHTML = `<img src="${creatorProfileImageData}" alt="Creator preview">`;
-    }else{
-      previewAvatar.textContent = (creatorName.value.trim() || "P").charAt(0).toUpperCase();
-    }
-  });
-
-  mainPhoto.addEventListener("change", async () => {
-    const file = mainPhoto.files[0];
-
-    if(!file){
-      previewMainImage.src = DEFAULT_PREVIEW_IMAGE;
-      return;
-    }
-
-    const dataUrl = await fileToDataUrl(file);
-
-    if(dataUrl){
-      previewMainImage.src = dataUrl;
-    }
-
-    if(!photoTitle.value.trim()){
-      previewTitle.textContent = safeTitleFromFile(file.name) || "Your photo title";
-    }
-  });
-
-  uploadForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
-
-    const creatorValue = creatorName.value.trim();
-    const categoryValue = category.value.trim();
-    const titleValue = photoTitle.value.trim();
-    const descriptionValue = photoDescription.value.trim();
-    const tagsValue = photoTags.value.trim();
-    const instagramValue = instagramLink.value.trim();
-    const xValue = xLink.value.trim();
-    const facebookValue = facebookLink.value.trim();
-    const mainPhotoFile = mainPhoto.files[0];
-    const creatorPhotoFile = creatorProfilePhoto.files[0];
-
-    if(!loadAdminCategories().length){
-      setStatus("No categories found. Add categories first from the admin page.", "error");
-      return;
-    }
-
-    if(!creatorValue){
-      setStatus("Please enter the creator name.", "error");
-      return;
-    }
-
-    if(!categoryValue){
-      setStatus("Please choose a category.", "error");
-      return;
-    }
-
-    if(!mainPhotoFile){
-      setStatus("Please upload the main photo.", "error");
-      return;
-    }
-
-    const allowedTypes = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
-
-    if(mainPhotoFile.type && !allowedTypes.includes(mainPhotoFile.type)){
-      setStatus("Use JPG, PNG, or WEBP first.", "error");
-      return;
-    }
-
-    submitBtn.disabled = true;
-    setStatus("Uploading to PixNest...", "success");
-
-    try{
-      const finalTitle = titleValue || safeTitleFromFile(mainPhotoFile.name) || "Untitled Photo";
-
-      const mainPhotoPath = makeStorageName("photos", mainPhotoFile.name, finalTitle);
-      const imageUrl = await uploadToBucket(PHOTOS_BUCKET, mainPhotoFile, mainPhotoPath);
-
-      let creatorPhotoUrl = "";
-
-      if(creatorPhotoFile){
-        if(creatorPhotoFile.type && !allowedTypes.includes(creatorPhotoFile.type)){
-          throw new Error("Creator profile image must be JPG, PNG, or WEBP.");
-        }
-
-        const creatorPhotoPath = makeStorageName("creator", creatorPhotoFile.name, creatorValue);
-        creatorPhotoUrl = await uploadToBucket(CREATOR_BUCKET, creatorPhotoFile, creatorPhotoPath);
-      }
-
-      const { error } = await supabaseClient
-        .from("photos")
-        .insert([
-          {
-            title: finalTitle,
-            description: descriptionValue,
-            category: categoryValue,
-            tags: tagsValue,
-            credit: creatorValue,
-            creator_photo: creatorPhotoUrl,
-            instagram: instagramValue,
-            x: xValue,
-            facebook: facebookValue,
-            image_url: imageUrl,
-            featured: false
-          }
-        ]);
+      const { error } = await supabaseClient.storage
+        .from(bucket)
+        .upload(filePath, file, {
+          cacheControl: "3600",
+          upsert: false
+        });
 
       if(error){
         throw error;
       }
 
-      setStatus("Upload submitted successfully.", "success");
-      uploadForm.reset();
-      creatorProfileImageData = "";
-      populateCategories();
-      resetPreview();
-    }catch(error){
-      console.error("UPLOAD ERROR:", error);
-      const message = `${error?.name ? error.name + ": " : ""}${error?.message || "Upload failed"}`;
-      setStatus(message, "error");
-    }finally{
-      submitBtn.disabled = false;
+      let publicUrl = "";
+
+      if(!isPremium){
+        const { data } = supabaseClient.storage
+          .from(bucket)
+          .getPublicUrl(filePath);
+
+        publicUrl = data?.publicUrl || "";
+      }
+
+      return {
+        bucket,
+        filePath,
+        publicUrl
+      };
     }
-  });
 
-  populateCategories();
-  updatePreviewText();
-  updatePreviewCategory();
-  setSocialLinkState(previewInstagram, "");
-  setSocialLinkState(previewX, "");
-  setSocialLinkState(previewFacebook, "");
-</script>
+    async function savePhotoRecord(file, storageResult, user, isPremium){
+      const fullName = getDisplayName(user);
+      const email = String(user.email || "").trim();
+      const description = descriptionInput.value.trim();
+      const category = categoryInput.value.trim();
+      const tags = tagsInput.value.trim();
+      const title = titleInput.value.trim();
 
+      const photoRecord = {
+        title: title || "",
+        public_title: title || "",
+        display_title: title || "",
+        description: description || "",
+        category: category || "",
+        tags: tags || "",
+        image_url: isPremium ? "" : storageResult.publicUrl,
+        file_name: storageResult.filePath,
+        storage_bucket: storageResult.bucket,
+        storage_path: storageResult.filePath,
+        featured: featuredInput.checked,
+        is_premium: isPremium,
+
+        user_id: user.id,
+        owner_id: user.id,
+        auth_user_id: user.id,
+        profile_id: user.id,
+        uploader_id: user.id,
+
+        email: email,
+        owner_email: email,
+        user_email: email,
+        uploader_email: email,
+
+        credit: fullName,
+        creator_name: fullName,
+        uploader_name: fullName,
+        author: fullName,
+
+        creator_photo: String(user.user_metadata?.avatar_url || ""),
+        likes: 0,
+        views: 0,
+        favourites: 0
+      };
+
+      const { data, error } = await supabaseClient
+        .from("photos")
+        .insert([photoRecord])
+        .select()
+        .single();
+
+      if(error){
+        throw error;
+      }
+
+      return data;
+    }
+
+    uploadForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      clearMessage();
+
+      if(!currentUser){
+        showMessage("You must be logged in to upload.");
+        return;
+      }
+
+      const file = photoFileInput.files?.[0];
+      const category = categoryInput.value.trim();
+      const isPremium = premiumInput.checked;
+
+      if(!file){
+        showMessage("Please choose a photo file.");
+        return;
+      }
+
+      if(!category){
+        showMessage("Please enter a category.");
+        return;
+      }
+
+      if(isPremium && !isPremiumMember(currentUser)){
+        showMessage("Only premium members can publish premium-only photos.");
+        return;
+      }
+
+      try{
+        setLoading(true);
+
+        const storageResult = await uploadToStorage(file, currentUser, isPremium);
+        await savePhotoRecord(file, storageResult, currentUser, isPremium);
+
+        showMessage("Photo uploaded successfully and linked to your account.", "success");
+        uploadForm.reset();
+        updateImagePreview(null);
+        updatePreview();
+
+        setTimeout(() => {
+          window.location.href = "account.html";
+        }, 1400);
+      }catch(error){
+        console.error(error);
+        showMessage(error.message || "Could not upload photo.");
+      }finally{
+        setLoading(false);
+      }
+    });
+
+    photoFileInput.addEventListener("change", () => {
+      const file = photoFileInput.files?.[0] || null;
+      updateImagePreview(file);
+    });
+
+    [titleInput, categoryInput, tagsInput, descriptionInput, featuredInput, premiumInput].forEach(input => {
+      input.addEventListener("input", updatePreview);
+      input.addEventListener("change", updatePreview);
+    });
+
+    (async function init(){
+      currentUser = await requireUser();
+      if(!currentUser) return;
+      previewCreator.textContent = getDisplayName(currentUser);
+      updatePreview();
+    })();
+  </script>
 </body>
 </html>
