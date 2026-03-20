@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -253,6 +253,65 @@
       background:rgba(255,255,255,.06);
     }
 
+    .search-bar{
+      display:grid;
+      grid-template-columns:1fr 120px;
+      gap:12px;
+      margin-top:24px;
+      max-width:760px;
+      background:#111827;
+      border:1px solid rgba(255,255,255,0.08);
+      border-radius:18px;
+      padding:10px;
+    }
+
+    .search-input-wrap{
+      position:relative;
+    }
+
+    .search-input-wrap i{
+      position:absolute;
+      left:16px;
+      top:50%;
+      transform:translateY(-50%);
+      color:#94a3b8;
+      font-size:15px;
+      pointer-events:none;
+    }
+
+    .search-input-wrap input{
+      width:100%;
+      min-height:52px;
+      background:#0f172a;
+      border:1px solid rgba(255,255,255,0.08);
+      border-radius:12px;
+      padding:14px 16px 14px 46px;
+      color:#ffffff;
+      outline:none;
+      font-size:15px;
+    }
+
+    .search-input-wrap input:focus{
+      border-color:rgba(250,204,21,0.55);
+      box-shadow:0 0 0 3px rgba(250,204,21,0.08);
+    }
+
+    .search-btn{
+      min-height:52px;
+      border:none;
+      border-radius:12px;
+      background:#facc15;
+      color:#111827;
+      font-size:15px;
+      font-weight:700;
+      cursor:pointer;
+    }
+
+    .search-btn:hover{
+      transform:translateY(-2px);
+      box-shadow:0 10px 24px rgba(250,204,21,0.2);
+    }
+
     section{
       padding:74px 0;
     }
@@ -311,13 +370,13 @@
 
     .category-card{
       display:block;
-      position:relative;
-      min-height:280px;
+      background:#111827;
+      border:1px solid var(--line);
       border-radius:22px;
       overflow:hidden;
-      border:1px solid var(--line);
-      background:#111827;
       transition:.3s;
+      min-height:100%;
+      box-shadow:0 14px 30px rgba(0,0,0,.14);
     }
 
     .category-card:hover{
@@ -325,51 +384,64 @@
       box-shadow:0 18px 36px rgba(0,0,0,.2);
     }
 
-    .category-card img{
-      position:absolute;
-      inset:0;
+    .category-image-wrap{
+      position:relative;
+      height:240px;
+      overflow:hidden;
+      background:#1e293b;
+    }
+
+    .category-image-wrap img{
       width:100%;
       height:100%;
       object-fit:cover;
     }
 
-    .category-card::after{
+    .category-image-wrap::after{
       content:"";
       position:absolute;
       inset:0;
-      background:linear-gradient(
-        to top,
-        rgba(15,23,42,.96) 0%,
-        rgba(15,23,42,.55) 45%,
-        rgba(15,23,42,.15) 100%
-      );
+      background:linear-gradient(to top, rgba(15,23,42,0.55), rgba(15,23,42,0.08));
     }
 
-    .category-overlay{
-      position:absolute;
-      left:0;
-      right:0;
-      bottom:0;
-      z-index:2;
+    .category-content{
       padding:20px;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
     }
 
-    .category-overlay h3{
+    .category-content h3{
       color:#fff;
       font-size:24px;
-      margin-bottom:6px;
+      line-height:1.2;
     }
 
-    .category-overlay p{
+    .category-content p{
       color:#cbd5e1;
       font-size:14px;
-      margin-bottom:10px;
+      line-height:1.6;
     }
 
     .category-meta{
       display:flex;
       gap:10px;
       flex-wrap:wrap;
+      margin-top:2px;
+    }
+
+    .category-link{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      color:var(--accent);
+      font-size:14px;
+      font-weight:700;
+      margin-top:6px;
+    }
+
+    .category-link:hover{
+      gap:12px;
     }
 
     .pill{
@@ -466,6 +538,7 @@
     .credit{
       color:#e2e8f0;
       font-size:14px;
+      font-weight:700;
       text-shadow:0 2px 10px rgba(0,0,0,.35);
     }
 
@@ -819,7 +892,8 @@
 
       .stats,
       .category-grid,
-      .photo-grid{
+      .photo-grid,
+      .search-bar{
         grid-template-columns:1fr;
       }
 
@@ -917,6 +991,7 @@
         <a href="index.html" class="active">Home</a>
         <a href="explore.html">Explore</a>
         <a href="category.html">Categories</a>
+        <a href="about.html">About</a>
         <a href="upload.html">Upload</a>
         <a href="contact.html">Contact</a>
       </nav>
@@ -926,12 +1001,20 @@
   <section class="hero">
     <div class="container">
       <div class="hero-content">
-        <div class="hero-tag">Discover fresh visual collections</div>
-        <h1>Discover beautiful photos for creative projects, brands, and inspiration.</h1>
-        <p>Browse categories, explore standout visuals, and find photos for websites, design work, social media, and creative ideas.</p>
+        <div class="hero-tag" id="heroTag">Discover fresh visual collections</div>
+        <h1 id="heroTitle">Discover beautiful photos for creative projects, brands, and inspiration.</h1>
+        <p id="heroText">Browse categories, explore standout visuals, and find photos for websites, design work, social media, and creative ideas.</p>
         <div class="hero-actions">
           <a href="explore.html" class="btn btn-primary">Explore Photos</a>
           <a href="#featured" class="btn btn-secondary">View Featured</a>
+        </div>
+
+        <div class="search-bar">
+          <div class="search-input-wrap">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" id="homeSearchInput" placeholder="Search photos, categories, or creators">
+          </div>
+          <button type="button" class="search-btn" id="homeSearchBtn">Search</button>
         </div>
       </div>
     </div>
@@ -959,8 +1042,8 @@
     <div class="container">
       <div class="section-head">
         <div>
-          <h2>All Categories</h2>
-          <p>Explore visual collections across different styles, themes, and creative topics.</p>
+          <h2 id="categoriesSectionTitle">All Categories</h2>
+          <p id="categoriesSectionText">Explore visual collections across different styles, themes, and creative topics.</p>
         </div>
       </div>
 
@@ -974,8 +1057,8 @@
     <div class="container">
       <div class="section-head">
         <div>
-          <h2>Featured Photos</h2>
-          <p>Latest standout visuals selected for the PixNest collection.</p>
+          <h2 id="featuredSectionTitle">Featured Photos</h2>
+          <p id="featuredSectionText">Latest standout visuals selected for the PixNest collection.</p>
         </div>
       </div>
 
@@ -989,8 +1072,8 @@
     <div class="container">
       <div class="section-head">
         <div>
-          <h2>Trending This Week</h2>
-          <p>Fresh visual picks to explore across multiple styles and categories.</p>
+          <h2 id="trendingSectionTitle">Trending This Week</h2>
+          <p id="trendingSectionText">Fresh visual picks to explore across multiple styles and categories.</p>
         </div>
       </div>
 
@@ -1002,8 +1085,8 @@
 
   <section class="cta">
     <div class="container">
-      <h2>Start exploring the PixNest collection today.</h2>
-      <p>Browse curated categories, discover standout images, and enjoy a growing library of free and premium visuals.</p>
+      <h2 id="ctaTitle">Start exploring the PixNest collection today.</h2>
+      <p id="ctaText">Browse curated categories, discover standout images, and enjoy a growing library of free and premium visuals.</p>
       <div class="cta-actions">
         <a href="explore.html" class="btn btn-primary">Explore Gallery</a>
         <a href="upload.html" class="btn btn-secondary">Upload Your Work</a>
@@ -1059,7 +1142,7 @@
 
   <footer>
     <div class="container footer-inner">
-      <p>©️ 2026 PixNest. Discover and share powerful visual collections.</p>
+      <p id="footerText">©️ 2026 PixNest. Discover and share powerful visual collections.</p>
 
       <div class="footer-links">
         <a href="about.html">About</a>
@@ -1072,8 +1155,10 @@
   </footer>
 
   <script>
-    const SUPABASE_URL = "https://vigczssznfvuijtdapbv.supabase.co";
+    const STORAGE_KEY = "pixnest_admin_v2";
+    const SUPABASE_URL = "https://vigczssznfvujttdapbv.supabase.co";
     const SUPABASE_KEY = "sb_publishable_UmF-mmVS42XeF6PqsNnCSw_wpA35wg2";
+    const FALLBACK_CATEGORY_IMAGE = "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&w=1200&q=80";
 
     const { createClient } = supabase;
     const supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -1081,11 +1166,119 @@
     const menuToggle = document.getElementById("menuToggle");
     const navLinks = document.getElementById("navLinks");
 
-    menuToggle.addEventListener("click", () => {
-      navLinks.classList.toggle("show");
-      const expanded = menuToggle.getAttribute("aria-expanded") === "true";
-      menuToggle.setAttribute("aria-expanded", String(!expanded));
-    });
+    const homeSearchInput = document.getElementById("homeSearchInput");
+    const homeSearchBtn = document.getElementById("homeSearchBtn");
+
+    const statsWrap = document.getElementById("statsWrap");
+    const categoryGrid = document.getElementById("categoryGrid");
+    const featuredGrid = document.getElementById("featuredGrid");
+    const trendingGrid = document.getElementById("trendingGrid");
+
+    const heroTag = document.getElementById("heroTag");
+    const heroTitle = document.getElementById("heroTitle");
+    const heroText = document.getElementById("heroText");
+    const categoriesSectionTitle = document.getElementById("categoriesSectionTitle");
+    const categoriesSectionText = document.getElementById("categoriesSectionText");
+    const featuredSectionTitle = document.getElementById("featuredSectionTitle");
+    const featuredSectionText = document.getElementById("featuredSectionText");
+    const trendingSectionTitle = document.getElementById("trendingSectionTitle");
+    const trendingSectionText = document.getElementById("trendingSectionText");
+    const ctaTitle = document.getElementById("ctaTitle");
+    const ctaText = document.getElementById("ctaText");
+    const footerText = document.getElementById("footerText");
+
+    const lightbox = document.getElementById("lightbox");
+    const lightboxClose = document.getElementById("lightboxClose");
+    const lightboxImage = document.getElementById("lightboxImage");
+    const creatorAvatar = document.getElementById("creatorAvatar");
+    const lightboxActions = document.getElementById("lightboxActions");
+
+    let allPhotos = [];
+    let siteData = loadAdminData();
+
+    function escapeHtml(value = ""){
+      return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+
+    function loadAdminData(){
+      try{
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if(!saved){
+          return {
+            categories: [],
+            homepage: {},
+            footerText: ""
+          };
+        }
+
+        const parsed = JSON.parse(saved);
+
+        return {
+          categories: Array.isArray(parsed.categories) ? parsed.categories : [],
+          homepage: parsed.homepage && typeof parsed.homepage === "object" ? parsed.homepage : {},
+          footerText: parsed.footerText || ""
+        };
+      }catch(error){
+        console.error("Failed to load admin data:", error);
+        return {
+          categories: [],
+          homepage: {},
+          footerText: ""
+        };
+      }
+    }
+
+    function applyAdminText(){
+      const homepage = siteData.homepage || {};
+
+      if(homepage.heroTag) heroTag.textContent = homepage.heroTag;
+      if(homepage.heroTitle) heroTitle.textContent = homepage.heroTitle;
+      if(homepage.heroText) heroText.textContent = homepage.heroText;
+      if(homepage.categoriesTitle) categoriesSectionTitle.textContent = homepage.categoriesTitle;
+      if(homepage.categoriesText) categoriesSectionText.textContent = homepage.categoriesText;
+      if(homepage.featuredTitle) featuredSectionTitle.textContent = homepage.featuredTitle;
+      if(homepage.featuredText) featuredSectionText.textContent = homepage.featuredText;
+      if(homepage.trendingTitle) trendingSectionTitle.textContent = homepage.trendingTitle;
+      if(homepage.trendingText) trendingSectionText.textContent = homepage.trendingText;
+      if(homepage.ctaTitle) ctaTitle.textContent = homepage.ctaTitle;
+      if(homepage.ctaText) ctaText.textContent = homepage.ctaText;
+      if(siteData.footerText) footerText.textContent = siteData.footerText;
+    }
+
+    function runHomeSearch(){
+      const value = homeSearchInput.value.trim();
+      if(value){
+        window.location.href = `explore.html?search=${encodeURIComponent(value)}`;
+      }else{
+        window.location.href = "explore.html";
+      }
+    }
+
+    if(homeSearchBtn){
+      homeSearchBtn.addEventListener("click", runHomeSearch);
+    }
+
+    if(homeSearchInput){
+      homeSearchInput.addEventListener("keydown", (e) => {
+        if(e.key === "Enter"){
+          e.preventDefault();
+          runHomeSearch();
+        }
+      });
+    }
+
+    if(menuToggle && navLinks){
+      menuToggle.addEventListener("click", () => {
+        navLinks.classList.toggle("show");
+        const expanded = menuToggle.getAttribute("aria-expanded") === "true";
+        menuToggle.setAttribute("aria-expanded", String(!expanded));
+      });
+    }
 
     document.querySelectorAll(".nav-links a").forEach(link => {
       link.addEventListener("click", () => {
@@ -1102,28 +1295,6 @@
         menuToggle.setAttribute("aria-expanded", "false");
       }
     });
-
-    const statsWrap = document.getElementById("statsWrap");
-    const categoryGrid = document.getElementById("categoryGrid");
-    const featuredGrid = document.getElementById("featuredGrid");
-    const trendingGrid = document.getElementById("trendingGrid");
-
-    const lightbox = document.getElementById("lightbox");
-    const lightboxClose = document.getElementById("lightboxClose");
-    const lightboxImage = document.getElementById("lightboxImage");
-    const creatorAvatar = document.getElementById("creatorAvatar");
-    const lightboxActions = document.getElementById("lightboxActions");
-
-    let allPhotos = [];
-
-    function escapeHtml(value = ""){
-      return String(value)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#39;");
-    }
 
     function getPhotoTags(photo){
       return (photo.tags || "")
@@ -1221,10 +1392,7 @@
 
       if(navigator.share){
         try{
-          await navigator.share({
-            title,
-            url
-          });
+          await navigator.share({ title, url });
         }catch(error){
         }
       }else{
@@ -1272,6 +1440,7 @@
     }
 
     lightboxClose.addEventListener("click", closeLightbox);
+
     lightbox.addEventListener("click", (e) => {
       if(e.target === lightbox){
         closeLightbox();
@@ -1319,10 +1488,10 @@
     function buildPhotoCard(photo){
       const tags = getPhotoTags(photo).slice(0, 4);
       const description = (photo.description || "").trim();
-      const credit = (photo.credit || "").trim();
+      const creatorName = (photo.credit || "Unknown Creator").trim();
 
       return `
-        <article class="visual-card" data-photo-id="${escapeHtml(photo.id || "")}">
+        <article class="visual-card" data-photo-id="${escapeHtml(String(photo.id || ""))}">
           <img src="${escapeHtml(photo.image_url || "")}" alt="${escapeHtml(photo.title || "Photo")}">
           <div class="photo-overlay">
             <div class="meta">
@@ -1331,11 +1500,20 @@
               ${tags.map(tag => `<span class="pill">${escapeHtml(tag)}</span>`).join("")}
             </div>
             ${description ? `<p class="overlay-desc">${escapeHtml(description)}</p>` : ""}
-            ${credit ? `<div class="credit">By ${escapeHtml(credit)}</div>` : ""}
+            <div class="credit">By ${escapeHtml(creatorName)}</div>
             ${createOverlayActions(photo)}
           </div>
         </article>
       `;
+    }
+
+    function goToPhotoCategory(photo){
+      const categoryName = String(photo.category || "").trim();
+      if(categoryName){
+        window.location.href = `category.html?category=${encodeURIComponent(categoryName)}`;
+      }else{
+        openLightbox(photo);
+      }
     }
 
     function activatePhotoCards(rows, container){
@@ -1348,7 +1526,7 @@
           if(e.target.closest("[data-stop-card]")){
             return;
           }
-          openLightbox(photo);
+          goToPhotoCategory(photo);
         });
       });
 
@@ -1386,6 +1564,16 @@
       `;
     }
 
+    function getSavedCategories(){
+      return (siteData.categories || [])
+        .map(cat => ({
+          id: cat.id || "",
+          name: String(cat.name || "").trim(),
+          description: String(cat.description || "").trim()
+        }))
+        .filter(cat => cat.name);
+    }
+
     function renderCategories(){
       const grouped = {};
 
@@ -1399,27 +1587,58 @@
         grouped[category].push(photo);
       });
 
-      const categories = Object.entries(grouped).sort((a,b) => a[0].localeCompare(b[0]));
+      const savedCategories = getSavedCategories();
+      const map = new Map();
+
+      savedCategories.forEach(cat => {
+        map.set(cat.name.toLowerCase(), {
+          name: cat.name,
+          description: cat.description,
+          photos: grouped[cat.name] || []
+        });
+      });
+
+      Object.keys(grouped).forEach(categoryName => {
+        const key = categoryName.toLowerCase();
+        if(!map.has(key)){
+          map.set(key, {
+            name: categoryName,
+            description: "",
+            photos: grouped[categoryName]
+          });
+        }
+      });
+
+      const categories = [...map.values()].sort((a, b) => a.name.localeCompare(b.name));
 
       if(!categories.length){
         categoryGrid.innerHTML = `<div class="empty-box">Categories will appear here when the collection is loaded.</div>`;
         return;
       }
 
-      categoryGrid.innerHTML = categories.map(([category, items]) => {
-        const cover = items[0];
+      categoryGrid.innerHTML = categories.map(category => {
+        const items = Array.isArray(category.photos) ? category.photos : [];
+        const featuredPhoto = items.find(item => item.featured);
+        const cover = featuredPhoto || items[0];
         const featuredCount = items.filter(item => item.featured).length;
+        const coverImage = cover && cover.image_url ? cover.image_url : FALLBACK_CATEGORY_IMAGE;
 
         return `
-          <a href="category.html?category=${encodeURIComponent(category)}" class="category-card">
-            <img src="${escapeHtml(cover.image_url || "")}" alt="${escapeHtml(category)}">
-            <div class="category-overlay">
-              <h3>${escapeHtml(category)}</h3>
-              <p>Browse photos in the ${escapeHtml(category)} collection.</p>
+          <a href="category.html?category=${encodeURIComponent(category.name)}" class="category-card">
+            <div class="category-image-wrap">
+              <img src="${escapeHtml(coverImage)}" alt="${escapeHtml(category.name)}">
+            </div>
+            <div class="category-content">
               <div class="category-meta">
                 <span class="pill">${items.length} photo${items.length === 1 ? "" : "s"}</span>
                 ${featuredCount ? `<span class="pill featured">${featuredCount} featured</span>` : ``}
               </div>
+              <h3>${escapeHtml(category.name)}</h3>
+              <p>${escapeHtml(category.description || `Browse photos in the ${category.name} collection.`)}</p>
+              <span class="category-link">
+                Open Collection
+                <i class="fa-solid fa-arrow-right"></i>
+              </span>
             </div>
           </a>
         `;
@@ -1455,13 +1674,6 @@
     }
 
     async function loadPhotos(){
-      if(SUPABASE_KEY === "PASTE_YOUR_SB_PUBLISHABLE_KEY_HERE"){
-        categoryGrid.innerHTML = `<div class="empty-box">Paste your real Supabase publishable key into the code first.</div>`;
-        featuredGrid.innerHTML = `<div class="empty-box">Paste your real Supabase publishable key into the code first.</div>`;
-        trendingGrid.innerHTML = `<div class="empty-box">Paste your real Supabase publishable key into the code first.</div>`;
-        return;
-      }
-
       try{
         const { data, error } = await supabaseClient
           .from("photos")
@@ -1474,6 +1686,7 @@
 
         allPhotos = Array.isArray(data) ? data : [];
 
+        applyAdminText();
         renderStats();
         renderCategories();
         renderFeatured();
@@ -1486,8 +1699,10 @@
       }
     }
 
+    applyAdminText();
     loadPhotos();
   </script>
 </body>
 </html>
 
+ 

@@ -3,9 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PixNest | Category</title>
+  <title>PixNest | Categories</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
   <style>
     *{
       margin:0;
@@ -47,7 +48,8 @@
     }
 
     button,
-    input{
+    input,
+    select{
       font-family:Arial, Helvetica, sans-serif;
       transition:0.3s;
     }
@@ -55,6 +57,10 @@
     .container{
       width:min(1200px, 92%);
       margin:auto;
+    }
+
+    .hidden{
+      display:none !important;
     }
 
     header{
@@ -213,6 +219,44 @@
       max-width:720px;
     }
 
+    .hero-meta{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:18px;
+    }
+
+    .hero-actions{
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-top:22px;
+    }
+
+    .mini-btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      padding:12px 18px;
+      border-radius:12px;
+      font-weight:700;
+      font-size:14px;
+      border:none;
+      cursor:pointer;
+      text-align:center;
+    }
+
+    .mini-btn.primary{
+      background:var(--accent);
+      color:#111827;
+    }
+
+    .mini-btn.secondary{
+      background:transparent;
+      color:#fff;
+      border:1px solid rgba(255,255,255,0.18);
+    }
+
     section{
       padding:74px 0;
     }
@@ -237,31 +281,172 @@
       max-width:720px;
     }
 
-    .category-switcher{
-      display:flex;
+    .search-bar{
+      display:grid;
+      grid-template-columns:1.2fr 0.8fr 120px;
       gap:12px;
-      flex-wrap:wrap;
-      margin-bottom:28px;
+      margin-bottom:30px;
+      background:#111827;
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:10px;
     }
 
-    .category-pill{
+    .search-input-wrap{
+      position:relative;
+    }
+
+    .search-input-wrap i{
+      position:absolute;
+      left:16px;
+      top:50%;
+      transform:translateY(-50%);
+      color:#94a3b8;
+      font-size:15px;
+      pointer-events:none;
+    }
+
+    .search-input-wrap input,
+    .search-select{
+      width:100%;
+      min-height:52px;
+      background:#0f172a;
+      border:1px solid rgba(255,255,255,0.08);
+      border-radius:12px;
+      color:#ffffff;
+      outline:none;
+      font-size:15px;
+    }
+
+    .search-input-wrap input{
+      padding:14px 16px 14px 46px;
+    }
+
+    .search-select{
+      padding:14px 16px;
+    }
+
+    .search-input-wrap input:focus,
+    .search-select:focus{
+      border-color:rgba(250,204,21,0.55);
+      box-shadow:0 0 0 3px rgba(250,204,21,0.08);
+    }
+
+    .search-btn{
+      min-height:52px;
+      border:none;
+      border-radius:12px;
+      background:var(--accent);
+      color:#111827;
+      font-size:15px;
+      font-weight:700;
+      cursor:pointer;
+    }
+
+    .search-btn:hover{
+      transform:translateY(-2px);
+      box-shadow:0 10px 24px rgba(250,204,21,0.2);
+    }
+
+    .category-grid{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:24px;
+    }
+
+    .category-card{
+      display:block;
+      background:#111827;
+      border:1px solid var(--line);
+      border-radius:22px;
+      overflow:hidden;
+      transition:0.3s;
+      min-height:100%;
+      box-shadow:0 14px 30px rgba(0,0,0,0.14);
+    }
+
+    .category-card:hover{
+      transform:translateY(-6px);
+      box-shadow:0 18px 36px rgba(0,0,0,0.2);
+    }
+
+    .category-image-wrap{
+      position:relative;
+      height:240px;
+      overflow:hidden;
+      background:#1e293b;
+    }
+
+    .category-image-wrap img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+    }
+
+    .category-image-wrap::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:linear-gradient(to top, rgba(15,23,42,0.55), rgba(15,23,42,0.08));
+    }
+
+    .category-content{
+      padding:20px;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+
+    .category-content h3{
+      color:#fff;
+      font-size:24px;
+      line-height:1.2;
+    }
+
+    .category-content p{
+      color:#cbd5e1;
+      font-size:14px;
+      line-height:1.6;
+    }
+
+    .category-meta{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:2px;
+    }
+
+    .pill{
       display:inline-flex;
       align-items:center;
       justify-content:center;
-      padding:11px 16px;
+      padding:6px 10px;
       border-radius:999px;
-      background:#111827;
-      border:1px solid var(--line);
-      color:#cbd5e1;
-      font-size:14px;
-      font-weight:700;
+      font-size:12px;
+      background:rgba(255,255,255,.12);
+      border:1px solid rgba(255,255,255,.12);
+      color:#fff;
+      backdrop-filter:blur(6px);
     }
 
-    .category-pill:hover,
-    .category-pill.active{
+    .pill.featured{
+      background:rgba(16,185,129,.14);
+      border-color:rgba(16,185,129,.20);
+      color:#86efac;
+    }
+
+    .category-link{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
       color:var(--accent);
-      border-color:rgba(250,204,21,0.22);
-      background:rgba(250,204,21,0.08);
+      font-size:14px;
+      font-weight:700;
+      margin-top:6px;
+    }
+
+    .category-link:hover{
+      gap:12px;
     }
 
     .photo-grid{
@@ -283,7 +468,7 @@
 
     .visual-card:hover{
       transform:translateY(-6px);
-      box-shadow:0 18px 36px rgba(0,0,0,0.2);
+      box-shadow:0 18px 36px rgba(0,0,0,.2);
     }
 
     .visual-card img{
@@ -302,10 +487,10 @@
       z-index:1;
       background:linear-gradient(
         to top,
-        rgba(15,23,42,0.95) 0%,
-        rgba(15,23,42,0.72) 34%,
-        rgba(15,23,42,0.26) 66%,
-        rgba(15,23,42,0.05) 100%
+        rgba(15,23,42,.95) 0%,
+        rgba(15,23,42,.72) 34%,
+        rgba(15,23,42,.26) 66%,
+        rgba(15,23,42,.05) 100%
       );
     }
 
@@ -328,34 +513,18 @@
       gap:10px;
     }
 
-    .pill{
-      background:rgba(255,255,255,0.12);
-      color:#ffffff;
-      padding:6px 10px;
-      border-radius:999px;
-      font-size:12px;
-      backdrop-filter:blur(6px);
-      border:1px solid rgba(255,255,255,0.12);
-    }
-
-    .pill.featured{
-      background:rgba(16,185,129,0.14);
-      border-color:rgba(16,185,129,0.20);
-      color:#86efac;
-    }
-
     .overlay-desc{
-      color:#ffffff;
+      color:#fff;
       font-size:16px;
       line-height:1.5;
       margin:0;
-      text-shadow:0 2px 10px rgba(0,0,0,0.35);
+      text-shadow:0 2px 10px rgba(0,0,0,.35);
     }
 
     .credit{
       color:#e2e8f0;
       font-size:14px;
-      text-shadow:0 2px 10px rgba(0,0,0,0.35);
+      text-shadow:0 2px 10px rgba(0,0,0,.35);
     }
 
     .overlay-actions{
@@ -373,9 +542,9 @@
       display:flex;
       align-items:center;
       justify-content:center;
-      background:rgba(255,255,255,0.12);
-      border:1px solid rgba(255,255,255,0.14);
-      color:#ffffff;
+      background:rgba(255,255,255,.12);
+      border:1px solid rgba(255,255,255,.14);
+      color:#fff;
       cursor:pointer;
       backdrop-filter:blur(8px);
       font-size:15px;
@@ -384,13 +553,13 @@
 
     .action-icon:hover{
       color:var(--accent);
-      border-color:rgba(250,204,21,0.3);
+      border-color:rgba(250,204,21,.3);
       transform:translateY(-2px);
     }
 
     .empty-box{
       background:#111827;
-      border:1px dashed rgba(255,255,255,0.14);
+      border:1px dashed rgba(255,255,255,.14);
       border-radius:22px;
       padding:28px;
       color:var(--muted);
@@ -401,7 +570,7 @@
     .lightbox{
       position:fixed;
       inset:0;
-      background:rgba(2,6,23,0.86);
+      background:rgba(2,6,23,.86);
       backdrop-filter:blur(10px);
       display:none;
       align-items:center;
@@ -415,15 +584,15 @@
     }
 
     .lightbox-panel{
-      width:min(1180px, 100%);
+      width:min(1180px,100%);
       background:#111827;
       border:1px solid var(--line);
       border-radius:24px;
       overflow:hidden;
       display:grid;
-      grid-template-columns:1.2fr 0.8fr;
+      grid-template-columns:1.2fr .8fr;
       max-height:90vh;
-      box-shadow:0 24px 60px rgba(0,0,0,0.35);
+      box-shadow:0 24px 60px rgba(0,0,0,.35);
     }
 
     .lightbox-image-wrap{
@@ -488,7 +657,7 @@
       font-size:22px;
       font-weight:800;
       flex-shrink:0;
-      border:2px solid rgba(255,255,255,0.12);
+      border:2px solid rgba(255,255,255,.12);
     }
 
     .creator-avatar img{
@@ -502,7 +671,7 @@
       color:var(--muted);
       font-size:12px;
       text-transform:uppercase;
-      letter-spacing:0.8px;
+      letter-spacing:.8px;
       margin-bottom:2px;
     }
 
@@ -518,16 +687,6 @@
       color:#fff;
       margin-bottom:10px;
       word-break:break-word;
-    }
-
-    .lightbox-sub{
-      color:#cbd5e1;
-      font-size:15px;
-      margin-bottom:18px;
-    }
-
-    .lightbox-sub:empty{
-      display:none;
     }
 
     .lightbox-actions{
@@ -554,12 +713,12 @@
 
     .lightbox-social:hover{
       color:var(--accent);
-      border-color:rgba(250,204,21,0.22);
+      border-color:rgba(250,204,21,.22);
       transform:translateY(-2px);
     }
 
     .lightbox-social.disabled{
-      opacity:0.45;
+      opacity:.45;
       cursor:not-allowed;
       pointer-events:none;
     }
@@ -583,7 +742,7 @@
       font-size:13px;
       margin-bottom:4px;
       text-transform:uppercase;
-      letter-spacing:0.8px;
+      letter-spacing:.8px;
     }
 
     .detail-item span{
@@ -627,6 +786,7 @@
     }
 
     @media(max-width:1024px){
+      .category-grid,
       .photo-grid{
         grid-template-columns:repeat(2,1fr);
       }
@@ -658,7 +818,7 @@
         border:1px solid var(--line);
         border-radius:16px;
         padding:12px;
-        box-shadow:0 16px 30px rgba(0,0,0,0.28);
+        box-shadow:0 16px 30px rgba(0,0,0,.28);
       }
 
       .nav-links.show{
@@ -677,7 +837,7 @@
 
       .nav-links a:hover,
       .nav-links a.active{
-        background:rgba(250,204,21,0.12);
+        background:rgba(250,204,21,.12);
       }
 
       .hero{
@@ -688,7 +848,9 @@
         padding:70px 0 40px;
       }
 
-      .photo-grid{
+      .category-grid,
+      .photo-grid,
+      .search-bar{
         grid-template-columns:1fr;
       }
 
@@ -748,10 +910,6 @@
       .lightbox-info{
         padding:18px;
       }
-
-      .creator-top{
-        align-items:flex-start;
-      }
     }
   </style>
 </head>
@@ -783,56 +941,77 @@
     </div>
   </header>
 
-  <section class="hero">
+  <section class="hero" id="heroSection">
     <div class="container">
       <div class="hero-content">
-        <div class="hero-tag">Category Gallery</div>
-        <h1 id="categoryTitle">Category Photos</h1>
-        <p id="categoryDescription">Browse the photos in this collection and open any image in a larger view.</p>
+        <div class="hero-tag" id="heroTag">Category Gallery</div>
+        <h1 id="heroTitle">All Categories</h1>
+        <p id="heroDescription">Explore visual collections across different styles, themes, and creative topics.</p>
+        <div class="hero-meta" id="heroMeta"></div>
+        <div class="hero-actions hidden" id="heroActions">
+          <a href="category.html" class="mini-btn secondary">Back to Categories</a>
+          <a href="explore.html" class="mini-btn primary">Explore All Photos</a>
+        </div>
       </div>
     </div>
   </section>
 
-  <section>
+  <section id="overviewSection">
     <div class="container">
       <div class="section-head">
         <div>
-          <h2>Browse Categories</h2>
-          <p>Switch between collections and open any image for a closer look.</p>
+          <h2 id="overviewHeading">All Categories</h2>
+          <p id="overviewText">Explore visual collections across different styles, themes, and creative topics.</p>
         </div>
       </div>
 
-
-      <div>
-          <h2>Explore Photos</h2>
-          <p>Search the collection and open any image to view the creator profile, socials, and download options.</p>
+      <div class="search-bar">
+        <div class="search-input-wrap">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input type="text" id="overviewSearchInput" placeholder="Search categories by name or description">
         </div>
+
+        <select id="overviewFilter" class="search-select">
+          <option value="all">All Categories</option>
+          <option value="with-photos">With Photos</option>
+          <option value="featured">Featured Categories</option>
+          <option value="empty">Empty Categories</option>
+        </select>
+
+        <button type="button" class="search-btn" id="overviewSearchBtn">Search</button>
       </div>
 
-       
+      <div class="category-grid" id="categoryGrid">
+        <div class="empty-box">Loading categories...</div>
+      </div>
+    </div>
+  </section>
 
-
-
-
-
-        
-
-
-
-
-
-
-      <div class="category-switcher" id="categorySwitcher"></div>
-
-      <div class="section-head" style="margin-top:16px;">
+  <section id="detailSection" class="hidden">
+    <div class="container">
+      <div class="section-head">
         <div>
-          <h2 id="galleryHeading">Photos</h2>
-          <p id="galleryCountText">Photos in this category.</p>
+          <h2 id="detailHeading">Category Photos</h2>
+          <p id="detailText">Browse photos in this category below.</p>
         </div>
       </div>
 
-      <div class="photo-grid" id="photoGrid">
-        <div class="empty-box">No photos found in this category yet.</div>
+      <div class="search-bar">
+        <div class="search-input-wrap">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input type="text" id="detailSearchInput" placeholder="Search photos in this category">
+        </div>
+
+        <select id="detailFilter" class="search-select">
+          <option value="all">All Photos</option>
+          <option value="featured">Featured Only</option>
+        </select>
+
+        <button type="button" class="search-btn" id="detailSearchBtn">Search</button>
+      </div>
+
+      <div class="photo-grid" id="detailPhotoGrid">
+        <div class="empty-box">Photos will appear here when the category is loaded.</div>
       </div>
     </div>
   </section>
@@ -855,7 +1034,6 @@
         </div>
 
         <h3 class="lightbox-title" id="lightboxTitle">Photo</h3>
-        <p class="lightbox-sub" id="lightboxSub"></p>
 
         <div class="lightbox-actions" id="lightboxActions"></div>
 
@@ -886,7 +1064,7 @@
 
   <footer>
     <div class="container footer-inner">
-      <p>©️ 2026 PixNest. Discover and share powerful visual collections.</p>
+      <p id="footerText">©️ 2026 PixNest. Discover and share powerful visual collections.</p>
 
       <div class="footer-links">
         <a href="about.html">About</a>
@@ -898,295 +1076,637 @@
     </div>
   </footer>
 
-<script>
-  const STORAGE_KEY = "pixnest_admin_v2";
-  const SUPABASE_URL = "https://vigczssznfvujttdapbv.supabase.co";
-  const SUPABASE_KEY = "sb_publishable_UmF-mmVS42XeF6PqsNnCSw_wpA35wg2";
+  <script>
+    const STORAGE_KEY = "pixnest_admin_v2";
+    const SUPABASE_URL = "https://vigczssznfvujttdapbv.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_UmF-mmVS42XeF6PqsNnCSw_wpA35wg2";
+    const DEFAULT_HERO_IMAGE = "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&w=1600&q=80";
+    const DEFAULT_CATEGORY_IMAGE = "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&w=1200&q=80";
 
-  const { createClient } = supabase;
-  const supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY);
+    const { createClient } = supabase;
+    const supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-  function pickElement(ids){
-    for(const id of ids){
-      const el = document.getElementById(id);
-      if(el) return el;
+    const menuToggle = document.getElementById("menuToggle");
+    const navLinks = document.getElementById("navLinks");
+
+    const heroSection = document.getElementById("heroSection");
+    const heroTag = document.getElementById("heroTag");
+    const heroTitle = document.getElementById("heroTitle");
+    const heroDescription = document.getElementById("heroDescription");
+    const heroMeta = document.getElementById("heroMeta");
+    const heroActions = document.getElementById("heroActions");
+
+    const overviewSection = document.getElementById("overviewSection");
+    const detailSection = document.getElementById("detailSection");
+
+    const overviewHeading = document.getElementById("overviewHeading");
+    const overviewText = document.getElementById("overviewText");
+    const overviewSearchInput = document.getElementById("overviewSearchInput");
+    const overviewFilter = document.getElementById("overviewFilter");
+    const overviewSearchBtn = document.getElementById("overviewSearchBtn");
+    const categoryGrid = document.getElementById("categoryGrid");
+
+    const detailHeading = document.getElementById("detailHeading");
+    const detailText = document.getElementById("detailText");
+    const detailSearchInput = document.getElementById("detailSearchInput");
+    const detailFilter = document.getElementById("detailFilter");
+    const detailSearchBtn = document.getElementById("detailSearchBtn");
+    const detailPhotoGrid = document.getElementById("detailPhotoGrid");
+
+    const footerText = document.getElementById("footerText");
+
+    const lightbox = document.getElementById("lightbox");
+    const lightboxClose = document.getElementById("lightboxClose");
+    const lightboxImage = document.getElementById("lightboxImage");
+    const creatorAvatar = document.getElementById("creatorAvatar");
+    const lightboxActions = document.getElementById("lightboxActions");
+
+    let siteData = loadAdminData();
+    let allPhotos = [];
+    let activeCategoryName = "";
+
+    if(menuToggle && navLinks){
+      menuToggle.addEventListener("click", () => {
+        navLinks.classList.toggle("show");
+        const expanded = menuToggle.getAttribute("aria-expanded") === "true";
+        menuToggle.setAttribute("aria-expanded", String(!expanded));
+      });
     }
-    return null;
-  }
 
-  const menuToggle = pickElement(["menuToggle"]);
-  const navLinks = pickElement(["navLinks"]);
-
-  const categoryGrid = pickElement([
-    "categoryGrid",
-    "categoryCards",
-    "categoriesGrid",
-    "categoriesWrap",
-    "photoCategories"
-  ]);
-
-  const libraryMessage = pickElement([
-    "libraryMessage",
-    "statusMessage",
-    "categoryMessage"
-  ]);
-
-  const pageTitle = pickElement([
-    "categoriesTitle",
-    "pageTitle",
-    "categoryPageTitle"
-  ]);
-
-  const pageText = pickElement([
-    "categoriesText",
-    "pageText",
-    "categoryPageText"
-  ]);
-
-  let searchInput = pickElement([
-    "searchInput",
-    "categorySearch"
-  ]);
-
-  let supabasePhotos = [];
-  let siteData = loadAdminData();
-
-  if(menuToggle && navLinks){
-    menuToggle.addEventListener("click", () => {
-      const isOpen = navLinks.classList.toggle("show");
-      menuToggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
-    });
-  }
-
-  function loadAdminData(){
-    try{
-      const saved = localStorage.getItem(STORAGE_KEY);
-
-      if(!saved){
-        return {
-          categories: [],
-          homepage: {}
-        };
-      }
-
-      const parsed = JSON.parse(saved);
-
-      return {
-        categories: Array.isArray(parsed.categories) ? parsed.categories : [],
-        homepage: parsed.homepage && typeof parsed.homepage === "object" ? parsed.homepage : {}
-      };
-    }catch(error){
-      console.error("Failed to load admin data:", error);
-      return {
-        categories: [],
-        homepage: {}
-      };
-    }
-  }
-
-  function escapeHtml(value = ""){
-    return String(value)
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#39;");
-  }
-
-  function setLibraryMessage(message, type){
-    if(!libraryMessage) return;
-    libraryMessage.textContent = message || "";
-    libraryMessage.className = "status-message" + (type ? " " + type : "");
-  }
-
-  function getSavedCategories(){
-    return (siteData.categories || [])
-      .map(cat => ({
-        id: cat.id || "",
-        name: String(cat.name || "").trim(),
-        description: String(cat.description || "").trim()
-      }))
-      .filter(cat => cat.name);
-  }
-
-  function getPhotoCategories(){
-    return [...new Set(
-      supabasePhotos
-        .map(photo => String(photo.category || "").trim())
-        .filter(Boolean)
-    )].map(name => ({
-      id: "",
-      name,
-      description: ""
-    }));
-  }
-
-  function getMergedCategories(){
-    const savedCategories = getSavedCategories();
-    const photoCategories = getPhotoCategories();
-    const map = new Map();
-
-    savedCategories.forEach(cat => {
-      map.set(cat.name.toLowerCase(), {
-        id: cat.id || "",
-        name: cat.name,
-        description: cat.description || ""
+    document.querySelectorAll(".nav-links a").forEach(link => {
+      link.addEventListener("click", () => {
+        if(window.innerWidth <= 768){
+          navLinks.classList.remove("show");
+          menuToggle.setAttribute("aria-expanded", "false");
+        }
       });
     });
 
-    photoCategories.forEach(cat => {
-      const key = cat.name.toLowerCase();
-      if(!map.has(key)){
-        map.set(key, {
-          id: "",
-          name: cat.name,
-          description: ""
-        });
+    window.addEventListener("resize", () => {
+      if(window.innerWidth > 768){
+        navLinks.classList.remove("show");
+        menuToggle.setAttribute("aria-expanded", "false");
       }
     });
 
-    return [...map.values()];
-  }
-
-  function getPhotosForCategory(categoryName){
-    return supabasePhotos.filter(photo =>
-      String(photo.category || "").trim() === String(categoryName || "").trim()
-    );
-  }
-
-  function renderPageText(){
-    if(pageTitle && siteData.homepage && siteData.homepage.categoriesTitle){
-      pageTitle.textContent = siteData.homepage.categoriesTitle;
+    function escapeHtml(value = ""){
+      return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
     }
 
-    if(pageText && siteData.homepage && siteData.homepage.categoriesText){
-      pageText.textContent = siteData.homepage.categoriesText;
-    }
-  }
+    function loadAdminData(){
+      try{
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if(!saved){
+          return {
+            categories: [],
+            homepage: {},
+            footerText: ""
+          };
+        }
 
-  function ensureSearchInput(){
-    if(searchInput || !categoryGrid) return;
+        const parsed = JSON.parse(saved);
 
-    const wrapper = document.createElement("div");
-    wrapper.style.margin = "0 0 24px 0";
-
-    wrapper.innerHTML = `
-      <input
-        type="text"
-        id="searchInput"
-        placeholder="Search categories..."
-        style="
-          width:100%;
-          background:#0f172a;
-          border:1px solid rgba(255,255,255,0.08);
-          border-radius:14px;
-          padding:14px 16px;
-          color:#ffffff;
-          outline:none;
-          font-size:15px;
-        "
-      />
-    `;
-
-    categoryGrid.parentNode.insertBefore(wrapper, categoryGrid);
-    searchInput = document.getElementById("searchInput");
-
-    searchInput.addEventListener("input", renderCategoryCards);
-  }
-
-  function renderCategoryCards(){
-    if(!categoryGrid) return;
-
-    const searchValue = searchInput ? searchInput.value.trim().toLowerCase() : "";
-    const categories = getMergedCategories();
-
-    const filteredCategories = categories.filter(category => {
-      if(!searchValue) return true;
-
-      const text = [
-        category.name,
-        category.description
-      ].join(" ").toLowerCase();
-
-      return text.includes(searchValue);
-    });
-
-    if(!filteredCategories.length){
-      categoryGrid.innerHTML = '<div class="empty-box">No categories found.</div>';
-      return;
+        return {
+          categories: Array.isArray(parsed.categories) ? parsed.categories : [],
+          homepage: parsed.homepage && typeof parsed.homepage === "object" ? parsed.homepage : {},
+          footerText: parsed.footerText || ""
+        };
+      }catch(error){
+        console.error("Failed to load admin data:", error);
+        return {
+          categories: [],
+          homepage: {},
+          footerText: ""
+        };
+      }
     }
 
-    categoryGrid.innerHTML = filteredCategories.map(category => {
-      const categoryPhotos = getPhotosForCategory(category.name);
-      const photoCount = categoryPhotos.length;
-      const coverPhoto = categoryPhotos[0] && categoryPhotos[0].image_url ? categoryPhotos[0].image_url : "";
-      const featuredCount = categoryPhotos.filter(photo => photo.featured).length;
+    function applyFooterText(){
+      if(siteData.footerText){
+        footerText.textContent = siteData.footerText;
+      }
+    }
+
+    function getSavedCategories(){
+      return (siteData.categories || [])
+        .map(cat => ({
+          id: cat.id || "",
+          name: String(cat.name || "").trim(),
+          description: String(cat.description || "").trim()
+        }))
+        .filter(cat => cat.name);
+    }
+
+    function getGroupedPhotos(){
+      const grouped = {};
+
+      allPhotos.forEach(photo => {
+        const categoryName = String(photo.category || "").trim();
+        if(!categoryName) return;
+
+        if(!grouped[categoryName]){
+          grouped[categoryName] = [];
+        }
+
+        grouped[categoryName].push(photo);
+      });
+
+      return grouped;
+    }
+
+    function getMergedCategories(){
+      const grouped = getGroupedPhotos();
+      const map = new Map();
+
+      getSavedCategories().forEach(category => {
+        map.set(category.name.toLowerCase(), {
+          name: category.name,
+          description: category.description,
+          photos: grouped[category.name] || []
+        });
+      });
+
+      Object.keys(grouped).forEach(categoryName => {
+        const key = categoryName.toLowerCase();
+        if(!map.has(key)){
+          map.set(key, {
+            name: categoryName,
+            description: "",
+            photos: grouped[categoryName] || []
+          });
+        }
+      });
+
+      return [...map.values()].sort((a, b) => a.name.localeCompare(b.name));
+    }
+
+    function getRequestedCategory(){
+      const params = new URLSearchParams(window.location.search);
+      return String(params.get("category") || "").trim();
+    }
+
+    function updateHeroImage(imageUrl){
+      heroSection.style.background =
+        `linear-gradient(rgba(15,23,42,0.70), rgba(15,23,42,0.92)), url('${imageUrl}') center/cover no-repeat`;
+    }
+
+    function renderOverviewHero(){
+      const homepage = siteData.homepage || {};
+      heroTag.textContent = "Category Gallery";
+      heroTitle.textContent = homepage.categoriesTitle || "All Categories";
+      heroDescription.textContent = homepage.categoriesText || "Explore visual collections across different styles, themes, and creative topics.";
+      heroMeta.innerHTML = "";
+      heroActions.classList.add("hidden");
+      updateHeroImage(DEFAULT_HERO_IMAGE);
+
+      overviewHeading.textContent = homepage.categoriesTitle || "All Categories";
+      overviewText.textContent = homepage.categoriesText || "Explore visual collections across different styles, themes, and creative topics.";
+      document.title = "PixNest | Categories";
+    }
+
+    function renderDetailHero(category){
+      const featuredPhoto = category.photos.find(photo => photo.featured);
+      const coverPhoto = featuredPhoto || category.photos[0];
+      const coverImage = coverPhoto && coverPhoto.image_url ? coverPhoto.image_url : DEFAULT_HERO_IMAGE;
+      const featuredCount = category.photos.filter(photo => photo.featured).length;
+
+      heroTag.textContent = "Category Collection";
+      heroTitle.textContent = category.name;
+      heroDescription.textContent = category.description || `Browse the ${category.name} collection and explore the visuals inside this category.`;
+      heroMeta.innerHTML = `
+        <span class="pill">${category.photos.length} photo${category.photos.length === 1 ? "" : "s"}</span>
+        ${featuredCount ? `<span class="pill featured">${featuredCount} featured</span>` : ""}
+      `;
+      heroActions.classList.remove("hidden");
+      updateHeroImage(coverImage);
+
+      detailHeading.textContent = `${category.name} Photos`;
+      detailText.textContent = category.description || `Browse all photos in the ${category.name} collection below.`;
+      document.title = `PixNest | ${category.name}`;
+    }
+
+    function getDisplayTitle(photo){
+      const description = (photo.description || "").trim();
+      const title = (photo.title || "").trim();
+      return title || description || "Photo";
+    }
+
+    function getPhotoTags(photo){
+      return (photo.tags || "")
+        .split(/[,|]/)
+        .map(tag => tag.trim())
+        .filter(Boolean);
+    }
+
+    function buildCreatorAvatar(photo){
+      const creatorName = (photo.credit || "Unknown").trim();
+      const creatorPhoto = (photo.creator_photo || "").trim();
+
+      if(creatorPhoto){
+        return `<img src="${escapeHtml(creatorPhoto)}" alt="${escapeHtml(creatorName)}">`;
+      }
+
+      const firstLetter = creatorName.charAt(0).toUpperCase() || "P";
+      return `<span>${escapeHtml(firstLetter)}</span>`;
+    }
+
+    function buildSocialButton(url, iconClass, label){
+      if(url){
+        return `
+          <a
+            class="lightbox-social"
+            href="${escapeHtml(url)}"
+            target="_blank"
+            rel="noopener noreferrer"
+            title="${escapeHtml(label)}"
+            aria-label="${escapeHtml(label)}"
+          >
+            <i class="${escapeHtml(iconClass)}"></i>
+          </a>
+        `;
+      }
 
       return `
-        <article class="category-card">
-          <a href="explore.html?category=${encodeURIComponent(category.name)}" class="category-card-link">
-            ${
-              coverPhoto
-                ? `
-                  <div class="category-card-image-wrap">
-                    <img class="category-card-image" src="${coverPhoto}" alt="${escapeHtml(category.name)}">
-                  </div>
-                `
-                : ""
-            }
+        <button
+          type="button"
+          class="lightbox-social disabled"
+          title="${escapeHtml(label)} unavailable"
+          aria-label="${escapeHtml(label)} unavailable"
+        >
+          <i class="${escapeHtml(iconClass)}"></i>
+        </button>
+      `;
+    }
 
-            <div class="category-card-content">
-              <div class="category-badges">
+    function buildLightboxActions(photo){
+      const shareTitle = `${getDisplayTitle(photo)} on PixNest`;
+      const actions = [];
+
+      actions.push(buildSocialButton(photo.instagram || "", "fa-brands fa-instagram", "Creator Instagram"));
+      actions.push(buildSocialButton(photo.x || "", "fa-brands fa-x-twitter", "Creator X"));
+      actions.push(buildSocialButton(photo.facebook || "", "fa-brands fa-facebook-f", "Creator Facebook"));
+
+      actions.push(`
+        <button
+          type="button"
+          class="lightbox-social"
+          id="lightboxShareBtn"
+          data-share-url="${escapeHtml(photo.image_url || window.location.href)}"
+          data-share-title="${escapeHtml(shareTitle)}"
+          title="Share"
+          aria-label="Share"
+        >
+          <i class="fa-solid fa-share-nodes"></i>
+        </button>
+      `);
+
+      actions.push(`
+        <a
+          class="lightbox-social"
+          href="${escapeHtml(photo.image_url || "")}"
+          download
+          title="Download image"
+          aria-label="Download image"
+        >
+          <i class="fa-solid fa-download"></i>
+        </a>
+      `);
+
+      return actions.join("");
+    }
+
+    async function handleNativeShare(button){
+      const url = button.getAttribute("data-share-url") || window.location.href;
+      const title = button.getAttribute("data-share-title") || "PixNest";
+
+      if(navigator.share){
+        try{
+          await navigator.share({ title, url });
+        }catch(error){
+        }
+      }else{
+        try{
+          await navigator.clipboard.writeText(url);
+          button.innerHTML = '<i class="fa-solid fa-check"></i>';
+          setTimeout(() => {
+            button.innerHTML = '<i class="fa-solid fa-share-nodes"></i>';
+          }, 1200);
+        }catch(error){
+          alert("Link copy failed. You can copy it manually:\n" + url);
+        }
+      }
+    }
+
+    function openLightbox(photo){
+      lightboxImage.src = photo.image_url || "";
+      lightboxImage.alt = getDisplayTitle(photo);
+
+      document.getElementById("lightboxTitle").textContent = getDisplayTitle(photo);
+      document.getElementById("lightboxCategory").textContent = photo.category || "Uncategorized";
+      document.getElementById("lightboxCredit").textContent = photo.credit || "Unknown";
+      document.getElementById("lightboxTags").textContent = getPhotoTags(photo).join(", ") || "No tags";
+      document.getElementById("lightboxDescription").textContent = photo.description || "No description added.";
+      document.getElementById("lightboxCreatorTop").textContent = photo.credit || "Unknown";
+
+      creatorAvatar.innerHTML = buildCreatorAvatar(photo);
+      lightboxActions.innerHTML = buildLightboxActions(photo);
+
+      const lightboxShareBtn = document.getElementById("lightboxShareBtn");
+      if(lightboxShareBtn){
+        lightboxShareBtn.addEventListener("click", async () => {
+          await handleNativeShare(lightboxShareBtn);
+        });
+      }
+
+      lightbox.classList.add("show");
+      document.body.style.overflow = "hidden";
+    }
+
+    function closeLightbox(){
+      lightbox.classList.remove("show");
+      document.body.style.overflow = "";
+      lightboxActions.innerHTML = "";
+    }
+
+    lightboxClose.addEventListener("click", closeLightbox);
+
+    lightbox.addEventListener("click", (e) => {
+      if(e.target === lightbox){
+        closeLightbox();
+      }
+    });
+
+    document.addEventListener("keydown", (e) => {
+      if(e.key === "Escape"){
+        closeLightbox();
+      }
+    });
+
+    function createOverlayActions(photo){
+      const shareText = `${getDisplayTitle(photo)} on PixNest`;
+      const imageUrl = photo.image_url || "";
+
+      return `
+        <div class="overlay-actions">
+          <button
+            type="button"
+            class="action-icon share-btn"
+            aria-label="Share"
+            title="Share"
+            data-share-url="${escapeHtml(imageUrl || window.location.href)}"
+            data-share-title="${escapeHtml(shareText)}"
+            data-stop-card
+          >
+            <i class="fa-solid fa-share-nodes"></i>
+          </button>
+
+          <a
+            class="action-icon"
+            href="${escapeHtml(imageUrl)}"
+            download
+            aria-label="Download image"
+            title="Download image"
+            data-stop-card
+          >
+            <i class="fa-solid fa-download"></i>
+          </a>
+        </div>
+      `;
+    }
+
+    function buildPhotoCard(photo){
+      const tags = getPhotoTags(photo).slice(0, 4);
+      const description = (photo.description || "").trim();
+      const credit = (photo.credit || "").trim();
+
+      return `
+        <article class="visual-card" data-photo-id="${escapeHtml(String(photo.id || ""))}">
+          <img src="${escapeHtml(photo.image_url || "")}" alt="${escapeHtml(photo.title || "Photo")}">
+          <div class="photo-overlay">
+            <div class="meta">
+              <span class="pill">${escapeHtml(photo.category || "Photo")}</span>
+              ${photo.featured ? `<span class="pill featured">Featured</span>` : ``}
+              ${tags.map(tag => `<span class="pill">${escapeHtml(tag)}</span>`).join("")}
+            </div>
+            ${description ? `<p class="overlay-desc">${escapeHtml(description)}</p>` : ""}
+            ${credit ? `<div class="credit">By ${escapeHtml(credit)}</div>` : ""}
+            ${createOverlayActions(photo)}
+          </div>
+        </article>
+      `;
+    }
+
+    function activatePhotoCards(rows, container){
+      container.querySelectorAll(".visual-card").forEach(card => {
+        const photoId = card.getAttribute("data-photo-id");
+        const photo = rows.find(item => String(item.id) === String(photoId));
+        if(!photo) return;
+
+        card.addEventListener("click", (e) => {
+          if(e.target.closest("[data-stop-card]")){
+            return;
+          }
+          openLightbox(photo);
+        });
+      });
+
+      container.querySelectorAll(".share-btn").forEach(btn => {
+        btn.addEventListener("click", async (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          await handleNativeShare(btn);
+        });
+      });
+    }
+
+    function renderOverviewCategories(){
+      const searchValue = overviewSearchInput.value.trim().toLowerCase();
+      const filterValue = overviewFilter.value;
+      const categories = getMergedCategories();
+
+      const filtered = categories.filter(category => {
+        const photoCount = category.photos.length;
+        const featuredCount = category.photos.filter(photo => photo.featured).length;
+
+        const matchesText = !searchValue || [
+          category.name,
+          category.description
+        ].join(" ").toLowerCase().includes(searchValue);
+
+        let matchesFilter = true;
+
+        if(filterValue === "with-photos"){
+          matchesFilter = photoCount > 0;
+        }else if(filterValue === "featured"){
+          matchesFilter = featuredCount > 0;
+        }else if(filterValue === "empty"){
+          matchesFilter = photoCount === 0;
+        }
+
+        return matchesText && matchesFilter;
+      });
+
+      if(!filtered.length){
+        categoryGrid.innerHTML = '<div class="empty-box">No categories found for this search.</div>';
+        return;
+      }
+
+      categoryGrid.innerHTML = filtered.map(category => {
+        const cover = category.photos.find(photo => photo.featured) || category.photos[0];
+        const photoCount = category.photos.length;
+        const featuredCount = category.photos.filter(photo => photo.featured).length;
+        const coverImage = cover && cover.image_url ? cover.image_url : DEFAULT_CATEGORY_IMAGE;
+
+        return `
+          <a href="category.html?category=${encodeURIComponent(category.name)}" class="category-card">
+            <div class="category-image-wrap">
+              <img src="${escapeHtml(coverImage)}" alt="${escapeHtml(category.name)}">
+            </div>
+
+            <div class="category-content">
+              <div class="category-meta">
                 <span class="pill">${photoCount} photo${photoCount === 1 ? "" : "s"}</span>
-                ${featuredCount ? `<span class="pill featured">${featuredCount} featured</span>` : ""}
+                ${featuredCount ? `<span class="pill featured">${featuredCount} featured</span>` : ``}
               </div>
 
               <h3>${escapeHtml(category.name)}</h3>
-              <p>${escapeHtml(category.description || "Browse photos from this category.")}</p>
+              <p>${escapeHtml(category.description || `Browse photos in the ${category.name} collection.`)}</p>
+
+              <span class="category-link">
+                Open Collection
+                <i class="fa-solid fa-arrow-right"></i>
+              </span>
             </div>
           </a>
-        </article>
-      `;
-    }).join("");
-  }
+        `;
+      }).join("");
+    }
 
-  async function loadSupabasePhotos(){
-    try{
-      setLibraryMessage("Loading categories...", "success");
+    function renderDetailPhotos(){
+      const categories = getMergedCategories();
+      const activeCategory = categories.find(category => category.name === activeCategoryName);
 
-      const { data, error } = await supabaseClient
-        .from("photos")
-        .select("*")
-        .order("created_at", { ascending: false });
-
-      if(error){
-        throw error;
+      if(!activeCategory){
+        detailPhotoGrid.innerHTML = '<div class="empty-box">Category not found.</div>';
+        return;
       }
 
-      supabasePhotos = Array.isArray(data) ? data : [];
-      setLibraryMessage("", "");
-      renderPageText();
-      ensureSearchInput();
-      renderCategoryCards();
-    }catch(error){
-      console.error("CATEGORY PAGE LOAD ERROR:", error);
-      setLibraryMessage(error?.message || "Could not load categories.", "error");
+      const searchValue = detailSearchInput.value.trim().toLowerCase();
+      const filterValue = detailFilter.value;
 
-      if(categoryGrid){
-        categoryGrid.innerHTML = '<div class="empty-box">Could not load categories.</div>';
+      let rows = activeCategory.photos.filter(photo => {
+        const text = [
+          photo.title,
+          photo.description,
+          photo.tags,
+          photo.credit,
+          photo.category
+        ].join(" ").toLowerCase();
+
+        const matchesText = !searchValue || text.includes(searchValue);
+        const matchesFilter = filterValue === "featured" ? Boolean(photo.featured) : true;
+
+        return matchesText && matchesFilter;
+      });
+
+      if(!rows.length){
+        detailPhotoGrid.innerHTML = '<div class="empty-box">No photos found for this category search.</div>';
+        return;
+      }
+
+      detailPhotoGrid.innerHTML = rows.map(buildPhotoCard).join("");
+      activatePhotoCards(rows, detailPhotoGrid);
+    }
+
+    function showOverviewMode(){
+      overviewSection.classList.remove("hidden");
+      detailSection.classList.add("hidden");
+      renderOverviewHero();
+      renderOverviewCategories();
+    }
+
+    function showDetailMode(categoryName){
+      const categories = getMergedCategories();
+      const activeCategory = categories.find(category => category.name === categoryName);
+
+      if(!activeCategory){
+        showOverviewMode();
+        return;
+      }
+
+      activeCategoryName = activeCategory.name;
+      overviewSection.classList.add("hidden");
+      detailSection.classList.remove("hidden");
+      renderDetailHero(activeCategory);
+      renderDetailPhotos();
+    }
+
+    function decideMode(){
+      const requestedCategory = getRequestedCategory();
+      const categories = getMergedCategories();
+
+      if(requestedCategory && categories.some(category => category.name === requestedCategory)){
+        showDetailMode(requestedCategory);
+      }else{
+        showOverviewMode();
       }
     }
-  }
 
-  ensureSearchInput();
+    function getRequestedCategory(){
+      const params = new URLSearchParams(window.location.search);
+      return String(params.get("category") || "").trim();
+    }
 
-  if(searchInput){
-    searchInput.addEventListener("input", renderCategoryCards);
-  }
+    async function loadPhotos(){
+      try{
+        const { data, error } = await supabaseClient
+          .from("photos")
+          .select("*")
+          .order("created_at", { ascending:false });
 
-  renderPageText();
-  loadSupabasePhotos();
-</script>
-  
+        if(error){
+          throw error;
+        }
+
+        allPhotos = Array.isArray(data) ? data : [];
+        applyFooterText();
+        decideMode();
+      }catch(error){
+        console.error(error);
+        categoryGrid.innerHTML = '<div class="empty-box">Could not load categories from Supabase.</div>';
+        detailPhotoGrid.innerHTML = '<div class="empty-box">Could not load category photos from Supabase.</div>';
+      }
+    }
+
+    overviewSearchBtn.addEventListener("click", renderOverviewCategories);
+
+    overviewSearchInput.addEventListener("keydown", (e) => {
+      if(e.key === "Enter"){
+        e.preventDefault();
+        renderOverviewCategories();
+      }
+    });
+
+    overviewFilter.addEventListener("change", renderOverviewCategories);
+
+    detailSearchBtn.addEventListener("click", renderDetailPhotos);
+
+    detailSearchInput.addEventListener("keydown", (e) => {
+      if(e.key === "Enter"){
+        e.preventDefault();
+        renderDetailPhotos();
+      }
+    });
+
+    detailFilter.addEventListener("change", renderDetailPhotos);
+
+    applyFooterText();
+    loadPhotos();
+  </script>
 </body>
 </html>
