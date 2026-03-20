@@ -1278,7 +1278,7 @@
 
   <script>
     const STORAGE_KEY = "pixnest_admin_v2";
-const SUPABASE_URL = "https://vigczssznfvuijtdapbv.supabase.co";
+const SUPABASE_URL = "https://vigczssznfvuijttdapbv.supabase.co";
 const SUPABASE_KEY = "sb_publishable_UmF-mmVS42XeF6PqsNnCSw_wpA35wg2";
 const PHOTOS_BUCKET = "photos";
 const CREATOR_BUCKET = "creator-photos";
@@ -1560,21 +1560,32 @@ const CREATOR_BUCKET = "creator-photos";
       });
     }
 
-    async function uploadFileToBucket(bucket, file, path){
-      const { error } = await supabaseClient.storage
-        .from(bucket)
-        .upload(path, file, {
-          cacheControl: "3600",
-          upsert: false
-        });
+    async function uploadToBucket(bucket, file, path){
+  const { data: signedData, error: signedError } = await supabaseClient
+    .storage
+    .from(bucket)
+    .createSignedUploadUrl(path);
 
-      if(error){
-        throw error;
+  if (signedError) throw signedError;
+
+  const { error: uploadError } = await supabaseClient
+    .storage
+    .from(bucket)
+    .uploadToSignedUrl(
+      path,
+      signedData.token,
+      file,
+      {
+        contentType: file.type || "application/octet-stream"
       }
+    );
 
-      const { data } = supabaseClient.storage.from(bucket).getPublicUrl(path);
-      return data.publicUrl;
-    }
+  if (uploadError) throw uploadError;
+
+  const { data } = supabaseClient.storage.from(bucket).getPublicUrl(path);
+  return data.publicUrl;
+}
+     
 
      async function loadSupabasePhotos(){
   try{
@@ -2161,7 +2172,7 @@ const CREATOR_BUCKET = "creator-photos";
 
         if(creatorFile){
           const creatorPath = makeStorageName("creator", creatorFile.name, creatorName);
-          creatorPhotoUrl = await uploadFileToBucket(CREATOR_BUCKET, creatorFile, creatorPath);
+          creatorPhotoUrl = await uploadToBucket(CREATOR_BUCKET, creatorFile, creatorPath);
         }
 
         for(let index = 0; index < files.length; index++){
@@ -2174,7 +2185,7 @@ const CREATOR_BUCKET = "creator-photos";
             : fallbackTitle;
 
           const imagePath = makeStorageName("photos", file.name, title || file.name);
-          const imageUrl = await uploadFileToBucket(PHOTOS_BUCKET, file, imagePath);
+          const imageUrl = await uploadToBucket(PHOTOS_BUCKET, file, imagePath);
 
           const { error } = await supabaseClient
             .from("photos")

@@ -913,9 +913,9 @@
   </footer>
 
   <script>
-    const SUPABASE_URL = "https://vigczssznfvuijtdapbv.supabase.co";
-    const SUPABASE_KEY = "sb_publishable_UmF-mmVS42XeF6PqsNnCSw_wpA35wg2";
-    const PHOTOS_BUCKET = "photos";
+    const SUPABASE_URL = "https://vigczssznfvuijttdapbv.supabase.co";
+const SUPABASE_KEY = "sb_publishable_UmF-mmVS42XeF6PqsNnCSw_wpA35wg2";
+     const PHOTOS_BUCKET = "photos";
     const CREATOR_BUCKET = "creator-photos";
     const ADMIN_STORAGE_KEY = "pixnest_admin_v2";
 
@@ -1008,20 +1008,35 @@
     }
 
     async function uploadToBucket(bucket, file, path){
-      const { error } = await supabaseClient.storage
-        .from(bucket)
-        .upload(path, file, {
-          cacheControl: "3600",
-          upsert: false
-        });
+  const { data: signedData, error: signedError } = await supabaseClient
+    .storage
+    .from(bucket)
+    .createSignedUploadUrl(path);
 
-      if(error){
-        throw error;
+  if (signedError) throw signedError;
+
+  const { error: uploadError } = await supabaseClient
+    .storage
+    .from(bucket)
+    .uploadToSignedUrl(
+      path,
+      signedData.token,
+      file,
+      {
+        contentType: file.type || "application/octet-stream"
       }
+    );
 
-      const { data } = supabaseClient.storage.from(bucket).getPublicUrl(path);
-      return data.publicUrl;
-    }
+  if (uploadError) throw uploadError;
+
+  const { data } = supabaseClient.storage.from(bucket).getPublicUrl(path);
+  return data.publicUrl;
+}
+
+    
+
+
+     
 
     function setSocialState(element, value){
       const url = (value || "").trim();
