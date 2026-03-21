@@ -4,7 +4,11 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>PixNest | Checkout</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png" />
+  <link rel="shortcut icon" href="favicon.ico" />
+  <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     *{
@@ -319,6 +323,65 @@
       font-size:13px;
     }
 
+
+    .checkout-legal{
+      margin-top:18px;
+      padding:18px;
+      border-radius:18px;
+      background:rgba(250,204,21,.08);
+      border:1px solid rgba(250,204,21,.18);
+    }
+
+    .checkout-legal h3{
+      font-size:15px;
+      color:#fff;
+      margin-bottom:8px;
+    }
+
+    .checkout-legal p{
+      color:#cbd5e1;
+      font-size:13px;
+      margin-bottom:12px;
+    }
+
+    .consent-check{
+      display:flex;
+      align-items:flex-start;
+      gap:12px;
+      padding:14px 16px;
+      border-radius:16px;
+      background:#0f172a;
+      border:1px solid var(--line);
+      cursor:pointer;
+    }
+
+    .consent-check input{
+      margin-top:3px;
+      width:18px;
+      height:18px;
+      accent-color:#facc15;
+      flex-shrink:0;
+    }
+
+    .consent-check span{
+      color:#e5e7eb;
+      font-size:13px;
+      line-height:1.6;
+    }
+
+    .consent-check a{
+      color:var(--accent);
+      text-decoration:underline;
+      text-underline-offset:2px;
+    }
+
+    .consent-note{
+      margin:12px 0 0;
+      color:#94a3b8 !important;
+      font-size:12px !important;
+    }
+
+
     .cta-btn{
       width:100%;
       min-height:56px;
@@ -534,7 +597,7 @@
           Secure Checkout
         </div>
         <h1>Complete your PixNest premium upgrade.</h1>
-        <p>Your payment will continue on Stripe’s secure payment page, where eligible users can see Apple Pay, Google Pay, and card options.</p>
+        <p>Your payment continues on Stripe’s secure payment page, where eligible users can see Apple Pay, Google Pay, and card options. Premium access begins after successful payment and follows the billing terms shown below.</p>
       </div>
     </div>
   </section>
@@ -591,6 +654,18 @@
         <div class="secure-note">
           <i class="fa-solid fa-shield-halved"></i>
           <span>Payments are handled on Stripe Checkout. Sensitive card details do not pass through your page code.</span>
+        </div>
+
+        <div class="checkout-legal">
+          <h3>Before you continue</h3>
+          <p>This premium membership renews on the billing schedule shown above until cancelled under our Terms. Premium digital access starts after successful payment.</p>
+
+          <label class="consent-check">
+            <input type="checkbox" id="legalConsent" />
+            <span>I agree to the <a href="terms.html">Terms</a>, <a href="license.html">License</a>, and <a href="privacy.html">Privacy Policy</a>, and I ask for premium digital access to begin immediately after successful payment.</span>
+          </label>
+
+          <p class="consent-note">Once premium digital access starts, any cancellation rights for already-supplied digital content may be affected as explained in our Terms. This does not remove any legal rights you still have.</p>
         </div>
 
         <button type="button" class="cta-btn" id="checkoutBtn">Continue to Secure Payment</button>
@@ -662,6 +737,7 @@
     const planBilling = document.getElementById("planBilling");
     const planPrice = document.getElementById("planPrice");
     const checkoutBtn = document.getElementById("checkoutBtn");
+    const legalConsent = document.getElementById("legalConsent");
     const backBtn = document.getElementById("backBtn");
     const checkoutMessage = document.getElementById("checkoutMessage");
 
@@ -709,6 +785,12 @@
 
     async function startCheckout(){
       clearMessage();
+
+      if(!legalConsent.checked){
+        showMessage("Please confirm the checkout terms before continuing.");
+        return;
+      }
+
       setLoading(true);
 
       try{

@@ -5,7 +5,11 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>PixNest | Log In</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png" />
+  <link rel="shortcut icon" href="favicon.ico" />
+  <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     *{
@@ -760,6 +764,10 @@
       loginBtn.textContent = isLoading ? "Logging in..." : "Log In";
     }
 
+    function getAuthRedirectBase(){
+      return "https://pixnest.uk";
+    }
+
     document.querySelectorAll(".toggle-password").forEach(button => {
       button.addEventListener("click", () => {
         const targetId = button.getAttribute("data-target");
@@ -787,7 +795,7 @@
 
       try{
         const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
-          redirectTo: window.location.origin + "/login.html"
+          redirectTo: getAuthRedirectBase() + "/login.html"
         });
 
         if(error){
