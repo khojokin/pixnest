@@ -672,7 +672,7 @@
               <span>Remember me</span>
             </label>
 
-            <a href="#" class="forgot-link" id="forgotPasswordLink">Forgot password?</a>
+            <a href="reset-password.html" class="forgot-link" id="forgotPasswordLink">Forgot password?</a>
           </div>
 
           <button type="submit" class="auth-btn" id="loginBtn">Log In</button>
@@ -784,22 +784,11 @@
         icon.className = isPassword ? "fa-solid fa-eye-slash" : "fa-solid fa-eye";
       });
     });
-
-    forgotPasswordLink.addEventListener("click", async (e) => {
+    forgotPasswordLink.addEventListener("click", (e) => {
       e.preventDefault();
-      clearMessage();
-
-      const email = emailInput.value.trim();
-
-      if(!email){
-        showMessage("Enter your email address first so a reset link can be sent.");
-        return;
-      }
-
-      try{
-        const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
-          redirectTo: getAuthRedirectBase() + "/login.html"
-        });
+      const email = encodeURIComponent(emailInput.value.trim());
+      window.location.href = email ? `reset-password.html?email=${email}` : "reset-password.html";
+    });
 
         if(error){
           throw error;
