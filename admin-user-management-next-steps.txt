@@ -1,0 +1,12 @@
+Admin user create / restore notes
+
+1. Deleted / banned / suspended / frozen users can now be restored from the Boss Admin page by email or with the new Activate User button.
+2. Brand-new login account creation now expects the included Edge Function:
+   supabase/functions/admin-create-user/index.ts
+3. Deploy it with the project service role secret.
+4. Make sure these secrets exist for the project:
+   SUPABASE_URL
+   SUPABASE_ANON_KEY
+   SUPABASE_SERVICE_ROLE_KEY
+5. The admin page now shows a clear message if the function is not deployed yet.
+6. Account creation from the browser should stay server-side only. Do not put the service role key directly into site HTML or JS.

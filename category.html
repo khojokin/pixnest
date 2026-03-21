@@ -1824,6 +1824,39 @@ const LOCKED_SVG =
       return String(value || "").trim().toLowerCase();
     }
 
+    function isPhotoPubliclyApproved(photo){
+      if(!photo || typeof photo !== "object") return false;
+
+      const approval = normalize(photo.approval_status || photo.review_status || photo.moderation_status || "");
+      const status = normalize(photo.status || photo.post_status || "");
+      const hasModerationFields = (
+        Object.prototype.hasOwnProperty.call(photo, "approval_status") ||
+        Object.prototype.hasOwnProperty.call(photo, "admin_approved") ||
+        Object.prototype.hasOwnProperty.call(photo, "is_approved") ||
+        Object.prototype.hasOwnProperty.call(photo, "review_status") ||
+        Object.prototype.hasOwnProperty.call(photo, "moderation_status")
+      );
+
+      if(["rejected", "deleted", "removed", "hidden", "draft", "archived"].includes(approval)) return false;
+      if(["rejected", "deleted", "removed", "hidden", "draft", "archived"].includes(status)) return false;
+
+      if(Object.prototype.hasOwnProperty.call(photo, "account_status")){
+        const accountStatus = normalize(photo.account_status);
+        if(["deleted", "banned", "suspended"].includes(accountStatus)) return false;
+      }
+
+      if(!hasModerationFields){
+        return true;
+      }
+
+      if(photo.admin_approved === true) return true;
+      if(photo.is_approved === true) return true;
+      if(approval === "approved") return true;
+      if(status === "approved") return true;
+
+      return false;
+    }
+
     function compactNumber(value){
       try{
         return new Intl.NumberFormat("en", {
@@ -2361,7 +2394,6 @@ function handleLockedPremiumPhoto(){
         photo.creator_banner ||
         photo.creator_background ||
         photo.creator_background_image ||
-        photo.image_url ||
         DEFAULT_CATEGORY_IMAGE
       ).trim();
     }
@@ -3375,7 +3407,7 @@ async function openLightbox(photo){
           throw error;
         }
 
-        allPhotos = Array.isArray(data) ? data : [];
+        allPhotos = (Array.isArray(data) ? data : []).filter(isPhotoPubliclyApproved);
         applyFooterText();
         decideMode();
       }catch(error){

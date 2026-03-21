@@ -97,7 +97,7 @@ function pixNestNormalizeData(data) {
           name: category.name || "Untitled Category",
           description: category.description || "",
           photos: Array.isArray(category.photos)
-            ? category.photos.map((photo) => ({
+            ? category.photos.filter(pixNestIsPhotoPubliclyApproved).map((photo) => ({
                 id: photo.id || "",
                 title: photo.title || "",
                 description: photo.description || "",
@@ -152,6 +152,31 @@ function pixNestSetPhone(id, phone) {
   if (!el) return;
   el.textContent = phone || "";
   el.href = `tel:${phone || ""}`;
+}
+
+function pixNestIsPhotoPubliclyApproved(photo) {
+  if (!photo || typeof photo !== "object") return false;
+
+  const approval = String(photo.approval_status || photo.review_status || photo.moderation_status || "").trim().toLowerCase();
+  const status = String(photo.status || photo.post_status || "").trim().toLowerCase();
+  const hasModerationFields = (
+    Object.prototype.hasOwnProperty.call(photo, "approval_status") ||
+    Object.prototype.hasOwnProperty.call(photo, "admin_approved") ||
+    Object.prototype.hasOwnProperty.call(photo, "is_approved") ||
+    Object.prototype.hasOwnProperty.call(photo, "review_status") ||
+    Object.prototype.hasOwnProperty.call(photo, "moderation_status")
+  );
+
+  if (["rejected", "deleted", "removed", "hidden", "draft", "archived"].includes(approval)) return false;
+  if (["rejected", "deleted", "removed", "hidden", "draft", "archived"].includes(status)) return false;
+
+  if (!hasModerationFields) return true;
+  if (photo.admin_approved === true) return true;
+  if (photo.is_approved === true) return true;
+  if (approval === "approved") return true;
+  if (status === "approved") return true;
+
+  return false;
 }
 
 function pixNestGetPhotoTags(photo) {
