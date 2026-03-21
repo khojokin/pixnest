@@ -117,6 +117,35 @@
       .photo-stat[data-label] i{ font-size:15px !important; color:#facc15 !important; }
       .photo-stat[data-label]::after{ content:attr(data-label); font-size:11px; font-weight:600; color:#cbd5e1; }
       .pixnest-extra-actions{ margin-left:0 !important; }
+
+      .account-menu-wrap,
+      .account-menu-toggle,
+      .account-menu-btn,
+      #accountMenuWrap,
+      #accountMenuToggle,
+      #accountMenuBtn,
+      #accountDropdown,
+      #accountMenuDropdown{ display:none !important; }
+      .site-unified-menu-wrap{ position:relative; display:flex; align-items:center; }
+      .site-unified-menu-panel{ position:absolute; top:calc(100% + 12px); right:0; width:min(360px,92vw); max-height:min(76vh,760px); overflow:auto; background:linear-gradient(180deg, rgba(15,23,42,.99), rgba(17,24,39,.98)); border:1px solid rgba(250,204,21,.18); border-radius:24px; box-shadow:0 26px 60px rgba(0,0,0,.38); padding:14px; z-index:2600; display:none; }
+      .site-unified-menu-panel.open{ display:block; }
+      .site-unified-menu-head{ display:flex; align-items:center; gap:12px; padding:6px 6px 14px; border-bottom:1px solid rgba(255,255,255,.08); margin-bottom:12px; }
+      .site-unified-menu-avatar{ width:42px; height:42px; border-radius:14px; background:linear-gradient(135deg,#facc15,#fb7185); color:#111827; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:18px; }
+      .site-unified-menu-head strong{ display:block; color:#f8fafc; font-size:15px; }
+      .site-unified-menu-head small{ color:#94a3b8; font-size:12px; }
+      .site-unified-menu-section{ display:grid; gap:6px; margin-bottom:10px; }
+      .site-unified-menu-section-title{ font-size:11px; text-transform:uppercase; letter-spacing:.12em; color:#94a3b8; padding:4px 8px; }
+      .site-unified-menu-link,
+      .site-unified-menu-action{ width:100%; display:flex; align-items:center; gap:12px; min-height:46px; padding:11px 12px; border-radius:16px; border:1px solid transparent; background:transparent; color:#e5e7eb; text-decoration:none; font-weight:700; font-size:14px; cursor:pointer; }
+      .site-unified-menu-link:hover,
+      .site-unified-menu-action:hover{ background:rgba(250,204,21,.10); border-color:rgba(250,204,21,.18); color:#facc15; }
+      .site-unified-menu-link.active{ background:rgba(250,204,21,.10); color:#facc15; border-color:rgba(250,204,21,.18); }
+      .site-unified-menu-action.site-danger{ color:#fecaca; }
+      .site-unified-menu-action.site-danger:hover{ color:#fff; background:rgba(239,68,68,.14); border-color:rgba(239,68,68,.24); }
+      .site-unified-menu-sep{ height:1px; background:rgba(255,255,255,.08); margin:6px 0 10px; }
+      @media (max-width:860px){
+        .site-unified-menu-panel{ left:18px; right:18px; width:auto; }
+      }
       @media (max-width:860px){
         .nav-links a.active::after{ display:block !important; bottom:-4px !important; }
       }
@@ -219,6 +248,15 @@
     });
   }
 
+  function removeLegacyMenus(){
+    document.querySelectorAll('.account-menu-wrap,.account-menu-toggle,.account-menu-btn').forEach(el => {
+      if(el.id === 'menuToggle' || el.id === 'navToggle') return;
+      if(el.classList.contains('menu-toggle') || el.classList.contains('nav-toggle')) return;
+      el.remove();
+    });
+    document.querySelectorAll('#accountDropdown,#accountMenuDropdown').forEach(el => el.remove());
+  }
+
   function ensureFooterFlex(){
     document.body.classList.add('site-flex-page');
   }
@@ -277,6 +315,41 @@
     }
   }
 
+
+  async function getAdminState(user, client){
+    if(!user) return false;
+
+    const role = String(user?.app_metadata?.role || '').toLowerCase();
+    if(role === 'admin' || role === 'founder' || user?.app_metadata?.is_admin === true) return true;
+
+    try{
+      const [profileRes, creatorRes] = await Promise.all([
+        client.from('profiles').select('site_admin,super_admin,role').eq('id', user.id).maybeSingle(),
+        client.from('creator_profiles').select('site_admin,super_admin,role').eq('user_id', user.id).maybeSingle()
+      ]);
+      const p = profileRes.data || {};
+      const c = creatorRes.data || {};
+      const pRole = String(p.role || '').toLowerCase();
+      const cRole = String(c.role || '').toLowerCase();
+      return Boolean(
+        p.site_admin === true ||
+        p.super_admin === true ||
+        c.site_admin === true ||
+        c.super_admin === true ||
+        pRole === 'admin' ||
+        pRole === 'founder' ||
+        cRole === 'admin' ||
+        cRole === 'founder'
+      );
+    }catch(_error){
+      return false;
+    }
+  }
+
+  function getAccountTargetPath(){
+    return window.pixnestUserIsAdmin ? 'boss-admin.html' : 'account.html';
+  }
+
   function setupIdleLogout(client){
     const markActive = () => localStorage.setItem(LAST_ACTIVE_KEY, String(Date.now()));
     ['mousemove','mousedown','keydown','scroll','touchstart','click'].forEach(eventName => {
@@ -325,21 +398,240 @@
       return;
     }
 
-    authLinks.innerHTML = `
-      <a href="account.html" class="nav-auth-btn secondary"><i class="fa-solid fa-user"></i>Account</a>
-      <a href="upload.html" class="nav-auth-btn primary"><i class="fa-solid fa-upload"></i>Upload</a>
-      <button type="button" class="nav-auth-btn site-danger" id="siteLogoutBtn"><i class="fa-solid fa-right-from-bracket"></i>Logout</button>
-    `;
+    authLinks.innerHTML = ``;
+    authLinks.style.display = 'none';
     navLinks.appendChild(authLinks);
+  }
 
-    document.getElementById('siteLogoutBtn').addEventListener('click', async () => {
-      try{
-        await client.auth.signOut();
-        window.location.href = 'index.html';
-      }catch(_err){
-        alert('Could not log out.');
+
+  function buildUnifiedMenuLink(href, label, icon, extraClass = ''){
+    const activeHref = getActiveNavHref();
+    const isActive = href && activeHref && href.toLowerCase() === activeHref.toLowerCase();
+    return `<a href="${href}" class="site-unified-menu-link ${extraClass} ${isActive ? 'active' : ''}"><i class="${icon}"></i><span>${label}</span></a>`;
+  }
+
+  function buildUnifiedActionLink(href, label, icon, dataAction = ''){
+    const actionAttr = dataAction ? ` data-site-action="${dataAction}"` : '';
+    return `<a href="${href}" class="site-unified-menu-link"${actionAttr}><i class="${icon}"></i><span>${label}</span></a>`;
+  }
+
+  function getUnifiedMenuMarkup(user){
+    const accountTarget = getAccountTargetPath();
+    const name = String(user?.user_metadata?.full_name || user?.user_metadata?.name || user?.email || 'PixNest User').trim();
+    const email = String(user?.email || 'Signed in').trim();
+    const initial = (name[0] || email[0] || 'P').toUpperCase();
+
+    const navSection = `
+      <div class="site-unified-menu-section">
+        <div class="site-unified-menu-section-title">Browse</div>
+        ${buildUnifiedMenuLink('index.html','Home','fa-solid fa-house')}
+        ${buildUnifiedMenuLink('explore.html','Explore','fa-solid fa-compass')}
+        ${buildUnifiedMenuLink('category.html','Categories','fa-solid fa-layer-group')}
+        ${buildUnifiedMenuLink('featured.html','Featured','fa-solid fa-star')}
+        ${buildUnifiedMenuLink('premium.html','Premium','fa-solid fa-crown')}
+        ${buildUnifiedMenuLink('contact.html','Contact','fa-solid fa-envelope')}
+      </div>`;
+
+    if(!user){
+      return `
+        <div class="site-unified-menu-head">
+          <div class="site-unified-menu-avatar">P</div>
+          <div><strong>PixNest Menu</strong><small>Browse or sign in</small></div>
+        </div>
+        ${navSection}
+        <div class="site-unified-menu-sep"></div>
+        <div class="site-unified-menu-section">
+          <div class="site-unified-menu-section-title">Account</div>
+          <a href="login.html" class="site-unified-menu-link"><i class="fa-solid fa-right-to-bracket"></i><span>Login</span></a>
+          <a href="signup.html" class="site-unified-menu-link"><i class="fa-solid fa-user-plus"></i><span>Create Account</span></a>
+        </div>`;
+    }
+
+    const adminSection = window.pixnestUserIsAdmin ? `
+      <div class="site-unified-menu-section">
+        <div class="site-unified-menu-section-title">Admin</div>
+        <a href="boss-admin.html" class="site-unified-menu-link"><i class="fa-solid fa-shield-halved"></i><span>Admin Interface</span></a>
+      </div>` : '';
+
+    return `
+      <div class="site-unified-menu-head">
+        <div class="site-unified-menu-avatar">${initial}</div>
+        <div><strong>${name}</strong><small>${email}</small></div>
+      </div>
+      ${navSection}
+      ${adminSection}
+      <div class="site-unified-menu-section">
+        <div class="site-unified-menu-section-title">Account</div>
+        ${buildUnifiedActionLink(accountTarget,'Account','fa-solid fa-user')}
+        ${buildUnifiedActionLink('account.html#edit-profile','Edit profile','fa-solid fa-user-pen','edit-profile')}
+        ${buildUnifiedActionLink('account.html#change-profile-picture','Change profile picture','fa-solid fa-camera','change-profile-picture')}
+        ${buildUnifiedActionLink('account.html#change-cover-photo','Change cover photo','fa-solid fa-image','change-cover-photo')}
+        ${buildUnifiedActionLink('account.html#verification-request','Submit verification request','fa-solid fa-badge-check','verification-request')}
+        ${buildUnifiedActionLink('account.html#dashboard-request','Submit dashboard request','fa-solid fa-chart-line','dashboard-request')}
+        ${buildUnifiedActionLink('upload.html','Upload','fa-solid fa-cloud-arrow-up')}
+        ${buildUnifiedActionLink('professional-dashboard.html','Creator Dashboard','fa-solid fa-chart-pie')}
+        ${buildUnifiedActionLink('premium.html','Buy premium membership','fa-solid fa-crown')}
+        ${buildUnifiedActionLink('account.html#muted-accounts','Muted accounts','fa-solid fa-volume-xmark')}
+        ${buildUnifiedActionLink('account.html#content-preferences','Content preferences','fa-solid fa-sliders')}
+        ${buildUnifiedActionLink('account.html#accessibility','Accessibility','fa-solid fa-universal-access')}
+        ${buildUnifiedActionLink('account.html#language-and-translations','Language and translations','fa-solid fa-language')}
+        ${buildUnifiedActionLink('account.html#media-quality','Media quality','fa-solid fa-photo-film')}
+        ${buildUnifiedActionLink('privacy.html','Privacy Centre','fa-solid fa-shield-heart')}
+        ${buildUnifiedActionLink('account.html#account-status','Account Status','fa-solid fa-circle-info')}
+      </div>
+      <div class="site-unified-menu-sep"></div>
+      <div class="site-unified-menu-section">
+        <button type="button" class="site-unified-menu-action site-danger" data-site-action="logout"><i class="fa-solid fa-right-from-bracket"></i><span>Log out</span></button>
+      </div>`;
+  }
+
+  function ensurePrimaryMenuToggle(){
+    let toggle = document.getElementById('menuToggle') || document.getElementById('navToggle') || document.querySelector('.menu-toggle') || document.querySelector('.nav-toggle');
+    if(toggle) return toggle;
+    const navLinks = document.getElementById('navLinks') || document.querySelector('.nav-links');
+    const host = navLinks?.parentElement || document.querySelector('.nav-right') || document.querySelector('header .nav') || document.querySelector('header');
+    if(!host) return null;
+    toggle = document.createElement('button');
+    toggle.type = 'button';
+    toggle.id = 'menuToggle';
+    toggle.className = 'menu-toggle';
+    toggle.setAttribute('aria-label', 'Open menu');
+    toggle.setAttribute('aria-expanded', 'false');
+    toggle.innerHTML = '<span></span><span></span><span></span>';
+    host.appendChild(toggle);
+    return toggle;
+  }
+
+  function bindAccountShortcutInterception(){
+    document.addEventListener('click', (event) => {
+      const link = event.target.closest('a[href]');
+      if(!link) return;
+      const href = String(link.getAttribute('href') || '').trim();
+      if(!window.pixnestUserIsAdmin) return;
+      if(href === 'account.html' || href === './account.html'){
+        event.preventDefault();
+        window.location.href = 'boss-admin.html';
       }
+    }, true);
+  }
+
+  function bindAccountActionLinks(panel){
+    if(!panel) return;
+    const actionMap = {
+      'edit-profile':'editProfileMenuBtn',
+      'change-profile-picture':'changeAvatarMenuBtn',
+      'change-cover-photo':'changeCoverMenuBtn',
+      'verification-request':'verificationRequestBtn',
+      'dashboard-request':'dashboardRequestBtn'
+    };
+
+    panel.querySelectorAll('[data-site-action]').forEach(el => {
+      const action = el.getAttribute('data-site-action');
+      if(action === 'logout') return;
+      el.addEventListener('click', (event) => {
+        if(currentPage() !== 'account.html') return;
+        const targetId = actionMap[action];
+        const target = targetId ? document.getElementById(targetId) : null;
+        if(target){
+          event.preventDefault();
+          target.click();
+          const panelEl = document.getElementById('siteUnifiedMenuPanel');
+          if(panelEl) panelEl.classList.remove('open');
+          const toggle = ensurePrimaryMenuToggle();
+          if(toggle) toggle.setAttribute('aria-expanded', 'false');
+        }
+      });
     });
+  }
+
+  function setupUnifiedPageMenu(user, client){
+    ensureGlobalStyles();
+    removeLegacyMenus();
+    const toggle = ensurePrimaryMenuToggle();
+    if(!toggle) return;
+
+    let wrap = document.getElementById('siteUnifiedMenuWrap');
+    if(!wrap){
+      wrap = document.createElement('div');
+      wrap.className = 'site-unified-menu-wrap';
+      wrap.id = 'siteUnifiedMenuWrap';
+      const panel = document.createElement('div');
+      panel.className = 'site-unified-menu-panel';
+      panel.id = 'siteUnifiedMenuPanel';
+      wrap.appendChild(panel);
+      toggle.insertAdjacentElement('afterend', wrap);
+    }
+
+    const panel = document.getElementById('siteUnifiedMenuPanel');
+    if(!panel) return;
+    panel.innerHTML = getUnifiedMenuMarkup(user);
+    bindAccountActionLinks(panel);
+
+    const closeMenu = () => {
+      panel.classList.remove('open');
+      toggle.setAttribute('aria-expanded', 'false');
+    };
+    const openMenu = () => {
+      panel.classList.add('open');
+      toggle.setAttribute('aria-expanded', 'true');
+    };
+
+    if(!toggle.dataset.siteUnifiedMenuBound){
+      toggle.dataset.siteUnifiedMenuBound = 'true';
+      toggle.addEventListener('click', (event) => {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        if(panel.classList.contains('open')) closeMenu();
+        else openMenu();
+      }, true);
+
+      document.addEventListener('click', (event) => {
+        if(!panel.classList.contains('open')) return;
+        const clickedInside = panel.contains(event.target) || toggle.contains(event.target);
+        if(!clickedInside) closeMenu();
+      }, true);
+
+      window.addEventListener('resize', () => {
+        if(window.innerWidth > 860) closeMenu();
+      });
+    }
+
+    panel.querySelectorAll('a[href]').forEach(link => {
+      link.addEventListener('click', () => closeMenu());
+    });
+
+    const logoutBtn = panel.querySelector('[data-site-action="logout"]');
+    if(logoutBtn){
+      logoutBtn.addEventListener('click', async (event) => {
+        event.preventDefault();
+        closeMenu();
+        try{
+          if(client) await client.auth.signOut();
+          window.location.href = 'index.html';
+        }catch(_err){
+          alert('Could not log out.');
+        }
+      });
+    }
+  }
+
+  function handlePrivateSelfVsPublicRouting(user){
+    const page = currentPage();
+    const accountTarget = getAccountTargetPath();
+    const creatorId = String(new URLSearchParams(window.location.search).get('creator') || '').trim();
+    const viewingSelf = Boolean(user && creatorId && creatorId === String(user.id || '').trim());
+
+    if(page === 'account.html' && user && window.pixnestUserIsAdmin && !window.location.hash && !window.location.search){
+      window.location.replace('boss-admin.html');
+      return true;
+    }
+
+    if(page === 'profile.html' && user && viewingSelf){
+      window.location.replace(accountTarget);
+      return true;
+    }
+
+    return false;
   }
 
   function removeHelpTeamSection(){
@@ -577,6 +869,8 @@
     removeHelpTeamSection();
     showIdleNoticeIfNeeded();
     ensureAuthPromptShell();
+    removeLegacyMenus();
+    bindAccountShortcutInterception();
     syncActiveNavLinks();
     const navObserver = new MutationObserver(() => syncActiveNavLinks());
     navObserver.observe(document.body, { childList:true, subtree:true, attributes:true, attributeFilter:['class','href'] });
@@ -594,9 +888,13 @@
             openAuthPrompt(actionText);
           };
           const isPremium = await getPremiumState(sessionUser, client);
+          const isAdmin = await getAdminState(sessionUser, client);
           window.pixnestUserIsPremium = isPremium;
+          window.pixnestUserIsAdmin = isAdmin;
           standardizeFooter(isPremium, Boolean(sessionUser));
           buildAuthUI(sessionUser, client);
+          setupUnifiedPageMenu(sessionUser, client);
+          if(handlePrivateSelfVsPublicRouting(sessionUser)) return;
           refreshExtraPhotoActions();
         };
 
