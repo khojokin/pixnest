@@ -1,0 +1,3384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PixNest | Categories</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+      font-family:Arial, Helvetica, sans-serif;
+    }
+
+    :root{
+      --bg:#0f172a;
+      --panel:#111827;
+      --panel2:#1e293b;
+      --text:#e5e7eb;
+      --muted:#94a3b8;
+      --accent:#facc15;
+      --line:rgba(255,255,255,0.08);
+      --blue:#3b82f6;
+      --success:#22c55e;
+      --danger:#ef4444;
+    }
+
+    html{
+      scroll-behavior:smooth;
+      min-height:100%;
+      background:var(--bg);
+    }
+
+    body{
+      min-height:100%;
+      background:var(--bg);
+      color:var(--text);
+      line-height:1.6;
+      overflow-x:hidden;
+    }
+
+    img{
+      max-width:100%;
+      display:block;
+    }
+
+    a{
+      text-decoration:none;
+      color:inherit;
+      transition:.3s;
+    }
+
+    button,
+    input,
+    select{
+      font-family:Arial, Helvetica, sans-serif;
+      transition:.3s;
+    }
+
+    .container{
+      width:min(1200px,92%);
+      margin:auto;
+    }
+
+    .hidden{
+      display:none !important;
+    }
+
+    header{
+      position:sticky;
+      top:0;
+      z-index:1000;
+      background:rgba(15,23,42,0.95);
+      border-bottom:1px solid var(--line);
+      backdrop-filter:blur(8px);
+    }
+
+    .nav{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:20px;
+      padding:16px 0;
+      position:relative;
+    }
+
+    .logo-wrap{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      flex-shrink:0;
+      min-width:0;
+    }
+
+    .logo-mark{
+      width:52px;
+      height:52px;
+      border-radius:14px;
+      background:linear-gradient(135deg,#facc15,#fb7185);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:#111827;
+      font-size:24px;
+      font-weight:800;
+      box-shadow:0 0 16px rgba(250,204,21,0.28);
+      flex-shrink:0;
+    }
+
+    .logo-text{
+      display:flex;
+      flex-direction:column;
+      line-height:1;
+      min-width:0;
+    }
+
+    .logo-title{
+      font-size:27px;
+      font-weight:800;
+      color:var(--accent);
+      letter-spacing:.4px;
+      white-space:nowrap;
+    }
+
+    .logo-sub{
+      font-size:11px;
+      color:#cbd5e1;
+      letter-spacing:1.7px;
+      text-transform:uppercase;
+      margin-top:4px;
+      white-space:nowrap;
+    }
+
+    .nav-links{
+      display:flex;
+      align-items:center;
+      gap:20px;
+      flex-wrap:wrap;
+    }
+
+    .nav-links a{
+      color:#cbd5e1;
+      font-size:15px;
+      position:relative;
+      padding-bottom:4px;
+    }
+
+    .nav-links a:hover,
+    .nav-links a.active{
+      color:var(--accent);
+    }
+
+    .nav-links a.active::after{
+      content:"";
+      position:absolute;
+      left:0;
+      bottom:-4px;
+      width:100%;
+      height:2px;
+      background:var(--accent);
+      border-radius:999px;
+    }
+
+    .menu-toggle{
+      display:none;
+      width:46px;
+      height:46px;
+      border-radius:12px;
+      border:1px solid rgba(250,204,21,.35);
+      background:#111827;
+      color:var(--accent);
+      align-items:center;
+      justify-content:center;
+      cursor:pointer;
+      flex-direction:column;
+      gap:5px;
+    }
+
+    .menu-toggle span{
+      width:20px;
+      height:2px;
+      border-radius:999px;
+      background:var(--accent);
+      display:block;
+    }
+
+    .hero{
+      background:
+        linear-gradient(rgba(15,23,42,.70), rgba(15,23,42,.92)),
+        url('https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&w=1600&q=80') center/cover no-repeat;
+      min-height:58vh;
+      display:flex;
+      align-items:center;
+    }
+
+    .hero-content{
+      max-width:860px;
+      padding:90px 0 60px;
+    }
+
+    .hero-tag{
+      display:inline-block;
+      background:rgba(250,204,21,.12);
+      color:var(--accent);
+      padding:8px 14px;
+      border-radius:999px;
+      font-size:14px;
+      border:1px solid rgba(250,204,21,.22);
+      margin-bottom:18px;
+    }
+
+    .hero h1{
+      font-size:clamp(36px,5vw,58px);
+      line-height:1.06;
+      margin-bottom:18px;
+      color:#fff;
+    }
+
+    .hero p{
+      font-size:18px;
+      color:#cbd5e1;
+      max-width:760px;
+    }
+
+    .hero-meta{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:18px;
+    }
+
+    .hero-actions{
+      display:flex;
+      flex-wrap:wrap;
+      gap:12px;
+      margin-top:22px;
+    }
+
+    .mini-btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      padding:12px 18px;
+      border-radius:12px;
+      font-weight:700;
+      font-size:14px;
+      border:none;
+      cursor:pointer;
+      text-align:center;
+    }
+
+    .mini-btn.primary{
+      background:var(--accent);
+      color:#111827;
+    }
+
+    .mini-btn.primary:hover{
+      transform:translateY(-2px);
+      box-shadow:0 10px 24px rgba(250,204,21,.2);
+    }
+
+    .mini-btn.secondary{
+      background:transparent;
+      color:#fff;
+      border:1px solid rgba(255,255,255,.18);
+    }
+
+    .mini-btn.secondary:hover{
+      background:rgba(255,255,255,.06);
+    }
+
+    section{
+      padding:74px 0;
+    }
+
+    .section-head{
+      display:flex;
+      align-items:end;
+      justify-content:space-between;
+      gap:20px;
+      flex-wrap:wrap;
+      margin-bottom:28px;
+    }
+
+    .section-head h2{
+      font-size:32px;
+      color:#fff;
+      margin-bottom:8px;
+    }
+
+    .section-head p{
+      color:var(--muted);
+      max-width:760px;
+    }
+
+    .search-bar{
+      display:grid;
+      grid-template-columns:1.2fr 0.8fr 120px;
+      gap:12px;
+      margin-bottom:28px;
+      background:#111827;
+      border:1px solid rgba(255,255,255,0.08);
+      border-radius:18px;
+      padding:10px;
+    }
+
+    .search-input-wrap{
+      position:relative;
+    }
+
+    .search-input-wrap i{
+      position:absolute;
+      left:16px;
+      top:50%;
+      transform:translateY(-50%);
+      color:#94a3b8;
+      font-size:15px;
+      pointer-events:none;
+    }
+
+    .search-input-wrap input,
+    .search-select{
+      width:100%;
+      min-height:52px;
+      background:#0f172a;
+      border:1px solid rgba(255,255,255,0.08);
+      border-radius:12px;
+      color:#ffffff;
+      outline:none;
+      font-size:15px;
+    }
+
+    .search-input-wrap input{
+      padding:14px 16px 14px 46px;
+    }
+
+    .search-select{
+      padding:14px 16px;
+    }
+
+    .search-input-wrap input:focus,
+    .search-select:focus{
+      border-color:rgba(250,204,21,0.55);
+      box-shadow:0 0 0 3px rgba(250,204,21,0.08);
+    }
+
+    .search-btn{
+      min-height:52px;
+      border:none;
+      border-radius:12px;
+      background:#facc15;
+      color:#111827;
+      font-size:15px;
+      font-weight:700;
+      cursor:pointer;
+    }
+
+    .search-btn:hover{
+      transform:translateY(-2px);
+      box-shadow:0 10px 24px rgba(250,204,21,0.2);
+    }
+
+    .filter-note{
+      color:#cbd5e1;
+      font-size:14px;
+      margin:6px 0 24px;
+    }
+
+    .category-grid{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:24px;
+    }
+
+    .category-card{
+      display:block;
+      background:#111827;
+      border:1px solid var(--line);
+      border-radius:22px;
+      overflow:hidden;
+      transition:.3s;
+      min-height:100%;
+      box-shadow:0 14px 30px rgba(0,0,0,.14);
+    }
+
+    .category-card:hover{
+      transform:translateY(-6px);
+      box-shadow:0 18px 36px rgba(0,0,0,.2);
+    }
+
+    .category-image-wrap{
+      position:relative;
+      height:240px;
+      overflow:hidden;
+      background:#1e293b;
+    }
+
+    .category-image-wrap img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+    }
+
+    .category-image-wrap::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:linear-gradient(to top, rgba(15,23,42,.55), rgba(15,23,42,.08));
+    }
+
+    .category-content{
+      padding:20px;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+
+    .category-content h3{
+      color:#fff;
+      font-size:24px;
+      line-height:1.2;
+    }
+
+    .category-content p{
+      color:#cbd5e1;
+      font-size:14px;
+      line-height:1.6;
+    }
+
+    .category-meta{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:2px;
+    }
+
+    .category-link{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      color:var(--accent);
+      font-size:14px;
+      font-weight:700;
+      margin-top:6px;
+    }
+
+    .category-link:hover{
+      gap:12px;
+    }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:6px;
+      padding:6px 10px;
+      border-radius:999px;
+      font-size:11px;
+      background:rgba(0,0,0,.74);
+      border:1px solid rgba(255,255,255,.12);
+      color:#fff;
+      backdrop-filter:blur(8px);
+      white-space:nowrap;
+    }
+
+    .pill.category-tag{
+      background:rgba(0,0,0,.84);
+      color:#fff;
+      border:1px solid rgba(255,255,255,.16);
+    }
+
+    .pill.featured{
+      background:rgba(34,197,94,.18);
+      border-color:rgba(34,197,94,.28);
+      color:#86efac;
+    }
+
+    .pill.trending{
+      background:rgba(59,130,246,.16);
+      border-color:rgba(59,130,246,.26);
+      color:#93c5fd;
+    }
+
+    .pill.premium{
+      background:rgba(250,204,21,.22);
+      border:1px solid rgba(250,204,21,.42);
+      color:#fde68a;
+      box-shadow:0 8px 22px rgba(250,204,21,.14);
+    }
+
+    .pill i{
+      font-size:10px;
+    }
+
+    .photo-grid{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:24px;
+    }
+
+    .visual-card{
+      position:relative;
+      min-height:430px;
+      border-radius:24px;
+      overflow:hidden;
+      border:1px solid var(--line);
+      background:#111827;
+      transition:.3s;
+      cursor:pointer;
+      box-shadow:0 14px 28px rgba(0,0,0,.16);
+    }
+
+    .visual-card:hover{
+      transform:translateY(-6px);
+      box-shadow:0 18px 36px rgba(0,0,0,.24);
+    }
+
+    .visual-card img{
+      position:absolute;
+      inset:0;
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      background:#1e293b;
+    }
+
+    .visual-card::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      z-index:1;
+      background:linear-gradient(
+        to top,
+        rgba(15,23,42,.96) 0%,
+        rgba(15,23,42,.72) 34%,
+        rgba(15,23,42,.20) 70%,
+        rgba(15,23,42,.04) 100%
+      );
+    }
+
+
+.locked-card img{
+  filter:blur(10px) brightness(.55);
+  transform:scale(1.05);
+}
+
+.locked-card::before{
+  content:"Premium";
+  position:absolute;
+  top:14px;
+  right:14px;
+  z-index:4;
+  background:#facc15;
+  color:#111827;
+  font-size:12px;
+  font-weight:800;
+  padding:6px 10px;
+  border-radius:999px;
+  box-shadow:0 8px 20px rgba(250,204,21,.18);
+}
+
+.action-icon.disabled,
+.lightbox-social.disabled,
+.photo-stat.disabled{
+  opacity:.45;
+  cursor:not-allowed;
+  pointer-events:none;
+}
+
+.lock-note{
+  color:#fde68a;
+  font-size:13px;
+  font-weight:700;
+  text-shadow:0 2px 10px rgba(0,0,0,.35);
+}
+
+    .card-top-row{
+      position:absolute;
+      top:14px;
+      left:14px;
+      right:14px;
+      z-index:3;
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:10px;
+    }
+
+    .card-top-left{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      flex-wrap:wrap;
+      min-width:0;
+    }
+
+    .card-top-right{
+      display:flex;
+      align-items:center;
+      justify-content:flex-end;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+
+    .photo-overlay{
+      position:absolute;
+      inset:0;
+      z-index:2;
+      padding:14px;
+      display:flex;
+      flex-direction:column;
+      justify-content:flex-end;
+      gap:8px;
+    }
+
+    .overlay-category{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+
+    .overlay-desc{
+      color:#fff;
+      font-size:14px;
+      line-height:1.45;
+      margin:0;
+      text-shadow:0 2px 10px rgba(0,0,0,.35);
+      display:-webkit-box;
+      -webkit-line-clamp:2;
+      -webkit-box-orient:vertical;
+      overflow:hidden;
+      max-width:92%;
+    }
+
+    .credit{
+      color:#e2e8f0;
+      font-size:13px;
+      font-weight:700;
+      text-shadow:0 2px 10px rgba(0,0,0,.35);
+      line-height:1.35;
+      display:flex;
+      align-items:center;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+
+    .creator-badges{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      flex-wrap:wrap;
+    }
+
+    .creator-badge{
+      width:22px;
+      height:22px;
+      border-radius:50%;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      font-size:11px;
+      border:1px solid rgba(255,255,255,.14);
+      background:#0f172a;
+      color:#fff;
+      box-shadow:0 6px 14px rgba(0,0,0,.18);
+    }
+
+    .creator-badge.verified{
+      color:#93c5fd;
+      border-color:rgba(59,130,246,.28);
+      background:rgba(59,130,246,.14);
+    }
+
+    .creator-badge.premium{
+      color:#fde68a;
+      border-color:rgba(250,204,21,.34);
+      background:rgba(250,204,21,.16);
+    }
+
+    .card-bottom{
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-top:2px;
+    }
+
+    .card-bottom-left{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      flex-wrap:wrap;
+      justify-content:flex-start;
+    }
+
+    .card-bottom-right{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+
+    .photo-stats{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      flex-wrap:wrap;
+      margin-top:2px;
+    }
+
+    .photo-stat{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding:7px 10px;
+      border-radius:999px;
+      font-size:11px;
+      font-weight:700;
+      color:#fff;
+      background:rgba(255,255,255,.12);
+      border:1px solid rgba(255,255,255,.14);
+      backdrop-filter:blur(8px);
+      line-height:1;
+    }
+
+    .photo-stat i{
+      color:var(--accent);
+      font-size:11px;
+    }
+
+    .photo-stat.react-btn{
+      cursor:pointer;
+      border:none;
+    }
+
+    .photo-stat.react-btn:hover{
+      transform:translateY(-2px);
+      border-color:rgba(250,204,21,.3);
+    }
+
+    .photo-stat.react-btn.active{
+      background:rgba(250,204,21,.16);
+      border-color:rgba(250,204,21,.35);
+      color:#fff;
+    }
+
+    .photo-stat.react-btn.active i{
+      color:var(--accent);
+    }
+
+    .action-icon{
+      width:38px;
+      height:38px;
+      border-radius:50%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:rgba(255,255,255,.12);
+      border:1px solid rgba(255,255,255,.14);
+      color:#fff;
+      cursor:pointer;
+      backdrop-filter:blur(8px);
+      font-size:14px;
+      text-decoration:none;
+      flex-shrink:0;
+    }
+
+    .action-icon:hover{
+      color:var(--accent);
+      border-color:rgba(250,204,21,.3);
+      transform:translateY(-2px);
+    }
+
+    .action-icon.is-loading,
+    .lightbox-social.is-loading{
+      opacity:.7;
+      pointer-events:none;
+    }
+
+    .empty-box{
+      background:#111827;
+      border:1px dashed rgba(255,255,255,.14);
+      border-radius:22px;
+      padding:28px;
+      color:var(--muted);
+      text-align:center;
+      grid-column:1 / -1;
+    }
+
+    .lightbox{
+      position:fixed;
+      inset:0;
+      background:rgba(2,6,23,.86);
+      backdrop-filter:blur(10px);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:20px;
+      z-index:2000;
+    }
+
+    .lightbox.show{
+      display:flex;
+    }
+
+    
+.lightbox-panel{
+      width:min(1180px,100%);
+      height:min(92vh,900px);
+      max-height:92vh;
+      background:#111827;
+      border:1px solid var(--line);
+      border-radius:24px;
+      overflow:hidden;
+      display:grid;
+      grid-template-columns:minmax(0,1.08fr) minmax(320px,.92fr);
+      align-items:stretch;
+      box-shadow:0 24px 60px rgba(0,0,0,.35);
+    }
+
+    
+.lightbox-image-wrap{
+      background:#020617;
+      min-height:0;
+      height:100%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:12px;
+      overflow:hidden;
+    }
+
+    
+.lightbox-image-wrap img{
+      width:100%;
+      height:100%;
+      max-width:100%;
+      max-height:100%;
+      object-fit:contain;
+      object-position:center;
+      border-radius:18px;
+    }
+
+    
+.lightbox-info{
+      padding:14px 14px 20px;
+      overflow-y:auto;
+      position:relative;
+      background:#111827;
+      min-height:0;
+    }
+
+    .lightbox-close{
+      position:absolute;
+      top:14px;
+      right:14px;
+      width:42px;
+      height:42px;
+      border:none;
+      border-radius:12px;
+      background:#0f172a;
+      border:1px solid var(--line);
+      color:#fff;
+      font-size:20px;
+      cursor:pointer;
+      z-index:10;
+    }
+
+    .lightbox-close:hover{
+      color:var(--accent);
+    }
+
+    .creator-profile-shell{
+      background:#0f172a;
+      border:1px solid var(--line);
+      border-radius:22px;
+      overflow:hidden;
+      margin-bottom:18px;
+    }
+
+    .creator-cover{
+      height:118px;
+      background:center/cover no-repeat #1e293b;
+      position:relative;
+    }
+
+    .creator-cover::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:linear-gradient(to bottom, rgba(15,23,42,.18), rgba(15,23,42,.74));
+    }
+
+    .creator-profile-card{
+      position:relative;
+      margin-top:-34px;
+      padding:0 16px 16px;
+    }
+
+    .creator-top{
+      display:flex;
+      align-items:flex-end;
+      gap:14px;
+      flex-wrap:wrap;
+      margin-bottom:14px;
+      padding-right:52px;
+    }
+
+    .creator-avatar{
+      width:72px;
+      height:72px;
+      border-radius:50%;
+      overflow:hidden;
+      background:linear-gradient(135deg,#facc15,#fb7185);
+      color:#111827;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:24px;
+      font-weight:800;
+      flex-shrink:0;
+      border:3px solid rgba(255,255,255,.14);
+      box-shadow:0 10px 24px rgba(0,0,0,.2);
+    }
+
+    .creator-avatar img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+    }
+
+    .creator-top-main{
+      flex:1;
+      min-width:180px;
+    }
+
+    .creator-top small{
+      display:block;
+      color:var(--muted);
+      font-size:12px;
+      text-transform:uppercase;
+      letter-spacing:.8px;
+      margin-bottom:2px;
+    }
+
+    .creator-name-line{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      flex-wrap:wrap;
+      width:100%;
+    }
+
+    .creator-name-link{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      color:#fff;
+    }
+
+    .creator-name-link strong{
+      color:#fff;
+      font-size:18px;
+      line-height:1.3;
+      word-break:break-word;
+    }
+
+    .creator-name-link:hover{
+      color:var(--accent);
+    }
+
+    .creator-posted-meta{
+      margin-top:6px;
+      color:#cbd5e1;
+      font-size:13px;
+    }
+
+    .follow-btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      min-height:42px;
+      padding:10px 16px;
+      border:none;
+      border-radius:12px;
+      cursor:pointer;
+      font-size:14px;
+      font-weight:800;
+      background:var(--accent);
+      color:#111827;
+      box-shadow:0 8px 20px rgba(250,204,21,.18);
+    }
+
+    .follow-btn:hover{
+      transform:translateY(-2px);
+    }
+
+    .follow-btn.following{
+      background:transparent;
+      color:#fff;
+      border:1px solid rgba(255,255,255,.16);
+      box-shadow:none;
+    }
+
+    .creator-social-proof{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:10px;
+      margin-bottom:12px;
+    }
+
+    .creator-count{
+      min-width:92px;
+      padding:10px 12px;
+      border-radius:14px;
+      background:#111827;
+      border:1px solid var(--line);
+      text-align:center;
+    }
+
+    .creator-count strong{
+      display:block;
+      color:#ffffff;
+      font-size:16px;
+      line-height:1.1;
+    }
+
+    .creator-count span{
+      display:block;
+      color:var(--muted);
+      font-size:12px;
+      margin-top:4px;
+    }
+
+    .creator-menu-actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    .creator-action-btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      min-height:40px;
+      padding:10px 14px;
+      border-radius:12px;
+      background:#111827;
+      border:1px solid var(--line);
+      color:#e5e7eb;
+      font-size:13px;
+      font-weight:700;
+      cursor:pointer;
+    }
+
+    .creator-action-btn:hover{
+      transform:translateY(-2px);
+      border-color:rgba(250,204,21,.24);
+      color:var(--accent);
+    }
+
+    .lightbox-title{
+      font-size:22px;
+      color:#fff;
+      margin-bottom:8px;
+      word-break:break-word;
+      line-height:1.2;
+    }
+
+    .lightbox-title.is-hidden{
+      display:none;
+    }
+
+    .lightbox-stats{
+      margin-bottom:16px;
+    }
+
+    .lightbox-stats .photo-stat{
+      background:#0f172a;
+      border-color:var(--line);
+      font-size:12px;
+      padding:8px 12px;
+    }
+
+    .lightbox-actions{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-bottom:20px;
+    }
+
+    .lightbox-social{
+      width:42px;
+      height:42px;
+      border-radius:50%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:#0f172a;
+      border:1px solid var(--line);
+      color:#fff;
+      font-size:15px;
+      cursor:pointer;
+      flex-shrink:0;
+    }
+
+    .lightbox-social:hover{
+      color:var(--accent);
+      border-color:rgba(250,204,21,.22);
+      transform:translateY(-2px);
+    }
+
+    .lightbox-social.disabled{
+      opacity:.45;
+      cursor:not-allowed;
+      pointer-events:none;
+    }
+
+    .detail-list{
+      display:grid;
+      gap:10px;
+      margin-top:4px;
+    }
+
+    .detail-item{
+      background:#0f172a;
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:12px 14px;
+    }
+
+    .detail-item strong{
+      display:block;
+      color:var(--accent);
+      font-size:13px;
+      margin-bottom:4px;
+      text-transform:uppercase;
+      letter-spacing:.8px;
+    }
+
+    .detail-item span{
+      color:#e5e7eb;
+      font-size:14px;
+      word-break:break-word;
+    }
+
+    .creator-posts-wrap{
+      margin-top:20px;
+    }
+
+    .creator-posts-title{
+      font-size:18px;
+      color:#fff;
+      margin-bottom:12px;
+    }
+
+    .creator-posts-grid{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:10px;
+    }
+
+    .creator-post-card{
+      border:none;
+      background:#0f172a;
+      border:1px solid var(--line);
+      border-radius:16px;
+      overflow:hidden;
+      cursor:pointer;
+      text-align:left;
+      color:#fff;
+    }
+
+    .creator-post-card:hover{
+      transform:translateY(-3px);
+      border-color:rgba(250,204,21,.24);
+    }
+
+    .creator-post-card img{
+      width:100%;
+      height:110px;
+      object-fit:cover;
+      background:#1e293b;
+    }
+
+    .creator-post-info{
+      padding:10px;
+    }
+
+    .creator-post-info small{
+      display:block;
+      color:#cbd5e1;
+      font-size:12px;
+      line-height:1.35;
+    }
+
+    .creator-post-empty{
+      grid-column:1 / -1;
+      background:#0f172a;
+      border:1px dashed var(--line);
+      border-radius:16px;
+      padding:14px;
+      color:var(--muted);
+      text-align:center;
+      font-size:14px;
+    }
+
+    .notice{
+      position:fixed;
+      left:50%;
+      bottom:24px;
+      transform:translateX(-50%);
+      background:#111827;
+      border:1px solid var(--line);
+      color:#fff;
+      padding:12px 16px;
+      border-radius:14px;
+      box-shadow:0 12px 28px rgba(0,0,0,.24);
+      z-index:2200;
+      display:none;
+      max-width:min(92vw,460px);
+      text-align:center;
+    }
+
+    .notice.show{
+      display:block;
+    }
+
+    footer{
+      background:#020617;
+      border-top:1px solid var(--line);
+      padding:24px 0;
+    }
+
+    .footer-inner{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:20px;
+      flex-wrap:wrap;
+    }
+
+    .footer-inner p{
+      color:#94a3b8;
+      font-size:14px;
+    }
+
+    .footer-links{
+      display:flex;
+      flex-wrap:wrap;
+      gap:16px;
+    }
+
+    .footer-links a{
+      color:#cbd5e1;
+      font-size:14px;
+    }
+
+    .footer-links a:hover{
+      color:var(--accent);
+    }
+
+    @media(max-width:1024px){
+      .category-grid,
+      .photo-grid{
+        grid-template-columns:repeat(2,1fr);
+      }
+
+      .search-bar{
+        grid-template-columns:1fr 1fr 120px;
+      }
+
+      .lightbox-panel{
+        grid-template-columns:1fr;
+      }
+
+      .creator-posts-grid{
+        grid-template-columns:repeat(3,1fr);
+      }
+    }
+
+    @media(max-width:768px){
+      .menu-toggle{
+        display:flex;
+      }
+
+      .nav-links{
+        position:absolute;
+        top:100%;
+        left:0;
+        right:0;
+        display:none;
+        flex-direction:column;
+        align-items:flex-start;
+        gap:0;
+        background:#0f172a;
+        border:1px solid var(--line);
+        border-radius:16px;
+        padding:12px;
+        box-shadow:0 16px 30px rgba(0,0,0,.28);
+      }
+
+      .nav-links.show{
+        display:flex;
+      }
+
+      .nav-links a{
+        width:100%;
+        padding:12px 10px;
+        border-radius:10px;
+      }
+
+      .nav-links a.active::after{
+        display:none;
+      }
+
+      .nav-links a:hover,
+      .nav-links a.active{
+        background:rgba(250,204,21,.12);
+      }
+
+      .hero{
+        min-height:auto;
+      }
+
+      .hero-content{
+        padding:70px 0 40px;
+      }
+
+      .category-grid,
+      .photo-grid,
+      .search-bar,
+      .creator-posts-grid,
+      .creator-social-proof{
+        grid-template-columns:1fr;
+      }
+
+      .section-head h2{
+        font-size:28px;
+      }
+
+      .logo-mark{
+        width:46px;
+        height:46px;
+      }
+
+      .logo-title{
+        font-size:22px;
+      }
+
+      .logo-sub{
+        font-size:10px;
+        letter-spacing:1.2px;
+      }
+
+      .footer-inner{
+        flex-direction:column;
+        align-items:flex-start;
+      }
+
+      .creator-top{
+        align-items:flex-start;
+      }
+
+      .follow-btn{
+        width:100%;
+      }
+
+      .card-bottom{
+        flex-direction:column;
+        align-items:flex-start;
+      }
+
+      .card-bottom-right,
+      .card-bottom-left{
+        width:100%;
+        justify-content:flex-start;
+      }
+    }
+
+    @media(max-width:480px){
+      .container{
+        width:min(1200px,94%);
+      }
+
+      .hero h1{
+        font-size:34px;
+      }
+
+      .hero p{
+        font-size:16px;
+      }
+
+      .logo-title{
+        font-size:20px;
+      }
+
+      .logo-sub{
+        font-size:9px;
+      }
+
+      .section-head h2{
+        font-size:25px;
+      }
+
+      .lightbox{
+        padding:12px;
+      }
+
+      .lightbox-info{
+        padding:18px;
+      }
+
+      .lightbox-image-wrap{
+        padding:12px;
+      }
+
+      .visual-card{
+        min-height:400px;
+      }
+
+      .overlay-desc{
+        font-size:12px;
+      }
+
+      .credit{
+        font-size:12px;
+      }
+
+      .pill{
+        font-size:10px;
+      }
+
+      .creator-menu-actions{
+        flex-direction:column;
+      }
+
+      .creator-action-btn{
+        width:100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="container nav">
+      <a href="index.html" class="logo-wrap">
+        <span class="logo-mark">P</span>
+        <span class="logo-text">
+          <span class="logo-title">PixNest</span>
+          <span class="logo-sub">Photo Collection Site</span>
+        </span>
+      </a>
+
+      <button class="menu-toggle" id="menuToggle" aria-label="Open menu" aria-expanded="false">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+
+      <nav class="nav-links" id="navLinks">
+        <a href="index.html">Home</a>
+        <a href="explore.html">Explore</a>
+        <a href="category.html" class="active">Categories</a>
+        <a href="about.html">About</a>
+        <a href="upload.html">Upload</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero" id="heroSection">
+    <div class="container">
+      <div class="hero-content">
+        <div class="hero-tag" id="heroTag">Category Gallery</div>
+        <h1 id="heroTitle">All Categories</h1>
+        <p id="heroDescription">Explore visual collections across different styles, themes, and creative topics.</p>
+        <div class="hero-meta" id="heroMeta"></div>
+        <div class="hero-actions hidden" id="heroActions">
+          <a href="category.html" class="mini-btn secondary">Back to Categories</a>
+          <a href="explore.html" class="mini-btn primary">Explore All Photos</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="overviewSection">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <h2 id="overviewHeading">All Categories</h2>
+          <p id="overviewText">Explore visual collections across different styles, themes, and creative topics.</p>
+        </div>
+      </div>
+
+      <div class="search-bar">
+        <div class="search-input-wrap">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input type="text" id="overviewSearchInput" placeholder="Search categories by name or description">
+        </div>
+
+        <select id="overviewFilter" class="search-select">
+          <option value="all">All Categories</option>
+          <option value="with-photos">With Photos</option>
+          <option value="featured">Featured Categories</option>
+          <option value="empty">Empty Categories</option>
+        </select>
+
+        <button type="button" class="search-btn" id="overviewSearchBtn">Search</button>
+      </div>
+
+      <div class="filter-note" id="overviewNote"></div>
+
+      <div class="category-grid" id="categoryGrid">
+        <div class="empty-box">Categories will appear here when the collection is loaded.</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="detailSection" class="hidden">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <h2 id="detailHeading">Category Photos</h2>
+          <p id="detailText">Browse the photos in this category below.</p>
+        </div>
+      </div>
+
+      <div class="search-bar">
+        <div class="search-input-wrap">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input type="text" id="detailSearchInput" placeholder="Search photos in this category">
+        </div>
+
+        <select id="detailFilter" class="search-select">
+          <option value="all">All Photos</option>
+          <option value="featured">Featured Only</option>
+          <option value="premium">Premium Only</option>
+        </select>
+
+        <button type="button" class="search-btn" id="detailSearchBtn">Search</button>
+      </div>
+
+      <div class="filter-note" id="detailNote"></div>
+
+      <div class="photo-grid" id="detailPhotoGrid">
+        <div class="empty-box">Photos will appear here when the category is loaded.</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="lightbox" id="lightbox">
+    <div class="lightbox-panel">
+      <div class="lightbox-image-wrap">
+        <img id="lightboxImage" src="" alt="Large view">
+      </div>
+
+      <div class="lightbox-info">
+        <button class="lightbox-close" id="lightboxClose" aria-label="Close">×</button>
+
+        <div class="creator-profile-shell">
+          <div class="creator-cover" id="creatorCover"></div>
+
+          <div class="creator-profile-card">
+            <div class="creator-top">
+              <div class="creator-avatar" id="creatorAvatar"></div>
+
+              <div class="creator-top-main">
+                <small>Creator</small>
+
+                <div class="creator-name-line">
+                  <a href="#" class="creator-name-link" id="openCreatorProfileBtn">
+                    <strong id="lightboxCreatorTop">Unknown</strong>
+                  </a>
+                  <span id="lightboxCreatorBadges"></span>
+                </div>
+
+                <div class="creator-posted-meta" id="lightboxPostedMeta"></div>
+              </div>
+
+              <button type="button" class="follow-btn" id="followCreatorBtn">
+                <i class="fa-solid fa-user-plus"></i>
+                Follow
+              </button>
+            </div>
+
+            <div class="creator-social-proof" id="creatorSocialProof"></div>
+            <div class="creator-menu-actions" id="creatorMenuActions"></div>
+          </div>
+        </div>
+
+        <h3 class="lightbox-title" id="lightboxTitle"></h3>
+
+        <div id="lightboxStatsWrap"></div>
+
+        <div class="lightbox-actions" id="lightboxActions"></div>
+
+        <div class="detail-list">
+          <div class="detail-item">
+            <strong>Category</strong>
+            <span id="lightboxCategory">—</span>
+          </div>
+
+          <div class="detail-item">
+            <strong>Creator</strong>
+            <span id="lightboxCredit">—</span>
+          </div>
+
+          <div class="detail-item">
+            <strong>Tags</strong>
+            <span id="lightboxTags">—</span>
+          </div>
+
+          <div class="detail-item">
+            <strong>Description</strong>
+            <span id="lightboxDescription">—</span>
+          </div>
+
+          <div class="detail-item">
+            <strong>Posted</strong>
+            <span id="lightboxPosted">—</span>
+          </div>
+        </div>
+
+        <div class="creator-posts-wrap">
+          <h4 class="creator-posts-title">More from this creator</h4>
+          <div class="creator-posts-grid" id="creatorPostsGrid"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="notice" id="noticeBar"></div>
+
+  <footer>
+    <div class="container footer-inner">
+      <p id="footerText">©️ 2026 PixNest. Discover and share powerful visual collections.</p>
+
+      <div class="footer-links">
+        <a href="about.html">About</a>
+        <a href="license.html">License</a>
+        <a href="privacy.html">Privacy</a>
+        <a href="terms.html">Terms</a>
+        <a href="contact.html">Contact</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const STORAGE_KEY = "pixnest_admin_v2";
+    const REACTION_KEY = "pixnest_photo_reactions_v1";
+    const CREATOR_PREFS_KEY = "pixnest_creator_prefs_v1";
+    const VIEWED_SESSION_KEY = "pixnest_viewed_session_v1";
+    const SUPABASE_URL = "https://vigczssznfvujttdapbv.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_UmF-mmVS42XeF6PqsNnCSw_wpA35wg2";
+    const DEFAULT_HERO_IMAGE = "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&w=1600&q=80";
+    const DEFAULT_CATEGORY_IMAGE = "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&w=1200&q=80";
+
+
+const LOCKED_SVG =
+  "data:image/svg+xml;charset=UTF-8," +
+  encodeURIComponent(`
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800">
+      <defs>
+        <linearGradient id="g" x1="0" x2="1" y1="0" y2="1">
+          <stop offset="0%" stop-color="#0f172a"/>
+          <stop offset="100%" stop-color="#1e293b"/>
+        </linearGradient>
+      </defs>
+      <rect width="800" height="800" fill="url(#g)"/>
+      <circle cx="400" cy="300" r="95" fill="rgba(250,204,21,0.12)" stroke="rgba(250,204,21,0.35)" stroke-width="6"/>
+      <path d="M350 300v-34c0-28 22-50 50-50s50 22 50 50v34" fill="none" stroke="#facc15" stroke-width="20" stroke-linecap="round"/>
+      <rect x="320" y="300" rx="24" ry="24" width="160" height="150" fill="#111827" stroke="rgba(250,204,21,0.28)" stroke-width="6"/>
+      <circle cx="400" cy="370" r="18" fill="#facc15"/>
+      <rect x="390" y="388" width="20" height="34" rx="10" fill="#facc15"/>
+      <text x="400" y="540" text-anchor="middle" fill="#f8fafc" font-size="38" font-family="Arial, Helvetica, sans-serif" font-weight="700">Premium Photo</text>
+      <text x="400" y="585" text-anchor="middle" fill="#94a3b8" font-size="22" font-family="Arial, Helvetica, sans-serif">Unlock with membership</text>
+    </svg>
+  `);
+
+    const { createClient } = supabase;
+    const supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    const menuToggle = document.getElementById("menuToggle");
+    const navLinks = document.getElementById("navLinks");
+
+    const heroSection = document.getElementById("heroSection");
+    const heroTag = document.getElementById("heroTag");
+    const heroTitle = document.getElementById("heroTitle");
+    const heroDescription = document.getElementById("heroDescription");
+    const heroMeta = document.getElementById("heroMeta");
+    const heroActions = document.getElementById("heroActions");
+
+    const overviewSection = document.getElementById("overviewSection");
+    const detailSection = document.getElementById("detailSection");
+
+    const overviewHeading = document.getElementById("overviewHeading");
+    const overviewText = document.getElementById("overviewText");
+    const overviewSearchInput = document.getElementById("overviewSearchInput");
+    const overviewFilter = document.getElementById("overviewFilter");
+    const overviewSearchBtn = document.getElementById("overviewSearchBtn");
+    const overviewNote = document.getElementById("overviewNote");
+    const categoryGrid = document.getElementById("categoryGrid");
+
+    const detailHeading = document.getElementById("detailHeading");
+    const detailText = document.getElementById("detailText");
+    const detailSearchInput = document.getElementById("detailSearchInput");
+    const detailFilter = document.getElementById("detailFilter");
+    const detailSearchBtn = document.getElementById("detailSearchBtn");
+    const detailNote = document.getElementById("detailNote");
+    const detailPhotoGrid = document.getElementById("detailPhotoGrid");
+
+    const footerText = document.getElementById("footerText");
+
+    const lightbox = document.getElementById("lightbox");
+    const lightboxClose = document.getElementById("lightboxClose");
+    const lightboxImage = document.getElementById("lightboxImage");
+    const creatorAvatar = document.getElementById("creatorAvatar");
+    const creatorCover = document.getElementById("creatorCover");
+    const openCreatorProfileBtn = document.getElementById("openCreatorProfileBtn");
+    const lightboxCreatorBadges = document.getElementById("lightboxCreatorBadges");
+    const lightboxPostedMeta = document.getElementById("lightboxPostedMeta");
+    const followCreatorBtn = document.getElementById("followCreatorBtn");
+    const creatorSocialProof = document.getElementById("creatorSocialProof");
+    const creatorMenuActions = document.getElementById("creatorMenuActions");
+    const creatorPostsGrid = document.getElementById("creatorPostsGrid");
+    const lightboxActions = document.getElementById("lightboxActions");
+    const lightboxTitle = document.getElementById("lightboxTitle");
+    const lightboxStatsWrap = document.getElementById("lightboxStatsWrap");
+    const noticeBar = document.getElementById("noticeBar");
+
+    let siteData = loadAdminData();
+    let allPhotos = [];
+    let activeCategoryName = "";
+    let reactionState = loadReactionState();
+    let creatorPrefs = loadCreatorPrefs();
+    let viewedSession = loadViewedSession();
+    let activeLightboxPhotoId = "";
+
+    if(menuToggle && navLinks){
+      menuToggle.addEventListener("click", () => {
+        navLinks.classList.toggle("show");
+        const expanded = menuToggle.getAttribute("aria-expanded") === "true";
+        menuToggle.setAttribute("aria-expanded", String(!expanded));
+      });
+    }
+
+    document.querySelectorAll(".nav-links a").forEach(link => {
+      link.addEventListener("click", () => {
+        if(window.innerWidth <= 768){
+          navLinks.classList.remove("show");
+          menuToggle.setAttribute("aria-expanded", "false");
+        }
+      });
+    });
+
+    document.addEventListener("click", (e) => {
+      if(window.innerWidth <= 768 && navLinks.classList.contains("show")){
+        if(!navLinks.contains(e.target) && !menuToggle.contains(e.target)){
+          navLinks.classList.remove("show");
+          menuToggle.setAttribute("aria-expanded", "false");
+        }
+      }
+    });
+
+    window.addEventListener("resize", () => {
+      if(window.innerWidth > 768){
+        navLinks.classList.remove("show");
+        menuToggle.setAttribute("aria-expanded", "false");
+      }
+    });
+
+    function showNotice(text){
+      noticeBar.textContent = text;
+      noticeBar.classList.add("show");
+      clearTimeout(showNotice._timer);
+      showNotice._timer = setTimeout(() => {
+        noticeBar.classList.remove("show");
+      }, 2200);
+    }
+
+    function escapeHtml(value = ""){
+      return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+
+    function normalize(value = ""){
+      return String(value || "").trim().toLowerCase();
+    }
+
+    function compactNumber(value){
+      try{
+        return new Intl.NumberFormat("en", {
+          notation:"compact",
+          maximumFractionDigits:1
+        }).format(Number(value || 0));
+      }catch(error){
+        return String(value || 0);
+      }
+    }
+
+    function loadAdminData(){
+      try{
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if(!saved){
+          return {
+            categories: [],
+            homepage: {},
+            footerText: ""
+          };
+        }
+
+        const parsed = JSON.parse(saved);
+
+        return {
+          categories: Array.isArray(parsed.categories) ? parsed.categories : [],
+          homepage: parsed.homepage && typeof parsed.homepage === "object" ? parsed.homepage : {},
+          footerText: parsed.footerText || ""
+        };
+      }catch(error){
+        console.error("Failed to load admin data:", error);
+        return {
+          categories: [],
+          homepage: {},
+          footerText: ""
+        };
+      }
+    }
+
+    function loadReactionState(){
+      try{
+        const saved = localStorage.getItem(REACTION_KEY);
+        const parsed = JSON.parse(saved || "{}");
+        return parsed && typeof parsed === "object" ? parsed : {};
+      }catch(error){
+        return {};
+      }
+    }
+
+    function saveReactionState(){
+      localStorage.setItem(REACTION_KEY, JSON.stringify(reactionState));
+    }
+
+    function loadCreatorPrefs(){
+      try{
+        const saved = localStorage.getItem(CREATOR_PREFS_KEY);
+        const parsed = JSON.parse(saved || "{}");
+        return parsed && typeof parsed === "object" ? parsed : {};
+      }catch(error){
+        return {};
+      }
+    }
+
+    function saveCreatorPrefs(){
+      localStorage.setItem(CREATOR_PREFS_KEY, JSON.stringify(creatorPrefs));
+    }
+
+    function loadViewedSession(){
+      try{
+        const saved = sessionStorage.getItem(VIEWED_SESSION_KEY);
+        const parsed = JSON.parse(saved || "{}");
+        return parsed && typeof parsed === "object" ? parsed : {};
+      }catch(error){
+        return {};
+      }
+    }
+
+    function saveViewedSession(){
+      sessionStorage.setItem(VIEWED_SESSION_KEY, JSON.stringify(viewedSession));
+    }
+
+
+let activeSessionUser = null;
+
+async function initActiveSessionUser(){
+  try{
+    const { data } = await supabaseClient.auth.getUser();
+    activeSessionUser = data?.user || null;
+  }catch(error){
+    activeSessionUser = null;
+  }
+}
+
+function getActiveUser(){
+  if(activeSessionUser) return activeSessionUser;
+  if(typeof currentUser !== "undefined" && currentUser) return currentUser;
+  if(typeof getSessionUser === "function"){
+    return getSessionUser();
+  }
+  return null;
+}
+
+function isLikelyFileName(value = ""){
+  const text = String(value || "").trim();
+  if(!text) return false;
+
+  const extPattern = /\.(jpg|jpeg|png|gif|webp|svg|bmp|avif)$/i;
+  const imageCodePattern = /^(img|image|dsc|pxl|pxl_|screenshot|screen-shot|whatsapp image|photo|file)[-_ ]?\d+/i;
+  const shortSlugPattern = /^[a-z0-9_-]{1,18}$/i;
+
+  return extPattern.test(text) || imageCodePattern.test(text) || shortSlugPattern.test(text);
+}
+
+function getMembershipPlan(user){
+  return String(
+    user?.app_metadata?.membership_plan ||
+    user?.app_metadata?.plan ||
+    user?.user_metadata?.membership_plan ||
+    user?.user_metadata?.plan ||
+    ""
+  ).trim().toLowerCase();
+}
+
+function isPremiumMember(user){
+  return Boolean(
+    ["premium", "premium-monthly", "premium-yearly"].includes(getMembershipPlan(user)) ||
+    user?.user_metadata?.premium_member === true ||
+    user?.user_metadata?.is_premium === true
+  );
+}
+
+    function getPhotoId(photo){
+      return String(
+        photo.id ||
+        photo.photo_id ||
+        photo.image_url ||
+        photo.created_at ||
+        `${photo.category || ""}-${photo.credit || ""}`
+      );
+    }
+
+    function getPhotoById(photoId){
+      return allPhotos.find(photo => getPhotoId(photo) === String(photoId)) || null;
+    }
+
+    
+function getSafePhotoTitle(photo){
+  const possibleFields = [
+    photo.display_title,
+    photo.caption,
+    photo.headline,
+    photo.custom_title,
+    photo.public_title,
+    photo.title
+  ];
+
+  const found = possibleFields.find(value => String(value || "").trim());
+  const clean = String(found || "").trim();
+
+  if(!clean) return "";
+  if(isLikelyFileName(clean)) return "";
+  return clean;
+}
+
+    function getDescription(photo){
+      return String(photo.description || "").trim();
+    }
+
+    function getPhotoAlt(photo){
+      return getSafePhotoTitle(photo) || getDescription(photo) || String(photo.category || "PixNest photo");
+    }
+
+    function getShareTitle(photo){
+      const safeTitle = getSafePhotoTitle(photo);
+      const description = getDescription(photo);
+      const category = String(photo.category || "").trim();
+
+      if(safeTitle) return `${safeTitle} on PixNest`;
+      if(description) return `${description} on PixNest`;
+      if(category) return `${category} photo on PixNest`;
+      return "Photo on PixNest";
+    }
+
+    
+function getPhotoTags(photo){
+  return (photo.tags || "")
+    .split(/[,|]/)
+    .map(tag => tag.trim())
+    .filter(Boolean)
+    .filter(tag => !isLikelyFileName(tag));
+}
+
+    function getNumberValue(photo, keys = []){
+      for(const key of keys){
+        const value = photo[key];
+
+        if(typeof value === "number" && Number.isFinite(value)){
+          return value;
+        }
+
+        if(typeof value === "string" && value.trim() !== "" && !Number.isNaN(Number(value))){
+          return Number(value);
+        }
+      }
+      return 0;
+    }
+
+    function getFavouriteBaseValue(photo){
+      const numericFavourite = getNumberValue(photo, [
+        "favourites",
+        "favorites",
+        "favourite_count",
+        "favorite_count",
+        "favourites_count",
+        "favorites_count",
+        "total_favourites",
+        "total_favorites"
+      ]);
+
+      if(numericFavourite) return numericFavourite;
+
+      const booleanKeys = [
+        "favourite",
+        "favorite",
+        "is_favourite",
+        "is_favorite"
+      ];
+
+      for(const key of booleanKeys){
+        if(typeof photo[key] === "boolean"){
+          return photo[key] ? 1 : 0;
+        }
+      }
+
+      return 0;
+    }
+
+    function getBasePhotoMetrics(photo){
+      return {
+        likes: getNumberValue(photo, ["likes","like_count","likes_count","total_likes"]),
+        views: getNumberValue(photo, ["views","view_count","views_count","total_views"]),
+        favourites: getFavouriteBaseValue(photo)
+      };
+    }
+
+    function getPhotoReactionState(photoId){
+      return reactionState[String(photoId)] || { liked:false, favourited:false };
+    }
+
+    function getPhotoMetrics(photo){
+      const id = getPhotoId(photo);
+      const state = getPhotoReactionState(id);
+      const base = getBasePhotoMetrics(photo);
+
+      return {
+        likes: base.likes + (state.liked ? 1 : 0),
+        views: base.views,
+        favourites: base.favourites + (state.favourited ? 1 : 0)
+      };
+    }
+
+    function toggleReaction(photoId, reactionType){
+      const key = reactionType === "like" ? "liked" : "favourited";
+      const current = {
+        liked: !!getPhotoReactionState(photoId).liked,
+        favourited: !!getPhotoReactionState(photoId).favourited
+      };
+
+      current[key] = !current[key];
+
+      if(!current.liked && !current.favourited){
+        delete reactionState[String(photoId)];
+      }else{
+        reactionState[String(photoId)] = current;
+      }
+
+      saveReactionState();
+      refreshPhotoDisplays();
+    }
+
+    function applyFooterText(){
+      if(siteData.footerText){
+        footerText.textContent = siteData.footerText;
+      }
+    }
+
+    function getSavedCategories(){
+      return (siteData.categories || [])
+        .map(cat => ({
+          id: cat.id || "",
+          name: String(cat.name || "").trim(),
+          description: String(cat.description || "").trim()
+        }))
+        .filter(cat => cat.name);
+    }
+
+    function getGroupedPhotos(){
+      const grouped = {};
+
+      allPhotos.forEach(photo => {
+        const categoryName = String(photo.category || "").trim();
+        if(!categoryName) return;
+
+        if(!grouped[categoryName]){
+          grouped[categoryName] = [];
+        }
+
+        grouped[categoryName].push(photo);
+      });
+
+      return grouped;
+    }
+
+    function getMergedCategories(){
+      const grouped = getGroupedPhotos();
+      const map = new Map();
+
+      getSavedCategories().forEach(category => {
+        map.set(category.name.toLowerCase(), {
+          name: category.name,
+          description: category.description,
+          photos: grouped[category.name] || []
+        });
+      });
+
+      Object.keys(grouped).forEach(categoryName => {
+        const key = categoryName.toLowerCase();
+        if(!map.has(key)){
+          map.set(key, {
+            name: categoryName,
+            description: "",
+            photos: grouped[categoryName] || []
+          });
+        }
+      });
+
+      return [...map.values()].sort((a, b) => a.name.localeCompare(b.name));
+    }
+
+    function getRequestedCategory(){
+      const params = new URLSearchParams(window.location.search);
+      return decodeURIComponent(params.get("category") || "").trim();
+    }
+
+    function updateHeroImage(imageUrl){
+      heroSection.style.background =
+        `linear-gradient(rgba(15,23,42,0.70), rgba(15,23,42,0.92)), url('${imageUrl}') center/cover no-repeat`;
+    }
+
+    function isPremiumPhoto(photo){
+      return Boolean(photo?.is_premium || photo?.premium_only);
+    }
+
+
+function isOwner(photo){
+  const user = getActiveUser();
+  if(!user) return false;
+
+  const currentId = normalize(user.id);
+  const ids = [
+    photo.user_id,
+    photo.owner_id,
+    photo.auth_user_id,
+    photo.profile_id,
+    photo.uploader_id,
+    photo.creator_id
+  ].map(normalize);
+
+  return ids.includes(currentId);
+}
+
+function canAccessPremiumPhoto(photo){
+  return !isPremiumPhoto(photo) || isPremiumMember(getActiveUser()) || isOwner(photo);
+}
+
+function isLockedPhoto(photo){
+  return isPremiumPhoto(photo) && !canAccessPremiumPhoto(photo);
+}
+
+function showPremiumLockNotice(){
+  showNotice("This premium photo is locked. Join premium to view, share, or download it.");
+}
+
+function handleLockedPremiumPhoto(){
+  showPremiumLockNotice();
+  window.location.href = "premium.html";
+}
+
+    function renderOverviewHero(){
+      const homepage = siteData.homepage || {};
+      heroTag.textContent = "Category Gallery";
+      heroTitle.textContent = homepage.categoriesTitle || "All Categories";
+      heroDescription.textContent = homepage.categoriesText || "Explore visual collections across different styles, themes, and creative topics.";
+      heroMeta.innerHTML = "";
+      heroActions.classList.add("hidden");
+      updateHeroImage(DEFAULT_HERO_IMAGE);
+
+      overviewHeading.textContent = homepage.categoriesTitle || "All Categories";
+      overviewText.textContent = homepage.categoriesText || "Explore visual collections across different styles, themes, and creative topics.";
+      document.title = "PixNest | Categories";
+    }
+
+    function renderDetailHero(category){
+      const featuredPhoto = category.photos.find(photo => photo.featured);
+      const coverPhoto = featuredPhoto || category.photos[0];
+      const coverImage = coverPhoto && coverPhoto.image_url ? coverPhoto.image_url : DEFAULT_HERO_IMAGE;
+      const featuredCount = category.photos.filter(photo => photo.featured).length;
+      const premiumCount = category.photos.filter(photo => isPremiumPhoto(photo)).length;
+
+      heroTag.textContent = "Category Collection";
+      heroTitle.textContent = category.name;
+      heroDescription.textContent = category.description || `Browse the ${category.name} collection and explore the visuals inside this category.`;
+      heroMeta.innerHTML = `
+        <span class="pill category-tag">${category.photos.length} photo${category.photos.length === 1 ? "" : "s"}</span>
+        ${featuredCount ? `<span class="pill featured"><i class="fa-solid fa-bolt"></i> Featured ${featuredCount}</span>` : ``}
+        ${premiumCount ? `<span class="pill premium"><i class="fa-solid fa-star"></i> Premium ${premiumCount}</span>` : ``}
+      `;
+      heroActions.classList.remove("hidden");
+      updateHeroImage(coverImage);
+
+      detailHeading.textContent = `${category.name} Photos`;
+      detailText.textContent = category.description || `Browse all photos in the ${category.name} collection below.`;
+      document.title = `PixNest | ${category.name}`;
+    }
+
+    function getCreatorName(photo){
+      return String(
+        photo.credit ||
+        photo.creator_name ||
+        photo.uploader_name ||
+        photo.author ||
+        "Unknown Creator"
+      ).trim();
+    }
+
+    function getCreatorKey(photo){
+      return String(
+        photo.creator_id ||
+        photo.profile_id ||
+        photo.user_id ||
+        photo.owner_id ||
+        photo.auth_user_id ||
+        getCreatorName(photo)
+      ).trim().toLowerCase();
+    }
+
+    function getCreatorPref(photo){
+      return creatorPrefs[getCreatorKey(photo)] || {};
+    }
+
+    function updateCreatorPref(photo, updates = {}){
+      const key = getCreatorKey(photo);
+      creatorPrefs[key] = {
+        ...(creatorPrefs[key] || {}),
+        ...updates
+      };
+      saveCreatorPrefs();
+    }
+
+    function isCreatorFollowed(photo){
+      return !!getCreatorPref(photo).followed;
+    }
+
+    function isCreatorFavourited(photo){
+      return !!getCreatorPref(photo).favourited;
+    }
+
+    function isCreatorVerified(photo){
+      return Boolean(
+        photo.creator_verified ||
+        photo.verified ||
+        photo.is_verified ||
+        photo.creator_blue_check ||
+        photo.blue_check
+      );
+    }
+
+    function isCreatorPremium(photo){
+      return Boolean(
+        photo.creator_premium ||
+        photo.premium_creator ||
+        photo.creator_pro ||
+        normalize(photo.creator_plan) === "premium" ||
+        normalize(photo.membership_plan) === "premium"
+      );
+    }
+
+    function buildCreatorBadges(photo){
+      const parts = [];
+
+      if(isCreatorVerified(photo)){
+        parts.push(`
+          <span class="creator-badge verified" title="Verified creator" aria-label="Verified creator">
+            <i class="fa-solid fa-check"></i>
+          </span>
+        `);
+      }
+
+      if(isCreatorPremium(photo)){
+        parts.push(`
+          <span class="creator-badge premium" title="Premium creator" aria-label="Premium creator">
+            <i class="fa-solid fa-crown"></i>
+          </span>
+        `);
+      }
+
+      if(!parts.length) return "";
+      return `<span class="creator-badges">${parts.join("")}</span>`;
+    }
+
+    function buildCreatorAvatar(photo){
+      const creatorName = getCreatorName(photo);
+      const creatorPhoto = String(
+        photo.creator_photo ||
+        photo.creator_avatar ||
+        photo.avatar_url ||
+        photo.profile_photo ||
+        ""
+      ).trim();
+
+      if(creatorPhoto){
+        return `<img src="${escapeHtml(creatorPhoto)}" alt="${escapeHtml(creatorName)}">`;
+      }
+
+      const firstLetter = creatorName.charAt(0).toUpperCase() || "P";
+      return `<span>${escapeHtml(firstLetter)}</span>`;
+    }
+
+    function getCreatorCoverImage(photo){
+      return String(
+        photo.creator_cover ||
+        photo.creator_cover_url ||
+        photo.cover_image ||
+        photo.creator_banner ||
+        photo.creator_background ||
+        photo.creator_background_image ||
+        photo.image_url ||
+        DEFAULT_CATEGORY_IMAGE
+      ).trim();
+    }
+
+    function getCreatorPhotos(photo){
+      const creatorKey = getCreatorKey(photo);
+      return allPhotos.filter(item => getCreatorKey(item) === creatorKey);
+    }
+
+    function getCreatorMetricValue(photo, keys = []){
+      const creatorPhotos = getCreatorPhotos(photo);
+      for(const item of creatorPhotos){
+        const value = getNumberValue(item, keys);
+        if(value) return value;
+      }
+      return getNumberValue(photo, keys);
+    }
+
+    function buildCreatorSocialProof(photo){
+      const photoCount = getCreatorPhotos(photo).length;
+      const followers = getCreatorMetricValue(photo, [
+        "creator_followers",
+        "followers",
+        "followers_count",
+        "follower_count",
+        "creator_follower_count"
+      ]) + (isCreatorFollowed(photo) ? 1 : 0);
+
+      const following = getCreatorMetricValue(photo, [
+        "creator_following",
+        "following",
+        "following_count",
+        "creator_following_count"
+      ]);
+
+      return `
+        <div class="creator-count">
+          <strong>${escapeHtml(compactNumber(following))}</strong>
+          <span>Following</span>
+        </div>
+        <div class="creator-count">
+          <strong>${escapeHtml(compactNumber(followers))}</strong>
+          <span>Followers</span>
+        </div>
+        <div class="creator-count">
+          <strong>${escapeHtml(compactNumber(photoCount))}</strong>
+          <span>Posts</span>
+        </div>
+      `;
+    }
+
+    function getPostDateValue(photo){
+      return (
+        photo.posted_at ||
+        photo.published_at ||
+        photo.created_at ||
+        photo.uploaded_at ||
+        photo.post_date ||
+        photo.date ||
+        ""
+      );
+    }
+
+    function formatPostDate(photo){
+      const value = getPostDateValue(photo);
+      if(!value) return "Unknown date";
+
+      const date = new Date(value);
+      if(Number.isNaN(date.getTime())){
+        return String(value);
+      }
+
+      return date.toLocaleDateString("en-GB", {
+        day:"numeric",
+        month:"short",
+        year:"numeric"
+      });
+    }
+
+    function getCreatorProfileHref(photo){
+      if(photo.creator_profile_url){
+        return String(photo.creator_profile_url);
+      }
+      return `profile.html?creator=${encodeURIComponent(getCreatorKey(photo))}&name=${encodeURIComponent(getCreatorName(photo))}`;
+    }
+
+    function getTrendingIds(rows){
+      const scored = [...rows].sort((a, b) => {
+        const am = getPhotoMetrics(a);
+        const bm = getPhotoMetrics(b);
+        const as = (am.views * 2) + (am.likes * 3) + (am.favourites * 3) + (a.featured ? 10 : 0);
+        const bs = (bm.views * 2) + (bm.likes * 3) + (bm.favourites * 3) + (b.featured ? 10 : 0);
+        return bs - as;
+      });
+
+      return new Set(scored.slice(0, 6).map(item => getPhotoId(item)));
+    }
+
+    function isPhotoTrending(photo){
+      return getTrendingIds(allPhotos).has(getPhotoId(photo));
+    }
+
+    function buildPhotoStats(photo, extraClass = "", stopCard = true){
+      const id = getPhotoId(photo);
+      const state = getPhotoReactionState(id);
+      const metrics = getPhotoMetrics(photo);
+      const stopCardAttr = stopCard ? "data-stop-card" : "";
+
+      return `
+        <div class="photo-stats ${escapeHtml(extraClass)}">
+          <button
+            type="button"
+            class="photo-stat react-btn ${state.liked ? "active" : ""}"
+            data-photo-id="${escapeHtml(id)}"
+            data-reaction="like"
+            aria-label="Like photo"
+            title="Like photo"
+            ${stopCardAttr}
+          >
+            <i class="fa-solid fa-heart"></i>
+            <span>${escapeHtml(compactNumber(metrics.likes))}</span>
+          </button>
+
+          <span class="photo-stat" aria-label="Views">
+            <i class="fa-solid fa-eye"></i>
+            <span>${escapeHtml(compactNumber(metrics.views))}</span>
+          </span>
+
+          <button
+            type="button"
+            class="photo-stat react-btn ${state.favourited ? "active" : ""}"
+            data-photo-id="${escapeHtml(id)}"
+            data-reaction="favourite"
+            aria-label="Favourite photo"
+            title="Favourite photo"
+            ${stopCardAttr}
+          >
+            <i class="fa-solid fa-star"></i>
+            <span>${escapeHtml(compactNumber(metrics.favourites))}</span>
+          </button>
+        </div>
+      `;
+    }
+
+    function sanitizeFileName(value = ""){
+      return String(value)
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "")
+        .slice(0, 60);
+    }
+
+    function getUrlExtension(url = ""){
+      try{
+        const pathname = new URL(url).pathname;
+        const cleanPath = pathname.split("?")[0];
+        const match = cleanPath.match(/\.([a-zA-Z0-9]+)$/);
+        if(match){
+          return match[1].toLowerCase();
+        }
+      }catch(error){
+      }
+      return "jpg";
+    }
+
+    function getDownloadFileName(photo, url = ""){
+      const safeTitle = getSafePhotoTitle(photo);
+      const description = getDescription(photo);
+      const category = String(photo.category || "").trim();
+      const creator = String(getCreatorName(photo) || "").trim();
+
+      const base =
+        sanitizeFileName(safeTitle) ||
+        sanitizeFileName(description.split(" ").slice(0, 6).join(" ")) ||
+        sanitizeFileName(category) ||
+        sanitizeFileName(creator) ||
+        "pixnest-photo";
+
+      const extension = getUrlExtension(url);
+      return `${base}.${extension}`;
+    }
+
+    function parseSupabaseStorageUrl(url = ""){
+      try{
+        const parsed = new URL(url);
+        const marker = "/storage/v1/object/public/";
+        const markerIndex = parsed.pathname.indexOf(marker);
+
+        if(markerIndex === -1){
+          return null;
+        }
+
+        const remainder = parsed.pathname.slice(markerIndex + marker.length);
+        const parts = remainder.split("/").filter(Boolean);
+
+        if(parts.length < 2){
+          return null;
+        }
+
+        const bucket = parts.shift();
+        const path = parts.join("/");
+
+        if(!bucket || !path){
+          return null;
+        }
+
+        return {
+          bucket,
+          path: decodeURIComponent(path)
+        };
+      }catch(error){
+        return null;
+      }
+    }
+
+    function triggerBlobDownload(blob, fileName){
+      const blobUrl = URL.createObjectURL(blob);
+      const anchor = document.createElement("a");
+      anchor.href = blobUrl;
+      anchor.download = fileName;
+      document.body.appendChild(anchor);
+      anchor.click();
+      anchor.remove();
+
+      setTimeout(() => {
+        URL.revokeObjectURL(blobUrl);
+      }, 1000);
+    }
+
+    async function downloadPhoto(url, fileName){
+      if(!url) throw new Error("No image URL");
+
+      const storageInfo = parseSupabaseStorageUrl(url);
+
+      if(storageInfo){
+        const { data, error } = await supabaseClient
+          .storage
+          .from(storageInfo.bucket)
+          .download(storageInfo.path);
+
+        if(!error && data){
+          triggerBlobDownload(data, fileName);
+          return;
+        }
+      }
+
+      const response = await fetch(url, { mode:"cors" });
+
+      if(!response.ok){
+        throw new Error("Download failed");
+      }
+
+      const blob = await response.blob();
+      triggerBlobDownload(blob, fileName);
+    }
+
+    function setButtonLoadingState(button, isLoading){
+      if(!button) return;
+
+      button.classList.toggle("is-loading", isLoading);
+
+      if(isLoading){
+        button.dataset.originalHtml = button.innerHTML;
+        button.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+      }else if(button.dataset.originalHtml){
+        button.innerHTML = button.dataset.originalHtml;
+      }
+    }
+
+    function buildSocialButton(url, iconClass, label){
+      if(url){
+        return `
+          <a
+            class="lightbox-social"
+            href="${escapeHtml(url)}"
+            target="_blank"
+            rel="noopener noreferrer"
+            title="${escapeHtml(label)}"
+            aria-label="${escapeHtml(label)}"
+          >
+            <i class="${escapeHtml(iconClass)}"></i>
+          </a>
+        `;
+      }
+
+      return `
+        <button
+          type="button"
+          class="lightbox-social disabled"
+          title="${escapeHtml(label)} unavailable"
+          aria-label="${escapeHtml(label)} unavailable"
+        >
+          <i class="${escapeHtml(iconClass)}"></i>
+        </button>
+      `;
+    }
+
+        function buildLightboxActions(photo){
+      if(isLockedPhoto(photo)){
+        return `
+          <a
+            class="lightbox-social"
+            href="premium.html"
+            title="Unlock premium"
+            aria-label="Unlock premium"
+          >
+            <i class="fa-solid fa-crown"></i>
+          </a>
+
+          <button
+            type="button"
+            class="lightbox-social disabled"
+            data-premium-locked="true"
+            title="Share locked for premium photo"
+            aria-label="Share locked for premium photo"
+          >
+            <i class="fa-solid fa-share-nodes"></i>
+          </button>
+
+          <button
+            type="button"
+            class="lightbox-social disabled"
+            data-premium-locked="true"
+            title="Download locked for premium photo"
+            aria-label="Download locked for premium photo"
+          >
+            <i class="fa-solid fa-download"></i>
+          </button>
+        `;
+      }
+
+      const shareTitle = getShareTitle(photo);
+      const imageUrl = photo.image_url || "";
+      const downloadName = getDownloadFileName(photo, imageUrl);
+      const actions = [];
+      const trending = isPhotoTrending(photo);
+
+      if(trending && !photo.featured){
+        actions.push(`<span class="pill trending"><i class="fa-solid fa-fire"></i> Trending</span>`);
+      }
+
+      if(photo.featured){
+        actions.push(`<span class="pill featured"><i class="fa-solid fa-bolt"></i> Featured</span>`);
+      }
+
+      if(isPremiumPhoto(photo)){
+        actions.push(`<span class="pill premium"><i class="fa-solid fa-star"></i> Premium</span>`);
+      }
+
+      actions.push(buildSocialButton(photo.instagram || "", "fa-brands fa-instagram", "Creator Instagram"));
+      actions.push(buildSocialButton(photo.x || "", "fa-brands fa-x-twitter", "Creator X"));
+      actions.push(buildSocialButton(photo.facebook || "", "fa-brands fa-facebook-f", "Creator Facebook"));
+
+      actions.push(`
+        <button
+          type="button"
+          class="lightbox-social"
+          id="lightboxShareBtn"
+          data-share-url="${escapeHtml(imageUrl || window.location.href)}"
+          data-share-title="${escapeHtml(shareTitle)}"
+          title="Share"
+          aria-label="Share"
+        >
+          <i class="fa-solid fa-share-nodes"></i>
+        </button>
+      `);
+
+      actions.push(`
+        <button
+          type="button"
+          class="lightbox-social download-btn"
+          data-download-url="${escapeHtml(imageUrl)}"
+          data-download-name="${escapeHtml(downloadName)}"
+          title="Download image"
+          aria-label="Download image"
+        >
+          <i class="fa-solid fa-download"></i>
+        </button>
+      `);
+
+      return actions.join("");
+    }
+
+    
+    async function handleNativeShare(button){
+      if(button.classList.contains("disabled") || button.dataset.premiumLocked === "true"){
+        handleLockedPremiumPhoto();
+        return;
+      }
+
+      const url = button.getAttribute("data-share-url") || window.location.href;
+      const title = button.getAttribute("data-share-title") || "PixNest";
+
+      if(navigator.share){
+        try{
+          await navigator.share({ title, url });
+        }catch(error){
+        }
+      }else{
+        try{
+          await navigator.clipboard.writeText(url);
+          showNotice("Link copied.");
+        }catch(error){
+          alert("Link copy failed. You can copy it manually:\n" + url);
+        }
+      }
+    }
+
+    async function shareProfileLink(photo, button){
+      const href = new URL(getCreatorProfileHref(photo), window.location.href).href;
+      const title = `${getCreatorName(photo)} on PixNest`;
+
+      if(navigator.share){
+        try{
+          await navigator.share({ title, url: href });
+        }catch(error){
+        }
+      }else{
+        try{
+          await navigator.clipboard.writeText(href);
+          if(button){
+            const old = button.innerHTML;
+            button.innerHTML = '<i class="fa-solid fa-check"></i> Copied';
+            setTimeout(() => {
+              button.innerHTML = old;
+            }, 1200);
+          }
+          showNotice("Profile link copied.");
+        }catch(error){
+          alert("Could not copy profile link.");
+        }
+      }
+    }
+
+    
+async function handleDownloadButtonClick(button){
+  if(button.classList.contains("disabled") || button.dataset.premiumLocked === "true"){
+    handleLockedPremiumPhoto();
+    return;
+  }
+
+  const url = button.getAttribute("data-download-url") || "";
+  const fileName = button.getAttribute("data-download-name") || "pixnest-photo.jpg";
+
+  if(!url || url === LOCKED_SVG){
+    handleLockedPremiumPhoto();
+    return;
+  }
+
+  try{
+    setButtonLoadingState(button, true);
+    await downloadPhoto(url, fileName);
+  }catch(error){
+    console.error(error);
+    alert("Download could not start. Please try again.");
+  }finally{
+    setButtonLoadingState(button, false);
+  }
+}
+
+    function bindDownloadButtons(scope){
+      scope.querySelectorAll(".download-btn").forEach(button => {
+        if(button.dataset.downloadBound === "true") return;
+        button.dataset.downloadBound = "true";
+
+        button.addEventListener("click", async (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          await handleDownloadButtonClick(button);
+        });
+      });
+    }
+
+    function bindReactionButtons(scope){
+      scope.querySelectorAll(".react-btn").forEach(button => {
+        if(button.dataset.reactionBound === "true") return;
+        button.dataset.reactionBound = "true";
+
+        button.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+
+          const photoId = button.getAttribute("data-photo-id");
+          const reactionType = button.getAttribute("data-reaction");
+
+          if(!photoId || !reactionType) return;
+          toggleReaction(photoId, reactionType);
+        });
+      });
+    }
+
+    function getViewColumnName(photo){
+      if(Object.prototype.hasOwnProperty.call(photo, "views")) return "views";
+      if(Object.prototype.hasOwnProperty.call(photo, "view_count")) return "view_count";
+      if(Object.prototype.hasOwnProperty.call(photo, "views_count")) return "views_count";
+      if(Object.prototype.hasOwnProperty.call(photo, "total_views")) return "total_views";
+      return "views";
+    }
+
+    function applyLocalViewIncrement(photo){
+      const photoId = getPhotoId(photo);
+      const column = getViewColumnName(photo);
+
+      allPhotos = allPhotos.map(item => {
+        if(getPhotoId(item) !== photoId) return item;
+        return {
+          ...item,
+          [column]: getNumberValue(item, [column]) + 1
+        };
+      });
+    }
+
+    async function incrementPhotoViews(photo){
+      const stableId = String(photo.id || getPhotoId(photo));
+      if(viewedSession[stableId]) return;
+
+      viewedSession[stableId] = true;
+      saveViewedSession();
+
+      applyLocalViewIncrement(photo);
+
+      if(!photo.id){
+        return;
+      }
+
+      try{
+        const column = getViewColumnName(photo);
+        const currentValue = getNumberValue(photo, [column]);
+        const nextValue = currentValue + 1;
+
+        const { error } = await supabaseClient
+          .from("photos")
+          .update({ [column]: nextValue })
+          .eq("id", photo.id);
+
+        if(error){
+          console.error("View update failed:", error);
+        }
+      }catch(error){
+        console.error("View increment error:", error);
+      }
+    }
+
+    function renderCreatorPosts(photo){
+      const currentId = getPhotoId(photo);
+      const rows = getCreatorPhotos(photo)
+        .filter(item => getPhotoId(item) !== currentId)
+        .slice(0, 6);
+
+      if(!rows.length){
+        creatorPostsGrid.innerHTML = `<div class="creator-post-empty">No other posts from this creator yet.</div>`;
+        return;
+      }
+
+      creatorPostsGrid.innerHTML = rows.map(item => {
+        const thumb = item.image_url || DEFAULT_CATEGORY_IMAGE;
+        const title = getSafePhotoTitle(item) || getDescription(item) || item.category || "PixNest photo";
+
+        return `
+          <button type="button" class="creator-post-card" data-creator-photo-id="${escapeHtml(getPhotoId(item))}">
+            <img src="${escapeHtml(thumb)}" alt="${escapeHtml(getPhotoAlt(item))}">
+            <div class="creator-post-info">
+              <small>${escapeHtml(title)}</small>
+            </div>
+          </button>
+        `;
+      }).join("");
+
+      creatorPostsGrid.querySelectorAll(".creator-post-card").forEach(button => {
+        button.addEventListener("click", async () => {
+          const photoId = button.getAttribute("data-creator-photo-id");
+          const selected = getPhotoById(photoId);
+          if(selected){
+            await openLightbox(selected);
+          }
+        });
+      });
+    }
+
+    function renderFollowButton(photo){
+      const followed = isCreatorFollowed(photo);
+
+      followCreatorBtn.classList.toggle("following", followed);
+      followCreatorBtn.innerHTML = followed
+        ? '<i class="fa-solid fa-check"></i> Following'
+        : '<i class="fa-solid fa-user-plus"></i> Follow';
+
+      followCreatorBtn.onclick = () => {
+        updateCreatorPref(photo, { followed: !followed });
+        showNotice(followed ? "Creator unfollowed." : "Creator followed.");
+        refreshPhotoDisplays();
+      };
+    }
+
+    function renderCreatorMenuActions(photo){
+      const favourited = isCreatorFavourited(photo);
+
+      creatorMenuActions.innerHTML = `
+        <button type="button" class="creator-action-btn" id="favouriteCreatorBtn">
+          <i class="fa-solid ${favourited ? "fa-star" : "fa-regular fa-star"}"></i>
+          ${favourited ? "Creator in Favourites" : "Add Creator to Favourites"}
+        </button>
+
+        <button type="button" class="creator-action-btn" id="shareProfileBtn">
+          <i class="fa-solid fa-share-nodes"></i>
+          Share Profile
+        </button>
+      `;
+
+      const favouriteCreatorBtn = document.getElementById("favouriteCreatorBtn");
+      const shareProfileBtn = document.getElementById("shareProfileBtn");
+
+      if(favouriteCreatorBtn){
+        favouriteCreatorBtn.addEventListener("click", () => {
+          updateCreatorPref(photo, { favourited: !favourited });
+          showNotice(favourited ? "Creator removed from favourites." : "Creator added to favourites.");
+          refreshPhotoDisplays();
+        });
+      }
+
+      if(shareProfileBtn){
+        shareProfileBtn.addEventListener("click", async () => {
+          await shareProfileLink(photo, shareProfileBtn);
+        });
+      }
+    }
+
+    function renderLightboxContent(photo){
+      const imageUrl = photo.image_url || "";
+      const safeTitle = getSafePhotoTitle(photo);
+
+      lightboxImage.src = imageUrl;
+      lightboxImage.alt = getPhotoAlt(photo);
+
+      lightboxTitle.textContent = safeTitle || photo.category || "Photo";
+      lightboxTitle.classList.toggle("is-hidden", !safeTitle && !photo.category);
+
+      document.getElementById("lightboxCategory").textContent = photo.category || "Uncategorized";
+      document.getElementById("lightboxCredit").textContent = getCreatorName(photo) || "Unknown";
+      document.getElementById("lightboxTags").textContent = getPhotoTags(photo).join(", ") || "No tags";
+      document.getElementById("lightboxDescription").textContent = getDescription(photo) || "No description added.";
+      document.getElementById("lightboxCreatorTop").textContent = getCreatorName(photo) || "Unknown";
+      document.getElementById("lightboxPosted").textContent = formatPostDate(photo);
+      lightboxPostedMeta.textContent = `Posted ${formatPostDate(photo)}`;
+
+      creatorAvatar.innerHTML = buildCreatorAvatar(photo);
+      creatorCover.style.backgroundImage = `url("${getCreatorCoverImage(photo).replace(/"/g, '\\"')}")`;
+      lightboxCreatorBadges.innerHTML = buildCreatorBadges(photo);
+      creatorSocialProof.innerHTML = buildCreatorSocialProof(photo);
+
+      openCreatorProfileBtn.href = getCreatorProfileHref(photo);
+
+      renderFollowButton(photo);
+      renderCreatorMenuActions(photo);
+      renderCreatorPosts(photo);
+
+      lightboxStatsWrap.innerHTML = isLockedPhoto(photo) ? `<div class="lock-note">Join premium to enlarge, share, or download this photo.</div>` : buildPhotoStats(photo, "lightbox-stats", false);
+      lightboxActions.innerHTML = buildLightboxActions(photo);
+
+      const lightboxShareBtn = document.getElementById("lightboxShareBtn");
+      if(lightboxShareBtn){
+        lightboxShareBtn.addEventListener("click", async () => {
+          await handleNativeShare(lightboxShareBtn);
+        });
+      }
+
+      bindReactionButtons(lightboxStatsWrap);
+      bindDownloadButtons(lightboxActions);
+    }
+
+    
+async function openLightbox(photo){
+  if(isLockedPhoto(photo)){
+    handleLockedPremiumPhoto();
+    return;
+  }
+
+  await incrementPhotoViews(photo);
+  const freshPhoto = getPhotoById(getPhotoId(photo)) || photo;
+
+  activeLightboxPhotoId = getPhotoId(freshPhoto);
+  renderLightboxContent(freshPhoto);
+  lightbox.classList.add("show");
+  document.body.style.overflow = "hidden";
+}
+
+    function closeLightbox(){
+      activeLightboxPhotoId = "";
+      lightbox.classList.remove("show");
+      document.body.style.overflow = "";
+      lightboxActions.innerHTML = "";
+      lightboxStatsWrap.innerHTML = "";
+      creatorSocialProof.innerHTML = "";
+      creatorMenuActions.innerHTML = "";
+      creatorPostsGrid.innerHTML = "";
+      creatorCover.style.backgroundImage = "";
+      lightboxImage.src = "";
+      lightboxImage.alt = "Large view";
+    }
+
+    lightboxClose.addEventListener("click", closeLightbox);
+
+    lightbox.addEventListener("click", (e) => {
+      if(e.target === lightbox){
+        closeLightbox();
+      }
+    });
+
+    document.addEventListener("keydown", (e) => {
+      if(e.key === "Escape"){
+        closeLightbox();
+      }
+    });
+
+        function buildPhotoCard(photo, trendingIds){
+      const locked = isLockedPhoto(photo);
+      const description = locked ? "Premium members only." : getDescription(photo);
+      const creatorName = getCreatorName(photo) || "Unknown Creator";
+      const photoId = getPhotoId(photo);
+      const isTrending = trendingIds.has(photoId);
+      const imageSrc = locked ? LOCKED_SVG : (photo.image_url || DEFAULT_CATEGORY_IMAGE);
+
+      return `
+        <article class="visual-card ${locked ? "locked-card" : ""}" data-photo-id="${escapeHtml(photoId)}">
+          <img src="${escapeHtml(imageSrc)}" alt="${escapeHtml(locked ? "Premium photo" : getPhotoAlt(photo))}">
+
+          <div class="card-top-row">
+            <div class="card-top-left">
+              ${isTrending && !photo.featured ? `<span class="pill trending"><i class="fa-solid fa-fire"></i> Trending</span>` : ``}
+              ${photo.featured ? `<span class="pill featured"><i class="fa-solid fa-bolt"></i> Featured</span>` : ``}
+            </div>
+
+            <div class="card-top-right">
+              ${isPremiumPhoto(photo) ? `<span class="pill premium"><i class="fa-solid fa-star"></i> Premium</span>` : ``}
+            </div>
+          </div>
+
+          <div class="photo-overlay">
+            <div class="overlay-category">
+              <span class="pill category-tag">${escapeHtml(photo.category || "Photo")}</span>
+            </div>
+
+            ${description ? `<p class="overlay-desc">${escapeHtml(description)}</p>` : ""}
+            <div class="credit">
+              <span>By ${escapeHtml(creatorName)}</span>
+              ${typeof buildCreatorBadges === "function" ? buildCreatorBadges(photo) : ""}
+            </div>
+
+            <div class="card-bottom">
+              <div class="card-bottom-left">
+                ${locked ? `
+                  <a
+                    class="action-icon"
+                    href="premium.html"
+                    aria-label="Unlock premium"
+                    title="Unlock premium"
+                    data-stop-card
+                  >
+                    <i class="fa-solid fa-crown"></i>
+                  </a>
+                ` : `
+                  <button
+                    type="button"
+                    class="action-icon share-btn"
+                    aria-label="Share"
+                    title="Share"
+                    data-share-url="${escapeHtml(photo.image_url || window.location.href)}"
+                    data-share-title="${escapeHtml(getShareTitle(photo))}"
+                    data-stop-card
+                  >
+                    <i class="fa-solid fa-share-nodes"></i>
+                  </button>
+
+                  <button
+                    type="button"
+                    class="action-icon download-btn"
+                    data-download-url="${escapeHtml(photo.image_url || "")}"
+                    data-download-name="${escapeHtml(getDownloadFileName(photo, photo.image_url || ""))}"
+                    aria-label="Download image"
+                    title="Download image"
+                    data-stop-card
+                  >
+                    <i class="fa-solid fa-download"></i>
+                  </button>
+                `}
+              </div>
+
+              <div class="card-bottom-right">
+                ${locked ? `<div class="lock-note">Join premium to enlarge, share, or download.</div>` : buildPhotoStats(photo, "", true)}
+              </div>
+            </div>
+          </div>
+        </article>
+      `;
+    }
+
+    function activatePhotoCards(rows, container){
+      container.querySelectorAll(".visual-card").forEach(card => {
+        const photoId = card.getAttribute("data-photo-id");
+        const photo = rows.find(item => getPhotoId(item) === String(photoId));
+        if(!photo) return;
+
+        card.addEventListener("click", async (e) => {
+          if(e.target.closest("[data-stop-card]")){
+            return;
+          }
+          await openLightbox(photo);
+        });
+      });
+
+      container.querySelectorAll(".share-btn").forEach(btn => {
+        btn.addEventListener("click", async (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          await handleNativeShare(btn);
+        });
+      });
+
+      bindDownloadButtons(container);
+      bindReactionButtons(container);
+    }
+
+    function renderOverviewCategories(){
+      const searchValue = overviewSearchInput.value.trim().toLowerCase();
+      const filterValue = overviewFilter.value;
+      const categories = getMergedCategories();
+
+      const filtered = categories.filter(category => {
+        const photoCount = category.photos.length;
+        const featuredCount = category.photos.filter(photo => photo.featured).length;
+
+        const matchesText = !searchValue || [
+          category.name,
+          category.description
+        ].join(" ").toLowerCase().includes(searchValue);
+
+        let matchesFilter = true;
+
+        if(filterValue === "with-photos"){
+          matchesFilter = photoCount > 0;
+        }else if(filterValue === "featured"){
+          matchesFilter = featuredCount > 0;
+        }else if(filterValue === "empty"){
+          matchesFilter = photoCount === 0;
+        }
+
+        return matchesText && matchesFilter;
+      });
+
+      overviewNote.textContent = `${filtered.length} categor${filtered.length === 1 ? "y" : "ies"} found.`;
+
+      if(!filtered.length){
+        categoryGrid.innerHTML = '<div class="empty-box">No categories found for this search.</div>';
+        return;
+      }
+
+      categoryGrid.innerHTML = filtered.map(category => {
+        const cover = category.photos.find(photo => photo.featured) || category.photos[0];
+        const photoCount = category.photos.length;
+        const featuredCount = category.photos.filter(photo => photo.featured).length;
+        const premiumCount = category.photos.filter(photo => isPremiumPhoto(photo)).length;
+        const coverImage = cover && cover.image_url ? cover.image_url : DEFAULT_CATEGORY_IMAGE;
+
+        return `
+          <a href="category.html?category=${encodeURIComponent(category.name)}" class="category-card">
+            <div class="category-image-wrap">
+              <img src="${escapeHtml(coverImage)}" alt="${escapeHtml(category.name)}">
+            </div>
+
+            <div class="category-content">
+              <div class="category-meta">
+                <span class="pill category-tag">${photoCount} photo${photoCount === 1 ? "" : "s"}</span>
+                ${featuredCount ? `<span class="pill featured"><i class="fa-solid fa-bolt"></i> ${featuredCount} featured</span>` : ``}
+                ${premiumCount ? `<span class="pill premium"><i class="fa-solid fa-star"></i> ${premiumCount} premium</span>` : ``}
+              </div>
+
+              <h3>${escapeHtml(category.name)}</h3>
+              <p>${escapeHtml(category.description || `Browse photos in the ${category.name} collection.`)}</p>
+
+              <span class="category-link">
+                Open Collection
+                <i class="fa-solid fa-arrow-right"></i>
+              </span>
+            </div>
+          </a>
+        `;
+      }).join("");
+    }
+
+    function renderDetailPhotos(){
+      const categories = getMergedCategories();
+      const activeCategory = categories.find(category => category.name === activeCategoryName);
+
+      if(!activeCategory){
+        detailPhotoGrid.innerHTML = '<div class="empty-box">Category not found.</div>';
+        return;
+      }
+
+      const searchValue = detailSearchInput.value.trim().toLowerCase();
+      const filterValue = detailFilter.value;
+
+      const rows = activeCategory.photos.filter(photo => {
+        const text = [
+          getSafePhotoTitle(photo),
+          photo.description,
+          photo.tags,
+          getCreatorName(photo),
+          photo.category
+        ].join(" ").toLowerCase();
+
+        const matchesText = !searchValue || text.includes(searchValue);
+
+        let matchesFilter = true;
+        if(filterValue === "featured"){
+          matchesFilter = Boolean(photo.featured);
+        }else if(filterValue === "premium"){
+          matchesFilter = isPremiumPhoto(photo);
+        }
+
+        return matchesText && matchesFilter;
+      });
+
+      const trendingIds = getTrendingIds(activeCategory.photos);
+
+      detailNote.textContent = `${rows.length} photo${rows.length === 1 ? "" : "s"} found in ${activeCategory.name}.`;
+
+      if(!rows.length){
+        detailPhotoGrid.innerHTML = '<div class="empty-box">No photos found for this category search.</div>';
+        return;
+      }
+
+      detailPhotoGrid.innerHTML = rows.map(photo => buildPhotoCard(photo, trendingIds)).join("");
+      activatePhotoCards(rows, detailPhotoGrid);
+    }
+
+    function showOverviewMode(){
+      overviewSection.classList.remove("hidden");
+      detailSection.classList.add("hidden");
+      activeCategoryName = "";
+      renderOverviewHero();
+      renderOverviewCategories();
+    }
+
+    function showDetailMode(categoryName){
+      const categories = getMergedCategories();
+      const activeCategory = categories.find(category => category.name.toLowerCase() === categoryName.toLowerCase());
+
+      if(!activeCategory){
+        showOverviewMode();
+        return;
+      }
+
+      activeCategoryName = activeCategory.name;
+      overviewSection.classList.add("hidden");
+      detailSection.classList.remove("hidden");
+      renderDetailHero(activeCategory);
+      renderDetailPhotos();
+    }
+
+    function decideMode(){
+      const requestedCategory = getRequestedCategory();
+
+      if(requestedCategory){
+        showDetailMode(requestedCategory);
+      }else{
+        showOverviewMode();
+      }
+    }
+
+    function refreshPhotoDisplays(){
+      if(activeCategoryName){
+        renderDetailPhotos();
+      }else{
+        renderOverviewCategories();
+      }
+
+      if(activeLightboxPhotoId && lightbox.classList.contains("show")){
+        const activePhoto = getPhotoById(activeLightboxPhotoId);
+        if(activePhoto){
+          renderLightboxContent(activePhoto);
+        }
+      }
+    }
+
+    async function loadPhotos(){
+      try{
+        const { data, error } = await supabaseClient
+          .from("photos")
+          .select("*")
+          .order("created_at", { ascending:false });
+
+        if(error){
+          throw error;
+        }
+
+        allPhotos = Array.isArray(data) ? data : [];
+        applyFooterText();
+        decideMode();
+      }catch(error){
+        console.error(error);
+        categoryGrid.innerHTML = '<div class="empty-box">Could not load categories from Supabase.</div>';
+        detailPhotoGrid.innerHTML = '<div class="empty-box">Could not load category photos from Supabase.</div>';
+      }
+    }
+
+    overviewSearchBtn.addEventListener("click", renderOverviewCategories);
+
+    overviewSearchInput.addEventListener("keydown", (e) => {
+      if(e.key === "Enter"){
+        e.preventDefault();
+        renderOverviewCategories();
+      }
+    });
+
+    overviewFilter.addEventListener("change", renderOverviewCategories);
+
+    detailSearchBtn.addEventListener("click", renderDetailPhotos);
+
+    detailSearchInput.addEventListener("keydown", (e) => {
+      if(e.key === "Enter"){
+        e.preventDefault();
+        renderDetailPhotos();
+      }
+    });
+
+    detailFilter.addEventListener("change", renderDetailPhotos);
+
+    applyFooterText();
+    (async function initPageData(){
+      await initActiveSessionUser();
+      await loadPhotos();
+    })();
+
+    supabaseClient.auth.onAuthStateChange(async () => {
+      await initActiveSessionUser();
+      refreshPhotoDisplays();
+    });
+  </script>
+  <script src="site-auth.js"></script>
+</body>
+</html>
+ 
+
+
+ 

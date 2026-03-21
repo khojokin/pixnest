@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PixNest | Checkout</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+      font-family:Arial, Helvetica, sans-serif;
+    }
+
+    :root{
+      --bg:#0f172a;
+      --panel:#111827;
+      --panel2:#1e293b;
+      --text:#e5e7eb;
+      --muted:#94a3b8;
+      --accent:#facc15;
+      --line:rgba(255,255,255,0.08);
+      --success:#22c55e;
+      --danger:#ef4444;
+      --blue:#3b82f6;
+    }
+
+    html{
+      scroll-behavior:smooth;
+      min-height:100%;
+      background:var(--bg);
+    }
+
+    body{
+      min-height:100%;
+      background:var(--bg);
+      color:var(--text);
+      line-height:1.6;
+      overflow-x:hidden;
+    }
+
+    img{
+      max-width:100%;
+      display:block;
+    }
+
+    a{
+      text-decoration:none;
+      color:inherit;
+      transition:.3s;
+    }
+
+    button,
+    input,
+    select{
+      font-family:Arial, Helvetica, sans-serif;
+      transition:.3s;
+    }
+
+    .container{
+      width:min(1200px,92%);
+      margin:auto;
+    }
+
+    header{
+      position:sticky;
+      top:0;
+      z-index:1000;
+      background:rgba(15,23,42,0.95);
+      border-bottom:1px solid var(--line);
+      backdrop-filter:blur(8px);
+    }
+
+    .nav{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:20px;
+      padding:16px 0;
+      position:relative;
+    }
+
+    .logo-wrap{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      flex-shrink:0;
+      min-width:0;
+    }
+
+    .logo-mark{
+      width:52px;
+      height:52px;
+      border-radius:14px;
+      background:linear-gradient(135deg,#facc15,#fb7185);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:#111827;
+      font-size:24px;
+      font-weight:800;
+      box-shadow:0 0 16px rgba(250,204,21,0.28);
+      flex-shrink:0;
+    }
+
+    .logo-text{
+      display:flex;
+      flex-direction:column;
+      line-height:1;
+      min-width:0;
+    }
+
+    .logo-title{
+      font-size:27px;
+      font-weight:800;
+      color:var(--accent);
+      letter-spacing:.4px;
+      white-space:nowrap;
+    }
+
+    .logo-sub{
+      font-size:11px;
+      color:#cbd5e1;
+      letter-spacing:1.7px;
+      text-transform:uppercase;
+      margin-top:4px;
+      white-space:nowrap;
+    }
+
+    .nav-links{
+      display:flex;
+      align-items:center;
+      gap:20px;
+      flex-wrap:wrap;
+    }
+
+    .nav-links a{
+      color:#cbd5e1;
+      font-size:15px;
+      position:relative;
+      padding-bottom:4px;
+    }
+
+    .nav-links a:hover,
+    .nav-links a.active{
+      color:var(--accent);
+    }
+
+    .nav-links a.active::after{
+      content:"";
+      position:absolute;
+      left:0;
+      bottom:-4px;
+      width:100%;
+      height:2px;
+      background:var(--accent);
+      border-radius:999px;
+    }
+
+    .hero{
+      background:
+        linear-gradient(rgba(15,23,42,.72), rgba(15,23,42,.92)),
+        url('https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1600&q=80') center/cover no-repeat;
+      min-height:40vh;
+      display:flex;
+      align-items:center;
+    }
+
+    .hero-content{
+      max-width:860px;
+      padding:80px 0 50px;
+    }
+
+    .hero-tag{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      background:rgba(250,204,21,.12);
+      color:var(--accent);
+      padding:8px 14px;
+      border-radius:999px;
+      font-size:14px;
+      border:1px solid rgba(250,204,21,.22);
+      margin-bottom:18px;
+      font-weight:700;
+    }
+
+    .hero h1{
+      font-size:clamp(32px,5vw,56px);
+      line-height:1.05;
+      margin-bottom:16px;
+      color:#fff;
+    }
+
+    .hero p{
+      font-size:17px;
+      color:#cbd5e1;
+      max-width:760px;
+    }
+
+    section{
+      padding:74px 0;
+    }
+
+    .checkout-layout{
+      display:grid;
+      grid-template-columns:1.1fr .9fr;
+      gap:24px;
+      align-items:start;
+    }
+
+    .panel-card{
+      background:#111827;
+      border:1px solid var(--line);
+      border-radius:24px;
+      padding:24px;
+      box-shadow:0 14px 30px rgba(0,0,0,.14);
+    }
+
+    .panel-card h2{
+      color:#fff;
+      font-size:28px;
+      margin-bottom:8px;
+    }
+
+    .panel-card p{
+      color:#94a3b8;
+      font-size:14px;
+      margin-bottom:20px;
+    }
+
+    .summary-box{
+      display:grid;
+      gap:14px;
+    }
+
+    .summary-row{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding:14px 16px;
+      border-radius:16px;
+      background:#0f172a;
+      border:1px solid var(--line);
+    }
+
+    .summary-row strong{
+      color:#fff;
+      font-size:15px;
+    }
+
+    .summary-row span{
+      color:#cbd5e1;
+      font-size:14px;
+      text-align:right;
+    }
+
+    .price-big{
+      color:var(--accent) !important;
+      font-size:32px !important;
+      font-weight:800;
+    }
+
+    .accepted-methods{
+      display:grid;
+      gap:14px;
+      margin-top:22px;
+    }
+
+    .method-chip{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      padding:16px;
+      border-radius:18px;
+      border:1px solid var(--line);
+      background:#0f172a;
+    }
+
+    .method-icon{
+      width:48px;
+      height:48px;
+      border-radius:14px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:#111827;
+      border:1px solid var(--line);
+      color:var(--accent);
+      font-size:20px;
+      flex-shrink:0;
+    }
+
+    .method-text strong{
+      display:block;
+      color:#fff;
+      font-size:15px;
+      margin-bottom:2px;
+    }
+
+    .method-text span{
+      color:#94a3b8;
+      font-size:13px;
+    }
+
+    .secure-note{
+      display:flex;
+      align-items:flex-start;
+      gap:12px;
+      margin-top:20px;
+      padding:16px;
+      border-radius:16px;
+      background:rgba(59,130,246,.08);
+      border:1px solid rgba(59,130,246,.16);
+      color:#dbeafe;
+      font-size:13px;
+    }
+
+    .cta-btn{
+      width:100%;
+      min-height:56px;
+      border:none;
+      border-radius:14px;
+      background:#facc15;
+      color:#111827;
+      font-size:16px;
+      font-weight:800;
+      cursor:pointer;
+      margin-top:22px;
+    }
+
+    .cta-btn:hover{
+      transform:translateY(-2px);
+      box-shadow:0 12px 28px rgba(250,204,21,.18);
+    }
+
+    .cta-btn:disabled{
+      opacity:.7;
+      cursor:not-allowed;
+      transform:none;
+      box-shadow:none;
+    }
+
+    .ghost-btn{
+      width:100%;
+      min-height:52px;
+      border:1px solid rgba(255,255,255,.14);
+      border-radius:14px;
+      background:transparent;
+      color:#fff;
+      font-size:15px;
+      font-weight:800;
+      cursor:pointer;
+      margin-top:12px;
+    }
+
+    .ghost-btn:hover{
+      background:rgba(255,255,255,.06);
+    }
+
+    .benefit-list{
+      display:grid;
+      gap:12px;
+      margin-top:8px;
+    }
+
+    .benefit-item{
+      display:flex;
+      align-items:flex-start;
+      gap:12px;
+      padding:14px 16px;
+      border-radius:16px;
+      background:#0f172a;
+      border:1px solid var(--line);
+    }
+
+    .benefit-item i{
+      color:var(--accent);
+      margin-top:3px;
+      flex-shrink:0;
+    }
+
+    .benefit-item strong{
+      display:block;
+      color:#fff;
+      margin-bottom:3px;
+      font-size:14px;
+    }
+
+    .benefit-item span{
+      color:#94a3b8;
+      font-size:13px;
+    }
+
+    .message{
+      display:none;
+      margin-top:16px;
+      padding:14px 16px;
+      border-radius:14px;
+      font-size:14px;
+    }
+
+    .message.show{
+      display:block;
+    }
+
+    .message.success{
+      background:rgba(34,197,94,.12);
+      border:1px solid rgba(34,197,94,.18);
+      color:#bbf7d0;
+    }
+
+    .message.error{
+      background:rgba(239,68,68,.12);
+      border:1px solid rgba(239,68,68,.18);
+      color:#fecaca;
+    }
+
+    footer{
+      background:#020617;
+      border-top:1px solid var(--line);
+      padding:24px 0;
+    }
+
+    .footer-inner{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:20px;
+      flex-wrap:wrap;
+    }
+
+    .footer-inner p{
+      color:#94a3b8;
+      font-size:14px;
+    }
+
+    .footer-links{
+      display:flex;
+      flex-wrap:wrap;
+      gap:16px;
+    }
+
+    .footer-links a{
+      color:#cbd5e1;
+      font-size:14px;
+    }
+
+    .footer-links a:hover{
+      color:var(--accent);
+    }
+
+    @media(max-width:1024px){
+      .checkout-layout{
+        grid-template-columns:1fr;
+      }
+    }
+
+    @media(max-width:768px){
+      .footer-inner{
+        flex-direction:column;
+        align-items:flex-start;
+      }
+
+      .logo-mark{
+        width:46px;
+        height:46px;
+      }
+
+      .logo-title{
+        font-size:22px;
+      }
+
+      .logo-sub{
+        font-size:10px;
+        letter-spacing:1.2px;
+      }
+    }
+
+    @media(max-width:480px){
+      .container{
+        width:min(1200px,94%);
+      }
+
+      .hero h1{
+        font-size:34px;
+      }
+
+      .hero p{
+        font-size:15px;
+      }
+
+      .panel-card{
+        padding:18px;
+      }
+
+      .logo-title{
+        font-size:20px;
+      }
+
+      .logo-sub{
+        font-size:9px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container nav">
+      <a href="index.html" class="logo-wrap">
+        <span class="logo-mark">P</span>
+        <span class="logo-text">
+          <span class="logo-title">PixNest</span>
+          <span class="logo-sub">Photo Collection Site</span>
+        </span>
+      </a>
+
+      <nav class="nav-links">
+        <a href="index.html">Home</a>
+        <a href="premium.html" class="active">Premium</a>
+        <a href="profile.html">Profile</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="container">
+      <div class="hero-content">
+        <div class="hero-tag">
+          <i class="fa-solid fa-lock"></i>
+          Secure Checkout
+        </div>
+        <h1>Complete your PixNest premium upgrade.</h1>
+        <p>Your payment will continue on Stripe’s secure payment page, where eligible users can see Apple Pay, Google Pay, and card options.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="container checkout-layout">
+      <div class="panel-card">
+        <h2>Order Summary</h2>
+        <p>Review your plan, then continue to secure checkout.</p>
+
+        <div class="summary-box">
+          <div class="summary-row">
+            <strong>Plan</strong>
+            <span id="planName">Premium Monthly</span>
+          </div>
+
+          <div class="summary-row">
+            <strong>Billing</strong>
+            <span id="planBilling">Every month</span>
+          </div>
+
+          <div class="summary-row">
+            <strong>Total</strong>
+            <span class="price-big" id="planPrice">£9.99</span>
+          </div>
+        </div>
+
+        <div class="accepted-methods">
+          <div class="method-chip">
+            <div class="method-icon"><i class="fa-brands fa-apple"></i></div>
+            <div class="method-text">
+              <strong>Apple Pay</strong>
+              <span>Shown automatically on supported Apple devices</span>
+            </div>
+          </div>
+
+          <div class="method-chip">
+            <div class="method-icon"><i class="fa-brands fa-google-pay"></i></div>
+            <div class="method-text">
+              <strong>Google Pay</strong>
+              <span>Shown automatically on supported browsers and devices</span>
+            </div>
+          </div>
+
+          <div class="method-chip">
+            <div class="method-icon"><i class="fa-regular fa-credit-card"></i></div>
+            <div class="method-text">
+              <strong>Debit / Credit Card</strong>
+              <span>Visa, Mastercard, and other supported cards</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="secure-note">
+          <i class="fa-solid fa-shield-halved"></i>
+          <span>Payments are handled on Stripe Checkout. Sensitive card details do not pass through your page code.</span>
+        </div>
+
+        <button type="button" class="cta-btn" id="checkoutBtn">Continue to Secure Payment</button>
+        <button type="button" class="ghost-btn" id="backBtn">Back to Plans</button>
+
+        <div class="message" id="checkoutMessage"></div>
+      </div>
+
+      <div class="panel-card">
+        <h2>What’s included</h2>
+        <p>Your premium plan unlocks more across PixNest.</p>
+
+        <div class="benefit-list">
+          <div class="benefit-item">
+            <i class="fa-solid fa-crown"></i>
+            <div>
+              <strong>Premium-only photos</strong>
+              <span>Open locked premium visuals across the platform.</span>
+            </div>
+          </div>
+
+          <div class="benefit-item">
+            <i class="fa-solid fa-image"></i>
+            <div>
+              <strong>Better browsing flow</strong>
+              <span>Move through premium content with fewer blockers.</span>
+            </div>
+          </div>
+
+          <div class="benefit-item">
+            <i class="fa-solid fa-user-check"></i>
+            <div>
+              <strong>Premium account status</strong>
+              <span>Your account can reflect premium access after successful payment.</span>
+            </div>
+          </div>
+
+          <div class="benefit-item">
+            <i class="fa-solid fa-repeat"></i>
+            <div>
+              <strong>Recurring membership</strong>
+              <span>Monthly or yearly billing handled by Stripe subscriptions.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container footer-inner">
+      <p>©️ 2026 PixNest. Discover and share powerful visual collections.</p>
+      <div class="footer-links">
+        <a href="about.html">About</a>
+        <a href="privacy.html">Privacy</a>
+        <a href="terms.html">Terms</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const SUPABASE_URL = "https://vigczssznfvujttdapbv.supabase.co";
+    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZpZ2N6c3N6bmZ2dWp0dGRhcGJ2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM5NTAyMDQsImV4cCI6MjA4OTUyNjIwNH0.X3RAAn934atQgrBZIhAUu0NueRfWyi-hUBZf_MQ37Rk";
+
+    const { createClient } = supabase;
+    const supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    const planName = document.getElementById("planName");
+    const planBilling = document.getElementById("planBilling");
+    const planPrice = document.getElementById("planPrice");
+    const checkoutBtn = document.getElementById("checkoutBtn");
+    const backBtn = document.getElementById("backBtn");
+    const checkoutMessage = document.getElementById("checkoutMessage");
+
+    const plans = {
+      monthly: {
+        label: "Premium Monthly",
+        billing: "Every month",
+        price: "£9.99"
+      },
+      yearly: {
+        label: "Premium Yearly",
+        billing: "Every year",
+        price: "£89.99"
+      }
+    };
+
+    function showMessage(text, type = "error"){
+      checkoutMessage.className = `message show ${type}`;
+      checkoutMessage.textContent = text;
+    }
+
+    function clearMessage(){
+      checkoutMessage.className = "message";
+      checkoutMessage.textContent = "";
+    }
+
+    function getPlanFromUrl(){
+      const params = new URLSearchParams(window.location.search);
+      const plan = String(params.get("plan") || "monthly").toLowerCase();
+      return plans[plan] ? plan : "monthly";
+    }
+
+    function setPlanSummary(){
+      const selectedPlan = getPlanFromUrl();
+      const plan = plans[selectedPlan];
+      planName.textContent = plan.label;
+      planBilling.textContent = plan.billing;
+      planPrice.textContent = plan.price;
+    }
+
+    function setLoading(isLoading){
+      checkoutBtn.disabled = isLoading;
+      checkoutBtn.textContent = isLoading ? "Redirecting..." : "Continue to Secure Payment";
+    }
+
+    async function startCheckout(){
+      clearMessage();
+      setLoading(true);
+
+      try{
+        const { data: authData } = await supabaseClient.auth.getUser();
+        const user = authData?.user || null;
+
+        if(!user){
+          window.location.href = "login.html?next=" + encodeURIComponent(window.location.href);
+          return;
+        }
+
+        const plan = getPlanFromUrl();
+        const accessToken = (await supabaseClient.auth.getSession()).data.session?.access_token;
+
+        const response = await fetch(`${SUPABASE_URL}/functions/v1/create-checkout-session`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${accessToken}`
+          },
+          body: JSON.stringify({ plan })
+        });
+
+        const result = await response.json();
+
+        if(!response.ok){
+          throw new Error(result.error || "Could not start checkout.");
+        }
+
+        if(!result.url){
+          throw new Error("No checkout URL returned.");
+        }
+
+        window.location.href = result.url;
+      }catch(error){
+        console.error(error);
+        showMessage(error.message || "Could not start checkout.");
+        setLoading(false);
+      }
+    }
+
+    checkoutBtn.addEventListener("click", startCheckout);
+
+    backBtn.addEventListener("click", () => {
+      window.location.href = "premium.html";
+    });
+
+    setPlanSummary();
+  </script>
+  <script src="site-auth.js"></script>
+</body>
+</html>

@@ -1,0 +1,1404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+ <meta charset="UTF-8" />
+ <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+ <title>PixNest | Contact</title>
+ <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+ <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+ <style>
+   *{
+     margin:0;
+     padding:0;
+     box-sizing:border-box;
+     font-family:Arial, Helvetica, sans-serif;
+   }
+
+   :root{
+     --bg:#0f172a;
+     --panel:#111827;
+     --panel2:#1e293b;
+     --text:#e5e7eb;
+     --muted:#94a3b8;
+     --accent:#facc15;
+     --line:rgba(255,255,255,0.08);
+     --blue:#3b82f6;
+     --success:#22c55e;
+     --danger:#ef4444;
+   }
+
+   html{
+     scroll-behavior:smooth;
+     min-height:100%;
+     background:var(--bg);
+   }
+
+   body{
+     min-height:100%;
+     background:var(--bg);
+     color:var(--text);
+     line-height:1.6;
+     overflow-x:hidden;
+   }
+
+   img{
+     max-width:100%;
+     display:block;
+   }
+
+   a{
+     text-decoration:none;
+     color:inherit;
+     transition:.3s;
+   }
+
+   button,
+   input,
+   select,
+   textarea{
+     font-family:Arial, Helvetica, sans-serif;
+     transition:.3s;
+   }
+
+   .container{
+     width:min(1200px,92%);
+     margin:auto;
+   }
+
+   .hidden{
+     display:none !important;
+   }
+
+   header{
+     position:sticky;
+     top:0;
+     z-index:1000;
+     background:rgba(15,23,42,0.95);
+     border-bottom:1px solid var(--line);
+     backdrop-filter:blur(8px);
+   }
+
+   .nav{
+     display:flex;
+     align-items:center;
+     justify-content:space-between;
+     gap:20px;
+     padding:16px 0;
+     position:relative;
+   }
+
+   .logo-wrap{
+     display:flex;
+     align-items:center;
+     gap:12px;
+     flex-shrink:0;
+     min-width:0;
+   }
+
+   .logo-mark{
+     width:52px;
+     height:52px;
+     border-radius:14px;
+     background:linear-gradient(135deg,#facc15,#fb7185);
+     display:flex;
+     align-items:center;
+     justify-content:center;
+     color:#111827;
+     font-size:24px;
+     font-weight:800;
+     box-shadow:0 0 16px rgba(250,204,21,0.28);
+     flex-shrink:0;
+   }
+
+   .logo-text{
+     display:flex;
+     flex-direction:column;
+     line-height:1;
+     min-width:0;
+   }
+
+   .logo-title{
+     font-size:27px;
+     font-weight:800;
+     color:var(--accent);
+     letter-spacing:.4px;
+     white-space:nowrap;
+   }
+
+   .logo-sub{
+     font-size:11px;
+     color:#cbd5e1;
+     letter-spacing:1.7px;
+     text-transform:uppercase;
+     margin-top:4px;
+     white-space:nowrap;
+   }
+
+   .nav-right{
+     display:flex;
+     align-items:center;
+     gap:14px;
+     min-width:0;
+   }
+
+   .nav-links{
+     display:flex;
+     align-items:center;
+     gap:20px;
+     flex-wrap:wrap;
+   }
+
+   .nav-links a{
+     color:#cbd5e1;
+     font-size:15px;
+     position:relative;
+     padding-bottom:4px;
+   }
+
+   .nav-links a:hover,
+   .nav-links a.active{
+     color:var(--accent);
+   }
+
+   .nav-links a.active::after{
+     content:"";
+     position:absolute;
+     left:0;
+     bottom:-4px;
+     width:100%;
+     height:2px;
+     background:var(--accent);
+     border-radius:999px;
+   }
+
+   .nav-auth{
+     display:flex;
+     align-items:center;
+     gap:10px;
+     flex-wrap:wrap;
+   }
+
+   .nav-auth a{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      min-height:42px;
+      padding:10px 14px;
+      border-radius:12px;
+      font-size:14px;
+      font-weight:700;
+      line-height:1;
+      border:1px solid rgba(255,255,255,.14);
+    }
+
+   .nav-auth .signup-btn{
+     background:var(--accent);
+     color:#111827;
+     border-color:transparent;
+   }
+
+   .nav-auth .signup-btn:hover{
+     transform:translateY(-2px);
+     box-shadow:0 10px 22px rgba(250,204,21,.18);
+   }
+
+   .nav-auth .login-btn{
+     background:transparent;
+     color:#fff;
+   }
+
+   .nav-auth .login-btn:hover{
+     background:rgba(255,255,255,.06);
+     border-color:rgba(250,204,21,.28);
+     color:var(--accent);
+   }
+
+   .menu-toggle{
+     display:none;
+     width:46px;
+     height:46px;
+     border-radius:12px;
+     border:1px solid rgba(250,204,21,.35);
+     background:#111827;
+     color:var(--accent);
+     align-items:center;
+     justify-content:center;
+     cursor:pointer;
+     flex-direction:column;
+     gap:5px;
+     flex-shrink:0;
+   }
+
+   .menu-toggle span{
+     width:20px;
+     height:2px;
+     border-radius:999px;
+     background:var(--accent);
+     display:block;
+   }
+
+   .account-menu-wrap{
+     position:relative;
+     flex-shrink:0;
+   }
+
+   .account-menu-btn{
+     width:48px;
+     height:48px;
+     border-radius:14px;
+     border:1px solid rgba(250,204,21,.28);
+     background:#111827;
+     color:#fff;
+     display:flex;
+     align-items:center;
+     justify-content:center;
+     cursor:pointer;
+     padding:0;
+   }
+
+   .account-menu-btn:hover{
+     color:var(--accent);
+     border-color:rgba(250,204,21,.42);
+     transform:translateY(-2px);
+   }
+
+   .account-menu-dropdown{
+     position:absolute;
+     top:calc(100% + 12px);
+     right:0;
+     width:min(340px,92vw);
+     background:#111827;
+     border:1px solid var(--line);
+     border-radius:20px;
+     box-shadow:0 24px 50px rgba(0,0,0,.34);
+     padding:14px;
+     display:none;
+     z-index:1200;
+   }
+
+   .account-menu-dropdown.show{
+     display:block;
+   }
+
+   .account-menu-head{
+     display:flex;
+     align-items:center;
+     gap:12px;
+     padding:8px 8px 14px;
+     border-bottom:1px solid var(--line);
+     margin-bottom:12px;
+   }
+
+   .account-menu-avatar{
+     width:52px;
+     height:52px;
+     border-radius:50%;
+     overflow:hidden;
+     background:linear-gradient(135deg,#facc15,#fb7185);
+     display:flex;
+     align-items:center;
+     justify-content:center;
+     color:#111827;
+     font-size:18px;
+     font-weight:800;
+     flex-shrink:0;
+   }
+
+   .account-menu-avatar img{
+     width:100%;
+     height:100%;
+     object-fit:cover;
+   }
+
+   .account-menu-head strong{
+     display:block;
+     color:#fff;
+     font-size:16px;
+     line-height:1.3;
+   }
+
+   .account-menu-head small{
+     display:block;
+     color:#94a3b8;
+     font-size:12px;
+     margin-top:2px;
+     word-break:break-word;
+   }
+
+   .account-menu-links{
+     display:grid;
+     gap:8px;
+   }
+
+   .account-link,
+   .account-logout{
+     min-height:46px;
+     border-radius:14px;
+     background:#0f172a;
+     border:1px solid var(--line);
+     color:#e5e7eb;
+     font-size:14px;
+     font-weight:700;
+     display:flex;
+     align-items:center;
+     gap:10px;
+     padding:0 14px;
+     cursor:pointer;
+   }
+
+   .account-link:hover,
+   .account-logout:hover{
+     color:var(--accent);
+     border-color:rgba(250,204,21,.24);
+     transform:translateY(-2px);
+   }
+
+   .hero{
+     background:
+       linear-gradient(rgba(15,23,42,.72), rgba(15,23,42,.92)),
+       url('https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1600&q=80') center/cover no-repeat;
+     min-height:52vh;
+     display:flex;
+     align-items:center;
+   }
+
+   .hero-content{
+     max-width:860px;
+     padding:88px 0 56px;
+   }
+
+   .hero-tag{
+     display:inline-flex;
+     align-items:center;
+     gap:8px;
+     background:rgba(250,204,21,.12);
+     color:var(--accent);
+     padding:8px 14px;
+     border-radius:999px;
+     font-size:14px;
+     font-weight:700;
+     border:1px solid rgba(250,204,21,.22);
+     margin-bottom:18px;
+   }
+
+   .hero h1{
+     font-size:clamp(36px,5vw,58px);
+     line-height:1.06;
+     margin-bottom:18px;
+     color:#fff;
+   }
+
+   .hero p{
+     font-size:18px;
+     color:#cbd5e1;
+     max-width:760px;
+   }
+
+   .hero-meta{
+     display:flex;
+     gap:10px;
+     flex-wrap:wrap;
+     margin-top:18px;
+   }
+
+   .pill{
+     display:inline-flex;
+     align-items:center;
+     justify-content:center;
+     gap:6px;
+     padding:6px 10px;
+     border-radius:999px;
+     font-size:11px;
+     background:rgba(0,0,0,.74);
+     border:1px solid rgba(255,255,255,.12);
+     color:#fff;
+     backdrop-filter:blur(8px);
+     white-space:nowrap;
+   }
+
+   .pill.featured{
+     background:rgba(34,197,94,.18);
+     border-color:rgba(34,197,94,.28);
+     color:#86efac;
+   }
+
+   .pill.trending{
+     background:rgba(59,130,246,.16);
+     border-color:rgba(59,130,246,.26);
+     color:#93c5fd;
+   }
+
+   .pill.premium{
+     background:rgba(250,204,21,.22);
+     border:1px solid rgba(250,204,21,.42);
+     color:#fde68a;
+   }
+
+   section{
+     padding:74px 0;
+   }
+
+   .section-head{
+     display:flex;
+     align-items:end;
+     justify-content:space-between;
+     gap:20px;
+     flex-wrap:wrap;
+     margin-bottom:28px;
+   }
+
+   .section-head h2{
+     font-size:32px;
+     color:#fff;
+     margin-bottom:8px;
+   }
+
+   .section-head p{
+     color:var(--muted);
+     max-width:760px;
+   }
+
+   .contact-grid{
+     display:grid;
+     grid-template-columns:repeat(4,1fr);
+     gap:18px;
+     margin-bottom:22px;
+   }
+
+   .contact-card{
+     background:#111827;
+     border:1px solid var(--line);
+     border-radius:22px;
+     padding:20px;
+     box-shadow:0 14px 30px rgba(0,0,0,.14);
+   }
+
+   .contact-card .icon{
+     width:46px;
+     height:46px;
+     border-radius:14px;
+     display:flex;
+     align-items:center;
+     justify-content:center;
+     background:#0f172a;
+     border:1px solid var(--line);
+     color:var(--accent);
+     font-size:18px;
+     margin-bottom:16px;
+   }
+
+   .contact-card h3{
+     color:#fff;
+     font-size:20px;
+     margin-bottom:8px;
+   }
+
+   .contact-card p{
+     color:#cbd5e1;
+     font-size:14px;
+     margin-bottom:12px;
+   }
+
+   .contact-card a{
+     color:var(--accent);
+     font-weight:700;
+     font-size:14px;
+     word-break:break-word;
+   }
+
+   .main-grid{
+     display:grid;
+     grid-template-columns:1.1fr .9fr;
+     gap:22px;
+     align-items:start;
+   }
+
+   .panel{
+     background:#111827;
+     border:1px solid var(--line);
+     border-radius:24px;
+     padding:22px;
+     box-shadow:0 14px 30px rgba(0,0,0,.14);
+   }
+
+   .panel h3{
+     color:#fff;
+     font-size:24px;
+     margin-bottom:10px;
+   }
+
+   .panel-sub{
+     color:#cbd5e1;
+     font-size:14px;
+     margin-bottom:18px;
+   }
+
+   .field-grid{
+     display:grid;
+     grid-template-columns:repeat(2,1fr);
+     gap:14px;
+   }
+
+   .field{
+     display:flex;
+     flex-direction:column;
+     gap:8px;
+     margin-bottom:14px;
+   }
+
+   .field.full{
+     grid-column:1 / -1;
+   }
+
+   .field label{
+     color:#e2e8f0;
+     font-size:14px;
+     font-weight:700;
+   }
+
+   .field input,
+   .field select,
+   .field textarea{
+     width:100%;
+     background:#0f172a;
+     border:1px solid rgba(255,255,255,0.08);
+     border-radius:14px;
+     color:#fff;
+     font-size:15px;
+     padding:14px 16px;
+     outline:none;
+   }
+
+   .field textarea{
+     min-height:150px;
+     resize:vertical;
+   }
+
+   .field input:focus,
+   .field select:focus,
+   .field textarea:focus{
+     border-color:rgba(250,204,21,0.55);
+     box-shadow:0 0 0 3px rgba(250,204,21,0.08);
+   }
+
+   .form-actions{
+     display:flex;
+     gap:12px;
+     flex-wrap:wrap;
+     margin-top:6px;
+   }
+
+   .btn{
+     min-height:50px;
+     padding:12px 18px;
+     border-radius:14px;
+     border:1px solid rgba(255,255,255,.14);
+     background:#0f172a;
+     color:#fff;
+     font-size:14px;
+     font-weight:800;
+     cursor:pointer;
+     display:inline-flex;
+     align-items:center;
+     justify-content:center;
+     gap:8px;
+   }
+
+   .btn:hover{
+     transform:translateY(-2px);
+     color:var(--accent);
+     border-color:rgba(250,204,21,.24);
+   }
+
+   .btn.primary{
+     background:var(--accent);
+     color:#111827;
+     border-color:transparent;
+     box-shadow:0 10px 24px rgba(250,204,21,.18);
+   }
+
+   .btn.primary:hover{
+     color:#111827;
+   }
+
+   .stack{
+     display:grid;
+     gap:18px;
+   }
+
+   .quick-list{
+     display:grid;
+     gap:12px;
+     margin-top:8px;
+   }
+
+   .quick-item{
+     display:flex;
+     align-items:flex-start;
+     gap:12px;
+     padding:14px;
+     border-radius:18px;
+     background:#0f172a;
+     border:1px solid var(--line);
+   }
+
+   .quick-item i{
+     width:18px;
+     text-align:center;
+     color:var(--accent);
+     margin-top:3px;
+     flex-shrink:0;
+   }
+
+   .quick-item strong{
+     display:block;
+     color:#fff;
+     margin-bottom:4px;
+   }
+
+   .quick-item span{
+     color:#cbd5e1;
+     font-size:14px;
+   }
+
+   .office-list{
+     display:grid;
+     gap:12px;
+     margin-top:10px;
+   }
+
+   .office-row{
+     padding:14px;
+     border-radius:18px;
+     background:#0f172a;
+     border:1px solid var(--line);
+   }
+
+   .office-row strong{
+     display:block;
+     color:#fff;
+     margin-bottom:6px;
+   }
+
+   .office-row span{
+     color:#cbd5e1;
+     font-size:14px;
+   }
+
+   .notice{
+     position:fixed;
+     left:50%;
+     bottom:24px;
+     transform:translateX(-50%);
+     background:#111827;
+     border:1px solid var(--line);
+     color:#fff;
+     padding:12px 16px;
+     border-radius:14px;
+     box-shadow:0 12px 28px rgba(0,0,0,.24);
+     z-index:2200;
+     display:none;
+     max-width:min(92vw,460px);
+     text-align:center;
+   }
+
+   .notice.show{
+     display:block;
+   }
+
+   footer{
+     background:#020617;
+     border-top:1px solid var(--line);
+     padding:24px 0;
+   }
+
+   .footer-inner{
+     display:flex;
+     align-items:center;
+     justify-content:space-between;
+     gap:20px;
+     flex-wrap:wrap;
+   }
+
+   .footer-inner p{
+     color:#94a3b8;
+     font-size:14px;
+   }
+
+   .footer-links{
+     display:flex;
+     flex-wrap:wrap;
+     gap:16px;
+   }
+
+   .footer-links a{
+     color:#cbd5e1;
+     font-size:14px;
+   }
+
+   .footer-links a:hover{
+     color:var(--accent);
+   }
+
+   @media(max-width:1100px){
+     .contact-grid{
+       grid-template-columns:repeat(2,1fr);
+     }
+
+     .main-grid{
+       grid-template-columns:1fr;
+     }
+   }
+
+   @media(max-width:768px){
+     .menu-toggle{
+       display:flex;
+     }
+
+     .nav-links{
+       position:absolute;
+       top:100%;
+       left:0;
+       right:0;
+       display:none;
+       flex-direction:column;
+       align-items:flex-start;
+       gap:0;
+       background:#0f172a;
+       border:1px solid var(--line);
+       border-radius:16px;
+       padding:12px;
+       box-shadow:0 16px 30px rgba(0,0,0,.28);
+     }
+
+     .nav-links.show{
+       display:flex;
+     }
+
+     .nav-links a{
+       width:100%;
+       padding:12px 10px;
+       border-radius:10px;
+     }
+
+     .nav-links a.active::after{
+       display:none;
+     }
+
+     .nav-links a:hover,
+     .nav-links a.active{
+       background:rgba(250,204,21,.12);
+     }
+
+     .nav-auth{
+       width:100%;
+       flex-direction:column;
+       align-items:stretch;
+       padding-top:10px;
+     }
+
+     .nav-auth a{
+       width:100%;
+       text-align:center;
+     }
+
+     .hero{
+       min-height:auto;
+     }
+
+     .hero-content{
+       padding:70px 0 40px;
+     }
+
+     .contact-grid,
+     .field-grid{
+       grid-template-columns:1fr;
+     }
+
+     .logo-title{
+       font-size:22px;
+     }
+
+     .logo-sub{
+       font-size:10px;
+       letter-spacing:1.2px;
+     }
+
+     .footer-inner{
+       flex-direction:column;
+       align-items:flex-start;
+     }
+   }
+
+   @media(max-width:480px){
+     .container{
+       width:min(1200px,94%);
+     }
+
+     .hero h1{
+       font-size:34px;
+     }
+
+     .hero p{
+       font-size:16px;
+     }
+
+     .logo-title{
+       font-size:20px;
+     }
+
+     .logo-sub{
+       font-size:9px;
+     }
+
+     .section-head h2{
+       font-size:26px;
+     }
+
+     .account-menu-dropdown{
+       width:min(320px,92vw);
+     }
+   }
+ </style>
+</head>
+<body>
+
+ <header>
+   <div class="container nav">
+     <a href="index.html" class="logo-wrap">
+       <span class="logo-mark">P</span>
+       <span class="logo-text">
+         <span class="logo-title">PixNest</span>
+         <span class="logo-sub">Photo Collection Site</span>
+       </span>
+     </a>
+
+     <div class="nav-right">
+       <button class="menu-toggle" id="menuToggle" aria-label="Open menu" aria-expanded="false">
+         <span></span>
+         <span></span>
+         <span></span>
+       </button>
+
+       <nav class="nav-links" id="navLinks">
+         <a href="index.html">Home</a>
+         <a href="explore.html">Explore</a>
+         <a href="category.html">Categories</a>
+         <a href="about.html">About</a>
+         <a href="upload.html">Upload</a>
+         <a href="contact.html" class="active">Contact</a>
+
+         <div class="nav-auth" id="navAuth">
+          <a href="login.html" class="login-btn"><i class="fa-solid fa-right-to-bracket"></i>Login</a>
+          <a href="signup.html" class="signup-btn"><i class="fa-solid fa-user-plus"></i>Sign Up</a>
+        </div>
+       </nav>
+
+       <div class="account-menu-wrap hidden" id="accountMenuWrap">
+         <button class="account-menu-btn" id="accountMenuBtn" aria-label="Open account menu" aria-expanded="false">
+           <i class="fa-solid fa-bars"></i>
+         </button>
+
+         <div class="account-menu-dropdown" id="accountMenuDropdown">
+           <div class="account-menu-head">
+             <div class="account-menu-avatar" id="menuAvatar"></div>
+             <div>
+               <strong id="menuName">PixNest User</strong>
+               <small id="menuEmail">Signed in</small>
+             </div>
+           </div>
+
+           <div class="account-menu-links">
+             <a class="account-link" href="profile.html">
+               <i class="fa-solid fa-user"></i>
+               My Profile
+             </a>
+
+             <a class="account-link" href="account.html">
+               <i class="fa-solid fa-id-card"></i>
+               Account
+             </a>
+
+             <a class="account-link" href="upload.html">
+               <i class="fa-solid fa-cloud-arrow-up"></i>
+               Upload
+             </a>
+
+             <a class="account-link" href="professional-dashboard.html">
+               <i class="fa-solid fa-chart-line"></i>
+               Professional Dashboard
+             </a>
+
+             <a class="account-link" href="help.html">
+               <i class="fa-solid fa-circle-question"></i>
+               Help
+             </a>
+
+             <button type="button" class="account-logout" id="logoutBtn">
+               <i class="fa-solid fa-right-from-bracket"></i>
+               Logout
+             </button>
+           </div>
+         </div>
+       </div>
+     </div>
+   </div>
+ </header>
+
+ <section class="hero">
+   <div class="container">
+     <div class="hero-content">
+       <div class="hero-tag">
+         <i class="fa-solid fa-envelope-open-text"></i>
+         Contact PixNest
+       </div>
+       <h1>Let’s talk about your account, uploads, creators, or support needs.</h1>
+       <p>Send us a message, reach the support team, or jump into live help if you already have an account.</p>
+       <div class="hero-meta">
+         <span class="pill featured"><i class="fa-solid fa-database"></i> Supabase Connected</span>
+         <span class="pill trending"><i class="fa-solid fa-headset"></i> Help Ready</span>
+         <span class="pill premium"><i class="fa-solid fa-users"></i> Creator Support</span>
+       </div>
+     </div>
+   </div>
+ </section>
+
+ <section>
+   <div class="container">
+     <div class="section-head">
+       <div>
+         <h2>Ways to reach us</h2>
+         <p>Choose the contact option that fits what you need right now.</p>
+       </div>
+     </div>
+
+     <div class="contact-grid">
+       <div class="contact-card">
+         <div class="icon"><i class="fa-solid fa-envelope"></i></div>
+         <h3>Email</h3>
+         <p>For general account questions, partnership requests, and support follow-up.</p>
+         <a href="mailto:support@pixnest.com">support@pixnest.com</a>
+       </div>
+
+       <div class="contact-card">
+         <div class="icon"><i class="fa-solid fa-phone"></i></div>
+         <h3>Phone</h3>
+         <p>Call the support line for urgent creator or account issues during business hours.</p>
+         <a href="tel:+447700900000">+44 7700 900000</a>
+       </div>
+
+       <div class="contact-card">
+         <div class="icon"><i class="fa-solid fa-circle-question"></i></div>
+         <h3>Help Center</h3>
+         <p>Need FAQs, callback requests, or support tickets? Use the full help page.</p>
+         <a href="help.html">Open Help Center</a>
+       </div>
+
+       <div class="contact-card">
+         <div class="icon"><i class="fa-solid fa-comments"></i></div>
+         <h3>Live Support</h3>
+         <p>Logged-in users can use live support from the help page for account-linked assistance.</p>
+         <a href="help.html#liveSupportSection">Start Live Support</a>
+       </div>
+     </div>
+
+     <div class="main-grid">
+       <div class="panel">
+         <h3>Send us a message</h3>
+         <p class="panel-sub">This form saves your contact message into Supabase so your team can review and reply.</p>
+
+         <form id="contactForm">
+           <div class="field-grid">
+             <div class="field">
+               <label for="fullName">Full Name</label>
+               <input type="text" id="fullName" placeholder="Your full name" required>
+             </div>
+
+             <div class="field">
+               <label for="emailAddress">Email Address</label>
+               <input type="email" id="emailAddress" placeholder="you@example.com" required>
+             </div>
+
+             <div class="field">
+               <label for="contactReason">Reason</label>
+               <select id="contactReason" required>
+                 <option value="General">General</option>
+                 <option value="Account">Account</option>
+                 <option value="Creator">Creator</option>
+                 <option value="Upload">Upload</option>
+                 <option value="Billing">Billing</option>
+                 <option value="Partnership">Partnership</option>
+                 <option value="Technical">Technical</option>
+               </select>
+             </div>
+
+             <div class="field">
+               <label for="contactPriority">Priority</label>
+               <select id="contactPriority" required>
+                 <option value="Normal">Normal</option>
+                 <option value="High">High</option>
+                 <option value="Urgent">Urgent</option>
+               </select>
+             </div>
+
+             <div class="field full">
+               <label for="subject">Subject</label>
+               <input type="text" id="subject" placeholder="What do you want to contact us about?" required>
+             </div>
+
+             <div class="field full">
+               <label for="message">Message</label>
+               <textarea id="message" placeholder="Write your message here..." required></textarea>
+             </div>
+           </div>
+
+           <div class="form-actions">
+             <button type="submit" class="btn primary" id="submitBtn">
+               <i class="fa-solid fa-paper-plane"></i>
+               Send Message
+             </button>
+
+             <button type="button" class="btn" id="clearBtn">
+               <i class="fa-solid fa-eraser"></i>
+               Clear
+             </button>
+           </div>
+         </form>
+       </div>
+
+       <div class="stack">
+         <div class="panel">
+           <h3>Quick support tips</h3>
+           <p class="panel-sub">A few fast paths depending on what you need.</p>
+
+           <div class="quick-list">
+             <div class="quick-item">
+               <i class="fa-solid fa-user-check"></i>
+               <div>
+                 <strong>Already have an account?</strong>
+                 <span>Log in to access live support, your dashboard, profile tools, and faster help.</span>
+               </div>
+             </div>
+
+             <div class="quick-item">
+               <i class="fa-solid fa-user-plus"></i>
+               <div>
+                 <strong>New here?</strong>
+                 <span>Create an account first so your creator profile, uploads, and support stay connected.</span>
+               </div>
+             </div>
+
+             <div class="quick-item">
+               <i class="fa-solid fa-image"></i>
+               <div>
+                 <strong>Upload or creator issue?</strong>
+                 <span>Use the help center as well if you need callback requests or live support follow-up.</span>
+               </div>
+             </div>
+           </div>
+         </div>
+
+         <div class="panel">
+           <h3>Office & support hours</h3>
+           <p class="panel-sub">Typical response windows for email and contact form messages.</p>
+
+           <div class="office-list">
+             <div class="office-row">
+               <strong>General Support</strong>
+               <span>Monday - Friday • 9:00 AM - 5:00 PM</span>
+             </div>
+
+             <div class="office-row">
+               <strong>Creator & Partnership</strong>
+               <span>Monday - Friday • 10:00 AM - 6:00 PM</span>
+             </div>
+
+             <div class="office-row">
+               <strong>Live Support</strong>
+               <span>Available from the Help page for logged-in users during active support periods.</span>
+             </div>
+           </div>
+         </div>
+
+         <div class="panel">
+           <h3>Need something else?</h3>
+           <p class="panel-sub">Open the help page for FAQs, callback requests, support tickets, and live support.</p>
+           <a href="help.html" class="btn primary">
+             <i class="fa-solid fa-circle-question"></i>
+             Open Help Page
+           </a>
+         </div>
+       </div>
+     </div>
+   </div>
+ </section>
+
+ <div class="notice" id="noticeBar"></div>
+
+ <footer>
+   <div class="container footer-inner">
+     <p id="footerText">©️ 2026 PixNest. Discover and share powerful visual collections.</p>
+
+     <div class="footer-links">
+       <a href="about.html">About</a>
+       <a href="license.html">License</a>
+       <a href="privacy.html">Privacy</a>
+       <a href="terms.html">Terms</a>
+       <a href="contact.html">Contact</a>
+       <a href="help.html">Help</a>
+     </div>
+   </div>
+ </footer>
+
+ <script>
+   const STORAGE_KEY = "pixnest_admin_v2";
+   const SUPABASE_URL = "https://vigczssznfvujttdapbv.supabase.co";
+   const SUPABASE_KEY = "sb_publishable_UmF-mmVS42XeF6PqsNnCSw_wpA35wg2";
+
+   const { createClient } = supabase;
+   const supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+   const menuToggle = document.getElementById("menuToggle");
+   const navLinks = document.getElementById("navLinks");
+   const navAuth = document.getElementById("navAuth");
+
+   const accountMenuWrap = document.getElementById("accountMenuWrap");
+   const accountMenuBtn = document.getElementById("accountMenuBtn");
+   const accountMenuDropdown = document.getElementById("accountMenuDropdown");
+   const menuAvatar = document.getElementById("menuAvatar");
+   const menuName = document.getElementById("menuName");
+   const menuEmail = document.getElementById("menuEmail");
+   const logoutBtn = document.getElementById("logoutBtn");
+
+   const fullName = document.getElementById("fullName");
+   const emailAddress = document.getElementById("emailAddress");
+   const contactReason = document.getElementById("contactReason");
+   const contactPriority = document.getElementById("contactPriority");
+   const subject = document.getElementById("subject");
+   const message = document.getElementById("message");
+   const contactForm = document.getElementById("contactForm");
+   const submitBtn = document.getElementById("submitBtn");
+   const clearBtn = document.getElementById("clearBtn");
+   const footerText = document.getElementById("footerText");
+   const noticeBar = document.getElementById("noticeBar");
+
+   let siteData = loadAdminData();
+   let currentSession = null;
+
+   if(menuToggle && navLinks){
+     menuToggle.addEventListener("click", () => {
+       navLinks.classList.toggle("show");
+       const expanded = menuToggle.getAttribute("aria-expanded") === "true";
+       menuToggle.setAttribute("aria-expanded", String(!expanded));
+     });
+   }
+
+   document.querySelectorAll(".nav-links a").forEach(link => {
+     link.addEventListener("click", () => {
+       if(window.innerWidth <= 768){
+         navLinks.classList.remove("show");
+         menuToggle.setAttribute("aria-expanded", "false");
+       }
+     });
+   });
+
+   document.addEventListener("click", (e) => {
+     if(window.innerWidth <= 768 && navLinks.classList.contains("show")){
+       if(!navLinks.contains(e.target) && !menuToggle.contains(e.target)){
+         navLinks.classList.remove("show");
+         menuToggle.setAttribute("aria-expanded", "false");
+       }
+     }
+
+     if(accountMenuWrap && !accountMenuWrap.contains(e.target)){
+       accountMenuDropdown.classList.remove("show");
+       accountMenuBtn.setAttribute("aria-expanded", "false");
+     }
+   });
+
+   window.addEventListener("resize", () => {
+     if(window.innerWidth > 768){
+       navLinks.classList.remove("show");
+       menuToggle.setAttribute("aria-expanded", "false");
+     }
+   });
+
+   if(accountMenuBtn){
+     accountMenuBtn.addEventListener("click", (e) => {
+       e.stopPropagation();
+       accountMenuDropdown.classList.toggle("show");
+       const expanded = accountMenuBtn.getAttribute("aria-expanded") === "true";
+       accountMenuBtn.setAttribute("aria-expanded", String(!expanded));
+     });
+   }
+
+   if(logoutBtn){
+     logoutBtn.addEventListener("click", async () => {
+       try{
+         await supabaseClient.auth.signOut();
+         window.location.href = "index.html";
+       }catch(error){
+         showNotice("Could not log out.");
+       }
+     });
+   }
+
+   function showNotice(text){
+     noticeBar.textContent = text;
+     noticeBar.classList.add("show");
+     clearTimeout(showNotice._timer);
+     showNotice._timer = setTimeout(() => {
+       noticeBar.classList.remove("show");
+     }, 2200);
+   }
+
+   function loadAdminData(){
+     try{
+       const saved = localStorage.getItem(STORAGE_KEY);
+       if(!saved){
+         return { footerText:"" };
+       }
+
+       const parsed = JSON.parse(saved);
+       return {
+         footerText: parsed.footerText || ""
+       };
+     }catch(error){
+       return { footerText:"" };
+     }
+   }
+
+   function applyFooterText(){
+     if(siteData.footerText){
+       footerText.textContent = siteData.footerText;
+     }
+   }
+
+   function escapeHtml(value = ""){
+     return String(value)
+       .replace(/&/g, "&amp;")
+       .replace(/</g, "&lt;")
+       .replace(/>/g, "&gt;")
+       .replace(/"/g, "&quot;")
+       .replace(/'/g, "&#39;");
+   }
+
+   function buildAvatarHtml(avatarUrl, name){
+     if(avatarUrl){
+       return `<img src="${escapeHtml(avatarUrl)}" alt="${escapeHtml(name)}">`;
+     }
+     return `<span>${escapeHtml((name || "P").charAt(0).toUpperCase() || "P")}</span>`;
+   }
+
+   function getCurrentUserDisplayName(){
+     const user = currentSession?.user;
+     if(!user) return "";
+     return String(
+       user.user_metadata?.full_name ||
+       user.user_metadata?.name ||
+       user.user_metadata?.username ||
+       user.email?.split("@")[0] ||
+       "PixNest User"
+     ).trim();
+   }
+
+   function updateAuthUi(){
+     const user = currentSession?.user || null;
+
+     if(!user){
+       navAuth.classList.remove("hidden");
+       accountMenuWrap.classList.add("hidden");
+       return;
+     }
+
+     navAuth.classList.add("hidden");
+     accountMenuWrap.classList.remove("hidden");
+
+     const displayName = getCurrentUserDisplayName() || "PixNest User";
+     menuName.textContent = displayName;
+     menuEmail.textContent = user.email || "Signed in";
+     menuAvatar.innerHTML = buildAvatarHtml(user.user_metadata?.avatar_url || "", displayName);
+
+     if(!fullName.value) fullName.value = displayName;
+     if(!emailAddress.value) emailAddress.value = user.email || "";
+   }
+
+   async function initAuthState(){
+     try{
+       const { data } = await supabaseClient.auth.getSession();
+       currentSession = data?.session || null;
+     }catch(error){
+       currentSession = null;
+     }
+
+     updateAuthUi();
+
+     supabaseClient.auth.onAuthStateChange((_event, session) => {
+       currentSession = session || null;
+       updateAuthUi();
+     });
+   }
+
+   async function submitContactForm(e){
+     e.preventDefault();
+
+     const payload = {
+       user_id: currentSession?.user?.id || null,
+       full_name: fullName.value.trim(),
+       email: emailAddress.value.trim(),
+       reason: contactReason.value,
+       priority: contactPriority.value,
+       subject: subject.value.trim(),
+       message: message.value.trim()
+     };
+
+     if(!payload.full_name || !payload.email || !payload.subject || !payload.message){
+       showNotice("Please complete the contact form.");
+       return;
+     }
+
+     try{
+       submitBtn.disabled = true;
+       submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Sending...';
+
+       const { error } = await supabaseClient
+         .from("contact_messages")
+         .insert(payload);
+
+       if(error) throw error;
+
+       showNotice("Message sent successfully.");
+       subject.value = "";
+       message.value = "";
+
+       if(!currentSession?.user){
+         fullName.value = "";
+         emailAddress.value = "";
+       }
+     }catch(error){
+       console.error(error);
+       showNotice("Could not send message.");
+     }finally{
+       submitBtn.disabled = false;
+       submitBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Send Message';
+     }
+   }
+
+   function clearForm(){
+     contactForm.reset();
+     if(currentSession?.user){
+       fullName.value = getCurrentUserDisplayName();
+       emailAddress.value = currentSession.user.email || "";
+     }
+   }
+
+   contactForm.addEventListener("submit", submitContactForm);
+   clearBtn.addEventListener("click", clearForm);
+
+   applyFooterText();
+   initAuthState();
+ </script>
+  <script src="site-auth.js"></script>
+</body>
+</html>

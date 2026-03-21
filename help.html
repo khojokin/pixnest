@@ -1,0 +1,2148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PixNest | Help</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+      font-family:Arial, Helvetica, sans-serif;
+    }
+
+    :root{
+      --bg:#0f172a;
+      --panel:#111827;
+      --panel2:#1e293b;
+      --text:#e5e7eb;
+      --muted:#94a3b8;
+      --accent:#facc15;
+      --line:rgba(255,255,255,0.08);
+      --blue:#3b82f6;
+      --success:#22c55e;
+      --danger:#ef4444;
+    }
+
+    html{
+      scroll-behavior:smooth;
+      min-height:100%;
+      background:var(--bg);
+    }
+
+    body{
+      min-height:100%;
+      background:var(--bg);
+      color:var(--text);
+      line-height:1.6;
+      overflow-x:hidden;
+    }
+
+    img{
+      max-width:100%;
+      display:block;
+    }
+
+    a{
+      text-decoration:none;
+      color:inherit;
+      transition:.3s;
+    }
+
+    button,
+    input,
+    select,
+    textarea{
+      font-family:Arial, Helvetica, sans-serif;
+      transition:.3s;
+    }
+
+    .container{
+      width:min(1200px,92%);
+      margin:auto;
+    }
+
+    .hidden{
+      display:none !important;
+    }
+
+    header{
+      position:sticky;
+      top:0;
+      z-index:1000;
+      background:rgba(15,23,42,0.95);
+      border-bottom:1px solid var(--line);
+      backdrop-filter:blur(8px);
+    }
+
+    .nav{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:20px;
+      padding:16px 0;
+      position:relative;
+    }
+
+    .logo-wrap{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      flex-shrink:0;
+      min-width:0;
+    }
+
+    .logo-mark{
+      width:52px;
+      height:52px;
+      border-radius:14px;
+      background:linear-gradient(135deg,#facc15,#fb7185);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:#111827;
+      font-size:24px;
+      font-weight:800;
+      box-shadow:0 0 16px rgba(250,204,21,0.28);
+      flex-shrink:0;
+    }
+
+    .logo-text{
+      display:flex;
+      flex-direction:column;
+      line-height:1;
+      min-width:0;
+    }
+
+    .logo-title{
+      font-size:27px;
+      font-weight:800;
+      color:var(--accent);
+      letter-spacing:.4px;
+      white-space:nowrap;
+    }
+
+    .logo-sub{
+      font-size:11px;
+      color:#cbd5e1;
+      letter-spacing:1.7px;
+      text-transform:uppercase;
+      margin-top:4px;
+      white-space:nowrap;
+    }
+
+    .nav-links{
+      display:flex;
+      align-items:center;
+      gap:20px;
+      flex-wrap:wrap;
+    }
+
+    .nav-links a{
+      color:#cbd5e1;
+      font-size:15px;
+      position:relative;
+      padding-bottom:4px;
+    }
+
+    .nav-links a:hover,
+    .nav-links a.active{
+      color:var(--accent);
+    }
+
+    .nav-links a.active::after{
+      content:"";
+      position:absolute;
+      left:0;
+      bottom:-4px;
+      width:100%;
+      height:2px;
+      background:var(--accent);
+      border-radius:999px;
+    }
+
+    .nav-auth{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    .nav-auth a{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      min-height:42px;
+      padding:10px 14px;
+      border-radius:12px;
+      font-size:14px;
+      font-weight:700;
+      line-height:1;
+      border:1px solid rgba(255,255,255,.14);
+    }
+
+    .nav-auth .signup-btn{
+      background:var(--accent);
+      color:#111827;
+      border-color:transparent;
+    }
+
+    .nav-auth .signup-btn:hover{
+      transform:translateY(-2px);
+      box-shadow:0 10px 22px rgba(250,204,21,.18);
+    }
+
+    .nav-auth .login-btn{
+      background:transparent;
+      color:#fff;
+    }
+
+    .nav-auth .login-btn:hover{
+      background:rgba(255,255,255,.06);
+      border-color:rgba(250,204,21,.28);
+      color:var(--accent);
+    }
+
+    .menu-toggle{
+      display:none;
+      width:46px;
+      height:46px;
+      border-radius:12px;
+      border:1px solid rgba(250,204,21,.35);
+      background:#111827;
+      color:var(--accent);
+      align-items:center;
+      justify-content:center;
+      cursor:pointer;
+      flex-direction:column;
+      gap:5px;
+    }
+
+    .menu-toggle span{
+      width:20px;
+      height:2px;
+      border-radius:999px;
+      background:var(--accent);
+      display:block;
+    }
+
+    .hero{
+      background:
+        linear-gradient(rgba(15,23,42,.70), rgba(15,23,42,.92)),
+        url('https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1600&q=80') center/cover no-repeat;
+      min-height:54vh;
+      display:flex;
+      align-items:center;
+    }
+
+    .hero-content{
+      max-width:860px;
+      padding:90px 0 60px;
+    }
+
+    .hero-tag{
+      display:inline-block;
+      background:rgba(250,204,21,.12);
+      color:var(--accent);
+      padding:8px 14px;
+      border-radius:999px;
+      font-size:14px;
+      border:1px solid rgba(250,204,21,.22);
+      margin-bottom:18px;
+    }
+
+    .hero h1{
+      font-size:clamp(36px,5vw,58px);
+      line-height:1.06;
+      margin-bottom:18px;
+      color:#fff;
+    }
+
+    .hero p{
+      font-size:18px;
+      color:#cbd5e1;
+      max-width:760px;
+    }
+
+    .hero-meta{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:18px;
+    }
+
+    section{
+      padding:74px 0;
+    }
+
+    .section-head{
+      display:flex;
+      align-items:end;
+      justify-content:space-between;
+      gap:20px;
+      flex-wrap:wrap;
+      margin-bottom:28px;
+    }
+
+    .section-head h2{
+      font-size:32px;
+      color:#fff;
+      margin-bottom:8px;
+    }
+
+    .section-head p{
+      color:var(--muted);
+      max-width:760px;
+    }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:6px;
+      padding:6px 10px;
+      border-radius:999px;
+      font-size:11px;
+      background:rgba(0,0,0,.74);
+      border:1px solid rgba(255,255,255,.12);
+      color:#fff;
+      backdrop-filter:blur(8px);
+      white-space:nowrap;
+    }
+
+    .pill.category-tag{
+      background:rgba(0,0,0,.84);
+      color:#fff;
+      border:1px solid rgba(255,255,255,.16);
+    }
+
+    .pill.featured{
+      background:rgba(34,197,94,.18);
+      border-color:rgba(34,197,94,.28);
+      color:#86efac;
+    }
+
+    .pill.trending{
+      background:rgba(59,130,246,.16);
+      border-color:rgba(59,130,246,.26);
+      color:#93c5fd;
+    }
+
+    .pill.premium{
+      background:rgba(250,204,21,.22);
+      border:1px solid rgba(250,204,21,.42);
+      color:#fde68a;
+      box-shadow:0 8px 22px rgba(250,204,21,.14);
+    }
+
+    .search-bar{
+      display:grid;
+      grid-template-columns:1.2fr 0.8fr 120px;
+      gap:12px;
+      margin-bottom:24px;
+      background:#111827;
+      border:1px solid rgba(255,255,255,0.08);
+      border-radius:18px;
+      padding:10px;
+    }
+
+    .search-input-wrap{
+      position:relative;
+    }
+
+    .search-input-wrap i{
+      position:absolute;
+      left:16px;
+      top:50%;
+      transform:translateY(-50%);
+      color:#94a3b8;
+      font-size:15px;
+      pointer-events:none;
+    }
+
+    .search-input-wrap input,
+    .search-select{
+      width:100%;
+      min-height:52px;
+      background:#0f172a;
+      border:1px solid rgba(255,255,255,0.08);
+      border-radius:12px;
+      color:#ffffff;
+      outline:none;
+      font-size:15px;
+    }
+
+    .search-input-wrap input{
+      padding:14px 16px 14px 46px;
+    }
+
+    .search-select{
+      padding:14px 16px;
+    }
+
+    .search-input-wrap input:focus,
+    .search-select:focus,
+    .field input:focus,
+    .field select:focus,
+    .field textarea:focus{
+      border-color:rgba(250,204,21,0.55);
+      box-shadow:0 0 0 3px rgba(250,204,21,0.08);
+      outline:none;
+    }
+
+    .search-btn,
+    .primary-btn,
+    .secondary-btn,
+    .ghost-btn{
+      min-height:52px;
+      border:none;
+      border-radius:12px;
+      font-size:15px;
+      font-weight:700;
+      cursor:pointer;
+    }
+
+    .search-btn,
+    .primary-btn{
+      background:#facc15;
+      color:#111827;
+    }
+
+    .search-btn:hover,
+    .primary-btn:hover{
+      transform:translateY(-2px);
+      box-shadow:0 10px 24px rgba(250,204,21,0.2);
+    }
+
+    .secondary-btn{
+      background:transparent;
+      color:#fff;
+      border:1px solid rgba(255,255,255,.16);
+    }
+
+    .secondary-btn:hover,
+    .ghost-btn:hover{
+      background:rgba(255,255,255,.06);
+      color:var(--accent);
+      border-color:rgba(250,204,21,.24);
+    }
+
+    .ghost-btn{
+      background:#0f172a;
+      color:#fff;
+      border:1px solid rgba(255,255,255,.12);
+    }
+
+    .filter-note{
+      color:#cbd5e1;
+      font-size:14px;
+      margin:6px 0 24px;
+    }
+
+    .card-panel{
+      background:#111827;
+      border:1px solid var(--line);
+      border-radius:24px;
+      padding:22px;
+      box-shadow:0 14px 30px rgba(0,0,0,.14);
+    }
+
+    .faq-list{
+      display:grid;
+      gap:16px;
+    }
+
+    .faq-item{
+      background:#111827;
+      border:1px solid var(--line);
+      border-radius:20px;
+      overflow:hidden;
+    }
+
+    .faq-question{
+      width:100%;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:14px;
+      padding:18px 20px;
+      background:transparent;
+      color:#fff;
+      border:none;
+      cursor:pointer;
+      text-align:left;
+      font-size:16px;
+      font-weight:700;
+    }
+
+    .faq-question:hover{
+      background:rgba(255,255,255,.03);
+    }
+
+    .faq-question i{
+      color:var(--accent);
+      flex-shrink:0;
+    }
+
+    .faq-meta{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+      padding:0 20px 16px;
+    }
+
+    .faq-answer{
+      padding:0 20px 20px;
+      color:#cbd5e1;
+      font-size:15px;
+      display:none;
+    }
+
+    .faq-answer.show{
+      display:block;
+    }
+
+    .request-layout,
+    .live-layout{
+      display:grid;
+      grid-template-columns:1.1fr .9fr;
+      gap:24px;
+    }
+
+    .field-grid{
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:14px;
+    }
+
+    .field{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      margin-bottom:14px;
+    }
+
+    .field.full{
+      grid-column:1 / -1;
+    }
+
+    .field label{
+      font-size:14px;
+      color:#e2e8f0;
+      font-weight:700;
+    }
+
+    .field input,
+    .field select,
+    .field textarea{
+      width:100%;
+      background:#0f172a;
+      border:1px solid rgba(255,255,255,0.08);
+      border-radius:14px;
+      color:#fff;
+      font-size:15px;
+      padding:14px 16px;
+    }
+
+    .field textarea{
+      min-height:150px;
+      resize:vertical;
+    }
+
+    .form-actions{
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-top:8px;
+    }
+
+    .mini-note{
+      font-size:13px;
+      color:var(--muted);
+      margin-top:14px;
+    }
+
+    .side-stack{
+      display:grid;
+      gap:18px;
+    }
+
+    .quick-list{
+      display:grid;
+      gap:12px;
+      margin-top:10px;
+    }
+
+    .quick-item{
+      display:flex;
+      align-items:flex-start;
+      gap:12px;
+      padding:14px;
+      border-radius:16px;
+      background:#0f172a;
+      border:1px solid var(--line);
+    }
+
+    .quick-item i{
+      color:var(--accent);
+      margin-top:3px;
+      font-size:16px;
+      width:18px;
+      text-align:center;
+      flex-shrink:0;
+    }
+
+    .quick-item strong{
+      display:block;
+      color:#fff;
+      margin-bottom:4px;
+    }
+
+    .quick-item span{
+      color:#cbd5e1;
+      font-size:14px;
+    }
+
+    .team-grid{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:22px;
+    }
+
+    .team-card{
+      background:#111827;
+      border:1px solid var(--line);
+      border-radius:24px;
+      overflow:hidden;
+      box-shadow:0 14px 30px rgba(0,0,0,.14);
+    }
+
+    .team-photo{
+      height:220px;
+      background:#1e293b center/cover no-repeat;
+      position:relative;
+    }
+
+    .team-photo::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:linear-gradient(to top, rgba(15,23,42,.6), rgba(15,23,42,.08));
+    }
+
+    .team-content{
+      padding:18px;
+      display:grid;
+      gap:12px;
+    }
+
+    .team-content h3{
+      color:#fff;
+      font-size:22px;
+      line-height:1.2;
+    }
+
+    .team-role{
+      color:var(--accent);
+      font-size:14px;
+      font-weight:700;
+    }
+
+    .team-content p{
+      color:#cbd5e1;
+      font-size:14px;
+    }
+
+    .team-actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:2px;
+    }
+
+    .team-actions a,
+    .team-actions button{
+      min-height:42px;
+      padding:10px 14px;
+      border-radius:12px;
+      font-size:13px;
+      font-weight:700;
+      border:1px solid rgba(255,255,255,.14);
+      background:#0f172a;
+      color:#fff;
+      cursor:pointer;
+    }
+
+    .team-actions a:hover,
+    .team-actions button:hover{
+      color:var(--accent);
+      border-color:rgba(250,204,21,.25);
+      transform:translateY(-2px);
+    }
+
+    .live-gate{
+      display:grid;
+      place-items:center;
+      text-align:center;
+      min-height:320px;
+    }
+
+    .live-gate h3{
+      color:#fff;
+      font-size:28px;
+      margin-bottom:10px;
+    }
+
+    .live-gate p{
+      color:#cbd5e1;
+      max-width:520px;
+      margin-bottom:18px;
+    }
+
+    .live-gate-actions{
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+      justify-content:center;
+    }
+
+    .live-chat{
+      display:grid;
+      gap:16px;
+    }
+
+    .live-top{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:16px;
+      flex-wrap:wrap;
+      margin-bottom:6px;
+    }
+
+    .live-top h3{
+      color:#fff;
+      font-size:24px;
+      margin-bottom:4px;
+    }
+
+    .live-top p{
+      color:#cbd5e1;
+      font-size:14px;
+    }
+
+    .live-chat-actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    .live-messages{
+      min-height:360px;
+      max-height:460px;
+      overflow-y:auto;
+      background:#0f172a;
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:16px;
+      display:grid;
+      gap:12px;
+    }
+
+    .live-empty{
+      color:#94a3b8;
+      text-align:center;
+      padding:24px;
+      border:1px dashed rgba(255,255,255,.12);
+      border-radius:14px;
+    }
+
+    .live-message{
+      display:flex;
+    }
+
+    .live-message.user{
+      justify-content:flex-end;
+    }
+
+    .live-bubble{
+      max-width:min(85%, 480px);
+      padding:12px 14px;
+      border-radius:16px;
+      border:1px solid var(--line);
+      background:#111827;
+      color:#e5e7eb;
+    }
+
+    .live-message.user .live-bubble{
+      background:rgba(250,204,21,.14);
+      border-color:rgba(250,204,21,.22);
+    }
+
+    .live-bubble strong{
+      display:block;
+      font-size:12px;
+      margin-bottom:4px;
+      color:var(--accent);
+    }
+
+    .live-bubble small{
+      display:block;
+      margin-top:8px;
+      color:#94a3b8;
+      font-size:11px;
+    }
+
+    .live-send{
+      display:grid;
+      grid-template-columns:1fr 140px;
+      gap:12px;
+      align-items:end;
+    }
+
+    .status-row{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    .status-open{
+      background:rgba(34,197,94,.18);
+      border-color:rgba(34,197,94,.28);
+      color:#86efac;
+    }
+
+    .status-closed{
+      background:rgba(239,68,68,.18);
+      border-color:rgba(239,68,68,.28);
+      color:#fca5a5;
+    }
+
+    .status-pending{
+      background:rgba(59,130,246,.16);
+      border-color:rgba(59,130,246,.26);
+      color:#93c5fd;
+    }
+
+    .empty-box{
+      background:#111827;
+      border:1px dashed rgba(255,255,255,.14);
+      border-radius:22px;
+      padding:28px;
+      color:var(--muted);
+      text-align:center;
+      grid-column:1 / -1;
+    }
+
+    .notice{
+      position:fixed;
+      left:50%;
+      bottom:24px;
+      transform:translateX(-50%);
+      background:#111827;
+      border:1px solid var(--line);
+      color:#fff;
+      padding:12px 16px;
+      border-radius:14px;
+      box-shadow:0 12px 28px rgba(0,0,0,.24);
+      z-index:2200;
+      display:none;
+      max-width:min(92vw,460px);
+      text-align:center;
+    }
+
+    .notice.show{
+      display:block;
+    }
+
+    footer{
+      background:#020617;
+      border-top:1px solid var(--line);
+      padding:24px 0;
+    }
+
+    .footer-inner{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:20px;
+      flex-wrap:wrap;
+    }
+
+    .footer-inner p{
+      color:#94a3b8;
+      font-size:14px;
+    }
+
+    .footer-links{
+      display:flex;
+      flex-wrap:wrap;
+      gap:16px;
+    }
+
+    .footer-links a{
+      color:#cbd5e1;
+      font-size:14px;
+    }
+
+    .footer-links a:hover{
+      color:var(--accent);
+    }
+
+    @media(max-width:1024px){
+      .request-layout,
+      .live-layout{
+        grid-template-columns:1fr;
+      }
+
+      .team-grid{
+        grid-template-columns:repeat(2,1fr);
+      }
+    }
+
+    @media(max-width:768px){
+      .menu-toggle{
+        display:flex;
+      }
+
+      .nav-links{
+        position:absolute;
+        top:100%;
+        left:0;
+        right:0;
+        display:none;
+        flex-direction:column;
+        align-items:flex-start;
+        gap:0;
+        background:#0f172a;
+        border:1px solid var(--line);
+        border-radius:16px;
+        padding:12px;
+        box-shadow:0 16px 30px rgba(0,0,0,.28);
+      }
+
+      .nav-links.show{
+        display:flex;
+      }
+
+      .nav-links a{
+        width:100%;
+        padding:12px 10px;
+        border-radius:10px;
+      }
+
+      .nav-links a.active::after{
+        display:none;
+      }
+
+      .nav-links a:hover,
+      .nav-links a.active{
+        background:rgba(250,204,21,.12);
+      }
+
+      .nav-auth{
+        width:100%;
+        flex-direction:column;
+        align-items:stretch;
+        padding-top:10px;
+      }
+
+      .nav-auth a{
+        width:100%;
+        text-align:center;
+      }
+
+      .hero{
+        min-height:auto;
+      }
+
+      .hero-content{
+        padding:70px 0 40px;
+      }
+
+      .search-bar,
+      .field-grid,
+      .team-grid,
+      .live-send{
+        grid-template-columns:1fr;
+      }
+
+      .section-head h2{
+        font-size:28px;
+      }
+
+      .logo-mark{
+        width:46px;
+        height:46px;
+      }
+
+      .logo-title{
+        font-size:22px;
+      }
+
+      .logo-sub{
+        font-size:10px;
+        letter-spacing:1.2px;
+      }
+
+      .footer-inner{
+        flex-direction:column;
+        align-items:flex-start;
+      }
+    }
+
+    @media(max-width:480px){
+      .container{
+        width:min(1200px,94%);
+      }
+
+      .hero h1{
+        font-size:34px;
+      }
+
+      .hero p{
+        font-size:16px;
+      }
+
+      .logo-title{
+        font-size:20px;
+      }
+
+      .logo-sub{
+        font-size:9px;
+      }
+
+      .section-head h2{
+        font-size:25px;
+      }
+
+      .team-grid{
+        grid-template-columns:1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="container nav">
+      <a href="index.html" class="logo-wrap">
+        <span class="logo-mark">P</span>
+        <span class="logo-text">
+          <span class="logo-title">PixNest</span>
+          <span class="logo-sub">Photo Collection Site</span>
+        </span>
+      </a>
+
+      <button class="menu-toggle" id="menuToggle" aria-label="Open menu" aria-expanded="false">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+
+      <nav class="nav-links" id="navLinks">
+        <a href="index.html">Home</a>
+        <a href="explore.html">Explore</a>
+        <a href="category.html">Categories</a>
+        <a href="about.html">About</a>
+        <a href="upload.html">Upload</a>
+        <a href="contact.html">Contact</a>
+        <a href="help.html" class="active">Help</a>
+
+        <div class="nav-auth" id="navAuth">
+          <a href="login.html" class="login-btn"><i class="fa-solid fa-right-to-bracket"></i>Login</a>
+          <a href="signup.html" class="signup-btn"><i class="fa-solid fa-user-plus"></i>Sign Up</a>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero" id="heroSection">
+    <div class="container">
+      <div class="hero-content">
+        <div class="hero-tag">Support Center</div>
+        <h1>Need help with PixNest?</h1>
+        <p>Find answers fast, submit support requests, contact team members, or start live support from one place.</p>
+        <div class="hero-meta" id="heroMeta"></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="faqSection">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <h2>Frequently Asked Questions</h2>
+          <p>Search through help articles and common answers loaded directly from Supabase.</p>
+        </div>
+      </div>
+
+      <div class="search-bar">
+        <div class="search-input-wrap">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input type="text" id="faqSearchInput" placeholder="Search questions or answers">
+        </div>
+
+        <select id="faqCategoryFilter" class="search-select">
+          <option value="all">All FAQ Categories</option>
+        </select>
+
+        <button type="button" class="search-btn" id="faqSearchBtn">Search</button>
+      </div>
+
+      <div class="filter-note" id="faqNote"></div>
+      <div class="faq-list" id="faqList">
+        <div class="empty-box">FAQs will appear here when loaded from Supabase.</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="requestSection">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <h2>Submit a Support Request</h2>
+          <p>Send a request directly to your Supabase support_requests table so your team can review it.</p>
+        </div>
+      </div>
+
+      <div class="request-layout">
+        <form class="card-panel" id="requestForm">
+          <div class="field-grid">
+            <div class="field">
+              <label for="requestName">Full Name</label>
+              <input type="text" id="requestName" placeholder="Your full name" required>
+            </div>
+
+            <div class="field">
+              <label for="requestEmail">Email Address</label>
+              <input type="email" id="requestEmail" placeholder="you@example.com" required>
+            </div>
+
+            <div class="field">
+              <label for="requestCategory">Category</label>
+              <select id="requestCategory" required>
+                <option value="General">General</option>
+                <option value="Account">Account</option>
+                <option value="Billing">Billing</option>
+                <option value="Technical">Technical</option>
+                <option value="Upload">Upload</option>
+                <option value="Callback">Callback</option>
+                <option value="Live Support">Live Support</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="requestPriority">Priority</label>
+              <select id="requestPriority" required>
+                <option value="Normal">Normal</option>
+                <option value="High">High</option>
+                <option value="Urgent">Urgent</option>
+              </select>
+            </div>
+
+            <div class="field full">
+              <label for="requestSubject">Subject</label>
+              <input type="text" id="requestSubject" placeholder="What do you need help with?" required>
+            </div>
+
+            <div class="field full">
+              <label for="requestMessage">Message</label>
+              <textarea id="requestMessage" placeholder="Describe the issue or request here..." required></textarea>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="primary-btn" id="requestSubmitBtn">Submit Request</button>
+            <button type="button" class="secondary-btn" id="requestClearBtn">Clear</button>
+          </div>
+
+          <p class="mini-note">This form inserts a new row into your support_requests table in Supabase.</p>
+        </form>
+
+        <div class="side-stack">
+          <div class="card-panel">
+            <h3 style="color:#fff; font-size:24px; margin-bottom:10px;">Quick help options</h3>
+            <p style="color:#cbd5e1;">Use any of these options depending on what you need right now.</p>
+
+            <div class="quick-list">
+              <div class="quick-item">
+                <i class="fa-solid fa-circle-question"></i>
+                <div>
+                  <strong>Check the FAQs</strong>
+                  <span>Fast answers for account, upload, billing, and technical questions.</span>
+                </div>
+              </div>
+
+              <div class="quick-item">
+                <i class="fa-solid fa-paper-plane"></i>
+                <div>
+                  <strong>Send a support request</strong>
+                  <span>Your request goes straight into Supabase for your team to track.</span>
+                </div>
+              </div>
+
+              <div class="quick-item">
+                <i class="fa-solid fa-headset"></i>
+                <div>
+                  <strong>Use live support</strong>
+                  <span>Logged-in users can start a support session and exchange messages live.</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card-panel">
+            <h3 style="color:#fff; font-size:24px; margin-bottom:10px;">Support status</h3>
+            <p style="color:#cbd5e1; margin-bottom:14px;">Keep this connected to your support workflow and admin review process.</p>
+            <div class="status-row">
+              <span class="pill featured"><i class="fa-solid fa-database"></i> Supabase Connected</span>
+              <span class="pill trending"><i class="fa-solid fa-users"></i> Team Directory</span>
+              <span class="pill premium"><i class="fa-solid fa-comments"></i> Live Chat</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="teamSection">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <h2>Call Team Members</h2>
+          <p>Your support team members below are loaded from Supabase. Users can call, email, or request a callback.</p>
+        </div>
+      </div>
+
+      <div class="team-grid" id="teamGrid">
+        <div class="empty-box">Support team members will appear here when loaded from Supabase.</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="liveSupportSection">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <h2>Live Support</h2>
+          <p>Start a live support session connected to Supabase. For security, this part works for logged-in users.</p>
+        </div>
+      </div>
+
+      <div class="live-layout">
+        <div class="card-panel">
+          <div class="live-gate" id="liveAuthGate">
+            <div>
+              <h3>Log in to access live support</h3>
+              <p>FAQs, team contact cards, and support requests stay public. Live support chat is reserved for logged-in users so each chat session can stay tied to the right account.</p>
+              <div class="live-gate-actions">
+                <a href="signup.html" class="primary-btn" style="display:inline-flex; align-items:center; justify-content:center; padding:0 18px;">Sign Up</a>
+                <a href="login.html" class="secondary-btn" style="display:inline-flex; align-items:center; justify-content:center; padding:0 18px;">Login</a>
+              </div>
+            </div>
+          </div>
+
+          <div id="liveStartCard" class="hidden">
+            <h3 style="color:#fff; font-size:24px; margin-bottom:10px;">Start a live support session</h3>
+            <p style="color:#cbd5e1; margin-bottom:18px;">This creates a live_support_sessions row and your first live_support_messages row in Supabase.</p>
+
+            <div class="field">
+              <label for="liveName">Name</label>
+              <input type="text" id="liveName" placeholder="Your name">
+            </div>
+
+            <div class="field">
+              <label for="liveEmail">Email</label>
+              <input type="email" id="liveEmail" placeholder="you@example.com">
+            </div>
+
+            <div class="field">
+              <label for="liveInitialMessage">First message</label>
+              <textarea id="liveInitialMessage" placeholder="Tell support what you need help with..."></textarea>
+            </div>
+
+            <div class="form-actions">
+              <button type="button" class="primary-btn" id="startLiveBtn">Start Live Support</button>
+            </div>
+          </div>
+
+          <div class="live-chat hidden" id="liveChatCard">
+            <div class="live-top">
+              <div>
+                <h3>Support chat</h3>
+                <p id="liveSessionMeta">Connected to your active support session.</p>
+              </div>
+
+              <div class="live-chat-actions">
+                <span class="pill status-pending" id="liveSessionBadge">Pending</span>
+                <button type="button" class="ghost-btn" id="refreshLiveBtn">Refresh</button>
+                <button type="button" class="secondary-btn" id="endLiveBtn">End Chat</button>
+              </div>
+            </div>
+
+            <div class="live-messages" id="liveMessages">
+              <div class="live-empty">No messages yet.</div>
+            </div>
+
+            <div class="live-send">
+              <div class="field" style="margin-bottom:0;">
+                <label for="liveMessageInput">Type a message</label>
+                <textarea id="liveMessageInput" placeholder="Write your reply here..." style="min-height:90px;"></textarea>
+              </div>
+
+              <button type="button" class="primary-btn" id="sendLiveBtn">Send</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="side-stack">
+          <div class="card-panel">
+            <h3 style="color:#fff; font-size:24px; margin-bottom:10px;">How live support works</h3>
+            <div class="quick-list">
+              <div class="quick-item">
+                <i class="fa-solid fa-user-check"></i>
+                <div>
+                  <strong>Logged-in access</strong>
+                  <span>Each live session is linked to the authenticated Supabase user.</span>
+                </div>
+              </div>
+
+              <div class="quick-item">
+                <i class="fa-solid fa-message"></i>
+                <div>
+                  <strong>Messages stored in Supabase</strong>
+                  <span>Every new chat message is saved in live_support_messages.</span>
+                </div>
+              </div>
+
+              <div class="quick-item">
+                <i class="fa-solid fa-bolt"></i>
+                <div>
+                  <strong>Realtime ready</strong>
+                  <span>Agent replies can appear live when Realtime is enabled for the messages table.</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card-panel">
+            <h3 style="color:#fff; font-size:24px; margin-bottom:10px;">Need another option?</h3>
+            <p style="color:#cbd5e1; margin-bottom:12px;">You can also submit a support request or request a callback from a team member card.</p>
+            <a href="#requestSection" class="secondary-btn" style="display:inline-flex; align-items:center; justify-content:center; padding:0 18px;">Go to Support Request Form</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="notice" id="noticeBar"></div>
+
+  <footer>
+    <div class="container footer-inner">
+      <p id="footerText">©️ 2026 PixNest. Discover and share powerful visual collections.</p>
+
+      <div class="footer-links">
+        <a href="about.html">About</a>
+        <a href="license.html">License</a>
+        <a href="privacy.html">Privacy</a>
+        <a href="terms.html">Terms</a>
+        <a href="contact.html">Contact</a>
+        <a href="help.html">Help</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const STORAGE_KEY = "pixnest_admin_v2";
+    const LIVE_SUPPORT_SESSION_KEY = "pixnest_live_support_session_id_v1";
+    const SUPABASE_URL = "https://vigczssznfvujttdapbv.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_UmF-mmVS42XeF6PqsNnCSw_wpA35wg2";
+
+    const { createClient } = supabase;
+    const supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    const menuToggle = document.getElementById("menuToggle");
+    const navLinks = document.getElementById("navLinks");
+    const navAuth = document.getElementById("navAuth");
+
+    const heroMeta = document.getElementById("heroMeta");
+    const footerText = document.getElementById("footerText");
+
+    const faqSearchInput = document.getElementById("faqSearchInput");
+    const faqCategoryFilter = document.getElementById("faqCategoryFilter");
+    const faqSearchBtn = document.getElementById("faqSearchBtn");
+    const faqNote = document.getElementById("faqNote");
+    const faqList = document.getElementById("faqList");
+
+    const requestForm = document.getElementById("requestForm");
+    const requestName = document.getElementById("requestName");
+    const requestEmail = document.getElementById("requestEmail");
+    const requestCategory = document.getElementById("requestCategory");
+    const requestPriority = document.getElementById("requestPriority");
+    const requestSubject = document.getElementById("requestSubject");
+    const requestMessage = document.getElementById("requestMessage");
+    const requestSubmitBtn = document.getElementById("requestSubmitBtn");
+    const requestClearBtn = document.getElementById("requestClearBtn");
+
+    const teamGrid = document.getElementById("teamGrid");
+
+    const liveAuthGate = document.getElementById("liveAuthGate");
+    const liveStartCard = document.getElementById("liveStartCard");
+    const liveChatCard = document.getElementById("liveChatCard");
+    const liveName = document.getElementById("liveName");
+    const liveEmail = document.getElementById("liveEmail");
+    const liveInitialMessage = document.getElementById("liveInitialMessage");
+    const startLiveBtn = document.getElementById("startLiveBtn");
+    const liveSessionBadge = document.getElementById("liveSessionBadge");
+    const liveSessionMeta = document.getElementById("liveSessionMeta");
+    const liveMessages = document.getElementById("liveMessages");
+    const liveMessageInput = document.getElementById("liveMessageInput");
+    const sendLiveBtn = document.getElementById("sendLiveBtn");
+    const refreshLiveBtn = document.getElementById("refreshLiveBtn");
+    const endLiveBtn = document.getElementById("endLiveBtn");
+
+    const noticeBar = document.getElementById("noticeBar");
+
+    let siteData = loadAdminData();
+    let faqRows = [];
+    let teamRows = [];
+    let currentSession = null;
+    let activeLiveSession = null;
+    let liveChannel = null;
+
+    if(menuToggle && navLinks){
+      menuToggle.addEventListener("click", () => {
+        navLinks.classList.toggle("show");
+        const expanded = menuToggle.getAttribute("aria-expanded") === "true";
+        menuToggle.setAttribute("aria-expanded", String(!expanded));
+      });
+    }
+
+    document.querySelectorAll(".nav-links a").forEach(link => {
+      link.addEventListener("click", () => {
+        if(window.innerWidth <= 768){
+          navLinks.classList.remove("show");
+          menuToggle.setAttribute("aria-expanded", "false");
+        }
+      });
+    });
+
+    document.addEventListener("click", (e) => {
+      if(window.innerWidth <= 768 && navLinks.classList.contains("show")){
+        if(!navLinks.contains(e.target) && !menuToggle.contains(e.target)){
+          navLinks.classList.remove("show");
+          menuToggle.setAttribute("aria-expanded", "false");
+        }
+      }
+    });
+
+    window.addEventListener("resize", () => {
+      if(window.innerWidth > 768){
+        navLinks.classList.remove("show");
+        menuToggle.setAttribute("aria-expanded", "false");
+      }
+    });
+
+    function showNotice(text){
+      noticeBar.textContent = text;
+      noticeBar.classList.add("show");
+      clearTimeout(showNotice._timer);
+      showNotice._timer = setTimeout(() => {
+        noticeBar.classList.remove("show");
+      }, 2200);
+    }
+
+    function escapeHtml(value = ""){
+      return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+
+    function loadAdminData(){
+      try{
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if(!saved){
+          return {
+            homepage: {},
+            footerText: ""
+          };
+        }
+
+        const parsed = JSON.parse(saved);
+        return {
+          homepage: parsed.homepage && typeof parsed.homepage === "object" ? parsed.homepage : {},
+          footerText: parsed.footerText || ""
+        };
+      }catch(error){
+        return {
+          homepage: {},
+          footerText: ""
+        };
+      }
+    }
+
+    function applyFooterText(){
+      if(siteData.footerText){
+        footerText.textContent = siteData.footerText;
+      }
+    }
+
+    function applyAuthVisibility(session){
+      const loggedIn = !!(session && session.user);
+      navAuth.classList.toggle("hidden", loggedIn);
+    }
+
+    function getUserDisplayName(user){
+      return String(
+        user?.user_metadata?.full_name ||
+        user?.user_metadata?.name ||
+        user?.email?.split("@")[0] ||
+        ""
+      ).trim();
+    }
+
+    function applyUserPrefill(session){
+      if(!(session && session.user)) return;
+
+      const user = session.user;
+      const displayName = getUserDisplayName(user);
+      const email = user.email || "";
+
+      if(!requestName.value && displayName) requestName.value = displayName;
+      if(!requestEmail.value && email) requestEmail.value = email;
+      if(!liveName.value && displayName) liveName.value = displayName;
+      if(!liveEmail.value && email) liveEmail.value = email;
+    }
+
+    async function initAuthState(){
+      try{
+        const { data } = await supabaseClient.auth.getSession();
+        currentSession = data?.session || null;
+        applyAuthVisibility(currentSession);
+        applyUserPrefill(currentSession);
+        await restoreLiveSupportSession();
+      }catch(error){
+        currentSession = null;
+        applyAuthVisibility(null);
+        renderLiveSupportState();
+      }
+
+      supabaseClient.auth.onAuthStateChange(async (_event, session) => {
+        currentSession = session || null;
+        applyAuthVisibility(currentSession);
+        applyUserPrefill(currentSession);
+
+        if(!currentSession){
+          clearLiveSupportState();
+        }else{
+          await restoreLiveSupportSession();
+        }
+
+        renderLiveSupportState();
+      });
+    }
+
+    function updateHeroMeta(){
+      heroMeta.innerHTML = `
+        <span class="pill category-tag">${faqRows.length} FAQ${faqRows.length === 1 ? "" : "s"}</span>
+        <span class="pill trending"><i class="fa-solid fa-users"></i> ${teamRows.length} team member${teamRows.length === 1 ? "" : "s"}</span>
+        <span class="pill featured"><i class="fa-solid fa-database"></i> Supabase Connected</span>
+      `;
+    }
+
+    async function loadFaqs(){
+      try{
+        const { data, error } = await supabaseClient
+          .from("faqs")
+          .select("*")
+          .eq("is_active", true)
+          .order("sort_order", { ascending:true })
+          .order("created_at", { ascending:false });
+
+        if(error) throw error;
+
+        faqRows = Array.isArray(data) ? data : [];
+        populateFaqCategories();
+        renderFaqs();
+      }catch(error){
+        console.error(error);
+        faqList.innerHTML = '<div class="empty-box">Could not load FAQs from Supabase.</div>';
+      }
+    }
+
+    function populateFaqCategories(){
+      const categories = [...new Set(
+        faqRows
+          .map(item => String(item.category || "").trim())
+          .filter(Boolean)
+      )].sort((a, b) => a.localeCompare(b));
+
+      faqCategoryFilter.innerHTML = `
+        <option value="all">All FAQ Categories</option>
+        ${categories.map(category => `<option value="${escapeHtml(category)}">${escapeHtml(category)}</option>`).join("")}
+      `;
+    }
+
+    function renderFaqs(){
+      const searchValue = faqSearchInput.value.trim().toLowerCase();
+      const categoryValue = faqCategoryFilter.value;
+
+      const filtered = faqRows.filter(item => {
+        const question = String(item.question || "");
+        const answer = String(item.answer || "");
+        const category = String(item.category || "");
+
+        const matchesText = !searchValue || [question, answer, category].join(" ").toLowerCase().includes(searchValue);
+        const matchesCategory = categoryValue === "all" || category === categoryValue;
+
+        return matchesText && matchesCategory;
+      });
+
+      faqNote.textContent = `${filtered.length} FAQ${filtered.length === 1 ? "" : "s"} found.`;
+
+      if(!filtered.length){
+        faqList.innerHTML = '<div class="empty-box">No FAQs found for this search.</div>';
+        return;
+      }
+
+      faqList.innerHTML = filtered.map((item, index) => `
+        <div class="faq-item">
+          <button type="button" class="faq-question" data-faq-index="${index}">
+            <span>${escapeHtml(item.question || "Untitled question")}</span>
+            <i class="fa-solid fa-plus"></i>
+          </button>
+
+          <div class="faq-meta">
+            <span class="pill category-tag">${escapeHtml(item.category || "General")}</span>
+            ${item.is_featured ? `<span class="pill featured"><i class="fa-solid fa-bolt"></i> Featured</span>` : ``}
+          </div>
+
+          <div class="faq-answer">${escapeHtml(item.answer || "No answer provided.")}</div>
+        </div>
+      `).join("");
+
+      faqList.querySelectorAll(".faq-question").forEach(button => {
+        button.addEventListener("click", () => {
+          const answer = button.parentElement.querySelector(".faq-answer");
+          const icon = button.querySelector("i");
+          const isOpen = answer.classList.contains("show");
+
+          faqList.querySelectorAll(".faq-answer").forEach(node => node.classList.remove("show"));
+          faqList.querySelectorAll(".faq-question i").forEach(node => {
+            node.classList.remove("fa-minus");
+            node.classList.add("fa-plus");
+          });
+
+          if(!isOpen){
+            answer.classList.add("show");
+            icon.classList.remove("fa-plus");
+            icon.classList.add("fa-minus");
+          }
+        });
+      });
+    }
+
+    async function loadTeamMembers(){
+      try{
+        const { data, error } = await supabaseClient
+          .from("support_team")
+          .select("*")
+          .eq("is_active", true)
+          .order("sort_order", { ascending:true })
+          .order("created_at", { ascending:false });
+
+        if(error) throw error;
+
+        teamRows = Array.isArray(data) ? data : [];
+        renderTeamMembers();
+      }catch(error){
+        console.error(error);
+        teamGrid.innerHTML = '<div class="empty-box">Could not load support team members from Supabase.</div>';
+      }
+    }
+
+    function requestCallbackFor(name){
+      requestCategory.value = "Callback";
+      requestSubject.value = `Request a callback from ${name}`;
+      requestMessage.value = `Hi, I would like a callback from ${name}.`;
+      document.getElementById("requestSection").scrollIntoView({ behavior:"smooth" });
+      showNotice(`Callback request prepared for ${name}.`);
+    }
+
+    function renderTeamMembers(){
+      if(!teamRows.length){
+        teamGrid.innerHTML = '<div class="empty-box">No team members found in Supabase yet.</div>';
+        return;
+      }
+
+      teamGrid.innerHTML = teamRows.map(member => {
+        const photo = member.photo_url || "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=900&q=80";
+        const phoneHref = member.phone ? `tel:${String(member.phone).replace(/\s+/g, "")}` : "";
+        const emailHref = member.email ? `mailto:${member.email}` : "";
+
+        return `
+          <article class="team-card">
+            <div class="team-photo" style="background-image:url('${escapeHtml(photo)}')"></div>
+
+            <div class="team-content">
+              <div>
+                <h3>${escapeHtml(member.name || "Team Member")}</h3>
+                <div class="team-role">${escapeHtml(member.role || "Support")}</div>
+              </div>
+
+              <p>${escapeHtml(member.bio || "Reach out to this support team member for help with your PixNest requests.")}</p>
+
+              <div class="status-row">
+                ${member.availability ? `<span class="pill trending"><i class="fa-solid fa-clock"></i> ${escapeHtml(member.availability)}</span>` : ``}
+                ${member.phone ? `<span class="pill category-tag"><i class="fa-solid fa-phone"></i> Call available</span>` : ``}
+                ${member.email ? `<span class="pill featured"><i class="fa-solid fa-envelope"></i> Email available</span>` : ``}
+              </div>
+
+              <div class="team-actions">
+                ${member.phone ? `<a href="${escapeHtml(phoneHref)}"><i class="fa-solid fa-phone"></i> Call</a>` : ``}
+                ${member.email ? `<a href="${escapeHtml(emailHref)}"><i class="fa-solid fa-envelope"></i> Email</a>` : ``}
+                <button type="button" class="callback-btn" data-member-name="${escapeHtml(member.name || "Team Member")}"><i class="fa-solid fa-phone-volume"></i> Request Callback</button>
+              </div>
+            </div>
+          </article>
+        `;
+      }).join("");
+
+      teamGrid.querySelectorAll(".callback-btn").forEach(button => {
+        button.addEventListener("click", () => {
+          requestCallbackFor(button.getAttribute("data-member-name") || "Support Team");
+        });
+      });
+    }
+
+    async function submitSupportRequest(event){
+      event.preventDefault();
+
+      const fullName = requestName.value.trim();
+      const email = requestEmail.value.trim();
+      const category = requestCategory.value;
+      const priority = requestPriority.value;
+      const subject = requestSubject.value.trim();
+      const message = requestMessage.value.trim();
+
+      if(!fullName || !email || !subject || !message){
+        showNotice("Please fill in all request fields.");
+        return;
+      }
+
+      try{
+        requestSubmitBtn.disabled = true;
+        requestSubmitBtn.textContent = "Submitting...";
+
+        const payload = {
+          user_id: currentSession?.user?.id || null,
+          full_name: fullName,
+          email,
+          category,
+          priority,
+          subject,
+          message
+        };
+
+        const { error } = await supabaseClient
+          .from("support_requests")
+          .insert(payload);
+
+        if(error) throw error;
+
+        showNotice("Support request submitted.");
+        requestSubject.value = "";
+        requestMessage.value = "";
+
+        if(!currentSession?.user){
+          requestName.value = "";
+          requestEmail.value = "";
+        }
+      }catch(error){
+        console.error(error);
+        showNotice("Could not submit request.");
+      }finally{
+        requestSubmitBtn.disabled = false;
+        requestSubmitBtn.textContent = "Submit Request";
+      }
+    }
+
+    function clearRequestForm(){
+      requestForm.reset();
+      applyUserPrefill(currentSession);
+    }
+
+    function setLiveButtonState(button, loading, loadingText, normalText){
+      if(!button) return;
+      button.disabled = loading;
+      button.textContent = loading ? loadingText : normalText;
+    }
+
+    function getSavedLiveSupportSessionId(){
+      return localStorage.getItem(LIVE_SUPPORT_SESSION_KEY) || "";
+    }
+
+    function saveLiveSupportSessionId(id){
+      localStorage.setItem(LIVE_SUPPORT_SESSION_KEY, id);
+    }
+
+    function clearLiveSupportSessionId(){
+      localStorage.removeItem(LIVE_SUPPORT_SESSION_KEY);
+    }
+
+    function clearLiveChannel(){
+      if(liveChannel){
+        supabaseClient.removeChannel(liveChannel);
+        liveChannel = null;
+      }
+    }
+
+    function clearLiveSupportState(){
+      clearLiveChannel();
+      activeLiveSession = null;
+      clearLiveSupportSessionId();
+      renderLiveSupportState();
+      liveMessages.innerHTML = '<div class="live-empty">No messages yet.</div>';
+      liveMessageInput.value = "";
+    }
+
+    function renderLiveSupportState(){
+      const loggedIn = !!(currentSession && currentSession.user);
+
+      liveAuthGate.classList.toggle("hidden", loggedIn);
+      liveStartCard.classList.toggle("hidden", !loggedIn || !!activeLiveSession);
+      liveChatCard.classList.toggle("hidden", !loggedIn || !activeLiveSession);
+
+      if(activeLiveSession){
+        const status = String(activeLiveSession.status || "open").toLowerCase();
+        liveSessionBadge.textContent = status.charAt(0).toUpperCase() + status.slice(1);
+        liveSessionBadge.className = "pill";
+
+        if(status === "closed"){
+          liveSessionBadge.classList.add("status-closed");
+        }else if(status === "pending"){
+          liveSessionBadge.classList.add("status-pending");
+        }else{
+          liveSessionBadge.classList.add("status-open");
+        }
+
+        const created = activeLiveSession.created_at
+          ? new Date(activeLiveSession.created_at).toLocaleString("en-GB")
+          : "Unknown";
+
+        liveSessionMeta.textContent = `Session started ${created}.`;
+      }
+    }
+
+    async function restoreLiveSupportSession(){
+      clearLiveChannel();
+
+      if(!(currentSession && currentSession.user)){
+        activeLiveSession = null;
+        renderLiveSupportState();
+        return;
+      }
+
+      try{
+        const savedId = getSavedLiveSupportSessionId();
+        let sessionRow = null;
+
+        if(savedId){
+          const { data } = await supabaseClient
+            .from("live_support_sessions")
+            .select("*")
+            .eq("id", savedId)
+            .maybeSingle();
+
+          sessionRow = data || null;
+        }
+
+        if(!sessionRow){
+          const { data } = await supabaseClient
+            .from("live_support_sessions")
+            .select("*")
+            .order("created_at", { ascending:false })
+            .limit(1)
+            .maybeSingle();
+
+          sessionRow = data || null;
+        }
+
+        activeLiveSession = sessionRow;
+
+        if(activeLiveSession){
+          saveLiveSupportSessionId(activeLiveSession.id);
+          await loadLiveMessages();
+          subscribeToLiveMessages(activeLiveSession.id);
+        }
+
+        renderLiveSupportState();
+      }catch(error){
+        console.error(error);
+        activeLiveSession = null;
+        renderLiveSupportState();
+      }
+    }
+
+    function formatMessageTime(value){
+      if(!value) return "";
+      const date = new Date(value);
+      if(Number.isNaN(date.getTime())) return "";
+      return date.toLocaleString("en-GB", {
+        day:"numeric",
+        month:"short",
+        hour:"2-digit",
+        minute:"2-digit"
+      });
+    }
+
+    function renderLiveMessages(rows = []){
+      if(!rows.length){
+        liveMessages.innerHTML = '<div class="live-empty">No messages yet.</div>';
+        return;
+      }
+
+      liveMessages.innerHTML = rows.map(item => {
+        const senderType = String(item.sender_type || "").toLowerCase();
+        const own = senderType === "user" || senderType === "visitor";
+        const senderName = item.sender_name || (own ? "You" : "Support");
+        return `
+          <div class="live-message ${own ? "user" : "agent"}">
+            <div class="live-bubble">
+              <strong>${escapeHtml(senderName)}</strong>
+              <div>${escapeHtml(item.message || "")}</div>
+              <small>${escapeHtml(formatMessageTime(item.created_at))}</small>
+            </div>
+          </div>
+        `;
+      }).join("");
+
+      liveMessages.scrollTop = liveMessages.scrollHeight;
+    }
+
+    async function loadLiveMessages(){
+      if(!activeLiveSession?.id) return;
+
+      try{
+        const { data, error } = await supabaseClient
+          .from("live_support_messages")
+          .select("*")
+          .eq("session_id", activeLiveSession.id)
+          .order("created_at", { ascending:true });
+
+        if(error) throw error;
+
+        renderLiveMessages(Array.isArray(data) ? data : []);
+      }catch(error){
+        console.error(error);
+        liveMessages.innerHTML = '<div class="live-empty">Could not load live support messages.</div>';
+      }
+    }
+
+    function subscribeToLiveMessages(sessionId){
+      if(!sessionId) return;
+
+      clearLiveChannel();
+
+      liveChannel = supabaseClient
+        .channel(`live-support-${sessionId}`)
+        .on(
+          "postgres_changes",
+          {
+            event: "*",
+            schema: "public",
+            table: "live_support_messages",
+            filter: `session_id=eq.${sessionId}`
+          },
+          async () => {
+            await loadLiveMessages();
+          }
+        )
+        .subscribe();
+    }
+
+    async function startLiveSupport(){
+      if(!(currentSession && currentSession.user)){
+        showNotice("Please log in to start live support.");
+        return;
+      }
+
+      const visitorName = liveName.value.trim() || getUserDisplayName(currentSession.user);
+      const visitorEmail = liveEmail.value.trim() || currentSession.user.email || "";
+      const firstMessage = liveInitialMessage.value.trim();
+
+      if(!visitorName || !firstMessage){
+        showNotice("Enter your name and first message.");
+        return;
+      }
+
+      try{
+        setLiveButtonState(startLiveBtn, true, "Starting...", "Start Live Support");
+
+        const { data: sessionData, error: sessionError } = await supabaseClient
+          .from("live_support_sessions")
+          .insert({
+            user_id: currentSession.user.id,
+            visitor_name: visitorName,
+            visitor_email: visitorEmail,
+            status: "open"
+          })
+          .select("*")
+          .single();
+
+        if(sessionError) throw sessionError;
+
+        const { error: messageError } = await supabaseClient
+          .from("live_support_messages")
+          .insert({
+            session_id: sessionData.id,
+            sender_name: visitorName,
+            sender_type: "user",
+            message: firstMessage
+          });
+
+        if(messageError) throw messageError;
+
+        activeLiveSession = sessionData;
+        saveLiveSupportSessionId(sessionData.id);
+        liveInitialMessage.value = "";
+
+        renderLiveSupportState();
+        await loadLiveMessages();
+        subscribeToLiveMessages(sessionData.id);
+        showNotice("Live support session started.");
+      }catch(error){
+        console.error(error);
+        showNotice("Could not start live support.");
+      }finally{
+        setLiveButtonState(startLiveBtn, false, "Starting...", "Start Live Support");
+      }
+    }
+
+    async function sendLiveMessage(){
+      if(!(currentSession && currentSession.user) || !activeLiveSession?.id){
+        showNotice("Start a live support session first.");
+        return;
+      }
+
+      const message = liveMessageInput.value.trim();
+      const senderName = liveName.value.trim() || getUserDisplayName(currentSession.user) || "You";
+
+      if(!message){
+        showNotice("Write a message first.");
+        return;
+      }
+
+      try{
+        setLiveButtonState(sendLiveBtn, true, "Sending...", "Send");
+
+        const { error } = await supabaseClient
+          .from("live_support_messages")
+          .insert({
+            session_id: activeLiveSession.id,
+            sender_name: senderName,
+            sender_type: "user",
+            message
+          });
+
+        if(error) throw error;
+
+        liveMessageInput.value = "";
+        await loadLiveMessages();
+      }catch(error){
+        console.error(error);
+        showNotice("Could not send message.");
+      }finally{
+        setLiveButtonState(sendLiveBtn, false, "Sending...", "Send");
+      }
+    }
+
+    async function refreshLiveSupport(){
+      if(!activeLiveSession?.id) return;
+
+      try{
+        const { data, error } = await supabaseClient
+          .from("live_support_sessions")
+          .select("*")
+          .eq("id", activeLiveSession.id)
+          .maybeSingle();
+
+        if(error) throw error;
+
+        if(data){
+          activeLiveSession = data;
+          renderLiveSupportState();
+          await loadLiveMessages();
+        }
+      }catch(error){
+        console.error(error);
+        showNotice("Could not refresh chat.");
+      }
+    }
+
+    async function endLiveSupport(){
+      if(!activeLiveSession?.id) return;
+
+      try{
+        const { error } = await supabaseClient
+          .from("live_support_sessions")
+          .update({ status: "closed" })
+          .eq("id", activeLiveSession.id);
+
+        if(error) throw error;
+
+        clearLiveSupportState();
+        showNotice("Live support session ended.");
+      }catch(error){
+        console.error(error);
+        showNotice("Could not end live support.");
+      }
+    }
+
+    faqSearchBtn.addEventListener("click", renderFaqs);
+
+    faqSearchInput.addEventListener("keydown", (e) => {
+      if(e.key === "Enter"){
+        e.preventDefault();
+        renderFaqs();
+      }
+    });
+
+    faqCategoryFilter.addEventListener("change", renderFaqs);
+    requestForm.addEventListener("submit", submitSupportRequest);
+    requestClearBtn.addEventListener("click", clearRequestForm);
+    startLiveBtn.addEventListener("click", startLiveSupport);
+    sendLiveBtn.addEventListener("click", sendLiveMessage);
+    refreshLiveBtn.addEventListener("click", refreshLiveSupport);
+    endLiveBtn.addEventListener("click", endLiveSupport);
+
+    liveMessageInput.addEventListener("keydown", (e) => {
+      if(e.key === "Enter" && !e.shiftKey){
+        e.preventDefault();
+        sendLiveMessage();
+      }
+    });
+
+    applyFooterText();
+    initAuthState();
+
+    Promise.all([
+      loadFaqs(),
+      loadTeamMembers()
+    ]).finally(() => {
+      updateHeroMeta();
+    });
+  </script>
+  <script src="site-auth.js"></script>
+</body>
+</html>

@@ -1,0 +1,2617 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>PixNest | Boss Admin</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+ *{
+   margin:0;
+   padding:0;
+   box-sizing:border-box;
+   font-family:Arial, Helvetica, sans-serif;
+ }
+
+ :root{
+   --bg:#0f172a;
+   --panel:#111827;
+   --panel2:#1e293b;
+   --text:#e5e7eb;
+   --muted:#94a3b8;
+   --accent:#facc15;
+   --line:rgba(255,255,255,0.08);
+   --blue:#3b82f6;
+   --success:#22c55e;
+   --danger:#ef4444;
+   --orange:#f59e0b;
+ }
+
+ html{
+   scroll-behavior:smooth;
+   min-height:100%;
+   background:var(--bg);
+ }
+
+ body{
+   min-height:100%;
+   background:var(--bg);
+   color:var(--text);
+   line-height:1.6;
+   overflow-x:hidden;
+   display:flex;
+   flex-direction:column;
+ }
+
+ main{
+   flex:1;
+ }
+
+ img{
+   max-width:100%;
+   display:block;
+ }
+
+ a{
+   text-decoration:none;
+   color:inherit;
+   transition:.3s;
+ }
+
+ button,
+ input,
+ select,
+ textarea{
+   font-family:Arial, Helvetica, sans-serif;
+   transition:.3s;
+ }
+
+ .container{
+   width:min(1360px,94%);
+   margin:auto;
+ }
+
+ .hidden{
+   display:none !important;
+ }
+
+ header{
+   position:sticky;
+   top:0;
+   z-index:1000;
+   background:rgba(15,23,42,0.95);
+   border-bottom:1px solid var(--line);
+   backdrop-filter:blur(8px);
+ }
+
+ .nav{
+   display:flex;
+   align-items:center;
+   justify-content:space-between;
+   gap:20px;
+   padding:16px 0;
+   position:relative;
+ }
+
+ .logo-wrap{
+   display:flex;
+   align-items:center;
+   gap:12px;
+   flex-shrink:0;
+   min-width:0;
+ }
+
+ .logo-mark{
+   width:52px;
+   height:52px;
+   border-radius:14px;
+   background:linear-gradient(135deg,#facc15,#fb7185);
+   display:flex;
+   align-items:center;
+   justify-content:center;
+   color:#111827;
+   font-size:24px;
+   font-weight:800;
+   box-shadow:0 0 16px rgba(250,204,21,0.28);
+   flex-shrink:0;
+ }
+
+ .logo-text{
+   display:flex;
+   flex-direction:column;
+   line-height:1;
+   min-width:0;
+ }
+
+ .logo-title{
+   font-size:27px;
+   font-weight:800;
+   color:var(--accent);
+   letter-spacing:.4px;
+   white-space:nowrap;
+ }
+
+ .logo-sub{
+   font-size:11px;
+   color:#cbd5e1;
+   letter-spacing:1.7px;
+   text-transform:uppercase;
+   margin-top:4px;
+   white-space:nowrap;
+ }
+
+ .nav-right{
+   display:flex;
+   align-items:center;
+   gap:14px;
+   min-width:0;
+ }
+
+ .nav-links{
+   display:flex;
+   align-items:center;
+   gap:20px;
+   flex-wrap:wrap;
+ }
+
+ .nav-links a{
+   color:#cbd5e1;
+   font-size:15px;
+   position:relative;
+   padding-bottom:4px;
+ }
+
+ .nav-links a:hover,
+ .nav-links a.active{
+   color:var(--accent);
+ }
+
+ .nav-links a.active::after{
+   content:"";
+   position:absolute;
+   left:0;
+   bottom:-4px;
+   width:100%;
+   height:2px;
+   background:var(--accent);
+   border-radius:999px;
+ }
+
+ .nav-auth{
+   display:flex;
+   align-items:center;
+   gap:10px;
+   flex-wrap:wrap;
+ }
+
+ .nav-auth a{
+   display:inline-flex;
+   align-items:center;
+   justify-content:center;
+   gap:8px;
+   min-height:42px;
+   padding:10px 14px;
+   border-radius:12px;
+   font-size:14px;
+   font-weight:700;
+   border:none;
+   cursor:pointer;
+ }
+
+ .nav-auth .signup-btn{
+   background:var(--accent);
+   color:#111827;
+ }
+
+ .nav-auth .login-btn{
+   background:transparent;
+   color:#fff;
+   border:1px solid rgba(255,255,255,.15);
+ }
+
+ .menu-toggle{
+   display:none;
+   width:46px;
+   height:46px;
+   border-radius:12px;
+   border:1px solid rgba(250,204,21,.35);
+   background:#111827;
+   color:var(--accent);
+   align-items:center;
+   justify-content:center;
+   cursor:pointer;
+   flex-direction:column;
+   gap:5px;
+   flex-shrink:0;
+ }
+
+ .menu-toggle span{
+   width:20px;
+   height:2px;
+   border-radius:999px;
+   background:var(--accent);
+   display:block;
+ }
+
+ .account-menu-wrap{
+   position:relative;
+   flex-shrink:0;
+ }
+
+ .account-menu-btn{
+   width:48px;
+   height:48px;
+   border-radius:14px;
+   border:1px solid rgba(250,204,21,.28);
+   background:#111827;
+   color:#fff;
+   display:flex;
+   align-items:center;
+   justify-content:center;
+   cursor:pointer;
+   padding:0;
+ }
+
+ .account-menu-btn:hover{
+   color:var(--accent);
+   border-color:rgba(250,204,21,.42);
+   transform:translateY(-2px);
+ }
+
+ .account-menu-dropdown{
+   position:absolute;
+   top:calc(100% + 12px);
+   right:0;
+   width:min(340px,92vw);
+   background:#111827;
+   border:1px solid var(--line);
+   border-radius:20px;
+   box-shadow:0 24px 50px rgba(0,0,0,.34);
+   padding:14px;
+   display:none;
+   z-index:1200;
+ }
+
+ .account-menu-dropdown.show{
+   display:block;
+ }
+
+ .account-menu-head{
+   display:flex;
+   align-items:center;
+   gap:12px;
+   padding:8px 8px 14px;
+   border-bottom:1px solid var(--line);
+   margin-bottom:12px;
+ }
+
+ .account-menu-avatar{
+   width:52px;
+   height:52px;
+   border-radius:50%;
+   overflow:hidden;
+   background:linear-gradient(135deg,#facc15,#fb7185);
+   display:flex;
+   align-items:center;
+   justify-content:center;
+   color:#111827;
+   font-size:18px;
+   font-weight:800;
+   flex-shrink:0;
+ }
+
+ .account-menu-avatar img{
+   width:100%;
+   height:100%;
+   object-fit:cover;
+ }
+
+ .account-menu-head strong{
+   display:block;
+   color:#fff;
+   font-size:16px;
+   line-height:1.3;
+ }
+
+ .account-menu-head small{
+   display:block;
+   color:#94a3b8;
+   font-size:12px;
+   margin-top:2px;
+   word-break:break-word;
+ }
+
+ .account-menu-links{
+   display:grid;
+   gap:8px;
+ }
+
+ .account-link,
+ .account-logout{
+   min-height:46px;
+   border-radius:14px;
+   background:#0f172a;
+   border:1px solid var(--line);
+   color:#e5e7eb;
+   font-size:14px;
+   font-weight:700;
+   display:flex;
+   align-items:center;
+   gap:10px;
+   padding:0 14px;
+   cursor:pointer;
+ }
+
+ .account-link:hover,
+ .account-logout:hover{
+   color:var(--accent);
+   border-color:rgba(250,204,21,.24);
+   transform:translateY(-2px);
+ }
+
+ .hero{
+   background:
+     linear-gradient(rgba(15,23,42,.76), rgba(15,23,42,.95)),
+     url('https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1600&q=80') center/cover no-repeat;
+   min-height:42vh;
+   display:flex;
+   align-items:center;
+ }
+
+ .hero-content{
+   max-width:980px;
+   padding:80px 0 44px;
+ }
+
+ .hero-tag{
+   display:inline-flex;
+   align-items:center;
+   gap:8px;
+   background:rgba(250,204,21,.12);
+   color:var(--accent);
+   padding:8px 14px;
+   border-radius:999px;
+   font-size:14px;
+   font-weight:700;
+   border:1px solid rgba(250,204,21,.22);
+   margin-bottom:18px;
+ }
+
+ .hero h1{
+   font-size:clamp(36px,5vw,58px);
+   line-height:1.04;
+   margin-bottom:18px;
+   color:#fff;
+ }
+
+ .hero p{
+   font-size:18px;
+   color:#cbd5e1;
+   max-width:860px;
+ }
+
+ section{
+   padding:28px 0 70px;
+ }
+
+ .gate{
+   background:#111827;
+   border:1px solid var(--line);
+   border-radius:28px;
+   padding:34px;
+   box-shadow:0 18px 40px rgba(0,0,0,.18);
+   text-align:center;
+   margin-top:30px;
+ }
+
+ .gate h2{
+   color:#fff;
+   font-size:34px;
+   margin-bottom:12px;
+ }
+
+ .gate p{
+   color:#cbd5e1;
+   max-width:760px;
+   margin:0 auto 18px;
+   font-size:16px;
+ }
+
+ .gate-actions{
+   display:flex;
+   gap:12px;
+   justify-content:center;
+   flex-wrap:wrap;
+   margin-top:14px;
+ }
+
+ .btn{
+   min-height:48px;
+   padding:12px 18px;
+   border-radius:14px;
+   border:1px solid rgba(255,255,255,.14);
+   background:#0f172a;
+   color:#fff;
+   font-size:14px;
+   font-weight:800;
+   cursor:pointer;
+   display:inline-flex;
+   align-items:center;
+   justify-content:center;
+   gap:8px;
+ }
+
+ .btn:hover{
+   transform:translateY(-2px);
+   color:var(--accent);
+   border-color:rgba(250,204,21,.24);
+ }
+
+ .btn.primary{
+   background:var(--accent);
+   color:#111827;
+   border-color:transparent;
+   box-shadow:0 10px 24px rgba(250,204,21,.18);
+ }
+
+ .btn.primary:hover{
+   color:#111827;
+ }
+
+ .tabs{
+   display:flex;
+   gap:12px;
+   flex-wrap:wrap;
+   margin-bottom:22px;
+ }
+
+ .tab-btn{
+   min-height:44px;
+   padding:10px 16px;
+   border-radius:999px;
+   border:1px solid var(--line);
+   background:#111827;
+   color:#cbd5e1;
+   font-size:14px;
+   font-weight:700;
+   cursor:pointer;
+ }
+
+ .tab-btn.active,
+ .tab-btn:hover{
+   color:#111827;
+   background:var(--accent);
+   border-color:transparent;
+ }
+
+ .tab-section{
+   display:none;
+ }
+
+ .tab-section.active{
+   display:block;
+ }
+
+ .stats-grid{
+   display:grid;
+   grid-template-columns:repeat(5,1fr);
+   gap:18px;
+   margin-bottom:24px;
+ }
+
+ .stat-card{
+   background:#111827;
+   border:1px solid var(--line);
+   border-radius:22px;
+   padding:18px;
+   box-shadow:0 14px 30px rgba(0,0,0,.14);
+ }
+
+ .stat-card .icon{
+   width:44px;
+   height:44px;
+   border-radius:14px;
+   display:flex;
+   align-items:center;
+   justify-content:center;
+   background:#0f172a;
+   border:1px solid var(--line);
+   color:var(--accent);
+   font-size:18px;
+   margin-bottom:12px;
+ }
+
+ .stat-card strong{
+   display:block;
+   color:#fff;
+   font-size:28px;
+   line-height:1.1;
+ }
+
+ .stat-card span{
+   display:block;
+   color:#94a3b8;
+   font-size:14px;
+   margin-top:8px;
+ }
+
+ .section-grid{
+   display:grid;
+   grid-template-columns:1.12fr .88fr;
+   gap:22px;
+   align-items:start;
+ }
+
+ .panel{
+   background:#111827;
+   border:1px solid var(--line);
+   border-radius:24px;
+   padding:22px;
+   box-shadow:0 14px 30px rgba(0,0,0,.14);
+ }
+
+ .panel h2{
+   color:#fff;
+   font-size:28px;
+   margin-bottom:8px;
+ }
+
+ .panel-sub{
+   color:#cbd5e1;
+   font-size:14px;
+   margin-bottom:16px;
+ }
+
+ .field-grid{
+   display:grid;
+   grid-template-columns:repeat(2,1fr);
+   gap:14px;
+ }
+
+ .field{
+   display:flex;
+   flex-direction:column;
+   gap:8px;
+   margin-bottom:14px;
+ }
+
+ .field.full{
+   grid-column:1 / -1;
+ }
+
+ .field label{
+   color:#e2e8f0;
+   font-size:14px;
+   font-weight:700;
+ }
+
+ .field input,
+ .field select,
+ .field textarea{
+   width:100%;
+   background:#0f172a;
+   border:1px solid rgba(255,255,255,0.08);
+   border-radius:14px;
+   color:#fff;
+   font-size:15px;
+   padding:14px 16px;
+   outline:none;
+ }
+
+ .field textarea{
+   min-height:110px;
+   resize:vertical;
+ }
+
+ .field input:focus,
+ .field select:focus,
+ .field textarea:focus{
+   border-color:rgba(250,204,21,0.55);
+   box-shadow:0 0 0 3px rgba(250,204,21,0.08);
+ }
+
+ .search-bar{
+   display:grid;
+   grid-template-columns:1fr 180px;
+   gap:12px;
+   margin-bottom:18px;
+ }
+
+ .search-bar input,
+ .search-bar select{
+   width:100%;
+   min-height:48px;
+   background:#0f172a;
+   border:1px solid rgba(255,255,255,0.08);
+   border-radius:14px;
+   color:#ffffff;
+   font-size:15px;
+   padding:12px 14px;
+   outline:none;
+ }
+
+ .card-list{
+   display:grid;
+   gap:14px;
+ }
+
+ .item-card{
+   background:#0f172a;
+   border:1px solid var(--line);
+   border-radius:20px;
+   padding:16px;
+ }
+
+ .item-head{
+   display:flex;
+   align-items:flex-start;
+   justify-content:space-between;
+   gap:14px;
+   margin-bottom:12px;
+   flex-wrap:wrap;
+ }
+
+ .item-title{
+   color:#fff;
+   font-size:17px;
+   font-weight:800;
+   line-height:1.35;
+ }
+
+ .item-meta{
+   color:#94a3b8;
+   font-size:13px;
+   line-height:1.5;
+   margin-top:4px;
+   word-break:break-word;
+ }
+
+ .pill{
+   display:inline-flex;
+   align-items:center;
+   justify-content:center;
+   gap:6px;
+   padding:6px 10px;
+   border-radius:999px;
+   font-size:11px;
+   background:rgba(255,255,255,.08);
+   border:1px solid rgba(255,255,255,.12);
+   color:#fff;
+   white-space:nowrap;
+ }
+
+ .pill.success{
+   background:rgba(34,197,94,.16);
+   border-color:rgba(34,197,94,.28);
+   color:#86efac;
+ }
+
+ .pill.warn{
+   background:rgba(245,158,11,.16);
+   border-color:rgba(245,158,11,.28);
+   color:#fcd34d;
+ }
+
+ .pill.danger{
+   background:rgba(239,68,68,.16);
+   border-color:rgba(239,68,68,.28);
+   color:#fca5a5;
+ }
+
+ .pill.info{
+   background:rgba(59,130,246,.16);
+   border-color:rgba(59,130,246,.28);
+   color:#93c5fd;
+ }
+
+ .item-body{
+   color:#dbe4f0;
+   font-size:14px;
+   line-height:1.6;
+   margin-bottom:14px;
+   white-space:pre-wrap;
+   word-break:break-word;
+ }
+
+ .photo-review{
+   display:grid;
+   grid-template-columns:140px 1fr;
+   gap:16px;
+   align-items:start;
+ }
+
+ .photo-review img{
+   width:100%;
+   height:140px;
+   object-fit:cover;
+   border-radius:18px;
+   background:#1e293b;
+   border:1px solid var(--line);
+ }
+
+ .action-row{
+   display:flex;
+   flex-wrap:wrap;
+   gap:10px;
+   margin-top:8px;
+ }
+
+ .mini-btn{
+   min-height:38px;
+   padding:8px 12px;
+   border-radius:12px;
+   border:1px solid rgba(255,255,255,.14);
+   background:#111827;
+   color:#fff;
+   font-size:12px;
+   font-weight:800;
+   cursor:pointer;
+   display:inline-flex;
+   align-items:center;
+   justify-content:center;
+   gap:8px;
+ }
+
+ .mini-btn:hover{
+   transform:translateY(-2px);
+   color:var(--accent);
+   border-color:rgba(250,204,21,.24);
+ }
+
+ .mini-btn.success{
+   background:rgba(34,197,94,.16);
+   border-color:rgba(34,197,94,.28);
+   color:#86efac;
+ }
+
+ .mini-btn.danger{
+   background:rgba(239,68,68,.16);
+   border-color:rgba(239,68,68,.28);
+   color:#fca5a5;
+ }
+
+ .mini-btn.warn{
+   background:rgba(245,158,11,.16);
+   border-color:rgba(245,158,11,.28);
+   color:#fcd34d;
+ }
+
+ .mini-btn.info{
+   background:rgba(59,130,246,.16);
+   border-color:rgba(59,130,246,.28);
+   color:#93c5fd;
+ }
+
+ .user-grid{
+   display:grid;
+   grid-template-columns:repeat(2,1fr);
+   gap:14px;
+ }
+
+ .user-card{
+   background:#0f172a;
+   border:1px solid var(--line);
+   border-radius:20px;
+   padding:16px;
+ }
+
+ .user-top{
+   display:flex;
+   align-items:flex-start;
+   gap:12px;
+   margin-bottom:12px;
+ }
+
+ .user-avatar{
+   width:54px;
+   height:54px;
+   border-radius:50%;
+   overflow:hidden;
+   background:linear-gradient(135deg,#facc15,#fb7185);
+   display:flex;
+   align-items:center;
+   justify-content:center;
+   color:#111827;
+   font-size:18px;
+   font-weight:800;
+   flex-shrink:0;
+ }
+
+ .user-avatar img{
+   width:100%;
+   height:100%;
+   object-fit:cover;
+ }
+
+ .user-name{
+   color:#fff;
+   font-size:16px;
+   font-weight:800;
+   line-height:1.35;
+ }
+
+ .user-sub{
+   color:#94a3b8;
+   font-size:13px;
+   line-height:1.5;
+   word-break:break-word;
+ }
+
+ .metrics-mini{
+   display:flex;
+   gap:8px;
+   flex-wrap:wrap;
+   margin:10px 0 12px;
+ }
+
+ .empty-box{
+   background:#0f172a;
+   border:1px dashed rgba(255,255,255,.14);
+   border-radius:20px;
+   padding:24px;
+   color:var(--muted);
+   text-align:center;
+ }
+
+ .notice{
+   position:fixed;
+   left:50%;
+   bottom:24px;
+   transform:translateX(-50%);
+   background:#111827;
+   border:1px solid var(--line);
+   color:#fff;
+   padding:12px 16px;
+   border-radius:14px;
+   box-shadow:0 12px 28px rgba(0,0,0,.24);
+   z-index:2200;
+   display:none;
+   max-width:min(92vw,520px);
+   text-align:center;
+ }
+
+ .notice.show{
+   display:block;
+ }
+
+ footer{
+   background:#020617;
+   border-top:1px solid var(--line);
+   padding:24px 0;
+   margin-top:auto;
+ }
+
+ .footer-inner{
+   display:flex;
+   align-items:center;
+   justify-content:space-between;
+   gap:20px;
+   flex-wrap:wrap;
+ }
+
+ .footer-inner p{
+   color:#94a3b8;
+   font-size:14px;
+ }
+
+ .footer-links{
+   display:flex;
+   flex-wrap:wrap;
+   gap:16px;
+ }
+
+ .footer-links a{
+   color:#cbd5e1;
+   font-size:14px;
+ }
+
+ .footer-links a:hover{
+   color:var(--accent);
+ }
+
+ @media(max-width:1200px){
+   .stats-grid{
+     grid-template-columns:repeat(3,1fr);
+   }
+
+   .section-grid{
+     grid-template-columns:1fr;
+   }
+
+   .user-grid{
+     grid-template-columns:1fr;
+   }
+ }
+
+ @media(max-width:768px){
+   .menu-toggle{
+     display:flex;
+   }
+
+   .nav-links{
+     position:absolute;
+     top:100%;
+     left:0;
+     right:0;
+     display:none;
+     flex-direction:column;
+     align-items:flex-start;
+     gap:0;
+     background:#0f172a;
+     border:1px solid var(--line);
+     border-radius:16px;
+     padding:12px;
+     box-shadow:0 16px 30px rgba(0,0,0,.28);
+   }
+
+   .nav-links.show{
+     display:flex;
+   }
+
+   .nav-links a{
+     width:100%;
+     padding:12px 10px;
+     border-radius:10px;
+   }
+
+   .nav-links a.active::after{
+     display:none;
+   }
+
+   .nav-links a:hover,
+   .nav-links a.active{
+     background:rgba(250,204,21,.12);
+   }
+
+   .nav-auth{
+     width:100%;
+     flex-direction:column;
+     align-items:stretch;
+     padding-top:10px;
+   }
+
+   .nav-auth a{
+     width:100%;
+     text-align:center;
+   }
+
+   .hero{
+     min-height:auto;
+   }
+
+   .hero-content{
+     padding:70px 0 40px;
+   }
+
+   .stats-grid{
+     grid-template-columns:repeat(2,1fr);
+   }
+
+   .field-grid,
+   .search-bar,
+   .photo-review{
+     grid-template-columns:1fr;
+   }
+ }
+
+ @media(max-width:520px){
+   .container{
+     width:min(1360px,95%);
+   }
+
+   .hero h1{
+     font-size:34px;
+   }
+
+   .stats-grid{
+     grid-template-columns:1fr;
+   }
+
+   .account-menu-dropdown{
+     width:min(320px,92vw);
+   }
+ }
+</style>
+</head>
+<body>
+
+<header>
+ <div class="container nav">
+   <a href="index.html" class="logo-wrap">
+     <span class="logo-mark">P</span>
+     <span class="logo-text">
+       <span class="logo-title">PixNest</span>
+       <span class="logo-sub">Boss Admin Panel</span>
+     </span>
+   </a>
+
+   <div class="nav-right">
+     <button class="menu-toggle" id="menuToggle" aria-label="Open menu" aria-expanded="false">
+       <span></span>
+       <span></span>
+       <span></span>
+     </button>
+
+     <nav class="nav-links" id="navLinks">
+       <a href="index.html">Home</a>
+       <a href="explore.html">Explore</a>
+       <a href="upload.html">Upload</a>
+       <a href="boss-admin.html" class="active">Boss Admin</a>
+
+       <div class="nav-auth" id="navAuth">
+         <a href="signup.html" class="signup-btn">
+           <i class="fa-solid fa-user-plus"></i>
+           Sign Up
+         </a>
+         <a href="login.html" class="login-btn">
+           <i class="fa-solid fa-right-to-bracket"></i>
+           Login
+         </a>
+       </div>
+     </nav>
+
+     <div class="account-menu-wrap hidden" id="accountMenuWrap">
+       <button class="account-menu-btn" id="accountMenuBtn" aria-label="Open account menu" aria-expanded="false">
+         <i class="fa-solid fa-bars"></i>
+       </button>
+
+       <div class="account-menu-dropdown" id="accountMenuDropdown">
+         <div class="account-menu-head">
+           <div class="account-menu-avatar" id="menuAvatar"></div>
+           <div>
+             <strong id="menuName">Admin</strong>
+             <small id="menuEmail">Signed in</small>
+           </div>
+         </div>
+
+         <div class="account-menu-links">
+           <a class="account-link" href="profile.html">
+             <i class="fa-solid fa-user"></i>
+             My Profile
+           </a>
+
+           <a class="account-link" href="professional-dashboard.html">
+             <i class="fa-solid fa-chart-line"></i>
+             Dashboard
+           </a>
+
+           <a class="account-link" href="help.html">
+             <i class="fa-solid fa-circle-question"></i>
+             Help
+           </a>
+
+           <button type="button" class="account-logout" id="logoutBtn">
+             <i class="fa-solid fa-right-from-bracket"></i>
+             Logout
+           </button>
+         </div>
+       </div>
+     </div>
+   </div>
+ </div>
+</header>
+
+<main>
+<section class="hero">
+ <div class="container">
+   <div class="hero-content">
+     <div class="hero-tag">
+       <i class="fa-solid fa-shield-halved"></i>
+       Full Control Admin Area
+     </div>
+     <h1>Run the platform from one boss page.</h1>
+     <p>Approve or reject photos, grant blue checks and premium, turn dashboard access on, review requests, control site banners, freeze payouts, flag fraud, and moderate users from one place.</p>
+   </div>
+ </div>
+</section>
+
+<section>
+ <div class="container">
+
+   <div id="accessGate" class="gate hidden"></div>
+
+   <div id="adminApp" class="hidden">
+     <div class="tabs">
+       <button class="tab-btn active" data-tab="overview">Overview</button>
+       <button class="tab-btn" data-tab="settings">Site Settings</button>
+       <button class="tab-btn" data-tab="requests">Requests</button>
+       <button class="tab-btn" data-tab="photos">Photo Review</button>
+       <button class="tab-btn" data-tab="users">Users</button>
+       <button class="tab-btn" data-tab="flags">Flags & Holds</button>
+       <button class="tab-btn" data-tab="audit">Audit Log</button>
+     </div>
+
+     <div class="tab-section active" id="tab-overview">
+       <div class="stats-grid" id="overviewStats"></div>
+
+       <div class="section-grid">
+         <div class="panel">
+           <h2>Platform Rules</h2>
+           <p class="panel-sub">These are the control rules supported by this admin page.</p>
+
+           <div class="card-list">
+             <div class="item-card">
+               <div class="item-title">Featured is admin-only</div>
+               <div class="item-body">Users cannot mark content as featured during upload. Featured can only be set from this boss page after review.</div>
+             </div>
+
+             <div class="item-card">
+               <div class="item-title">Approval before posting</div>
+               <div class="item-body">Only photos with approval_status = approved and admin_approved = true should appear publicly.</div>
+             </div>
+
+             <div class="item-card">
+               <div class="item-title">Fraud or hacking suspicion</div>
+               <div class="item-body">If a user looks suspicious, place them under review, turn on fraud hold, and optionally disable payouts before final action.</div>
+             </div>
+
+             <div class="item-card">
+               <div class="item-title">Soft remove first</div>
+               <div class="item-body">This page marks the profile as deleted and locks the account state. Hard auth deletion should still be done server-side only.</div>
+             </div>
+
+             <div class="item-card">
+               <div class="item-title">Creator profile driven badges</div>
+               <div class="item-body">Verified, premium, creator approval, dashboard approval, and payout availability are controlled from creator_profiles.</div>
+             </div>
+
+             <div class="item-card">
+               <div class="item-title">Every admin action should be logged</div>
+               <div class="item-body">Important moderation actions are saved into audit_logs so you can track who did what.</div>
+             </div>
+           </div>
+         </div>
+
+         <div class="panel">
+           <h2>Quick Notes</h2>
+           <p class="panel-sub">Useful reminders while moderating.</p>
+
+           <div class="card-list">
+             <div class="item-card">
+               <div class="item-title">Grant creator access</div>
+               <div class="item-body">Turn on creator approval and dashboard access together if the creator has passed your requirements.</div>
+             </div>
+
+             <div class="item-card">
+               <div class="item-title">Grant premium</div>
+               <div class="item-body">Premium lets users access premium content and premium upload options.</div>
+             </div>
+
+             <div class="item-card">
+               <div class="item-title">Payout control</div>
+               <div class="item-body">Use payout enable or disable when you want to allow or block creator withdrawals from the professional dashboard.</div>
+             </div>
+
+             <div class="item-card">
+               <div class="item-title">Banners and notices</div>
+               <div class="item-body">Use site settings to update page banners and a global notice without editing code files.</div>
+             </div>
+           </div>
+         </div>
+       </div>
+     </div>
+
+     <div class="tab-section" id="tab-settings">
+       <div class="panel">
+         <h2>Update Banners & Notice</h2>
+         <p class="panel-sub">These values are stored in the database.</p>
+
+         <form id="settingsForm">
+           <div class="field-grid">
+             <div class="field">
+               <label for="homeBanner">Home Banner URL</label>
+               <input type="text" id="homeBanner" placeholder="https://...">
+             </div>
+
+             <div class="field">
+               <label for="exploreBanner">Explore Banner URL</label>
+               <input type="text" id="exploreBanner" placeholder="https://...">
+             </div>
+
+             <div class="field">
+               <label for="premiumBanner">Premium Banner URL</label>
+               <input type="text" id="premiumBanner" placeholder="https://...">
+             </div>
+
+             <div class="field">
+               <label for="uploadBanner">Upload Banner URL</label>
+               <input type="text" id="uploadBanner" placeholder="https://...">
+             </div>
+
+             <div class="field full">
+               <label for="globalNotice">Global Site Notice</label>
+               <textarea id="globalNotice" placeholder="Write a site-wide notice..."></textarea>
+             </div>
+           </div>
+
+           <div class="action-row">
+             <button type="submit" class="btn primary" id="saveSettingsBtn">
+               <i class="fa-solid fa-floppy-disk"></i>
+               Save Settings
+             </button>
+           </div>
+         </form>
+       </div>
+     </div>
+
+     <div class="tab-section" id="tab-requests">
+       <div class="panel">
+         <h2>Requests Review</h2>
+         <p class="panel-sub">Approve verification, premium, dashboard, creator and payout requests.</p>
+         <div class="card-list" id="requestsList"></div>
+       </div>
+     </div>
+
+     <div class="tab-section" id="tab-photos">
+       <div class="panel">
+         <h2>Photo Review Queue</h2>
+         <p class="panel-sub">Approve, reject, hold, feature, or set premium status on uploads.</p>
+
+         <div class="search-bar">
+           <input type="text" id="photoSearch" placeholder="Search by title, creator, category or status">
+           <select id="photoFilter">
+             <option value="all">All Photos</option>
+             <option value="pending">Pending Only</option>
+             <option value="under_review">Under Review</option>
+             <option value="approved">Approved</option>
+             <option value="rejected">Rejected</option>
+           </select>
+         </div>
+
+         <div class="card-list" id="photosList"></div>
+       </div>
+     </div>
+
+     <div class="tab-section" id="tab-users">
+       <div class="panel">
+         <h2>User Control</h2>
+         <p class="panel-sub">Grant checkmarks, premium, creator access, dashboard access, ban, freeze, remove, enable or disable payouts, and fraud hold.</p>
+
+         <div class="search-bar">
+           <input type="text" id="userSearch" placeholder="Search by name, email, phone, role or status">
+           <select id="userFilter">
+             <option value="all">All Users</option>
+             <option value="active">Active</option>
+             <option value="under_review">Under Review</option>
+             <option value="suspended">Suspended</option>
+             <option value="frozen">Frozen</option>
+             <option value="banned">Banned</option>
+             <option value="deleted">Deleted</option>
+           </select>
+         </div>
+
+         <div class="user-grid" id="usersList"></div>
+       </div>
+     </div>
+
+     <div class="tab-section" id="tab-flags">
+       <div class="panel">
+         <h2>Flags, Fraud & Holds</h2>
+         <p class="panel-sub">Review suspicious accounts and put them on hold before final action.</p>
+         <div class="card-list" id="flagsList"></div>
+       </div>
+     </div>
+
+     <div class="tab-section" id="tab-audit">
+       <div class="panel">
+         <h2>Audit Log</h2>
+         <p class="panel-sub">Every important admin action appears here.</p>
+         <div class="card-list" id="auditList"></div>
+       </div>
+     </div>
+   </div>
+
+ </div>
+</section>
+</main>
+
+<div class="notice" id="noticeBar"></div>
+
+<footer>
+ <div class="container footer-inner">
+   <p>©️ 2026 PixNest Boss Admin. Protected moderation and platform controls.</p>
+   <div class="footer-links">
+     <a href="about.html">About</a>
+     <a href="privacy.html">Privacy</a>
+     <a href="terms.html">Terms</a>
+     <a href="help.html">Help</a>
+   </div>
+ </div>
+</footer>
+
+<script>
+ const SUPABASE_URL = "https://vigczssznfvujttdapbv.supabase.co";
+ const SUPABASE_KEY = "sb_publishable_UmF-mmVS42XeF6PqsNnCSw_wpA35wg2";
+
+ const { createClient } = supabase;
+ const supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+ const CREATOR_PROFILE_TABLE = "creator_profiles";
+
+ const menuToggle = document.getElementById("menuToggle");
+ const navLinks = document.getElementById("navLinks");
+ const navAuth = document.getElementById("navAuth");
+
+ const accountMenuWrap = document.getElementById("accountMenuWrap");
+ const accountMenuBtn = document.getElementById("accountMenuBtn");
+ const accountMenuDropdown = document.getElementById("accountMenuDropdown");
+ const menuAvatar = document.getElementById("menuAvatar");
+ const menuName = document.getElementById("menuName");
+ const menuEmail = document.getElementById("menuEmail");
+ const logoutBtn = document.getElementById("logoutBtn");
+ const noticeBar = document.getElementById("noticeBar");
+
+ const accessGate = document.getElementById("accessGate");
+ const adminApp = document.getElementById("adminApp");
+
+ const overviewStats = document.getElementById("overviewStats");
+ const requestsList = document.getElementById("requestsList");
+ const photosList = document.getElementById("photosList");
+ const usersList = document.getElementById("usersList");
+ const flagsList = document.getElementById("flagsList");
+ const auditList = document.getElementById("auditList");
+
+ const photoSearch = document.getElementById("photoSearch");
+ const photoFilter = document.getElementById("photoFilter");
+ const userSearch = document.getElementById("userSearch");
+ const userFilter = document.getElementById("userFilter");
+
+ const settingsForm = document.getElementById("settingsForm");
+ const homeBanner = document.getElementById("homeBanner");
+ const exploreBanner = document.getElementById("exploreBanner");
+ const premiumBanner = document.getElementById("premiumBanner");
+ const uploadBanner = document.getElementById("uploadBanner");
+ const globalNotice = document.getElementById("globalNotice");
+ const saveSettingsBtn = document.getElementById("saveSettingsBtn");
+
+ let currentSession = null;
+ let adminProfile = null;
+ let requestsData = [];
+ let photosData = [];
+ let usersData = [];
+ let flagsData = [];
+ let auditData = [];
+ let siteSettings = null;
+ let creatorProfilesMap = {};
+
+ if(menuToggle && navLinks){
+   menuToggle.addEventListener("click", () => {
+     navLinks.classList.toggle("show");
+     const expanded = menuToggle.getAttribute("aria-expanded") === "true";
+     menuToggle.setAttribute("aria-expanded", String(!expanded));
+   });
+ }
+
+ document.addEventListener("click", (e) => {
+   if(window.innerWidth <= 768 && navLinks.classList.contains("show")){
+     if(!navLinks.contains(e.target) && !menuToggle.contains(e.target)){
+       navLinks.classList.remove("show");
+       menuToggle.setAttribute("aria-expanded", "false");
+     }
+   }
+
+   if(accountMenuWrap && !accountMenuWrap.contains(e.target)){
+     accountMenuDropdown.classList.remove("show");
+     accountMenuBtn.setAttribute("aria-expanded", "false");
+   }
+ });
+
+ window.addEventListener("resize", () => {
+   if(window.innerWidth > 768){
+     navLinks.classList.remove("show");
+     menuToggle.setAttribute("aria-expanded", "false");
+   }
+ });
+
+ accountMenuBtn?.addEventListener("click", (e) => {
+   e.stopPropagation();
+   accountMenuDropdown.classList.toggle("show");
+   const expanded = accountMenuBtn.getAttribute("aria-expanded") === "true";
+   accountMenuBtn.setAttribute("aria-expanded", String(!expanded));
+ });
+
+ logoutBtn?.addEventListener("click", async () => {
+   try{
+     await supabaseClient.auth.signOut();
+     window.location.href = "index.html";
+   }catch(error){
+     showNotice("Could not log out.");
+   }
+ });
+
+ document.querySelectorAll(".tab-btn").forEach(button => {
+   button.addEventListener("click", () => {
+     document.querySelectorAll(".tab-btn").forEach(btn => btn.classList.remove("active"));
+     document.querySelectorAll(".tab-section").forEach(section => section.classList.remove("active"));
+     button.classList.add("active");
+     document.getElementById(`tab-${button.dataset.tab}`).classList.add("active");
+   });
+ });
+
+ photoSearch.addEventListener("input", renderPhotos);
+ photoFilter.addEventListener("change", renderPhotos);
+ userSearch.addEventListener("input", renderUsers);
+ userFilter.addEventListener("change", renderUsers);
+ settingsForm?.addEventListener("submit", saveSiteSettings);
+
+ function showNotice(text){
+   noticeBar.textContent = text;
+   noticeBar.classList.add("show");
+   clearTimeout(showNotice._timer);
+   showNotice._timer = setTimeout(() => {
+     noticeBar.classList.remove("show");
+   }, 2400);
+ }
+
+ function escapeHtml(value = ""){
+   return String(value)
+     .replace(/&/g, "&amp;")
+     .replace(/</g, "&lt;")
+     .replace(/>/g, "&gt;")
+     .replace(/"/g, "&quot;")
+     .replace(/'/g, "&#39;");
+ }
+
+ function normalize(value = ""){
+   return String(value || "").trim().toLowerCase();
+ }
+
+ function compactNumber(value){
+   try{
+     return new Intl.NumberFormat("en", {
+       notation:"compact",
+       maximumFractionDigits:1
+     }).format(Number(value || 0));
+   }catch(error){
+     return String(value || 0);
+   }
+ }
+
+ function buildAvatarHtml(avatarUrl, name){
+   if(avatarUrl){
+     return `<img src="${escapeHtml(avatarUrl)}" alt="${escapeHtml(name)}">`;
+   }
+   return `<span>${escapeHtml((name || "A").charAt(0).toUpperCase() || "A")}</span>`;
+ }
+
+ function formatDate(value){
+   if(!value) return "Unknown";
+   const date = new Date(value);
+   if(Number.isNaN(date.getTime())) return String(value);
+   return date.toLocaleString("en-GB", {
+     day:"numeric",
+     month:"short",
+     year:"numeric",
+     hour:"2-digit",
+     minute:"2-digit"
+   });
+ }
+
+ function getStatusPill(text, type = ""){
+   return `<span class="pill ${type}">${escapeHtml(text)}</span>`;
+ }
+
+ function getSessionUser(){
+   return currentSession?.user || null;
+ }
+
+ function safeJson(obj){
+   try{
+     return JSON.stringify(obj || {}, null, 2);
+   }catch(error){
+     return "{}";
+   }
+ }
+
+ function getCreatorProfile(userId){
+   return creatorProfilesMap[String(userId)] || null;
+ }
+
+ async function ensureCreatorProfile(userId, email = "", displayName = ""){
+   const existing = getCreatorProfile(userId);
+   if(existing) return existing;
+
+   const { data, error } = await supabaseClient
+     .from(CREATOR_PROFILE_TABLE)
+     .select("*")
+     .eq("user_id", userId)
+     .maybeSingle();
+
+   if(error) throw error;
+
+   if(data){
+     creatorProfilesMap[String(userId)] = data;
+     return data;
+   }
+
+   const { data: inserted, error: insertError } = await supabaseClient
+     .from(CREATOR_PROFILE_TABLE)
+     .insert([{
+       user_id: userId,
+       email,
+       display_name: displayName || email || "Creator",
+       payout_enabled: false
+     }])
+     .select()
+     .single();
+
+   if(insertError) throw insertError;
+   creatorProfilesMap[String(userId)] = inserted;
+   return inserted;
+ }
+
+ async function initAuthState(){
+   try{
+     const { data } = await supabaseClient.auth.getSession();
+     currentSession = data?.session || null;
+   }catch(error){
+     currentSession = null;
+   }
+
+   await checkAccessAndLoad();
+
+   supabaseClient.auth.onAuthStateChange(async (_event, session) => {
+     currentSession = session || null;
+     await checkAccessAndLoad();
+   });
+ }
+
+ async function checkAccessAndLoad(){
+   const user = getSessionUser();
+
+   if(!user){
+     navAuth.classList.remove("hidden");
+     accountMenuWrap.classList.add("hidden");
+     adminApp.classList.add("hidden");
+     accessGate.classList.remove("hidden");
+     accessGate.innerHTML = `
+       <h2>Admin login required</h2>
+       <p>You need to log in with your admin account before you can open the boss page.</p>
+       <div class="gate-actions">
+         <a href="login.html?next=${encodeURIComponent("boss-admin.html")}" class="btn primary">
+           <i class="fa-solid fa-right-to-bracket"></i>
+           Login
+         </a>
+       </div>
+     `;
+     return;
+   }
+
+   navAuth.classList.add("hidden");
+   accountMenuWrap.classList.remove("hidden");
+
+   const { data: profile, error } = await supabaseClient
+     .from("profiles")
+     .select("*")
+     .eq("id", user.id)
+     .maybeSingle();
+
+   if(error || !profile){
+     adminProfile = null;
+     adminApp.classList.add("hidden");
+     accessGate.classList.remove("hidden");
+     accessGate.innerHTML = `
+       <h2>Profile not found</h2>
+       <p>Your account is logged in, but no matching profile record was found.</p>
+     `;
+     return;
+   }
+
+   const isAdmin = (
+     normalize(profile.role) === "admin" ||
+     normalize(profile.role) === "founder" ||
+     profile.site_admin === true ||
+     profile.super_admin === true
+   );
+
+   if(!isAdmin){
+     adminProfile = null;
+     adminApp.classList.add("hidden");
+     accessGate.classList.remove("hidden");
+     accessGate.innerHTML = `
+       <h2>Access denied</h2>
+       <p>Your account is logged in, but it is not marked as an admin account in the profiles table.</p>
+     `;
+
+     const displayName = profile.full_name || profile.display_name || user.email || "User";
+     menuName.textContent = displayName;
+     menuEmail.textContent = profile.email || user.email || "Signed in";
+     menuAvatar.innerHTML = buildAvatarHtml(profile.avatar_url || user.user_metadata?.avatar_url || "", displayName);
+     return;
+   }
+
+   adminProfile = profile;
+   accessGate.classList.add("hidden");
+   adminApp.classList.remove("hidden");
+
+   const displayName = profile.full_name || profile.display_name || user.email || "Admin";
+   menuName.textContent = displayName;
+   menuEmail.textContent = profile.email || user.email || "Signed in";
+   menuAvatar.innerHTML = buildAvatarHtml(profile.avatar_url || user.user_metadata?.avatar_url || "", displayName);
+
+   await loadAllAdminData();
+ }
+
+ async function loadAllAdminData(){
+   await Promise.all([
+     loadCreatorProfiles(),
+     loadOverviewStats(),
+     loadSiteSettings(),
+     loadRequests(),
+     loadPhotos(),
+     loadUsers(),
+     loadFlags(),
+     loadAudit()
+   ]);
+ }
+
+ async function loadCreatorProfiles(){
+   const { data, error } = await supabaseClient
+     .from(CREATOR_PROFILE_TABLE)
+     .select("*");
+
+   if(error){
+     console.error(error);
+     creatorProfilesMap = {};
+     return;
+   }
+
+   creatorProfilesMap = {};
+   (Array.isArray(data) ? data : []).forEach(item => {
+     creatorProfilesMap[String(item.user_id)] = item;
+   });
+ }
+
+ async function loadOverviewStats(){
+   const [
+     pendingPhotos,
+     pendingRequests,
+     openFlags,
+     payoutDisabledUsers,
+     bannedUsers
+   ] = await Promise.all([
+     supabaseClient.from("photos").select("*", { count:"exact", head:true }).eq("approval_status", "pending"),
+     supabaseClient.from("admin_requests").select("*", { count:"exact", head:true }).eq("status", "pending"),
+     supabaseClient.from("security_flags").select("*", { count:"exact", head:true }).in("status", ["new", "reviewing"]),
+     supabaseClient.from(CREATOR_PROFILE_TABLE).select("*", { count:"exact", head:true }).eq("payout_enabled", false),
+     supabaseClient.from("profiles").select("*", { count:"exact", head:true }).eq("account_status", "banned")
+   ]);
+
+   overviewStats.innerHTML = `
+     <div class="stat-card">
+       <div class="icon"><i class="fa-solid fa-image"></i></div>
+       <strong>${escapeHtml(compactNumber(pendingPhotos.count || 0))}</strong>
+       <span>Pending Photos</span>
+     </div>
+
+     <div class="stat-card">
+       <div class="icon"><i class="fa-solid fa-file-circle-check"></i></div>
+       <strong>${escapeHtml(compactNumber(pendingRequests.count || 0))}</strong>
+       <span>Pending Requests</span>
+     </div>
+
+     <div class="stat-card">
+       <div class="icon"><i class="fa-solid fa-shield-virus"></i></div>
+       <strong>${escapeHtml(compactNumber(openFlags.count || 0))}</strong>
+       <span>Open Flags</span>
+     </div>
+
+     <div class="stat-card">
+       <div class="icon"><i class="fa-solid fa-wallet"></i></div>
+       <strong>${escapeHtml(compactNumber(payoutDisabledUsers.count || 0))}</strong>
+       <span>Payout Disabled</span>
+     </div>
+
+     <div class="stat-card">
+       <div class="icon"><i class="fa-solid fa-user-slash"></i></div>
+       <strong>${escapeHtml(compactNumber(bannedUsers.count || 0))}</strong>
+       <span>Banned Users</span>
+     </div>
+   `;
+ }
+
+ async function loadSiteSettings(){
+   const { data, error } = await supabaseClient
+     .from("site_settings")
+     .select("*")
+     .eq("id", 1)
+     .maybeSingle();
+
+   if(error){
+     console.error(error);
+     return;
+   }
+
+   siteSettings = data || {};
+   homeBanner.value = siteSettings.home_banner || "";
+   exploreBanner.value = siteSettings.explore_banner || "";
+   premiumBanner.value = siteSettings.premium_banner || "";
+   uploadBanner.value = siteSettings.upload_banner || "";
+   globalNotice.value = siteSettings.global_notice || "";
+ }
+
+ async function saveSiteSettings(e){
+   e.preventDefault();
+
+   try{
+     saveSettingsBtn.disabled = true;
+     saveSettingsBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving...';
+
+     const payload = {
+       id: 1,
+       home_banner: homeBanner.value.trim(),
+       explore_banner: exploreBanner.value.trim(),
+       premium_banner: premiumBanner.value.trim(),
+       upload_banner: uploadBanner.value.trim(),
+       global_notice: globalNotice.value.trim(),
+       updated_by: adminProfile.id,
+       updated_at: new Date().toISOString()
+     };
+
+     const { error } = await supabaseClient
+       .from("site_settings")
+       .upsert(payload);
+
+     if(error) throw error;
+
+     await logAudit("update_site_settings", "site_settings", "1", payload);
+     showNotice("Site settings updated.");
+   }catch(error){
+     console.error(error);
+     showNotice("Could not save site settings.");
+   }finally{
+     saveSettingsBtn.disabled = false;
+     saveSettingsBtn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Save Settings';
+   }
+ }
+
+ async function loadRequests(){
+   const { data, error } = await supabaseClient
+     .from("admin_requests")
+     .select("*")
+     .order("created_at", { ascending:false })
+     .limit(100);
+
+   if(error){
+     console.error(error);
+     requestsList.innerHTML = '<div class="empty-box">Could not load requests.</div>';
+     return;
+   }
+
+   requestsData = Array.isArray(data) ? data : [];
+   renderRequests();
+ }
+
+ function renderRequests(){
+   if(!requestsData.length){
+     requestsList.innerHTML = '<div class="empty-box">No requests found.</div>';
+     return;
+   }
+
+   requestsList.innerHTML = requestsData.map(req => `
+     <div class="item-card">
+       <div class="item-head">
+         <div>
+           <div class="item-title">${escapeHtml(req.request_type || "Request")}</div>
+           <div class="item-meta">
+             User: ${escapeHtml(req.target_user_id || "—")}<br>
+             Email: ${escapeHtml(req.email || "—")}<br>
+             Created: ${escapeHtml(formatDate(req.created_at))}
+           </div>
+         </div>
+         <div>
+           ${
+             req.status === "approved"
+               ? getStatusPill("Approved", "success")
+               : req.status === "rejected"
+                 ? getStatusPill("Rejected", "danger")
+                 : req.status === "reviewing"
+                   ? getStatusPill("Reviewing", "warn")
+                   : getStatusPill("Pending", "info")
+           }
+         </div>
+       </div>
+
+       <div class="item-body">${escapeHtml(safeJson(req.payload || {}))}</div>
+
+       <div class="action-row">
+         <button class="mini-btn success" data-request-action="approve" data-request-id="${escapeHtml(req.id)}">
+           <i class="fa-solid fa-check"></i>
+           Approve
+         </button>
+
+         <button class="mini-btn danger" data-request-action="reject" data-request-id="${escapeHtml(req.id)}">
+           <i class="fa-solid fa-xmark"></i>
+           Reject
+         </button>
+
+         <button class="mini-btn warn" data-request-action="reviewing" data-request-id="${escapeHtml(req.id)}">
+           <i class="fa-solid fa-eye"></i>
+           Mark Reviewing
+         </button>
+       </div>
+     </div>
+   `).join("");
+
+   requestsList.querySelectorAll("[data-request-action]").forEach(button => {
+     button.addEventListener("click", async () => {
+       const action = button.getAttribute("data-request-action");
+       const id = button.getAttribute("data-request-id");
+       const req = requestsData.find(item => String(item.id) === String(id));
+       if(req){
+         await handleRequestAction(req, action);
+       }
+     });
+   });
+ }
+
+ async function applyApprovedRequestEffect(req){
+   if(!req.target_user_id) return;
+
+   const type = normalize(req.request_type);
+   const email = String(req.email || "").trim();
+   const displayName = email ? email.split("@")[0] : "Creator";
+
+   await ensureCreatorProfile(req.target_user_id, email, displayName);
+
+   const updates = {
+     updated_at: new Date().toISOString()
+   };
+
+   if(type === "verification"){
+     updates.verified = true;
+   }else if(type === "premium"){
+     updates.premium_member = true;
+   }else if(type === "dashboard" || type === "professional" || type === "professional_dashboard"){
+     updates.professional_dashboard_approved = true;
+     updates.payout_enabled = true;
+   }else if(type === "creator" || type === "creator_store" || type === "sell" || type === "store"){
+     updates.creator_approved = true;
+     updates.professional_dashboard_approved = true;
+     updates.payout_enabled = true;
+
+     await supabaseClient.from("creator_store_access").upsert({
+       creator_user_id: req.target_user_id,
+       admin_approved: true,
+       updated_at: new Date().toISOString()
+     });
+   }else if(type === "payout_release"){
+     updates.payout_enabled = true;
+   }
+
+   const { error } = await supabaseClient
+     .from(CREATOR_PROFILE_TABLE)
+     .update(updates)
+     .eq("user_id", req.target_user_id);
+
+   if(error){
+     throw error;
+   }
+
+   await loadCreatorProfiles();
+ }
+
+ async function handleRequestAction(req, action){
+   const now = new Date().toISOString();
+   const patch = {
+     status: action,
+     reviewed_by: adminProfile.id,
+     reviewed_at: now
+   };
+
+   if(action === "reject"){
+     patch.notes = prompt("Reason for rejection:", "") || "";
+   }
+
+   try{
+     const { error } = await supabaseClient
+       .from("admin_requests")
+       .update(patch)
+       .eq("id", req.id);
+
+     if(error) throw error;
+
+     if(action === "approve"){
+       await applyApprovedRequestEffect(req);
+     }
+
+     await logAudit("review_request", "admin_requests", req.id, { action, request_type: req.request_type });
+     showNotice(`Request ${action}.`);
+     await loadRequests();
+     await loadUsers();
+     await loadOverviewStats();
+   }catch(error){
+     console.error(error);
+     showNotice("Could not update request.");
+   }
+ }
+
+ async function loadPhotos(){
+   const { data, error } = await supabaseClient
+     .from("photos")
+     .select("*")
+     .order("created_at", { ascending:false })
+     .limit(120);
+
+   if(error){
+     console.error(error);
+     photosList.innerHTML = '<div class="empty-box">Could not load photos.</div>';
+     return;
+   }
+
+   photosData = Array.isArray(data) ? data : [];
+   renderPhotos();
+ }
+
+ function renderPhotos(){
+   const searchValue = normalize(photoSearch.value);
+   const filterValue = photoFilter.value;
+
+   const rows = photosData.filter(photo => {
+     const text = [
+       photo.title,
+       photo.category,
+       photo.credit,
+       photo.creator_name,
+       photo.description,
+       photo.approval_status
+     ].join(" ").toLowerCase();
+
+     const matchesSearch = !searchValue || text.includes(searchValue);
+     const matchesFilter = filterValue === "all" ? true : normalize(photo.approval_status) === normalize(filterValue);
+     return matchesSearch && matchesFilter;
+   });
+
+   if(!rows.length){
+     photosList.innerHTML = '<div class="empty-box">No photos match this filter.</div>';
+     return;
+   }
+
+   photosList.innerHTML = rows.map(photo => `
+     <div class="item-card">
+       <div class="photo-review">
+         <img src="${escapeHtml(photo.preview_url || photo.image_url || "")}" alt="${escapeHtml(photo.title || photo.category || "Photo")}">
+
+         <div>
+           <div class="item-head">
+             <div>
+               <div class="item-title">${escapeHtml(photo.title || photo.category || "Untitled Photo")}</div>
+               <div class="item-meta">
+                 Creator: ${escapeHtml(photo.creator_name || photo.credit || "Unknown")}<br>
+                 Category: ${escapeHtml(photo.category || "Uncategorized")}<br>
+                 Posted: ${escapeHtml(formatDate(photo.created_at))}
+               </div>
+             </div>
+             <div style="display:flex; gap:8px; flex-wrap:wrap;">
+               ${
+                 normalize(photo.approval_status) === "approved"
+                   ? getStatusPill("Approved", "success")
+                   : normalize(photo.approval_status) === "rejected"
+                     ? getStatusPill("Rejected", "danger")
+                     : normalize(photo.approval_status) === "under_review"
+                       ? getStatusPill("Under Review", "warn")
+                       : getStatusPill("Pending", "info")
+               }
+               ${photo.featured ? getStatusPill("Featured", "warn") : ""}
+               ${photo.is_premium || photo.premium_only ? getStatusPill("Premium", "warn") : ""}
+               ${photo.for_sale ? getStatusPill(`For Sale £${Number(photo.sale_price_gbp || 0).toFixed(2)}`, "info") : ""}
+             </div>
+           </div>
+
+           <div class="item-body">${escapeHtml(photo.description || "No description.")}</div>
+
+           <div class="action-row">
+             <button class="mini-btn success" data-photo-action="approve" data-photo-id="${escapeHtml(photo.id)}">
+               <i class="fa-solid fa-check"></i>
+               Approve
+             </button>
+
+             <button class="mini-btn danger" data-photo-action="reject" data-photo-id="${escapeHtml(photo.id)}">
+               <i class="fa-solid fa-xmark"></i>
+               Reject
+             </button>
+
+             <button class="mini-btn warn" data-photo-action="review" data-photo-id="${escapeHtml(photo.id)}">
+               <i class="fa-solid fa-eye"></i>
+               Hold Review
+             </button>
+
+             <button class="mini-btn info" data-photo-action="feature" data-photo-id="${escapeHtml(photo.id)}">
+               <i class="fa-solid fa-star"></i>
+               ${photo.featured ? "Unfeature" : "Feature"}
+             </button>
+
+             <button class="mini-btn" data-photo-action="premium" data-photo-id="${escapeHtml(photo.id)}">
+               <i class="fa-solid fa-crown"></i>
+               ${photo.is_premium || photo.premium_only ? "Remove Premium" : "Make Premium"}
+             </button>
+
+             <button class="mini-btn" data-photo-action="sale" data-photo-id="${escapeHtml(photo.id)}">
+               <i class="fa-solid fa-cart-shopping"></i>
+               ${photo.for_sale ? "Remove Sale" : "Allow Sale"}
+             </button>
+           </div>
+         </div>
+       </div>
+     </div>
+   `).join("");
+
+   photosList.querySelectorAll("[data-photo-action]").forEach(button => {
+     button.addEventListener("click", async () => {
+       const action = button.getAttribute("data-photo-action");
+       const id = button.getAttribute("data-photo-id");
+       const photo = photosData.find(item => String(item.id) === String(id));
+       if(photo){
+         await handlePhotoAction(photo, action);
+       }
+     });
+   });
+ }
+
+ async function handlePhotoAction(photo, action){
+   let patch = {};
+   const now = new Date().toISOString();
+
+   if(action === "approve"){
+     patch = {
+       approval_status: "approved",
+       admin_approved: true,
+       reviewed_by: adminProfile.id,
+       reviewed_at: now
+     };
+   }else if(action === "reject"){
+     const reason = prompt("Reason for rejection:", "") || "";
+     patch = {
+       approval_status: "rejected",
+       admin_approved: false,
+       rejected_reason: reason,
+       reviewed_by: adminProfile.id,
+       reviewed_at: now
+     };
+   }else if(action === "review"){
+     patch = {
+       approval_status: "under_review",
+       admin_approved: false,
+       reviewed_by: adminProfile.id,
+       reviewed_at: now
+     };
+   }else if(action === "feature"){
+     if(normalize(photo.approval_status) !== "approved" || photo.admin_approved !== true){
+       showNotice("Only approved photos can be featured.");
+       return;
+     }
+     patch = { featured: !photo.featured };
+   }else if(action === "premium"){
+     const next = !(photo.is_premium || photo.premium_only);
+     patch = {
+       is_premium: next,
+       premium_only: next
+     };
+   }else if(action === "sale"){
+     patch = { for_sale: !photo.for_sale };
+   }
+
+   try{
+     const { error } = await supabaseClient
+       .from("photos")
+       .update(patch)
+       .eq("id", photo.id);
+
+     if(error) throw error;
+
+     await logAudit("review_photo", "photos", photo.id, { action, patch });
+     showNotice("Photo updated.");
+     await loadPhotos();
+     await loadOverviewStats();
+   }catch(error){
+     console.error(error);
+     showNotice("Could not update photo.");
+   }
+ }
+
+ async function loadUsers(){
+   const { data, error } = await supabaseClient
+     .from("profiles")
+     .select("*")
+     .order("created_at", { ascending:false })
+     .limit(160);
+
+   if(error){
+     console.error(error);
+     usersList.innerHTML = '<div class="empty-box">Could not load users.</div>';
+     return;
+   }
+
+   usersData = Array.isArray(data) ? data : [];
+   renderUsers();
+ }
+
+ function renderUsers(){
+   const searchValue = normalize(userSearch.value);
+   const filterValue = userFilter.value;
+
+   const rows = usersData.filter(user => {
+     const text = [
+       user.full_name,
+       user.display_name,
+       user.email,
+       user.phone,
+       user.role,
+       user.account_status
+     ].join(" ").toLowerCase();
+
+     const matchesSearch = !searchValue || text.includes(searchValue);
+     const matchesFilter = filterValue === "all" ? true : normalize(user.account_status) === normalize(filterValue);
+     return matchesSearch && matchesFilter;
+   });
+
+   if(!rows.length){
+     usersList.innerHTML = '<div class="empty-box">No users match this filter.</div>';
+     return;
+   }
+
+   usersList.innerHTML = rows.map(user => {
+     const displayName = user.full_name || user.display_name || user.email || user.phone || "User";
+     const status = normalize(user.account_status || "active");
+     const creatorProfile = getCreatorProfile(user.id) || {};
+
+     return `
+       <div class="user-card">
+         <div class="user-top">
+           <div class="user-avatar">
+             ${user.avatar_url ? `<img src="${escapeHtml(user.avatar_url)}" alt="${escapeHtml(displayName)}">` : escapeHtml((displayName.charAt(0) || "U").toUpperCase())}
+           </div>
+
+           <div style="flex:1;">
+             <div class="user-name">${escapeHtml(displayName)}</div>
+             <div class="user-sub">
+               ${escapeHtml(user.email || "No email")}<br>
+               ${escapeHtml(user.phone || "No phone")}<br>
+               Role: ${escapeHtml(user.role || "user")}
+             </div>
+           </div>
+         </div>
+
+         <div class="metrics-mini">
+           ${
+             status === "active"
+               ? getStatusPill("Active", "success")
+               : status === "under_review"
+                 ? getStatusPill("Under Review", "warn")
+                 : status === "suspended"
+                   ? getStatusPill("Suspended", "warn")
+                   : status === "frozen"
+                     ? getStatusPill("Frozen", "warn")
+                     : status === "banned"
+                       ? getStatusPill("Banned", "danger")
+                       : status === "deleted"
+                         ? getStatusPill("Deleted", "danger")
+                         : getStatusPill(user.account_status || "Unknown", "info")
+           }
+           ${creatorProfile.verified ? getStatusPill("Blue Check", "info") : ""}
+           ${creatorProfile.premium_member ? getStatusPill("Premium", "warn") : ""}
+           ${creatorProfile.creator_approved ? getStatusPill("Creator", "success") : ""}
+           ${creatorProfile.professional_dashboard_approved ? getStatusPill("Dashboard", "info") : ""}
+           ${creatorProfile.payout_enabled === false ? getStatusPill("Payout Disabled", "danger") : ""}
+           ${user.fraud_hold ? getStatusPill("Fraud Hold", "danger") : ""}
+         </div>
+
+         <div class="item-meta" style="margin-bottom:12px;">
+           Followers: ${escapeHtml(compactNumber(creatorProfile.followers_count || 0))} •
+           Following: ${escapeHtml(compactNumber(creatorProfile.following_count || 0))}<br>
+           Created: ${escapeHtml(formatDate(user.created_at))}
+         </div>
+
+         <div class="action-row">
+           <button class="mini-btn info" data-user-action="verify" data-user-id="${escapeHtml(user.id)}">
+             <i class="fa-solid fa-check"></i>
+             ${creatorProfile.verified ? "Remove Check" : "Grant Check"}
+           </button>
+
+           <button class="mini-btn warn" data-user-action="premium" data-user-id="${escapeHtml(user.id)}">
+             <i class="fa-solid fa-crown"></i>
+             ${creatorProfile.premium_member ? "Remove Premium" : "Grant Premium"}
+           </button>
+
+           <button class="mini-btn success" data-user-action="creator" data-user-id="${escapeHtml(user.id)}">
+             <i class="fa-solid fa-camera"></i>
+             ${creatorProfile.creator_approved ? "Revoke Creator" : "Approve Creator"}
+           </button>
+
+           <button class="mini-btn info" data-user-action="dashboard" data-user-id="${escapeHtml(user.id)}">
+             <i class="fa-solid fa-chart-line"></i>
+             ${creatorProfile.professional_dashboard_approved ? "Disable Dashboard" : "Enable Dashboard"}
+           </button>
+
+           <button class="mini-btn warn" data-user-action="suspend" data-user-id="${escapeHtml(user.id)}">
+             <i class="fa-solid fa-ban"></i>
+             Suspend
+           </button>
+
+           <button class="mini-btn warn" data-user-action="freeze" data-user-id="${escapeHtml(user.id)}">
+             <i class="fa-solid fa-snowflake"></i>
+             ${status === "frozen" ? "Unfreeze" : "Freeze"}
+           </button>
+
+           <button class="mini-btn danger" data-user-action="ban" data-user-id="${escapeHtml(user.id)}">
+             <i class="fa-solid fa-user-slash"></i>
+             ${status === "banned" ? "Unban" : "Ban"}
+           </button>
+
+           <button class="mini-btn danger" data-user-action="payout" data-user-id="${escapeHtml(user.id)}">
+             <i class="fa-solid fa-wallet"></i>
+             ${creatorProfile.payout_enabled === false ? "Enable Payout" : "Disable Payout"}
+           </button>
+
+           <button class="mini-btn danger" data-user-action="fraud" data-user-id="${escapeHtml(user.id)}">
+             <i class="fa-solid fa-shield-virus"></i>
+             ${user.fraud_hold ? "Clear Fraud Hold" : "Fraud Hold"}
+           </button>
+
+           <button class="mini-btn danger" data-user-action="remove" data-user-id="${escapeHtml(user.id)}">
+             <i class="fa-solid fa-trash"></i>
+             Remove User
+           </button>
+         </div>
+       </div>
+     `;
+   }).join("");
+
+   usersList.querySelectorAll("[data-user-action]").forEach(button => {
+     button.addEventListener("click", async () => {
+       const action = button.getAttribute("data-user-action");
+       const id = button.getAttribute("data-user-id");
+       const user = usersData.find(item => String(item.id) === String(id));
+       if(user){
+         await handleUserAction(user, action);
+       }
+     });
+   });
+ }
+
+ async function updateCreatorProfileForUser(user, updates){
+   await ensureCreatorProfile(
+     user.id,
+     user.email || "",
+     user.full_name || user.display_name || user.email || "User"
+   );
+
+   const { error } = await supabaseClient
+     .from(CREATOR_PROFILE_TABLE)
+     .update({
+       ...updates,
+       updated_at: new Date().toISOString()
+     })
+     .eq("user_id", user.id);
+
+   if(error) throw error;
+ }
+
+ async function handleUserAction(user, action){
+   const status = normalize(user.account_status || "active");
+   const creatorProfile = getCreatorProfile(user.id) || {};
+   let profilePatch = {};
+   let creatorPatch = {};
+
+   if(action === "verify"){
+     creatorPatch = { verified: !creatorProfile.verified };
+   }else if(action === "premium"){
+     creatorPatch = { premium_member: !creatorProfile.premium_member };
+   }else if(action === "creator"){
+     creatorPatch = { creator_approved: !creatorProfile.creator_approved };
+     if(!creatorProfile.creator_approved){
+       await supabaseClient.from("creator_store_access").upsert({
+         creator_user_id: user.id,
+         admin_approved: true,
+         updated_at: new Date().toISOString()
+       });
+     }
+   }else if(action === "dashboard"){
+     const next = !creatorProfile.professional_dashboard_approved;
+     creatorPatch = {
+       professional_dashboard_approved: next,
+       payout_enabled: next ? true : creatorProfile.payout_enabled
+     };
+   }else if(action === "suspend"){
+     const reason = prompt("Reason for suspension:", "") || "";
+     profilePatch = {
+       account_status: "suspended",
+       ban_reason: reason
+     };
+   }else if(action === "freeze"){
+     if(status === "frozen"){
+       profilePatch = {
+         account_status: "active",
+         freeze_reason: null
+       };
+     }else{
+       const reason = prompt("Reason for freeze:", "") || "";
+       profilePatch = {
+         account_status: "frozen",
+         freeze_reason: reason
+       };
+     }
+   }else if(action === "ban"){
+     if(status === "banned"){
+       profilePatch = {
+         account_status: "active",
+         ban_reason: null
+       };
+     }else{
+       const reason = prompt("Reason for ban:", "") || "";
+       profilePatch = {
+         account_status: "banned",
+         ban_reason: reason
+       };
+     }
+   }else if(action === "payout"){
+     creatorPatch = {
+       payout_enabled: creatorProfile.payout_enabled === false ? true : false
+     };
+   }else if(action === "fraud"){
+     const hold = !user.fraud_hold;
+     profilePatch = {
+       fraud_hold: hold,
+       account_status: hold ? "under_review" : (status === "under_review" ? "active" : user.account_status)
+     };
+     creatorPatch = {
+       payout_enabled: hold ? false : creatorProfile.payout_enabled
+     };
+   }else if(action === "remove"){
+     const reason = prompt("Reason for removing this user:", "") || "";
+     profilePatch = {
+       account_status: "deleted",
+       deleted_at: new Date().toISOString(),
+       ban_reason: reason,
+       fraud_hold: true
+     };
+     creatorPatch = {
+       payout_enabled: false
+     };
+   }
+
+   try{
+     if(Object.keys(profilePatch).length){
+       const { error } = await supabaseClient
+         .from("profiles")
+         .update({
+           ...profilePatch,
+           updated_at: new Date().toISOString()
+         })
+         .eq("id", user.id);
+
+       if(error) throw error;
+     }
+
+     if(Object.keys(creatorPatch).length){
+       await updateCreatorProfileForUser(user, creatorPatch);
+     }
+
+     await logAudit("moderate_user", "profiles", user.id, { action, profilePatch, creatorPatch });
+     showNotice("User updated.");
+     await loadCreatorProfiles();
+     await loadUsers();
+     await loadOverviewStats();
+   }catch(error){
+     console.error(error);
+     showNotice("Could not update user.");
+   }
+ }
+
+ async function loadFlags(){
+   const { data, error } = await supabaseClient
+     .from("security_flags")
+     .select("*")
+     .order("created_at", { ascending:false })
+     .limit(100);
+
+   if(error){
+     console.error(error);
+     flagsList.innerHTML = '<div class="empty-box">Could not load flags.</div>';
+     return;
+   }
+
+   flagsData = Array.isArray(data) ? data : [];
+   renderFlags();
+ }
+
+ function renderFlags(){
+   if(!flagsData.length){
+     flagsList.innerHTML = '<div class="empty-box">No flags found.</div>';
+     return;
+   }
+
+   flagsList.innerHTML = flagsData.map(flag => `
+     <div class="item-card">
+       <div class="item-head">
+         <div>
+           <div class="item-title">${escapeHtml(flag.flag_type || "Security Flag")}</div>
+           <div class="item-meta">
+             Target User: ${escapeHtml(flag.target_user_id || "—")}<br>
+             Severity: ${escapeHtml(flag.severity || "medium")}<br>
+             Created: ${escapeHtml(formatDate(flag.created_at))}
+           </div>
+         </div>
+
+         <div style="display:flex; gap:8px; flex-wrap:wrap;">
+           ${
+             normalize(flag.status) === "resolved"
+               ? getStatusPill("Resolved", "success")
+               : normalize(flag.status) === "reviewing"
+                 ? getStatusPill("Reviewing", "warn")
+                 : getStatusPill("New", "danger")
+           }
+           ${flag.hold_account ? getStatusPill("Account Hold", "danger") : ""}
+           ${flag.hold_payout ? getStatusPill("Payout Hold", "danger") : ""}
+         </div>
+       </div>
+
+       <div class="item-body">${escapeHtml(flag.reason || flag.notes || "No reason added.")}</div>
+
+       <div class="action-row">
+         <button class="mini-btn warn" data-flag-action="reviewing" data-flag-id="${escapeHtml(flag.id)}">
+           <i class="fa-solid fa-eye"></i>
+           Mark Reviewing
+         </button>
+
+         <button class="mini-btn success" data-flag-action="resolve" data-flag-id="${escapeHtml(flag.id)}">
+           <i class="fa-solid fa-check"></i>
+           Resolve
+         </button>
+
+         <button class="mini-btn danger" data-flag-action="hold_account" data-flag-id="${escapeHtml(flag.id)}">
+           <i class="fa-solid fa-user-lock"></i>
+           Hold Account
+         </button>
+
+         <button class="mini-btn danger" data-flag-action="hold_payout" data-flag-id="${escapeHtml(flag.id)}">
+           <i class="fa-solid fa-wallet"></i>
+           Disable Payout
+         </button>
+       </div>
+     </div>
+   `).join("");
+
+   flagsList.querySelectorAll("[data-flag-action]").forEach(button => {
+     button.addEventListener("click", async () => {
+       const action = button.getAttribute("data-flag-action");
+       const id = button.getAttribute("data-flag-id");
+       const flag = flagsData.find(item => String(item.id) === String(id));
+       if(flag){
+         await handleFlagAction(flag, action);
+       }
+     });
+   });
+ }
+
+ async function handleFlagAction(flag, action){
+   const patch = {};
+
+   if(action === "reviewing"){
+     patch.status = "reviewing";
+   }else if(action === "resolve"){
+     patch.status = "resolved";
+   }else if(action === "hold_account"){
+     patch.status = "reviewing";
+     patch.hold_account = true;
+     if(flag.target_user_id){
+       await supabaseClient
+         .from("profiles")
+         .update({
+           account_status: "under_review",
+           fraud_hold: true,
+           updated_at: new Date().toISOString()
+         })
+         .eq("id", flag.target_user_id);
+     }
+   }else if(action === "hold_payout"){
+     patch.status = "reviewing";
+     patch.hold_payout = true;
+     if(flag.target_user_id){
+       await ensureCreatorProfile(flag.target_user_id);
+
+       await supabaseClient
+         .from(CREATOR_PROFILE_TABLE)
+         .update({
+           payout_enabled: false,
+           updated_at: new Date().toISOString()
+         })
+         .eq("user_id", flag.target_user_id);
+
+       await supabaseClient
+         .from("profiles")
+         .update({
+           account_status: "under_review",
+           updated_at: new Date().toISOString()
+         })
+         .eq("id", flag.target_user_id);
+     }
+   }
+
+   try{
+     const { error } = await supabaseClient
+       .from("security_flags")
+       .update({
+         ...patch,
+         reviewed_by: adminProfile.id,
+         reviewed_at: new Date().toISOString()
+       })
+       .eq("id", flag.id);
+
+     if(error) throw error;
+
+     await logAudit("review_flag", "security_flags", flag.id, { action, patch });
+     showNotice("Flag updated.");
+     await loadCreatorProfiles();
+     await loadFlags();
+     await loadUsers();
+     await loadOverviewStats();
+   }catch(error){
+     console.error(error);
+     showNotice("Could not update flag.");
+   }
+ }
+
+ async function loadAudit(){
+   const { data, error } = await supabaseClient
+     .from("audit_logs")
+     .select("*")
+     .order("created_at", { ascending:false })
+     .limit(100);
+
+   if(error){
+     console.error(error);
+     auditList.innerHTML = '<div class="empty-box">Could not load audit log.</div>';
+     return;
+   }
+
+   auditData = Array.isArray(data) ? data : [];
+   renderAudit();
+ }
+
+ function renderAudit(){
+   if(!auditData.length){
+     auditList.innerHTML = '<div class="empty-box">No audit logs yet.</div>';
+     return;
+   }
+
+   auditList.innerHTML = auditData.map(log => `
+     <div class="item-card">
+       <div class="item-head">
+         <div>
+           <div class="item-title">${escapeHtml(log.action || "Action")}</div>
+           <div class="item-meta">
+             Table: ${escapeHtml(log.target_table || "—")}<br>
+             Target: ${escapeHtml(log.target_id || "—")}<br>
+             Created: ${escapeHtml(formatDate(log.created_at))}
+           </div>
+         </div>
+         ${getStatusPill("Logged", "info")}
+       </div>
+
+       <div class="item-body">${escapeHtml(safeJson(log.details || {}))}</div>
+     </div>
+   `).join("");
+ }
+
+ async function logAudit(action, targetTable, targetId, details = {}){
+   try{
+     await supabaseClient.from("audit_logs").insert({
+       action,
+       target_table: targetTable,
+       target_id: String(targetId || ""),
+       details,
+       created_by: adminProfile?.id || null
+     });
+     await loadAudit();
+   }catch(error){
+     console.error("Audit log insert failed:", error);
+   }
+ }
+
+ initAuthState();
+</script>
+</body>
+</html>
+ 

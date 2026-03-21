@@ -1,0 +1,1076 @@
+Yes — that’s the right flow.
+
+The better setup is:
+
+Premium plans page → Checkout page → choose Apple Pay / Google Pay / Debit or Credit Card
+
+Below is a full checkout page in one piece for PixNest.
+It:
+	•	reads the selected plan from the URL
+	•	shows selected membership plan
+	•	lets user choose:
+	•	Apple Pay
+	•	Google Pay
+	•	Debit / Credit Card
+	•	has a card form section
+	•	keeps your PixNest style
+	•	is ready for you to connect to Stripe or another payment gateway later
+
+Use links from your premium page like:
+
+<a href="checkout.html?plan=monthly">Choose Monthly</a>
+<a href="checkout.html?plan=yearly">Choose Yearly</a>
+
+Here’s the full code:
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PixNest | Checkout</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+  <style>
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+      font-family:Arial, Helvetica, sans-serif;
+    }
+
+    :root{
+      --bg:#0f172a;
+      --panel:#111827;
+      --panel2:#1e293b;
+      --text:#e5e7eb;
+      --muted:#94a3b8;
+      --accent:#facc15;
+      --line:rgba(255,255,255,0.08);
+      --success:#22c55e;
+      --danger:#ef4444;
+    }
+
+    html{
+      scroll-behavior:smooth;
+      min-height:100%;
+      background:var(--bg);
+    }
+
+    body{
+      min-height:100%;
+      background:var(--bg);
+      color:var(--text);
+      line-height:1.6;
+      overflow-x:hidden;
+    }
+
+    img{
+      max-width:100%;
+      display:block;
+    }
+
+    a{
+      text-decoration:none;
+      color:inherit;
+      transition:.3s;
+    }
+
+    button,
+    input,
+    select{
+      font-family:Arial, Helvetica, sans-serif;
+      transition:.3s;
+    }
+
+    .container{
+      width:min(1200px,92%);
+      margin:auto;
+    }
+
+    header{
+      position:sticky;
+      top:0;
+      z-index:1000;
+      background:rgba(15,23,42,0.95);
+      border-bottom:1px solid var(--line);
+      backdrop-filter:blur(8px);
+    }
+
+    .nav{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:20px;
+      padding:16px 0;
+      position:relative;
+    }
+
+    .logo-wrap{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      flex-shrink:0;
+      min-width:0;
+    }
+
+    .logo-mark{
+      width:52px;
+      height:52px;
+      border-radius:14px;
+      background:linear-gradient(135deg,#facc15,#fb7185);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:#111827;
+      font-size:24px;
+      font-weight:800;
+      box-shadow:0 0 16px rgba(250,204,21,0.28);
+      flex-shrink:0;
+    }
+
+    .logo-text{
+      display:flex;
+      flex-direction:column;
+      line-height:1;
+      min-width:0;
+    }
+
+    .logo-title{
+      font-size:27px;
+      font-weight:800;
+      color:var(--accent);
+      letter-spacing:.4px;
+      white-space:nowrap;
+    }
+
+    .logo-sub{
+      font-size:11px;
+      color:#cbd5e1;
+      letter-spacing:1.7px;
+      text-transform:uppercase;
+      margin-top:4px;
+      white-space:nowrap;
+    }
+
+    .nav-links{
+      display:flex;
+      align-items:center;
+      gap:20px;
+      flex-wrap:wrap;
+    }
+
+    .nav-links a{
+      color:#cbd5e1;
+      font-size:15px;
+      position:relative;
+      padding-bottom:4px;
+    }
+
+    .nav-links a:hover,
+    .nav-links a.active{
+      color:var(--accent);
+    }
+
+    .nav-links a.active::after{
+      content:"";
+      position:absolute;
+      left:0;
+      bottom:-4px;
+      width:100%;
+      height:2px;
+      background:var(--accent);
+      border-radius:999px;
+    }
+
+    .menu-toggle{
+      display:none;
+      width:46px;
+      height:46px;
+      border-radius:12px;
+      border:1px solid rgba(250,204,21,.35);
+      background:#111827;
+      color:var(--accent);
+      align-items:center;
+      justify-content:center;
+      cursor:pointer;
+      flex-direction:column;
+      gap:5px;
+    }
+
+    .menu-toggle span{
+      width:20px;
+      height:2px;
+      border-radius:999px;
+      background:var(--accent);
+      display:block;
+    }
+
+    .hero{
+      background:
+        linear-gradient(rgba(15,23,42,.72), rgba(15,23,42,.92)),
+        url('https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1600&q=80') center/cover no-repeat;
+      min-height:40vh;
+      display:flex;
+      align-items:center;
+    }
+
+    .hero-content{
+      max-width:860px;
+      padding:80px 0 50px;
+    }
+
+    .hero-tag{
+      display:inline-block;
+      background:rgba(250,204,21,.12);
+      color:var(--accent);
+      padding:8px 14px;
+      border-radius:999px;
+      font-size:14px;
+      border:1px solid rgba(250,204,21,.22);
+      margin-bottom:18px;
+    }
+
+    .hero h1{
+      font-size:clamp(32px,5vw,56px);
+      line-height:1.05;
+      margin-bottom:16px;
+      color:#fff;
+    }
+
+    .hero p{
+      font-size:17px;
+      color:#cbd5e1;
+      max-width:760px;
+    }
+
+    section{
+      padding:74px 0;
+    }
+
+    .checkout-layout{
+      display:grid;
+      grid-template-columns:1.1fr .9fr;
+      gap:24px;
+      align-items:start;
+    }
+
+    .panel-card{
+      background:#111827;
+      border:1px solid var(--line);
+      border-radius:24px;
+      padding:24px;
+      box-shadow:0 14px 30px rgba(0,0,0,.14);
+    }
+
+    .panel-card h2{
+      color:#fff;
+      font-size:28px;
+      margin-bottom:8px;
+    }
+
+    .panel-card p{
+      color:#94a3b8;
+      font-size:14px;
+      margin-bottom:20px;
+    }
+
+    .plan-summary{
+      display:grid;
+      gap:14px;
+      margin-bottom:24px;
+    }
+
+    .summary-row{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding:14px 16px;
+      border-radius:16px;
+      background:#0f172a;
+      border:1px solid var(--line);
+    }
+
+    .summary-row strong{
+      color:#fff;
+      font-size:15px;
+    }
+
+    .summary-row span{
+      color:#cbd5e1;
+      font-size:14px;
+    }
+
+    .big-price{
+      font-size:32px;
+      color:var(--accent);
+      font-weight:800;
+    }
+
+    .payment-methods{
+      display:grid;
+      gap:14px;
+      margin-bottom:22px;
+    }
+
+    .method-card{
+      display:flex;
+      align-items:center;
+      gap:14px;
+      padding:16px;
+      border-radius:18px;
+      border:1px solid var(--line);
+      background:#0f172a;
+      cursor:pointer;
+      transition:.3s;
+    }
+
+    .method-card:hover{
+      border-color:rgba(250,204,21,.25);
+      transform:translateY(-2px);
+    }
+
+    .method-card.active{
+      border-color:rgba(250,204,21,.45);
+      box-shadow:0 0 0 3px rgba(250,204,21,.08);
+      background:rgba(250,204,21,.06);
+    }
+
+    .method-icon{
+      width:48px;
+      height:48px;
+      border-radius:14px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:#111827;
+      border:1px solid var(--line);
+      color:var(--accent);
+      font-size:20px;
+      flex-shrink:0;
+    }
+
+    .method-info{
+      flex:1;
+    }
+
+    .method-info strong{
+      display:block;
+      color:#fff;
+      font-size:15px;
+      margin-bottom:2px;
+    }
+
+    .method-info span{
+      color:#94a3b8;
+      font-size:13px;
+    }
+
+    .method-card input{
+      accent-color:#facc15;
+      transform:scale(1.15);
+    }
+
+    .card-form{
+      display:grid;
+      gap:16px;
+      margin-top:20px;
+    }
+
+    .field{
+      display:grid;
+      gap:8px;
+    }
+
+    .field label{
+      color:#e5e7eb;
+      font-size:14px;
+      font-weight:700;
+    }
+
+    .field input,
+    .field select{
+      width:100%;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.08);
+      background:#0f172a;
+      color:#fff;
+      padding:14px 16px;
+      outline:none;
+      font-size:15px;
+    }
+
+    .field input:focus,
+    .field select:focus{
+      border-color:rgba(250,204,21,.55);
+      box-shadow:0 0 0 3px rgba(250,204,21,.08);
+    }
+
+    .field-row{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:14px;
+    }
+
+    .secure-note{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      margin-top:18px;
+      padding:14px 16px;
+      border-radius:14px;
+      background:rgba(34,197,94,.08);
+      border:1px solid rgba(34,197,94,.14);
+      color:#bbf7d0;
+      font-size:13px;
+    }
+
+    .pay-btn{
+      width:100%;
+      min-height:56px;
+      border:none;
+      border-radius:14px;
+      background:#facc15;
+      color:#111827;
+      font-size:16px;
+      font-weight:800;
+      cursor:pointer;
+      margin-top:22px;
+    }
+
+    .pay-btn:hover{
+      transform:translateY(-2px);
+      box-shadow:0 12px 28px rgba(250,204,21,.18);
+    }
+
+    .wallet-box{
+      display:none;
+      margin-top:20px;
+      padding:18px;
+      border-radius:18px;
+      background:#0f172a;
+      border:1px solid var(--line);
+    }
+
+    .wallet-box.show{
+      display:block;
+    }
+
+    .wallet-btn{
+      width:100%;
+      min-height:54px;
+      border:none;
+      border-radius:14px;
+      font-size:15px;
+      font-weight:800;
+      cursor:pointer;
+      margin-top:12px;
+    }
+
+    .apple-btn{
+      background:#ffffff;
+      color:#111827;
+    }
+
+    .google-btn{
+      background:#1f2937;
+      color:#ffffff;
+      border:1px solid rgba(255,255,255,.12);
+    }
+
+    .wallet-btn:hover{
+      transform:translateY(-2px);
+    }
+
+    .benefit-list{
+      display:grid;
+      gap:12px;
+      margin-top:16px;
+    }
+
+    .benefit-item{
+      display:flex;
+      align-items:flex-start;
+      gap:12px;
+      padding:14px 16px;
+      border-radius:16px;
+      background:#0f172a;
+      border:1px solid var(--line);
+    }
+
+    .benefit-item i{
+      color:var(--accent);
+      margin-top:2px;
+    }
+
+    .benefit-item strong{
+      display:block;
+      color:#fff;
+      margin-bottom:3px;
+      font-size:14px;
+    }
+
+    .benefit-item span{
+      color:#94a3b8;
+      font-size:13px;
+    }
+
+    .message{
+      display:none;
+      margin-top:16px;
+      padding:14px 16px;
+      border-radius:14px;
+      font-size:14px;
+    }
+
+    .message.show{
+      display:block;
+    }
+
+    .message.success{
+      background:rgba(34,197,94,.12);
+      border:1px solid rgba(34,197,94,.18);
+      color:#bbf7d0;
+    }
+
+    .message.error{
+      background:rgba(239,68,68,.12);
+      border:1px solid rgba(239,68,68,.18);
+      color:#fecaca;
+    }
+
+    footer{
+      background:#020617;
+      border-top:1px solid var(--line);
+      padding:24px 0;
+    }
+
+    .footer-inner{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:20px;
+      flex-wrap:wrap;
+    }
+
+    .footer-inner p{
+      color:#94a3b8;
+      font-size:14px;
+    }
+
+    .footer-links{
+      display:flex;
+      flex-wrap:wrap;
+      gap:16px;
+    }
+
+    .footer-links a{
+      color:#cbd5e1;
+      font-size:14px;
+    }
+
+    .footer-links a:hover{
+      color:var(--accent);
+    }
+
+    @media(max-width:1024px){
+      .checkout-layout{
+        grid-template-columns:1fr;
+      }
+    }
+
+    @media(max-width:768px){
+      .menu-toggle{
+        display:flex;
+      }
+
+      .nav-links{
+        position:absolute;
+        top:100%;
+        left:0;
+        right:0;
+        display:none;
+        flex-direction:column;
+        align-items:flex-start;
+        gap:0;
+        background:#0f172a;
+        border:1px solid var(--line);
+        border-radius:16px;
+        padding:12px;
+        box-shadow:0 16px 30px rgba(0,0,0,.28);
+      }
+
+      .nav-links.show{
+        display:flex;
+      }
+
+      .nav-links a{
+        width:100%;
+        padding:12px 10px;
+        border-radius:10px;
+      }
+
+      .nav-links a.active::after{
+        display:none;
+      }
+
+      .nav-links a:hover,
+      .nav-links a.active{
+        background:rgba(250,204,21,.12);
+      }
+
+      .field-row{
+        grid-template-columns:1fr;
+      }
+
+      .footer-inner{
+        flex-direction:column;
+        align-items:flex-start;
+      }
+
+      .logo-mark{
+        width:46px;
+        height:46px;
+      }
+
+      .logo-title{
+        font-size:22px;
+      }
+
+      .logo-sub{
+        font-size:10px;
+        letter-spacing:1.2px;
+      }
+    }
+
+    @media(max-width:480px){
+      .container{
+        width:min(1200px,94%);
+      }
+
+      .hero h1{
+        font-size:34px;
+      }
+
+      .hero p{
+        font-size:15px;
+      }
+
+      .panel-card{
+        padding:18px;
+      }
+
+      .logo-title{
+        font-size:20px;
+      }
+
+      .logo-sub{
+        font-size:9px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="container nav">
+      <a href="index.html" class="logo-wrap">
+        <span class="logo-mark">P</span>
+        <span class="logo-text">
+          <span class="logo-title">PixNest</span>
+          <span class="logo-sub">Photo Collection Site</span>
+        </span>
+      </a>
+
+      <button class="menu-toggle" id="menuToggle" aria-label="Open menu" aria-expanded="false">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+
+      <nav class="nav-links" id="navLinks">
+        <a href="index.html">Home</a>
+        <a href="explore.html">Explore</a>
+        <a href="category.html">Categories</a>
+        <a href="premium.html" class="active">Premium</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="container">
+      <div class="hero-content">
+        <div class="hero-tag">Secure Membership Checkout</div>
+        <h1>Complete your PixNest premium membership.</h1>
+        <p>Select your payment method and finish checkout to unlock premium-only photos and creator benefits.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="container checkout-layout">
+      <div class="panel-card">
+        <h2>Checkout</h2>
+        <p>Choose a payment method to continue with your premium plan.</p>
+
+        <div class="plan-summary">
+          <div class="summary-row">
+            <strong>Selected Plan</strong>
+            <span id="planName">Premium Monthly</span>
+          </div>
+
+          <div class="summary-row">
+            <strong>Billing</strong>
+            <span id="planBilling">Billed every month</span>
+          </div>
+
+          <div class="summary-row">
+            <strong>Total Today</strong>
+            <span class="big-price" id="planPrice">£9.99</span>
+          </div>
+        </div>
+
+        <div class="payment-methods">
+          <label class="method-card active" data-method="card">
+            <div class="method-icon">
+              <i class="fa-regular fa-credit-card"></i>
+            </div>
+            <div class="method-info">
+              <strong>Debit / Credit Card</strong>
+              <span>Pay with Visa, Mastercard, or other bank cards</span>
+            </div>
+            <input type="radio" name="paymentMethod" value="card" checked />
+          </label>
+
+          <label class="method-card" data-method="applepay">
+            <div class="method-icon">
+              <i class="fa-brands fa-apple"></i>
+            </div>
+            <div class="method-info">
+              <strong>Apple Pay</strong>
+              <span>Fast checkout on supported Apple devices</span>
+            </div>
+            <input type="radio" name="paymentMethod" value="applepay" />
+          </label>
+
+          <label class="method-card" data-method="googlepay">
+            <div class="method-icon">
+              <i class="fa-brands fa-google-pay"></i>
+            </div>
+            <div class="method-info">
+              <strong>Google Pay</strong>
+              <span>Quick payment on supported browsers and devices</span>
+            </div>
+            <input type="radio" name="paymentMethod" value="googlepay" />
+          </label>
+        </div>
+
+        <div id="cardFormWrap" class="card-form">
+          <div class="field">
+            <label for="cardName">Name on card</label>
+            <input type="text" id="cardName" placeholder="Enter cardholder name" />
+          </div>
+
+          <div class="field">
+            <label for="cardNumber">Card number</label>
+            <input type="text" id="cardNumber" placeholder="1234 5678 9012 3456" maxlength="19" />
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label for="expiryDate">Expiry date</label>
+              <input type="text" id="expiryDate" placeholder="MM/YY" maxlength="5" />
+            </div>
+
+            <div class="field">
+              <label for="cvv">CVV</label>
+              <input type="text" id="cvv" placeholder="123" maxlength="4" />
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="country">Country</label>
+            <select id="country">
+              <option value="United Kingdom">United Kingdom</option>
+              <option value="United States">United States</option>
+              <option value="Canada">Canada</option>
+              <option value="Nigeria">Nigeria</option>
+              <option value="Ghana">Ghana</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+
+          <button type="button" class="pay-btn" id="payCardBtn">Pay Now</button>
+        </div>
+
+        <div class="wallet-box" id="applePayBox">
+          <p>Continue with Apple Pay for fast checkout.</p>
+          <button type="button" class="wallet-btn apple-btn" id="applePayBtn">
+            <i class="fa-brands fa-apple"></i> Pay with Apple Pay
+          </button>
+        </div>
+
+        <div class="wallet-box" id="googlePayBox">
+          <p>Continue with Google Pay for fast checkout.</p>
+          <button type="button" class="wallet-btn google-btn" id="googlePayBtn">
+            <i class="fa-brands fa-google-pay"></i> Pay with Google Pay
+          </button>
+        </div>
+
+        <div class="secure-note">
+          <i class="fa-solid fa-lock"></i>
+          <span>Your payment details should be processed with a secure payment provider like Stripe before going live.</span>
+        </div>
+
+        <div class="message" id="checkoutMessage"></div>
+      </div>
+
+      <div class="panel-card">
+        <h2>What you get</h2>
+        <p>Your premium membership unlocks more on PixNest.</p>
+
+        <div class="benefit-list">
+          <div class="benefit-item">
+            <i class="fa-solid fa-crown"></i>
+            <div>
+              <strong>Premium-only photos</strong>
+              <span>Access locked premium content across the site.</span>
+            </div>
+          </div>
+
+          <div class="benefit-item">
+            <i class="fa-solid fa-download"></i>
+            <div>
+              <strong>High-quality downloads</strong>
+              <span>Download more creator content with fewer restrictions.</span>
+            </div>
+          </div>
+
+          <div class="benefit-item">
+            <i class="fa-solid fa-user-check"></i>
+            <div>
+              <strong>Premium member status</strong>
+              <span>Show premium access across your account experience.</span>
+            </div>
+          </div>
+
+          <div class="benefit-item">
+            <i class="fa-solid fa-bolt"></i>
+            <div>
+              <strong>Faster premium access flow</strong>
+              <span>Open premium visuals immediately after successful payment.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container footer-inner">
+      <p>©️ 2026 PixNest. Discover and share powerful visual collections.</p>
+
+      <div class="footer-links">
+        <a href="about.html">About</a>
+        <a href="privacy.html">Privacy</a>
+        <a href="terms.html">Terms</a>
+        <a href="contact.html">Contact</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const menuToggle = document.getElementById("menuToggle");
+    const navLinks = document.getElementById("navLinks");
+
+    const methodCards = document.querySelectorAll(".method-card");
+    const cardFormWrap = document.getElementById("cardFormWrap");
+    const applePayBox = document.getElementById("applePayBox");
+    const googlePayBox = document.getElementById("googlePayBox");
+
+    const planName = document.getElementById("planName");
+    const planBilling = document.getElementById("planBilling");
+    const planPrice = document.getElementById("planPrice");
+
+    const payCardBtn = document.getElementById("payCardBtn");
+    const applePayBtn = document.getElementById("applePayBtn");
+    const googlePayBtn = document.getElementById("googlePayBtn");
+
+    const cardName = document.getElementById("cardName");
+    const cardNumber = document.getElementById("cardNumber");
+    const expiryDate = document.getElementById("expiryDate");
+    const cvv = document.getElementById("cvv");
+
+    const checkoutMessage = document.getElementById("checkoutMessage");
+
+    let selectedMethod = "card";
+
+    const plans = {
+      monthly: {
+        name: "Premium Monthly",
+        billing: "Billed every month",
+        price: "£9.99"
+      },
+      yearly: {
+        name: "Premium Yearly",
+        billing: "Billed once per year",
+        price: "£89.99"
+      },
+      weekly: {
+        name: "Premium Weekly",
+        billing: "Billed every week",
+        price: "£3.99"
+      }
+    };
+
+    if(menuToggle && navLinks){
+      menuToggle.addEventListener("click", () => {
+        navLinks.classList.toggle("show");
+        const expanded = menuToggle.getAttribute("aria-expanded") === "true";
+        menuToggle.setAttribute("aria-expanded", String(!expanded));
+      });
+    }
+
+    document.querySelectorAll(".nav-links a").forEach(link => {
+      link.addEventListener("click", () => {
+        if(window.innerWidth <= 768){
+          navLinks.classList.remove("show");
+          menuToggle.setAttribute("aria-expanded", "false");
+        }
+      });
+    });
+
+    window.addEventListener("resize", () => {
+      if(window.innerWidth > 768){
+        navLinks.classList.remove("show");
+        menuToggle.setAttribute("aria-expanded", "false");
+      }
+    });
+
+    function getPlanFromUrl(){
+      const params = new URLSearchParams(window.location.search);
+      return (params.get("plan") || "monthly").toLowerCase();
+    }
+
+    function setPlanDetails(){
+      const selectedPlan = getPlanFromUrl();
+      const plan = plans[selectedPlan] || plans.monthly;
+
+      planName.textContent = plan.name;
+      planBilling.textContent = plan.billing;
+      planPrice.textContent = plan.price;
+    }
+
+    function showMessage(text, type = "success"){
+      checkoutMessage.className = `message show ${type}`;
+      checkoutMessage.textContent = text;
+    }
+
+    function clearMessage(){
+      checkoutMessage.className = "message";
+      checkoutMessage.textContent = "";
+    }
+
+    function updatePaymentView(){
+      cardFormWrap.style.display = selectedMethod === "card" ? "grid" : "none";
+      applePayBox.classList.toggle("show", selectedMethod === "applepay");
+      googlePayBox.classList.toggle("show", selectedMethod === "googlepay");
+    }
+
+    methodCards.forEach(card => {
+      card.addEventListener("click", () => {
+        methodCards.forEach(item => item.classList.remove("active"));
+        card.classList.add("active");
+
+        const radio = card.querySelector('input[type="radio"]');
+        if(radio){
+          radio.checked = true;
+          selectedMethod = radio.value;
+          clearMessage();
+          updatePaymentView();
+        }
+      });
+    });
+
+    function formatCardNumber(value){
+      return value
+        .replace(/\D/g, "")
+        .slice(0, 16)
+        .replace(/(.{4})/g, "$1 ")
+        .trim();
+    }
+
+    function formatExpiry(value){
+      const cleaned = value.replace(/\D/g, "").slice(0, 4);
+      if(cleaned.length < 3) return cleaned;
+      return `${cleaned.slice(0,2)}/${cleaned.slice(2)}`;
+    }
+
+    cardNumber.addEventListener("input", () => {
+      cardNumber.value = formatCardNumber(cardNumber.value);
+    });
+
+    expiryDate.addEventListener("input", () => {
+      expiryDate.value = formatExpiry(expiryDate.value);
+    });
+
+    cvv.addEventListener("input", () => {
+      cvv.value = cvv.value.replace(/\D/g, "").slice(0, 4);
+    });
+
+    function validateCardForm(){
+      if(!cardName.value.trim()){
+        showMessage("Please enter the name on card.", "error");
+        return false;
+      }
+
+      if(cardNumber.value.replace(/\s/g, "").length < 16){
+        showMessage("Please enter a valid card number.", "error");
+        return false;
+      }
+
+      if(expiryDate.value.length < 5){
+        showMessage("Please enter a valid expiry date.", "error");
+        return false;
+      }
+
+      if(cvv.value.length < 3){
+        showMessage("Please enter a valid CVV.", "error");
+        return false;
+      }
+
+      return true;
+    }
+
+    payCardBtn.addEventListener("click", () => {
+      clearMessage();
+
+      if(!validateCardForm()){
+        return;
+      }
+
+      showMessage("Card checkout UI is ready. Connect this button to Stripe or your payment provider to complete real payments.", "success");
+    });
+
+    applePayBtn.addEventListener("click", () => {
+      clearMessage();
+      showMessage("Apple Pay button UI is ready. Connect this to Stripe Payment Request or Apple Pay gateway setup for live payments.", "success");
+    });
+
+    googlePayBtn.addEventListener("click", () => {
+      clearMessage();
+      showMessage("Google Pay button UI is ready. Connect this to Stripe Payment Request or Google Pay gateway setup for live payments.", "success");
+    });
+
+    setPlanDetails();
+    updatePaymentView();
+  </script>
+  <script src="site-auth.js"></script>
+</body>
+</html>
+
+Important part: Apple Pay, Google Pay, and live card charging will not work with only HTML/CSS/JS alone.
+For real payments, this checkout page should be connected to a payment service like Stripe.
+
+Next best step after this is for me to make the premium plans page buttons open this checkout page correctly with the selected plan already filled in.

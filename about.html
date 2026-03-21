@@ -1,0 +1,1320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PixNest | About</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+      font-family:Arial, Helvetica, sans-serif;
+    }
+
+    :root{
+      --bg:#0f172a;
+      --panel:#111827;
+      --panel2:#1e293b;
+      --text:#e5e7eb;
+      --muted:#94a3b8;
+      --accent:#facc15;
+      --line:rgba(255,255,255,0.08);
+      --blue:#3b82f6;
+      --success:#22c55e;
+      --danger:#ef4444;
+    }
+
+    html{
+      scroll-behavior:smooth;
+      min-height:100%;
+      background:var(--bg);
+    }
+
+    body{
+      min-height:100%;
+      background:var(--bg);
+      color:var(--text);
+      line-height:1.6;
+      overflow-x:hidden;
+    }
+
+    img{
+      max-width:100%;
+      display:block;
+    }
+
+    a{
+      text-decoration:none;
+      color:inherit;
+      transition:.3s;
+    }
+
+    button,
+    input,
+    textarea{
+      font-family:Arial, Helvetica, sans-serif;
+      transition:.3s;
+    }
+
+    .container{
+      width:min(1200px,92%);
+      margin:auto;
+    }
+
+    header{
+      position:sticky;
+      top:0;
+      z-index:1100;
+      background:rgba(15,23,42,0.95);
+      border-bottom:1px solid var(--line);
+      backdrop-filter:blur(8px);
+    }
+
+    .nav{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:20px;
+      padding:16px 0;
+      position:relative;
+    }
+
+    .logo-wrap{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      flex-shrink:0;
+      min-width:0;
+    }
+
+    .logo-mark{
+      width:52px;
+      height:52px;
+      border-radius:14px;
+      background:linear-gradient(135deg,#facc15,#fb7185);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:#111827;
+      font-size:24px;
+      font-weight:800;
+      box-shadow:0 0 16px rgba(250,204,21,0.28);
+      flex-shrink:0;
+    }
+
+    .logo-text{
+      display:flex;
+      flex-direction:column;
+      line-height:1;
+      min-width:0;
+    }
+
+    .logo-title{
+      font-size:27px;
+      font-weight:800;
+      color:var(--accent);
+      letter-spacing:.4px;
+      white-space:nowrap;
+    }
+
+    .logo-sub{
+      font-size:11px;
+      color:#cbd5e1;
+      letter-spacing:1.7px;
+      text-transform:uppercase;
+      margin-top:4px;
+      white-space:nowrap;
+    }
+
+    .nav-right{
+      display:flex;
+      align-items:center;
+      gap:12px;
+    }
+
+    .nav-links{
+      display:flex;
+      align-items:center;
+      gap:20px;
+      flex-wrap:wrap;
+    }
+
+    .nav-links a{
+      color:#cbd5e1;
+      font-size:15px;
+      position:relative;
+      padding-bottom:4px;
+    }
+
+    .nav-links a:hover,
+    .nav-links a.active{
+      color:var(--accent);
+    }
+
+    .nav-links a.active::after{
+      content:"";
+      position:absolute;
+      left:0;
+      bottom:-4px;
+      width:100%;
+      height:2px;
+      background:var(--accent);
+      border-radius:999px;
+    }
+
+    .auth-links{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    .nav-chip{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 12px;
+      border-radius:999px;
+      background:rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.08);
+      color:#e5e7eb;
+      font-size:12px;
+      font-weight:700;
+    }
+
+    .nav-chip.founder{
+      background:rgba(250,204,21,.12);
+      border-color:rgba(250,204,21,.2);
+      color:var(--accent);
+    }
+
+    .nav-chip.verified{
+      background:rgba(59,130,246,.12);
+      border-color:rgba(59,130,246,.2);
+      color:#93c5fd;
+    }
+
+    .nav-chip.premium{
+      background:rgba(250,204,21,.12);
+      border-color:rgba(250,204,21,.2);
+      color:#fde68a;
+    }
+
+    .nav-auth-btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      min-height:42px;
+      padding:10px 14px;
+      border-radius:12px;
+      font-size:14px;
+      font-weight:700;
+      border:none;
+      cursor:pointer;
+    }
+
+    .nav-auth-btn.primary{
+      background:var(--accent);
+      color:#111827;
+    }
+
+    .nav-auth-btn.primary:hover{
+      transform:translateY(-2px);
+      box-shadow:0 10px 24px rgba(250,204,21,.18);
+    }
+
+    .nav-auth-btn.secondary{
+      background:transparent;
+      color:#fff;
+      border:1px solid rgba(255,255,255,.15);
+    }
+
+    .nav-auth-btn.secondary:hover{
+      background:rgba(255,255,255,.06);
+    }
+
+    .nav-toggle{
+      display:none;
+      width:46px;
+      height:46px;
+      border-radius:12px;
+      border:1px solid rgba(250,204,21,.35);
+      background:#111827;
+      color:var(--accent);
+      align-items:center;
+      justify-content:center;
+      cursor:pointer;
+      flex-direction:column;
+      gap:5px;
+      flex-shrink:0;
+    }
+
+    .nav-toggle span{
+      width:20px;
+      height:2px;
+      border-radius:999px;
+      background:var(--accent);
+      display:block;
+    }
+
+    .hero{
+      background:
+        linear-gradient(rgba(15,23,42,.70), rgba(15,23,42,.92)),
+        url('https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&w=1600&q=80') center/cover no-repeat;
+      min-height:72vh;
+      display:flex;
+      align-items:center;
+      border-bottom:1px solid rgba(255,255,255,.05);
+    }
+
+    .hero-content{
+      max-width:900px;
+      padding:90px 0 70px;
+    }
+
+    .hero-tag{
+      display:inline-block;
+      background:rgba(250,204,21,.12);
+      color:var(--accent);
+      padding:8px 14px;
+      border-radius:999px;
+      font-size:14px;
+      border:1px solid rgba(250,204,21,.22);
+      margin-bottom:18px;
+    }
+
+    .hero h1{
+      font-size:clamp(38px,5vw,62px);
+      line-height:1.06;
+      margin-bottom:18px;
+      color:#fff;
+    }
+
+    .hero p{
+      font-size:18px;
+      color:#cbd5e1;
+      max-width:760px;
+      margin-bottom:24px;
+    }
+
+    .hero-actions{
+      display:flex;
+      flex-wrap:wrap;
+      gap:12px;
+    }
+
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      padding:14px 22px;
+      border-radius:14px;
+      font-weight:800;
+      font-size:15px;
+      border:none;
+      cursor:pointer;
+      text-align:center;
+    }
+
+    .btn-primary{
+      background:var(--accent);
+      color:#111827;
+    }
+
+    .btn-primary:hover{
+      transform:translateY(-2px);
+      box-shadow:0 10px 24px rgba(250,204,21,.2);
+    }
+
+    .btn-secondary{
+      background:transparent;
+      color:#fff;
+      border:1px solid rgba(255,255,255,.18);
+    }
+
+    .btn-secondary:hover{
+      background:rgba(255,255,255,.06);
+    }
+
+    section{
+      padding:74px 0;
+    }
+
+    .section-head{
+      display:flex;
+      align-items:end;
+      justify-content:space-between;
+      gap:20px;
+      flex-wrap:wrap;
+      margin-bottom:28px;
+    }
+
+    .section-head h2{
+      font-size:32px;
+      color:#fff;
+      margin-bottom:8px;
+    }
+
+    .section-head p{
+      color:var(--muted);
+      max-width:760px;
+    }
+
+    .stats{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:16px;
+    }
+
+    .stat{
+      background:var(--panel);
+      border:1px solid var(--line);
+      border-radius:22px;
+      padding:20px;
+      box-shadow:0 14px 28px rgba(0,0,0,.14);
+    }
+
+    .stat strong{
+      display:block;
+      color:var(--accent);
+      font-size:30px;
+      margin-bottom:6px;
+    }
+
+    .stat span{
+      color:var(--muted);
+      font-size:14px;
+    }
+
+    .feature-grid{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:24px;
+    }
+
+    .feature-card{
+      background:#111827;
+      border:1px solid var(--line);
+      border-radius:24px;
+      padding:24px;
+      box-shadow:0 14px 30px rgba(0,0,0,.14);
+      min-height:100%;
+    }
+
+    .feature-icon{
+      width:56px;
+      height:56px;
+      border-radius:16px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:rgba(250,204,21,.12);
+      color:var(--accent);
+      border:1px solid rgba(250,204,21,.16);
+      font-size:22px;
+      margin-bottom:16px;
+    }
+
+    .feature-card h3{
+      color:#fff;
+      font-size:22px;
+      margin-bottom:10px;
+      line-height:1.2;
+    }
+
+    .feature-card p{
+      color:#cbd5e1;
+      font-size:14px;
+      line-height:1.7;
+    }
+
+    .flow{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:18px;
+    }
+
+    .flow-card{
+      background:#111827;
+      border:1px solid var(--line);
+      border-radius:22px;
+      padding:22px 18px;
+      position:relative;
+      overflow:hidden;
+    }
+
+    .flow-step{
+      width:38px;
+      height:38px;
+      border-radius:50%;
+      background:rgba(250,204,21,.12);
+      border:1px solid rgba(250,204,21,.2);
+      color:var(--accent);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight:800;
+      margin-bottom:14px;
+    }
+
+    .flow-card h3{
+      color:#fff;
+      font-size:20px;
+      margin-bottom:8px;
+    }
+
+    .flow-card p{
+      color:#cbd5e1;
+      font-size:14px;
+    }
+
+    .split{
+      display:grid;
+      grid-template-columns:1.05fr .95fr;
+      gap:26px;
+      align-items:stretch;
+    }
+
+    .panel{
+      background:#111827;
+      border:1px solid var(--line);
+      border-radius:24px;
+      padding:24px;
+      box-shadow:0 14px 30px rgba(0,0,0,.14);
+    }
+
+    .panel h3{
+      color:#fff;
+      font-size:25px;
+      margin-bottom:14px;
+    }
+
+    .panel p{
+      color:#cbd5e1;
+      font-size:15px;
+      margin-bottom:14px;
+    }
+
+    .list{
+      display:grid;
+      gap:12px;
+      margin-top:6px;
+    }
+
+    .list-item{
+      background:#0f172a;
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:14px 16px;
+      display:flex;
+      gap:12px;
+      align-items:flex-start;
+    }
+
+    .list-item i{
+      color:var(--accent);
+      font-size:16px;
+      margin-top:2px;
+      flex-shrink:0;
+    }
+
+    .list-item span{
+      color:#e5e7eb;
+      font-size:14px;
+      line-height:1.6;
+    }
+
+    .requirements{
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:18px;
+      margin-top:10px;
+    }
+
+    .requirement-card{
+      background:#0f172a;
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:18px;
+    }
+
+    .requirement-card h4{
+      color:#fff;
+      font-size:18px;
+      margin-bottom:8px;
+    }
+
+    .requirement-card p{
+      color:#cbd5e1;
+      font-size:14px;
+      margin:0;
+    }
+
+    .faq-grid{
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:18px;
+    }
+
+    .faq-card{
+      background:#111827;
+      border:1px solid var(--line);
+      border-radius:22px;
+      padding:22px;
+    }
+
+    .faq-card h3{
+      color:#fff;
+      font-size:19px;
+      margin-bottom:8px;
+    }
+
+    .faq-card p{
+      color:#cbd5e1;
+      font-size:14px;
+    }
+
+    .cta{
+      background:linear-gradient(135deg,#1e293b,#111827);
+      border-top:1px solid rgba(255,255,255,.05);
+      border-bottom:1px solid rgba(255,255,255,.05);
+      text-align:center;
+    }
+
+    .cta h2{
+      font-size:38px;
+      color:#fff;
+      margin-bottom:12px;
+    }
+
+    .cta p{
+      max-width:760px;
+      margin:0 auto 24px;
+      color:#cbd5e1;
+    }
+
+    .cta-actions{
+      display:flex;
+      justify-content:center;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+
+    footer{
+      background:#020617;
+      border-top:1px solid var(--line);
+      padding:24px 0;
+    }
+
+    .footer-inner{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:20px;
+      flex-wrap:wrap;
+    }
+
+    .footer-inner p{
+      color:#94a3b8;
+      font-size:14px;
+    }
+
+    .footer-links{
+      display:flex;
+      flex-wrap:wrap;
+      gap:16px;
+    }
+
+    .footer-links a{
+      color:#cbd5e1;
+      font-size:14px;
+    }
+
+    .footer-links a:hover{
+      color:var(--accent);
+    }
+
+    @media(max-width:1024px){
+      .stats,
+      .feature-grid,
+      .flow,
+      .faq-grid{
+        grid-template-columns:repeat(2,1fr);
+      }
+
+      .split{
+        grid-template-columns:1fr;
+      }
+    }
+
+    @media(max-width:860px){
+      .nav-toggle{
+        display:flex;
+      }
+
+      .nav-links{
+        position:absolute;
+        top:100%;
+        left:0;
+        right:58px;
+        display:none;
+        flex-direction:column;
+        align-items:flex-start;
+        gap:0;
+        background:#0f172a;
+        border:1px solid var(--line);
+        border-radius:16px;
+        padding:12px;
+        box-shadow:0 16px 30px rgba(0,0,0,.28);
+      }
+
+      .nav-links.show{
+        display:flex;
+      }
+
+      .nav-links a,
+      .nav-links .auth-links{
+        width:100%;
+      }
+
+      .nav-links a{
+        padding:12px 10px;
+        border-radius:10px;
+      }
+
+      .auth-links{
+        flex-direction:column;
+        align-items:stretch;
+        padding-top:10px;
+      }
+
+      .nav-auth-btn,
+      .nav-chip{
+        width:100%;
+      }
+
+      .nav-links a.active::after{
+        display:none;
+      }
+
+      .nav-links a:hover,
+      .nav-links a.active{
+        background:rgba(250,204,21,.12);
+      }
+
+      .hero{
+        min-height:auto;
+      }
+
+      .hero-content{
+        padding:70px 0 46px;
+      }
+
+      .stats,
+      .feature-grid,
+      .flow,
+      .faq-grid,
+      .requirements{
+        grid-template-columns:1fr;
+      }
+    }
+
+    @media(max-width:560px){
+      .container{
+        width:min(1200px,94%);
+      }
+
+      .logo-title{
+        font-size:20px;
+      }
+
+      .logo-sub{
+        font-size:9px;
+        letter-spacing:1.2px;
+      }
+
+      .hero h1{
+        font-size:34px;
+      }
+
+      .hero p{
+        font-size:16px;
+      }
+
+      .section-head h2{
+        font-size:27px;
+      }
+
+      .cta h2{
+        font-size:30px;
+      }
+
+      .btn{
+        width:100%;
+      }
+
+      .hero-actions,
+      .cta-actions{
+        flex-direction:column;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="container nav">
+      <a href="index.html" class="logo-wrap">
+        <span class="logo-mark">P</span>
+        <span class="logo-text">
+          <span class="logo-title">PixNest</span>
+          <span class="logo-sub">Photo Collection Site</span>
+        </span>
+      </a>
+
+      <div class="nav-right">
+        <nav class="nav-links" id="navLinks">
+          <a href="index.html">Home</a>
+          <a href="explore.html">Explore</a>
+          <a href="category.html">Categories</a>
+          <a href="premium.html">Premium</a>
+          <a href="about.html" class="active">About</a>
+          <a href="contact.html">Contact</a>
+          <div class="auth-links" id="authNavLinks"></div>
+        </nav>
+
+        <button class="nav-toggle" id="navToggle" aria-label="Open navigation" aria-expanded="false">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="container">
+      <div class="hero-content">
+        <div class="hero-tag">About PixNest</div>
+        <h1>PixNest is built for creators, collections, premium content, and real platform growth.</h1>
+        <p>
+          PixNest is a photo discovery platform where people explore visual collections, follow creators, unlock premium work,
+          request verification, and grow toward creator approval and professional dashboard access.
+        </p>
+
+        <div class="hero-actions" id="heroActions">
+          <a href="explore.html" class="btn btn-primary">
+            <i class="fa-solid fa-images"></i>
+            Explore Photos
+          </a>
+          <a href="signup.html" class="btn btn-secondary">
+            <i class="fa-solid fa-user-plus"></i>
+            Join PixNest
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <h2>What PixNest is about</h2>
+          <p>Everything on the platform is designed around discovery, creator identity, and quality visual content.</p>
+        </div>
+      </div>
+
+      <div class="stats">
+        <div class="stat">
+          <strong>Free</strong>
+          <span>Explore public collections and discover visual inspiration.</span>
+        </div>
+
+        <div class="stat">
+          <strong>Premium</strong>
+          <span>Unlock premium-only visuals and member platform features.</span>
+        </div>
+
+        <div class="stat">
+          <strong>Verified</strong>
+          <span>Creators can request verification and earn trusted visibility.</span>
+        </div>
+
+        <div class="stat">
+          <strong>Creator+</strong>
+          <span>Approved creators can move into dashboard-level growth tools.</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <h2>Core platform updates</h2>
+          <p>This About page reflects the current PixNest direction and the updates already added across the site.</p>
+        </div>
+      </div>
+
+      <div class="feature-grid">
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fa-solid fa-user"></i>
+          </div>
+          <h3>Creator profiles</h3>
+          <p>
+            Creators have profiles with a cover image, profile picture, follower counts, following counts, post counts,
+            badges, and creator identity that connects their posts across the platform.
+          </p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fa-solid fa-crown"></i>
+          </div>
+          <h3>Premium membership</h3>
+          <p>
+            Some posts can sit behind a premium wall. Premium members unlock those posts and may also display premium status
+            on their account when membership is active.
+          </p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fa-solid fa-circle-check"></i>
+          </div>
+          <h3>Verification system</h3>
+          <p>
+            Users can submit a verification request. Once approved by admin, their account can show verified status and
+            a blue check mark beside the creator name.
+          </p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fa-solid fa-shield-check"></i>
+          </div>
+          <h3>Admin approval flow</h3>
+          <p>
+            Creator uploads can be set to require admin approval, especially for creators who reach advanced platform
+            milestones and move into a more controlled creator workflow.
+          </p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fa-solid fa-chart-line"></i>
+          </div>
+          <h3>Professional dashboard</h3>
+          <p>
+            The professional dashboard is reserved for stronger creator accounts. It can unlock automatically after reaching
+            follower and view targets, or through admin approval after a submitted request.
+          </p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fa-solid fa-layer-group"></i>
+          </div>
+          <h3>Structured collections</h3>
+          <p>
+            Photos are grouped into categories, featured collections, trending selections, reposts, favourites,
+            premium content, and creator-based experiences across the platform.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <h2>How the platform works</h2>
+          <p>PixNest grows users from simple visitors into creators, premium members, verified accounts, and approved dashboard users.</p>
+        </div>
+      </div>
+
+      <div class="flow">
+        <div class="flow-card">
+          <div class="flow-step">1</div>
+          <h3>Explore</h3>
+          <p>Visitors browse categories, discover creators, like posts, view trending work, and save favourites.</p>
+        </div>
+
+        <div class="flow-card">
+          <div class="flow-step">2</div>
+          <h3>Create</h3>
+          <p>Users sign up, build a creator account, upload photos, and begin growing their own visual collection.</p>
+        </div>
+
+        <div class="flow-card">
+          <div class="flow-step">3</div>
+          <h3>Grow</h3>
+          <p>Accounts grow through followers, likes, views, favourites, reposts, and creator identity across posts.</p>
+        </div>
+
+        <div class="flow-card">
+          <div class="flow-step">4</div>
+          <h3>Unlock</h3>
+          <p>Creators can request verification, buy premium membership, and reach the stage where dashboard tools unlock.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="container">
+      <div class="split">
+        <div class="panel">
+          <h3>Verification, premium, and creator trust</h3>
+          <p>
+            PixNest is not only about showing pictures. It is about making creator identity visible, protecting premium work,
+            and giving stronger accounts a trusted path toward bigger features.
+          </p>
+
+          <div class="list">
+            <div class="list-item">
+              <i class="fa-solid fa-circle-check"></i>
+              <span>Verified users can show trusted account identity with visible verification status.</span>
+            </div>
+
+            <div class="list-item">
+              <i class="fa-solid fa-crown"></i>
+              <span>Premium members can unlock premium-only visuals and display premium membership on their account.</span>
+            </div>
+
+            <div class="list-item">
+              <i class="fa-solid fa-hourglass-half"></i>
+              <span>Requests can be submitted to admin for account review, verification, or professional dashboard access.</span>
+            </div>
+
+            <div class="list-item">
+              <i class="fa-solid fa-shield-check"></i>
+              <span>Admin approval can be used to control creator upload quality and approve advanced creator accounts.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h3>Professional dashboard requirements</h3>
+          <p>
+            The professional dashboard is meant for creators who have already built traction on PixNest and are ready
+            for stronger creator tools.
+          </p>
+
+          <div class="requirements">
+            <div class="requirement-card">
+              <h4>Automatic path</h4>
+              <p>Reach at least 10k followers and 100k total views across your posts.</p>
+            </div>
+
+            <div class="requirement-card">
+              <h4>Request path</h4>
+              <p>Submit a dashboard request to admin and wait for approval.</p>
+            </div>
+
+            <div class="requirement-card">
+              <h4>Creator approval</h4>
+              <p>Approved creators may move into upload-review workflows before publishing content.</p>
+            </div>
+
+            <div class="requirement-card">
+              <h4>Platform quality</h4>
+              <p>This keeps dashboard tools focused on creators who are active, trusted, and ready for growth tools.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <h2>Frequently asked questions</h2>
+          <p>These answers line up with the current PixNest feature direction.</p>
+        </div>
+      </div>
+
+      <div class="faq-grid">
+        <div class="faq-card">
+          <h3>Can anyone join PixNest?</h3>
+          <p>Yes. People can browse, create accounts, and start building a profile. Advanced features unlock as accounts grow or get approved.</p>
+        </div>
+
+        <div class="faq-card">
+          <h3>Are all posts free?</h3>
+          <p>No. Some posts can be marked as premium, which means only premium members can unlock them.</p>
+        </div>
+
+        <div class="faq-card">
+          <h3>How do I get verified?</h3>
+          <p>Users can submit a verification request through the account menu. Once approved by admin, verified status can appear on the account.</p>
+        </div>
+
+        <div class="faq-card">
+          <h3>How do I unlock the professional dashboard?</h3>
+          <p>Either meet the follower and view targets or submit a request for admin approval.</p>
+        </div>
+
+        <div class="faq-card">
+          <h3>Do uploads always publish instantly?</h3>
+          <p>Not always. Approved creators may have uploads routed through admin review depending on the platform flow you are applying.</p>
+        </div>
+
+        <div class="faq-card">
+          <h3>What does PixNest focus on most?</h3>
+          <p>Creator identity, beautiful visual discovery, premium access, and quality-controlled platform growth.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta">
+    <div class="container">
+      <h2>Start building your place on PixNest.</h2>
+      <p>Explore visuals, create your profile, upload your work, unlock premium content, and grow toward verified creator status.</p>
+
+      <div class="cta-actions" id="ctaActions">
+        <a href="signup.html" class="btn btn-primary">
+          <i class="fa-solid fa-user-plus"></i>
+          Create Account
+        </a>
+        <a href="explore.html" class="btn btn-secondary">
+          <i class="fa-solid fa-compass"></i>
+          Explore Gallery
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container footer-inner">
+      <p>©️ 2026 PixNest. Discover and share powerful visual collections.</p>
+
+      <div class="footer-links">
+        <a href="about.html">About</a>
+        <a href="license.html">License</a>
+        <a href="privacy.html">Privacy</a>
+        <a href="terms.html">Terms</a>
+        <a href="contact.html">Contact</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const SUPABASE_URL = "https://vigczssznfvujttdapbv.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_UmF-mmVS42XeF6PqsNnCSw_wpA35wg2";
+
+    const { createClient } = supabase;
+    const supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    const navLinks = document.getElementById("navLinks");
+    const navToggle = document.getElementById("navToggle");
+    const authNavLinks = document.getElementById("authNavLinks");
+    const heroActions = document.getElementById("heroActions");
+    const ctaActions = document.getElementById("ctaActions");
+
+    let currentUser = null;
+
+    function normalize(value = ""){
+      return String(value || "").trim().toLowerCase();
+    }
+
+    function getDisplayName(user){
+      return String(
+        user?.user_metadata?.full_name ||
+        user?.user_metadata?.name ||
+        user?.email?.split("@")[0] ||
+        "User"
+      ).trim();
+    }
+
+    function isFounder(user){
+      return normalize(user?.app_metadata?.role) === "founder" || user?.app_metadata?.is_admin === true;
+    }
+
+    function isVerified(user){
+      return Boolean(
+        isFounder(user) ||
+        user?.app_metadata?.is_verified === true ||
+        user?.user_metadata?.is_verified === true ||
+        user?.user_metadata?.verified === true ||
+        user?.user_metadata?.verification_approved === true
+      );
+    }
+
+    function getMembershipPlan(user){
+      return String(
+        user?.app_metadata?.membership_plan ||
+        user?.app_metadata?.plan ||
+        user?.user_metadata?.membership_plan ||
+        user?.user_metadata?.plan ||
+        ""
+      ).trim().toLowerCase();
+    }
+
+    function isPremiumMember(user){
+      return Boolean(
+        ["premium", "premium-monthly", "premium-yearly"].includes(getMembershipPlan(user)) ||
+        user?.user_metadata?.premium_member === true ||
+        user?.user_metadata?.is_premium === true
+      );
+    }
+
+    async function initCurrentUser(){
+      try{
+        const { data } = await supabaseClient.auth.getUser();
+        currentUser = data?.user || null;
+      }catch(error){
+        currentUser = null;
+      }
+    }
+
+    async function handleLogout(){
+      try{
+        await supabaseClient.auth.signOut();
+        currentUser = null;
+        updateAuthUI();
+      }catch(error){
+        alert("Could not log out.");
+      }
+    }
+
+    function updateAuthUI(){
+      authNavLinks.innerHTML = "";
+
+      if(currentUser){
+        authNavLinks.innerHTML = `
+          <div class="site-account-menu-wrap">
+            <button class="site-account-menu-toggle" id="siteInlineMenuToggle" aria-label="Open account menu">
+              <i class="fa-solid fa-bars"></i>
+            </button>
+            <div class="site-account-dropdown" id="siteInlineMenuDropdown">
+              <a href="account.html"><i class="fa-solid fa-user"></i>My Account</a>
+              <a href="profile.html"><i class="fa-solid fa-address-card"></i>Profile</a>
+              <a href="upload.html"><i class="fa-solid fa-upload"></i>Upload</a>
+              <a href="premium.html"><i class="fa-solid fa-crown"></i>Premium</a>
+              <a href="contact.html"><i class="fa-solid fa-envelope"></i>Contact</a>
+              <button type="button" class="site-danger" id="logoutBtnNav"><i class="fa-solid fa-right-from-bracket"></i>Logout</button>
+            </div>
+          </div>
+        `;
+
+        heroActions.innerHTML = `
+          <a href="account.html" class="btn btn-primary">
+            <i class="fa-solid fa-user"></i>
+            My Account
+          </a>
+          <a href="explore.html" class="btn btn-secondary">
+            <i class="fa-solid fa-images"></i>
+            Explore Photos
+          </a>
+        `;
+
+        ctaActions.innerHTML = `
+          <a href="account.html" class="btn btn-primary">
+            <i class="fa-solid fa-user"></i>
+            Go to My Account
+          </a>
+          <a href="explore.html" class="btn btn-secondary">
+            <i class="fa-solid fa-compass"></i>
+            Explore Gallery
+          </a>
+        `;
+
+        const logoutBtnNav = document.getElementById("logoutBtnNav");
+        const siteInlineMenuToggle = document.getElementById("siteInlineMenuToggle");
+        const siteInlineMenuDropdown = document.getElementById("siteInlineMenuDropdown");
+        if(siteInlineMenuToggle && siteInlineMenuDropdown){
+          siteInlineMenuToggle.addEventListener("click", (e) => {
+            e.stopPropagation();
+            siteInlineMenuDropdown.classList.toggle("show");
+          });
+          document.addEventListener("click", (e) => {
+            if(!siteInlineMenuDropdown.contains(e.target) && !siteInlineMenuToggle.contains(e.target)){
+              siteInlineMenuDropdown.classList.remove("show");
+            }
+          });
+        }
+        if(logoutBtnNav){
+          logoutBtnNav.addEventListener("click", handleLogout);
+        }
+      }else{
+        authNavLinks.innerHTML = `
+          <a href="login.html" class="nav-auth-btn secondary">
+            <i class="fa-solid fa-right-to-bracket"></i>
+            Login
+          </a>
+          <a href="signup.html" class="nav-auth-btn primary">
+            <i class="fa-solid fa-user-plus"></i>
+            Sign Up
+          </a>
+        `;
+
+        heroActions.innerHTML = `
+          <a href="explore.html" class="btn btn-primary">
+            <i class="fa-solid fa-images"></i>
+            Explore Photos
+          </a>
+          <a href="signup.html" class="btn btn-secondary">
+            <i class="fa-solid fa-user-plus"></i>
+            Join PixNest
+          </a>
+        `;
+
+        ctaActions.innerHTML = `
+          <a href="signup.html" class="btn btn-primary">
+            <i class="fa-solid fa-user-plus"></i>
+            Create Account
+          </a>
+          <a href="explore.html" class="btn btn-secondary">
+            <i class="fa-solid fa-compass"></i>
+            Explore Gallery
+          </a>
+        `;
+      }
+    }
+
+    navToggle.addEventListener("click", () => {
+      navLinks.classList.toggle("show");
+      const expanded = navToggle.getAttribute("aria-expanded") === "true";
+      navToggle.setAttribute("aria-expanded", String(!expanded));
+    });
+
+    document.addEventListener("click", (e) => {
+      if(window.innerWidth <= 860 && !navLinks.contains(e.target) && !navToggle.contains(e.target)){
+        navLinks.classList.remove("show");
+        navToggle.setAttribute("aria-expanded", "false");
+      }
+    });
+
+    window.addEventListener("resize", () => {
+      if(window.innerWidth > 860){
+        navLinks.classList.remove("show");
+        navToggle.setAttribute("aria-expanded", "false");
+      }
+    });
+
+    supabaseClient.auth.onAuthStateChange(async () => {
+      await initCurrentUser();
+      updateAuthUI();
+    });
+
+    (async function init(){
+      await initCurrentUser();
+      updateAuthUI();
+    })();
+  </script>
+  <script src="site-auth.js"></script>
+</body>
+</html>

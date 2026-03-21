@@ -1,0 +1,3540 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PixNest | Profile</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+      font-family:Arial, Helvetica, sans-serif;
+    }
+
+    :root{
+      --bg:#0f172a;
+      --panel:#111827;
+      --panel2:#1e293b;
+      --text:#e5e7eb;
+      --muted:#94a3b8;
+      --accent:#facc15;
+      --line:rgba(255,255,255,0.08);
+      --blue:#3b82f6;
+      --success:#22c55e;
+      --danger:#ef4444;
+    }
+
+    html{
+      scroll-behavior:smooth;
+      min-height:100%;
+      background:var(--bg);
+    }
+
+    body{
+      min-height:100%;
+      background:var(--bg);
+      color:var(--text);
+      line-height:1.6;
+      overflow-x:hidden;
+    }
+
+    img{
+      max-width:100%;
+      display:block;
+    }
+
+    a{
+      text-decoration:none;
+      color:inherit;
+      transition:.3s;
+    }
+
+    button,
+    input,
+    select,
+    textarea{
+      font-family:Arial, Helvetica, sans-serif;
+      transition:.3s;
+    }
+
+    .container{
+      width:min(1200px,92%);
+      margin:auto;
+    }
+
+    .hidden{
+      display:none !important;
+    }
+
+    header{
+      position:sticky;
+      top:0;
+      z-index:1000;
+      background:rgba(15,23,42,0.95);
+      border-bottom:1px solid var(--line);
+      backdrop-filter:blur(8px);
+    }
+
+    .nav{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:20px;
+      padding:16px 0;
+      position:relative;
+    }
+
+    .logo-wrap{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      flex-shrink:0;
+      min-width:0;
+    }
+
+    .logo-mark{
+      width:52px;
+      height:52px;
+      border-radius:14px;
+      background:linear-gradient(135deg,#facc15,#fb7185);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:#111827;
+      font-size:24px;
+      font-weight:800;
+      box-shadow:0 0 16px rgba(250,204,21,0.28);
+      flex-shrink:0;
+    }
+
+    .logo-text{
+      display:flex;
+      flex-direction:column;
+      line-height:1;
+      min-width:0;
+    }
+
+    .logo-title{
+      font-size:27px;
+      font-weight:800;
+      color:var(--accent);
+      letter-spacing:.4px;
+      white-space:nowrap;
+    }
+
+    .logo-sub{
+      font-size:11px;
+      color:#cbd5e1;
+      letter-spacing:1.7px;
+      text-transform:uppercase;
+      margin-top:4px;
+      white-space:nowrap;
+    }
+
+    .nav-right{
+      display:flex;
+      align-items:center;
+      gap:14px;
+      min-width:0;
+    }
+
+    .nav-links{
+      display:flex;
+      align-items:center;
+      gap:20px;
+      flex-wrap:wrap;
+    }
+
+    .nav-links a{
+      color:#cbd5e1;
+      font-size:15px;
+      position:relative;
+      padding-bottom:4px;
+    }
+
+    .nav-links a:hover,
+    .nav-links a.active{
+      color:var(--accent);
+    }
+
+    .nav-links a.active::after{
+      content:"";
+      position:absolute;
+      left:0;
+      bottom:-4px;
+      width:100%;
+      height:2px;
+      background:var(--accent);
+      border-radius:999px;
+    }
+
+    .nav-auth{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    .nav-auth a{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      min-height:42px;
+      padding:10px 14px;
+      border-radius:12px;
+      font-size:14px;
+      font-weight:700;
+      line-height:1;
+      border:1px solid rgba(255,255,255,.14);
+    }
+
+    .nav-auth .signup-btn{
+      background:var(--accent);
+      color:#111827;
+      border-color:transparent;
+    }
+
+    .nav-auth .signup-btn:hover{
+      transform:translateY(-2px);
+      box-shadow:0 10px 22px rgba(250,204,21,.18);
+    }
+
+    .nav-auth .login-btn{
+      background:transparent;
+      color:#fff;
+    }
+
+    .nav-auth .login-btn:hover{
+      background:rgba(255,255,255,.06);
+      border-color:rgba(250,204,21,.28);
+      color:var(--accent);
+    }
+
+    .menu-toggle{
+      display:none;
+      width:46px;
+      height:46px;
+      border-radius:12px;
+      border:1px solid rgba(250,204,21,.35);
+      background:#111827;
+      color:var(--accent);
+      align-items:center;
+      justify-content:center;
+      cursor:pointer;
+      flex-direction:column;
+      gap:5px;
+      flex-shrink:0;
+    }
+
+    .menu-toggle span{
+      width:20px;
+      height:2px;
+      border-radius:999px;
+      background:var(--accent);
+      display:block;
+    }
+
+    .account-menu-wrap{
+      position:relative;
+      flex-shrink:0;
+    }
+
+    .account-menu-btn{
+      width:48px;
+      height:48px;
+      border-radius:14px;
+      border:1px solid rgba(250,204,21,.28);
+      background:#111827;
+      color:#fff;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:5px;
+      cursor:pointer;
+      padding:0;
+      position:relative;
+      overflow:hidden;
+    }
+
+    .account-menu-btn:hover{
+      color:var(--accent);
+      border-color:rgba(250,204,21,.42);
+      transform:translateY(-2px);
+    }
+
+    .account-menu-btn i{
+      font-size:15px;
+    }
+
+    .account-menu-dropdown{
+      position:absolute;
+      top:calc(100% + 12px);
+      right:0;
+      width:min(340px,92vw);
+      background:#111827;
+      border:1px solid var(--line);
+      border-radius:20px;
+      box-shadow:0 24px 50px rgba(0,0,0,.34);
+      padding:14px;
+      display:none;
+      z-index:1200;
+    }
+
+    .account-menu-dropdown.show{
+      display:block;
+    }
+
+    .account-menu-head{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      padding:8px 8px 14px;
+      border-bottom:1px solid var(--line);
+      margin-bottom:12px;
+    }
+
+    .account-menu-avatar{
+      width:52px;
+      height:52px;
+      border-radius:50%;
+      overflow:hidden;
+      background:linear-gradient(135deg,#facc15,#fb7185);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:#111827;
+      font-size:18px;
+      font-weight:800;
+      flex-shrink:0;
+    }
+
+    .account-menu-avatar img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+    }
+
+    .account-menu-head strong{
+      display:block;
+      color:#fff;
+      font-size:16px;
+      line-height:1.3;
+    }
+
+    .account-menu-head small{
+      display:block;
+      color:#94a3b8;
+      font-size:12px;
+      margin-top:2px;
+      word-break:break-word;
+    }
+
+    .account-menu-links{
+      display:grid;
+      gap:8px;
+    }
+
+    .account-link,
+    .account-logout{
+      min-height:46px;
+      border-radius:14px;
+      background:#0f172a;
+      border:1px solid var(--line);
+      color:#e5e7eb;
+      font-size:14px;
+      font-weight:700;
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding:0 14px;
+      cursor:pointer;
+    }
+
+    .account-link:hover,
+    .account-logout:hover{
+      color:var(--accent);
+      border-color:rgba(250,204,21,.24);
+      transform:translateY(-2px);
+    }
+
+    .page-shell{
+      padding:26px 0 74px;
+    }
+
+    .profile-shell{
+      background:#111827;
+      border:1px solid var(--line);
+      border-radius:28px;
+      overflow:hidden;
+      box-shadow:0 18px 40px rgba(0,0,0,.18);
+    }
+
+    .cover-wrap{
+      position:relative;
+      min-height:320px;
+      background:
+        linear-gradient(rgba(15,23,42,.26), rgba(15,23,42,.68)),
+        url('https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&w=1600&q=80') center/cover no-repeat;
+    }
+
+    .cover-wrap::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:linear-gradient(to bottom, rgba(15,23,42,.12), rgba(15,23,42,.74));
+    }
+
+    .profile-main{
+      position:relative;
+      z-index:2;
+      margin-top:-70px;
+      padding:0 26px 26px;
+    }
+
+    .profile-top{
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+      gap:18px;
+      flex-wrap:wrap;
+      margin-bottom:18px;
+    }
+
+    .profile-main-left{
+      display:flex;
+      align-items:flex-end;
+      gap:18px;
+      flex-wrap:wrap;
+      min-width:0;
+    }
+
+    .profile-avatar{
+      width:128px;
+      height:128px;
+      border-radius:50%;
+      overflow:hidden;
+      background:linear-gradient(135deg,#facc15,#fb7185);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:#111827;
+      font-size:44px;
+      font-weight:800;
+      border:4px solid rgba(255,255,255,.14);
+      box-shadow:0 14px 28px rgba(0,0,0,.24);
+      flex-shrink:0;
+    }
+
+    .profile-avatar img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+    }
+
+    .profile-identity{
+      min-width:220px;
+      flex:1;
+    }
+
+    .profile-role{
+      color:#cbd5e1;
+      font-size:13px;
+      text-transform:uppercase;
+      letter-spacing:1px;
+      margin-bottom:6px;
+    }
+
+    .profile-name-line{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-bottom:8px;
+    }
+
+    .profile-name{
+      font-size:36px;
+      line-height:1.1;
+      color:#fff;
+      font-weight:800;
+      word-break:break-word;
+    }
+
+    .check-badge{
+      width:28px;
+      height:28px;
+      border-radius:50%;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      background:rgba(59,130,246,.16);
+      color:#93c5fd;
+      border:1px solid rgba(59,130,246,.26);
+      font-size:13px;
+      flex-shrink:0;
+    }
+
+    .profile-handle{
+      color:#94a3b8;
+      font-size:15px;
+      word-break:break-word;
+    }
+
+    .profile-badges{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:12px;
+    }
+
+    .member-badge{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:7px;
+      padding:9px 14px;
+      border-radius:999px;
+      font-size:13px;
+      font-weight:700;
+      border:1px solid rgba(255,255,255,.14);
+      background:#0f172a;
+      color:#fff;
+    }
+
+    .member-badge.premium{
+      color:#fde68a;
+      border-color:rgba(250,204,21,.36);
+      background:rgba(250,204,21,.14);
+    }
+
+    .member-badge.verified{
+      color:#93c5fd;
+      border-color:rgba(59,130,246,.26);
+      background:rgba(59,130,246,.12);
+    }
+
+    .profile-actions{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+
+    .action-btn{
+      min-height:48px;
+      padding:12px 18px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.14);
+      background:#0f172a;
+      color:#fff;
+      font-size:14px;
+      font-weight:800;
+      cursor:pointer;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+    }
+
+    .action-btn:hover{
+      transform:translateY(-2px);
+      color:var(--accent);
+      border-color:rgba(250,204,21,.24);
+    }
+
+    .action-btn.primary{
+      background:var(--accent);
+      color:#111827;
+      border-color:transparent;
+      box-shadow:0 10px 24px rgba(250,204,21,.18);
+    }
+
+    .action-btn.primary:hover{
+      color:#111827;
+    }
+
+    .action-btn.following{
+      background:transparent;
+      color:#fff;
+      border-color:rgba(255,255,255,.16);
+      box-shadow:none;
+    }
+
+    .profile-body{
+      display:grid;
+      grid-template-columns:320px minmax(0,1fr);
+      gap:22px;
+      align-items:start;
+    }
+
+    .info-stack{
+      display:grid;
+      gap:18px;
+    }
+
+    .panel{
+      background:#0f172a;
+      border:1px solid var(--line);
+      border-radius:22px;
+      padding:18px;
+    }
+
+    .panel h3{
+      color:#fff;
+      font-size:19px;
+      margin-bottom:12px;
+    }
+
+    .profile-bio{
+      color:#cbd5e1;
+      font-size:15px;
+      white-space:pre-wrap;
+    }
+
+    .detail-list{
+      display:grid;
+      gap:10px;
+      margin-top:4px;
+    }
+
+    .detail-row{
+      display:flex;
+      align-items:flex-start;
+      gap:12px;
+      color:#cbd5e1;
+      font-size:14px;
+      word-break:break-word;
+    }
+
+    .detail-row i{
+      width:16px;
+      margin-top:4px;
+      color:var(--accent);
+      text-align:center;
+      flex-shrink:0;
+    }
+
+    .stat-grid{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:12px;
+    }
+
+    .stat-card{
+      text-align:center;
+      background:#111827;
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:16px 12px;
+    }
+
+    .stat-card strong{
+      display:block;
+      color:#fff;
+      font-size:22px;
+      line-height:1.1;
+    }
+
+    .stat-card span{
+      display:block;
+      color:#94a3b8;
+      font-size:12px;
+      margin-top:6px;
+    }
+
+    .dashboard-lock{
+      display:grid;
+      gap:12px;
+    }
+
+    .dashboard-lock p{
+      color:#cbd5e1;
+      font-size:14px;
+    }
+
+    .content-head{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:16px;
+      flex-wrap:wrap;
+      margin-bottom:18px;
+    }
+
+    .content-head h2{
+      color:#fff;
+      font-size:30px;
+    }
+
+    .content-head p{
+      color:#94a3b8;
+      font-size:14px;
+    }
+
+    .tab-bar{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-bottom:20px;
+    }
+
+    .tab-btn{
+      min-height:44px;
+      padding:10px 16px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.14);
+      background:#0f172a;
+      color:#cbd5e1;
+      font-size:14px;
+      font-weight:800;
+      cursor:pointer;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+    }
+
+    .tab-btn.active,
+    .tab-btn:hover{
+      color:#111827;
+      background:var(--accent);
+      border-color:transparent;
+    }
+
+    .search-bar{
+      display:grid;
+      grid-template-columns:1.2fr 0.8fr 120px;
+      gap:12px;
+      margin-bottom:24px;
+      background:#111827;
+      border:1px solid rgba(255,255,255,0.08);
+      border-radius:18px;
+      padding:10px;
+    }
+
+    .search-input-wrap{
+      position:relative;
+    }
+
+    .search-input-wrap i{
+      position:absolute;
+      left:16px;
+      top:50%;
+      transform:translateY(-50%);
+      color:#94a3b8;
+      font-size:15px;
+      pointer-events:none;
+    }
+
+    .search-input-wrap input,
+    .search-select{
+      width:100%;
+      min-height:52px;
+      background:#0f172a;
+      border:1px solid rgba(255,255,255,0.08);
+      border-radius:12px;
+      color:#ffffff;
+      outline:none;
+      font-size:15px;
+    }
+
+    .search-input-wrap input{
+      padding:14px 16px 14px 46px;
+    }
+
+    .search-select{
+      padding:14px 16px;
+    }
+
+    .search-input-wrap input:focus,
+    .search-select:focus{
+      border-color:rgba(250,204,21,0.55);
+      box-shadow:0 0 0 3px rgba(250,204,21,0.08);
+    }
+
+    .search-btn{
+      min-height:52px;
+      border:none;
+      border-radius:12px;
+      background:#facc15;
+      color:#111827;
+      font-size:15px;
+      font-weight:700;
+      cursor:pointer;
+    }
+
+    .search-btn:hover{
+      transform:translateY(-2px);
+      box-shadow:0 10px 24px rgba(250,204,21,0.2);
+    }
+
+    .filter-note{
+      color:#cbd5e1;
+      font-size:14px;
+      margin:6px 0 22px;
+    }
+
+    .photo-grid{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:22px;
+    }
+
+    .visual-card{
+      position:relative;
+      min-height:420px;
+      border-radius:24px;
+      overflow:hidden;
+      border:1px solid var(--line);
+      background:#111827;
+      transition:.3s;
+      cursor:pointer;
+      box-shadow:0 14px 28px rgba(0,0,0,.16);
+    }
+
+    .visual-card:hover{
+      transform:translateY(-6px);
+      box-shadow:0 18px 36px rgba(0,0,0,.24);
+    }
+
+    .visual-card img{
+      position:absolute;
+      inset:0;
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      background:#1e293b;
+    }
+
+    .visual-card::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      z-index:1;
+      background:linear-gradient(
+        to top,
+        rgba(15,23,42,.96) 0%,
+        rgba(15,23,42,.72) 34%,
+        rgba(15,23,42,.20) 70%,
+        rgba(15,23,42,.04) 100%
+      );
+    }
+
+
+.locked-card img{
+  filter:blur(10px) brightness(.55);
+  transform:scale(1.05);
+}
+
+.locked-card::before{
+  content:"Premium";
+  position:absolute;
+  top:14px;
+  right:14px;
+  z-index:4;
+  background:#facc15;
+  color:#111827;
+  font-size:12px;
+  font-weight:800;
+  padding:6px 10px;
+  border-radius:999px;
+  box-shadow:0 8px 20px rgba(250,204,21,.18);
+}
+
+.action-icon.disabled,
+.lightbox-social.disabled,
+.photo-stat.disabled{
+  opacity:.45;
+  cursor:not-allowed;
+  pointer-events:none;
+}
+
+.lock-note{
+  color:#fde68a;
+  font-size:13px;
+  font-weight:700;
+  text-shadow:0 2px 10px rgba(0,0,0,.35);
+}
+
+    .card-top-row{
+      position:absolute;
+      top:14px;
+      left:14px;
+      right:14px;
+      z-index:3;
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:10px;
+    }
+
+    .card-top-left,
+    .card-top-right{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+
+    .photo-overlay{
+      position:absolute;
+      inset:0;
+      z-index:2;
+      padding:14px;
+      display:flex;
+      flex-direction:column;
+      justify-content:flex-end;
+      gap:8px;
+    }
+
+    .overlay-category{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+
+    .overlay-desc{
+      color:#fff;
+      font-size:14px;
+      line-height:1.45;
+      margin:0;
+      text-shadow:0 2px 10px rgba(0,0,0,.35);
+      display:-webkit-box;
+      -webkit-line-clamp:2;
+      -webkit-box-orient:vertical;
+      overflow:hidden;
+      max-width:92%;
+    }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:6px;
+      padding:6px 10px;
+      border-radius:999px;
+      font-size:11px;
+      background:rgba(0,0,0,.74);
+      border:1px solid rgba(255,255,255,.12);
+      color:#fff;
+      backdrop-filter:blur(8px);
+      white-space:nowrap;
+    }
+
+    .pill.category-tag{
+      background:rgba(0,0,0,.84);
+      color:#fff;
+      border:1px solid rgba(255,255,255,.16);
+    }
+
+    .pill.featured{
+      background:rgba(34,197,94,.18);
+      border-color:rgba(34,197,94,.28);
+      color:#86efac;
+    }
+
+    .pill.trending{
+      background:rgba(59,130,246,.16);
+      border-color:rgba(59,130,246,.26);
+      color:#93c5fd;
+    }
+
+    .pill.premium{
+      background:rgba(250,204,21,.22);
+      border:1px solid rgba(250,204,21,.42);
+      color:#fde68a;
+      box-shadow:0 8px 22px rgba(250,204,21,.14);
+    }
+
+    .credit{
+      color:#e2e8f0;
+      font-size:13px;
+      font-weight:700;
+      text-shadow:0 2px 10px rgba(0,0,0,.35);
+      line-height:1.35;
+      display:flex;
+      align-items:center;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+
+    .photo-stats{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      flex-wrap:wrap;
+      margin-top:2px;
+    }
+
+    .photo-stat{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding:7px 10px;
+      border-radius:999px;
+      font-size:11px;
+      font-weight:700;
+      color:#fff;
+      background:rgba(255,255,255,.12);
+      border:1px solid rgba(255,255,255,.14);
+      backdrop-filter:blur(8px);
+      line-height:1;
+    }
+
+    .photo-stat i{
+      color:var(--accent);
+      font-size:11px;
+    }
+
+    .photo-stat.react-btn{
+      cursor:pointer;
+      border:none;
+    }
+
+    .photo-stat.react-btn:hover{
+      transform:translateY(-2px);
+      border-color:rgba(250,204,21,.3);
+    }
+
+    .photo-stat.react-btn.active{
+      background:rgba(250,204,21,.16);
+      border-color:rgba(250,204,21,.35);
+      color:#fff;
+    }
+
+    .action-icon{
+      width:38px;
+      height:38px;
+      border-radius:50%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:rgba(255,255,255,.12);
+      border:1px solid rgba(255,255,255,.14);
+      color:#fff;
+      cursor:pointer;
+      backdrop-filter:blur(8px);
+      font-size:14px;
+      text-decoration:none;
+      flex-shrink:0;
+    }
+
+    .action-icon:hover{
+      color:var(--accent);
+      border-color:rgba(250,204,21,.3);
+      transform:translateY(-2px);
+    }
+
+    .empty-box{
+      background:#111827;
+      border:1px dashed rgba(255,255,255,.14);
+      border-radius:22px;
+      padding:28px;
+      color:var(--muted);
+      text-align:center;
+      grid-column:1 / -1;
+    }
+
+    .empty-box strong{
+      display:block;
+      color:#fff;
+      font-size:20px;
+      margin-bottom:8px;
+    }
+
+    .empty-actions{
+      display:flex;
+      gap:12px;
+      justify-content:center;
+      flex-wrap:wrap;
+      margin-top:16px;
+    }
+
+    .lightbox{
+      position:fixed;
+      inset:0;
+      background:rgba(2,6,23,.86);
+      backdrop-filter:blur(10px);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:20px;
+      z-index:2000;
+    }
+
+    .lightbox.show{
+      display:flex;
+    }
+
+    
+.lightbox-panel{
+      width:min(1180px,100%);
+      height:min(92vh,900px);
+      max-height:92vh;
+      background:#111827;
+      border:1px solid var(--line);
+      border-radius:24px;
+      overflow:hidden;
+      display:grid;
+      grid-template-columns:minmax(0,1.08fr) minmax(320px,.92fr);
+      align-items:stretch;
+      box-shadow:0 24px 60px rgba(0,0,0,.35);
+    }
+
+    
+.lightbox-image-wrap{
+      background:#020617;
+      min-height:0;
+      height:100%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:12px;
+      overflow:hidden;
+    }
+
+    
+.lightbox-image-wrap img{
+      width:100%;
+      height:100%;
+      max-width:100%;
+      max-height:100%;
+      object-fit:contain;
+      object-position:center;
+      border-radius:18px;
+    }
+
+    
+.lightbox-info{
+      padding:14px 14px 20px;
+      overflow-y:auto;
+      position:relative;
+      background:#111827;
+      min-height:0;
+    }
+
+    .lightbox-close{
+      position:absolute;
+      top:14px;
+      right:14px;
+      width:42px;
+      height:42px;
+      border:none;
+      border-radius:12px;
+      background:#0f172a;
+      border:1px solid var(--line);
+      color:#fff;
+      font-size:20px;
+      cursor:pointer;
+      z-index:10;
+    }
+
+    .lightbox-close:hover{
+      color:var(--accent);
+    }
+
+    .lightbox-title{
+      font-size:22px;
+      color:#fff;
+      margin-bottom:8px;
+      word-break:break-word;
+      line-height:1.2;
+    }
+
+    .lightbox-sub{
+      color:#cbd5e1;
+      font-size:14px;
+      margin-bottom:16px;
+    }
+
+    .lightbox-actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-bottom:18px;
+    }
+
+    .lightbox-social{
+      width:42px;
+      height:42px;
+      border-radius:50%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:#0f172a;
+      border:1px solid var(--line);
+      color:#fff;
+      font-size:15px;
+      cursor:pointer;
+      flex-shrink:0;
+    }
+
+    .lightbox-social:hover{
+      color:var(--accent);
+      border-color:rgba(250,204,21,.22);
+      transform:translateY(-2px);
+    }
+
+    .detail-list{
+      display:grid;
+      gap:12px;
+      margin-top:6px;
+    }
+
+    .detail-item{
+      background:#0f172a;
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:12px 14px;
+    }
+
+    .detail-item strong{
+      display:block;
+      color:var(--accent);
+      font-size:13px;
+      margin-bottom:4px;
+      text-transform:uppercase;
+      letter-spacing:.8px;
+    }
+
+    .detail-item span{
+      color:#e5e7eb;
+      font-size:14px;
+      word-break:break-word;
+      white-space:pre-wrap;
+    }
+
+    .notice{
+      position:fixed;
+      left:50%;
+      bottom:24px;
+      transform:translateX(-50%);
+      background:#111827;
+      border:1px solid var(--line);
+      color:#fff;
+      padding:12px 16px;
+      border-radius:14px;
+      box-shadow:0 12px 28px rgba(0,0,0,.24);
+      z-index:2200;
+      display:none;
+      max-width:min(92vw,460px);
+      text-align:center;
+    }
+
+    .notice.show{
+      display:block;
+    }
+
+    footer{
+      background:#020617;
+      border-top:1px solid var(--line);
+      padding:24px 0;
+    }
+
+    .footer-inner{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:20px;
+      flex-wrap:wrap;
+    }
+
+    .footer-inner p{
+      color:#94a3b8;
+      font-size:14px;
+    }
+
+    .footer-links{
+      display:flex;
+      flex-wrap:wrap;
+      gap:16px;
+    }
+
+    .footer-links a{
+      color:#cbd5e1;
+      font-size:14px;
+    }
+
+    .footer-links a:hover{
+      color:var(--accent);
+    }
+
+    @media(max-width:1100px){
+      .profile-body{
+        grid-template-columns:1fr;
+      }
+
+      .photo-grid{
+        grid-template-columns:repeat(2,1fr);
+      }
+
+      .lightbox-panel{
+        grid-template-columns:1fr;
+      }
+    }
+
+    @media(max-width:768px){
+      .menu-toggle{
+        display:flex;
+      }
+
+      .nav-links{
+        position:absolute;
+        top:100%;
+        left:0;
+        right:0;
+        display:none;
+        flex-direction:column;
+        align-items:flex-start;
+        gap:0;
+        background:#0f172a;
+        border:1px solid var(--line);
+        border-radius:16px;
+        padding:12px;
+        box-shadow:0 16px 30px rgba(0,0,0,.28);
+      }
+
+      .nav-links.show{
+        display:flex;
+      }
+
+      .nav-links a{
+        width:100%;
+        padding:12px 10px;
+        border-radius:10px;
+      }
+
+      .nav-links a.active::after{
+        display:none;
+      }
+
+      .nav-links a:hover,
+      .nav-links a.active{
+        background:rgba(250,204,21,.12);
+      }
+
+      .nav-auth{
+        width:100%;
+        flex-direction:column;
+        align-items:stretch;
+        padding-top:10px;
+      }
+
+      .nav-auth a{
+        width:100%;
+        text-align:center;
+      }
+
+      .profile-main{
+        margin-top:-52px;
+        padding:0 16px 18px;
+      }
+
+      .profile-avatar{
+        width:110px;
+        height:110px;
+        font-size:36px;
+      }
+
+      .profile-name{
+        font-size:30px;
+      }
+
+      .profile-top{
+        align-items:flex-start;
+      }
+
+      .profile-actions{
+        width:100%;
+        justify-content:flex-start;
+      }
+
+      .action-btn{
+        width:100%;
+      }
+
+      .search-bar,
+      .photo-grid{
+        grid-template-columns:1fr;
+      }
+
+      .stat-grid{
+        grid-template-columns:1fr;
+      }
+
+      .logo-title{
+        font-size:22px;
+      }
+
+      .logo-sub{
+        font-size:10px;
+        letter-spacing:1.2px;
+      }
+
+      .footer-inner{
+        flex-direction:column;
+        align-items:flex-start;
+      }
+    }
+
+    @media(max-width:480px){
+      .container{
+        width:min(1200px,94%);
+      }
+
+      .logo-title{
+        font-size:20px;
+      }
+
+      .logo-sub{
+        font-size:9px;
+      }
+
+      .cover-wrap{
+        min-height:260px;
+      }
+
+      .profile-name{
+        font-size:26px;
+      }
+
+      .content-head h2{
+        font-size:26px;
+      }
+
+      .visual-card{
+        min-height:390px;
+      }
+
+      .overlay-desc{
+        font-size:12px;
+      }
+
+      .credit{
+        font-size:12px;
+      }
+
+      .pill{
+        font-size:10px;
+      }
+
+      .account-menu-dropdown{
+        width:min(320px,92vw);
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="container nav">
+      <a href="index.html" class="logo-wrap">
+        <span class="logo-mark">P</span>
+        <span class="logo-text">
+          <span class="logo-title">PixNest</span>
+          <span class="logo-sub">Photo Collection Site</span>
+        </span>
+      </a>
+
+      <div class="nav-right">
+        <button class="menu-toggle" id="menuToggle" aria-label="Open menu" aria-expanded="false">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+
+        <nav class="nav-links" id="navLinks">
+          <a href="index.html">Home</a>
+          <a href="explore.html">Explore</a>
+          <a href="category.html">Categories</a>
+          <a href="about.html">About</a>
+          <a href="upload.html">Upload</a>
+          <a href="contact.html">Contact</a>
+
+          <div class="nav-auth" id="navAuth">
+          <a href="login.html" class="login-btn"><i class="fa-solid fa-right-to-bracket"></i>Login</a>
+          <a href="signup.html" class="signup-btn"><i class="fa-solid fa-user-plus"></i>Sign Up</a>
+        </div>
+        </nav>
+
+        <div class="account-menu-wrap hidden" id="accountMenuWrap">
+          <button class="account-menu-btn" id="accountMenuBtn" aria-label="Open account menu" aria-expanded="false">
+            <i class="fa-solid fa-bars"></i>
+          </button>
+
+          <div class="account-menu-dropdown" id="accountMenuDropdown">
+            <div class="account-menu-head">
+              <div class="account-menu-avatar" id="menuAvatar"></div>
+
+              <div>
+                <strong id="menuName">PixNest User</strong>
+                <small id="menuEmail">Signed in</small>
+              </div>
+            </div>
+
+            <div class="account-menu-links">
+              <a class="account-link" href="profile.html">
+                <i class="fa-solid fa-user"></i>
+                My Profile
+              </a>
+
+              <a class="account-link" href="account.html">
+                <i class="fa-solid fa-id-card"></i>
+                Account
+              </a>
+
+              <a class="account-link" href="upload.html">
+                <i class="fa-solid fa-cloud-arrow-up"></i>
+                Upload
+              </a>
+
+              <a class="account-link" href="help.html">
+                <i class="fa-solid fa-circle-question"></i>
+                Help
+              </a>
+
+              <a class="account-link hidden" href="professional-dashboard.html" id="menuDashboardLink">
+                <i class="fa-solid fa-chart-line"></i>
+                Professional Dashboard
+              </a>
+
+              <button type="button" class="account-logout" id="logoutBtn">
+                <i class="fa-solid fa-right-from-bracket"></i>
+                Logout
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="page-shell">
+    <div class="container">
+      <div class="profile-shell">
+        <div class="cover-wrap" id="coverWrap"></div>
+
+        <div class="profile-main">
+          <div class="profile-top">
+            <div class="profile-main-left">
+              <div class="profile-avatar" id="profileAvatar"></div>
+
+              <div class="profile-identity">
+                <div class="profile-role" id="profileRole">Creator Profile</div>
+
+                <div class="profile-name-line">
+                  <h1 class="profile-name" id="profileName">PixNest Profile</h1>
+                  <span class="check-badge hidden" id="verifiedBadge" title="Verified creator" aria-label="Verified creator">
+                    <i class="fa-solid fa-check"></i>
+                  </span>
+                </div>
+
+                <div class="profile-handle" id="profileHandle">@pixnest</div>
+
+                <div class="profile-badges" id="profileBadges"></div>
+              </div>
+            </div>
+
+            <div class="profile-actions" id="profileActions"></div>
+          </div>
+
+          <div class="profile-body">
+            <aside class="info-stack">
+              <div class="panel">
+                <h3>About</h3>
+                <p class="profile-bio" id="profileBio">Profile information will appear here.</p>
+              </div>
+
+              <div class="panel">
+                <h3>Profile Details</h3>
+                <div class="detail-list" id="profileDetails"></div>
+              </div>
+
+              <div class="panel">
+                <h3>Stats</h3>
+                <div class="stat-grid" id="profileStats"></div>
+              </div>
+
+              <div class="panel" id="dashboardPanel">
+                <h3>Professional Dashboard</h3>
+                <div class="dashboard-lock" id="dashboardPanelBody"></div>
+              </div>
+            </aside>
+
+            <section>
+              <div class="content-head">
+                <div>
+                  <h2 id="contentTitle">Profile Content</h2>
+                  <p id="contentText">Browse posts, reposts and favourites on this profile.</p>
+                </div>
+              </div>
+
+              <div class="tab-bar" id="tabBar"></div>
+
+              <div class="search-bar">
+                <div class="search-input-wrap">
+                  <i class="fa-solid fa-magnifying-glass"></i>
+                  <input type="text" id="profileSearchInput" placeholder="Search photos, descriptions or tags">
+                </div>
+
+                <select id="profileFilter" class="search-select">
+                  <option value="all">All Items</option>
+                  <option value="featured">Featured Only</option>
+                  <option value="premium">Premium Only</option>
+                </select>
+
+                <button type="button" class="search-btn" id="profileSearchBtn">Search</button>
+              </div>
+
+              <div class="filter-note" id="contentNote"></div>
+
+              <div class="photo-grid" id="profileGrid">
+                <div class="empty-box">Profile photos will appear here when loaded.</div>
+              </div>
+            </section>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div class="lightbox" id="lightbox">
+    <div class="lightbox-panel">
+      <div class="lightbox-image-wrap">
+        <img id="lightboxImage" src="" alt="Large view">
+      </div>
+
+      <div class="lightbox-info">
+        <button class="lightbox-close" id="lightboxClose" aria-label="Close">×</button>
+
+        <h3 class="lightbox-title" id="lightboxTitle"></h3>
+        <div class="lightbox-sub" id="lightboxSub"></div>
+
+        <div id="lightboxStatsWrap"></div>
+
+        <div class="lightbox-actions" id="lightboxActions"></div>
+
+        <div class="detail-list">
+          <div class="detail-item">
+            <strong>Category</strong>
+            <span id="lightboxCategory">—</span>
+          </div>
+
+          <div class="detail-item">
+            <strong>Creator</strong>
+            <span id="lightboxCreator">—</span>
+          </div>
+
+          <div class="detail-item">
+            <strong>Tags</strong>
+            <span id="lightboxTags">—</span>
+          </div>
+
+          <div class="detail-item">
+            <strong>Description</strong>
+            <span id="lightboxDescription">—</span>
+          </div>
+
+          <div class="detail-item">
+            <strong>Posted</strong>
+            <span id="lightboxPosted">—</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="notice" id="noticeBar"></div>
+
+  <footer>
+    <div class="container footer-inner">
+      <p id="footerText">©️ 2026 PixNest. Discover and share powerful visual collections.</p>
+
+      <div class="footer-links">
+        <a href="about.html">About</a>
+        <a href="license.html">License</a>
+        <a href="privacy.html">Privacy</a>
+        <a href="terms.html">Terms</a>
+        <a href="contact.html">Contact</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const STORAGE_KEY = "pixnest_admin_v2";
+    const REACTION_KEY = "pixnest_photo_reactions_v1";
+    const CREATOR_PREFS_KEY = "pixnest_creator_prefs_v1";
+    const VIEWED_SESSION_KEY = "pixnest_viewed_session_v1";
+    const SUPABASE_URL = "https://vigczssznfvujttdapbv.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_UmF-mmVS42XeF6PqsNnCSw_wpA35wg2";
+    const DEFAULT_COVER = "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&w=1600&q=80";
+
+
+const LOCKED_SVG =
+  "data:image/svg+xml;charset=UTF-8," +
+  encodeURIComponent(`
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800">
+      <defs>
+        <linearGradient id="g" x1="0" x2="1" y1="0" y2="1">
+          <stop offset="0%" stop-color="#0f172a"/>
+          <stop offset="100%" stop-color="#1e293b"/>
+        </linearGradient>
+      </defs>
+      <rect width="800" height="800" fill="url(#g)"/>
+      <circle cx="400" cy="300" r="95" fill="rgba(250,204,21,0.12)" stroke="rgba(250,204,21,0.35)" stroke-width="6"/>
+      <path d="M350 300v-34c0-28 22-50 50-50s50 22 50 50v34" fill="none" stroke="#facc15" stroke-width="20" stroke-linecap="round"/>
+      <rect x="320" y="300" rx="24" ry="24" width="160" height="150" fill="#111827" stroke="rgba(250,204,21,0.28)" stroke-width="6"/>
+      <circle cx="400" cy="370" r="18" fill="#facc15"/>
+      <rect x="390" y="388" width="20" height="34" rx="10" fill="#facc15"/>
+      <text x="400" y="540" text-anchor="middle" fill="#f8fafc" font-size="38" font-family="Arial, Helvetica, sans-serif" font-weight="700">Premium Photo</text>
+      <text x="400" y="585" text-anchor="middle" fill="#94a3b8" font-size="22" font-family="Arial, Helvetica, sans-serif">Unlock with membership</text>
+    </svg>
+  `);
+    const DEFAULT_IMAGE = "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&w=1200&q=80";
+
+    const { createClient } = supabase;
+    const supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    const menuToggle = document.getElementById("menuToggle");
+    const navLinks = document.getElementById("navLinks");
+    const navAuth = document.getElementById("navAuth");
+
+    const accountMenuWrap = document.getElementById("accountMenuWrap");
+    const accountMenuBtn = document.getElementById("accountMenuBtn");
+    const accountMenuDropdown = document.getElementById("accountMenuDropdown");
+    const menuAvatar = document.getElementById("menuAvatar");
+    const menuName = document.getElementById("menuName");
+    const menuEmail = document.getElementById("menuEmail");
+    const menuDashboardLink = document.getElementById("menuDashboardLink");
+    const logoutBtn = document.getElementById("logoutBtn");
+
+    const coverWrap = document.getElementById("coverWrap");
+    const profileAvatar = document.getElementById("profileAvatar");
+    const profileRole = document.getElementById("profileRole");
+    const profileName = document.getElementById("profileName");
+    const verifiedBadge = document.getElementById("verifiedBadge");
+    const profileHandle = document.getElementById("profileHandle");
+    const profileBadges = document.getElementById("profileBadges");
+    const profileBio = document.getElementById("profileBio");
+    const profileDetails = document.getElementById("profileDetails");
+    const profileStats = document.getElementById("profileStats");
+    const profileActions = document.getElementById("profileActions");
+    const dashboardPanel = document.getElementById("dashboardPanel");
+    const dashboardPanelBody = document.getElementById("dashboardPanelBody");
+    const contentTitle = document.getElementById("contentTitle");
+    const contentText = document.getElementById("contentText");
+    const tabBar = document.getElementById("tabBar");
+    const profileSearchInput = document.getElementById("profileSearchInput");
+    const profileFilter = document.getElementById("profileFilter");
+    const profileSearchBtn = document.getElementById("profileSearchBtn");
+    const contentNote = document.getElementById("contentNote");
+    const profileGrid = document.getElementById("profileGrid");
+    const footerText = document.getElementById("footerText");
+
+    const lightbox = document.getElementById("lightbox");
+    const lightboxClose = document.getElementById("lightboxClose");
+    const lightboxImage = document.getElementById("lightboxImage");
+    const lightboxTitle = document.getElementById("lightboxTitle");
+    const lightboxSub = document.getElementById("lightboxSub");
+    const lightboxStatsWrap = document.getElementById("lightboxStatsWrap");
+    const lightboxActions = document.getElementById("lightboxActions");
+    const noticeBar = document.getElementById("noticeBar");
+
+    let siteData = loadAdminData();
+    let currentSession = null;
+    let allPhotos = [];
+    let reactionState = loadReactionState();
+    let creatorPrefs = loadCreatorPrefs();
+    let viewedSession = loadViewedSession();
+    let activeLightboxPhotoId = "";
+    let activeTab = "posts";
+    let targetProfile = null;
+    let viewedRows = {
+      posts: [],
+      reposts: [],
+      favourites: []
+    };
+
+    if(menuToggle && navLinks){
+      menuToggle.addEventListener("click", () => {
+        navLinks.classList.toggle("show");
+        const expanded = menuToggle.getAttribute("aria-expanded") === "true";
+        menuToggle.setAttribute("aria-expanded", String(!expanded));
+      });
+    }
+
+    document.querySelectorAll(".nav-links a").forEach(link => {
+      link.addEventListener("click", () => {
+        if(window.innerWidth <= 768){
+          navLinks.classList.remove("show");
+          menuToggle.setAttribute("aria-expanded", "false");
+        }
+      });
+    });
+
+    document.addEventListener("click", (e) => {
+      if(window.innerWidth <= 768 && navLinks.classList.contains("show")){
+        if(!navLinks.contains(e.target) && !menuToggle.contains(e.target)){
+          navLinks.classList.remove("show");
+          menuToggle.setAttribute("aria-expanded", "false");
+        }
+      }
+
+      if(accountMenuWrap && !accountMenuWrap.contains(e.target)){
+        accountMenuDropdown.classList.remove("show");
+        accountMenuBtn.setAttribute("aria-expanded", "false");
+      }
+    });
+
+    window.addEventListener("resize", () => {
+      if(window.innerWidth > 768){
+        navLinks.classList.remove("show");
+        menuToggle.setAttribute("aria-expanded", "false");
+      }
+    });
+
+    if(accountMenuBtn){
+      accountMenuBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        accountMenuDropdown.classList.toggle("show");
+        const expanded = accountMenuBtn.getAttribute("aria-expanded") === "true";
+        accountMenuBtn.setAttribute("aria-expanded", String(!expanded));
+      });
+    }
+
+    if(logoutBtn){
+      logoutBtn.addEventListener("click", async () => {
+        try{
+          await supabaseClient.auth.signOut();
+          window.location.href = "index.html";
+        }catch(error){
+          showNotice("Could not log out.");
+        }
+      });
+    }
+
+    function showNotice(text){
+      noticeBar.textContent = text;
+      noticeBar.classList.add("show");
+      clearTimeout(showNotice._timer);
+      showNotice._timer = setTimeout(() => {
+        noticeBar.classList.remove("show");
+      }, 2200);
+    }
+
+    function escapeHtml(value = ""){
+      return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+
+    function normalize(value = ""){
+      return String(value || "").trim().toLowerCase();
+    }
+
+    function compactNumber(value){
+      try{
+        return new Intl.NumberFormat("en", {
+          notation:"compact",
+          maximumFractionDigits:1
+        }).format(Number(value || 0));
+      }catch(error){
+        return String(value || 0);
+      }
+    }
+
+    function loadAdminData(){
+      try{
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if(!saved){
+          return {
+            homepage:{},
+            footerText:""
+          };
+        }
+
+        const parsed = JSON.parse(saved);
+        return {
+          homepage: parsed.homepage && typeof parsed.homepage === "object" ? parsed.homepage : {},
+          footerText: parsed.footerText || ""
+        };
+      }catch(error){
+        return {
+          homepage:{},
+          footerText:""
+        };
+      }
+    }
+
+    function loadReactionState(){
+      try{
+        const saved = localStorage.getItem(REACTION_KEY);
+        const parsed = JSON.parse(saved || "{}");
+        return parsed && typeof parsed === "object" ? parsed : {};
+      }catch(error){
+        return {};
+      }
+    }
+
+    function saveReactionState(){
+      localStorage.setItem(REACTION_KEY, JSON.stringify(reactionState));
+    }
+
+    function loadCreatorPrefs(){
+      try{
+        const saved = localStorage.getItem(CREATOR_PREFS_KEY);
+        const parsed = JSON.parse(saved || "{}");
+        return parsed && typeof parsed === "object" ? parsed : {};
+      }catch(error){
+        return {};
+      }
+    }
+
+    function saveCreatorPrefs(){
+      localStorage.setItem(CREATOR_PREFS_KEY, JSON.stringify(creatorPrefs));
+    }
+
+    function loadViewedSession(){
+      try{
+        const saved = sessionStorage.getItem(VIEWED_SESSION_KEY);
+        const parsed = JSON.parse(saved || "{}");
+        return parsed && typeof parsed === "object" ? parsed : {};
+      }catch(error){
+        return {};
+      }
+    }
+
+    function saveViewedSession(){
+      sessionStorage.setItem(VIEWED_SESSION_KEY, JSON.stringify(viewedSession));
+    }
+
+
+let activeSessionUser = null;
+
+async function initActiveSessionUser(){
+  try{
+    const { data } = await supabaseClient.auth.getUser();
+    activeSessionUser = data?.user || null;
+  }catch(error){
+    activeSessionUser = null;
+  }
+}
+
+function getActiveUser(){
+  if(activeSessionUser) return activeSessionUser;
+  if(typeof currentUser !== "undefined" && currentUser) return currentUser;
+  if(typeof getSessionUser === "function"){
+    return getSessionUser();
+  }
+  return null;
+}
+
+function isLikelyFileName(value = ""){
+  const text = String(value || "").trim();
+  if(!text) return false;
+
+  const extPattern = /\.(jpg|jpeg|png|gif|webp|svg|bmp|avif)$/i;
+  const imageCodePattern = /^(img|image|dsc|pxl|pxl_|screenshot|screen-shot|whatsapp image|photo|file)[-_ ]?\d+/i;
+  const shortSlugPattern = /^[a-z0-9_-]{1,18}$/i;
+
+  return extPattern.test(text) || imageCodePattern.test(text) || shortSlugPattern.test(text);
+}
+
+function getMembershipPlan(user){
+  return String(
+    user?.app_metadata?.membership_plan ||
+    user?.app_metadata?.plan ||
+    user?.user_metadata?.membership_plan ||
+    user?.user_metadata?.plan ||
+    ""
+  ).trim().toLowerCase();
+}
+
+function isPremiumMember(user){
+  return Boolean(
+    ["premium", "premium-monthly", "premium-yearly"].includes(getMembershipPlan(user)) ||
+    user?.user_metadata?.premium_member === true ||
+    user?.user_metadata?.is_premium === true
+  );
+}
+
+    function applyFooterText(){
+      if(siteData.footerText){
+        footerText.textContent = siteData.footerText;
+      }
+    }
+
+    function getSessionUser(){
+      return currentSession?.user || null;
+    }
+
+    function getCurrentUserDisplayName(){
+      const user = getSessionUser();
+      if(!user) return "";
+      return String(
+        user.user_metadata?.full_name ||
+        user.user_metadata?.name ||
+        user.user_metadata?.username ||
+        user.email?.split("@")[0] ||
+        "PixNest User"
+      ).trim();
+    }
+
+    function getCurrentUserKeys(){
+      const user = getSessionUser();
+      if(!user) return [];
+
+      const candidates = [
+        user.id,
+        user.email,
+        user.email ? user.email.split("@")[0] : "",
+        user.user_metadata?.username,
+        user.user_metadata?.full_name,
+        user.user_metadata?.name
+      ];
+
+      return [...new Set(candidates.map(normalize).filter(Boolean))];
+    }
+
+    function updateAccountMenu(){
+      const user = getSessionUser();
+      if(!user){
+        accountMenuWrap.classList.add("hidden");
+        navAuth.classList.remove("hidden");
+        return;
+      }
+
+      accountMenuWrap.classList.remove("hidden");
+      navAuth.classList.add("hidden");
+
+      const displayName = getCurrentUserDisplayName() || "PixNest User";
+      const email = user.email || "Signed in";
+      menuName.textContent = displayName;
+      menuEmail.textContent = email;
+      menuAvatar.innerHTML = buildAvatarHtml({
+        avatar: user.user_metadata?.avatar_url || "",
+        name: displayName
+      });
+
+      const canDashboard = canCurrentUserAccessDashboard();
+      menuDashboardLink.classList.toggle("hidden", !canDashboard);
+    }
+
+    function canCurrentUserAccessDashboard(){
+      const user = getSessionUser();
+      if(!user) return false;
+
+      return Boolean(
+        user.user_metadata?.creator_approved ||
+        user.user_metadata?.dashboard_enabled ||
+        user.user_metadata?.can_access_dashboard ||
+        user.user_metadata?.verified_creator ||
+        user.user_metadata?.premium_creator
+      );
+    }
+
+    async function initAuthState(){
+      try{
+        const { data } = await supabaseClient.auth.getSession();
+        currentSession = data?.session || null;
+      }catch(error){
+        currentSession = null;
+      }
+
+      updateAccountMenu();
+
+      supabaseClient.auth.onAuthStateChange((_event, session) => {
+        currentSession = session || null;
+        updateAccountMenu();
+        decideProfileMode();
+      });
+    }
+
+    function getPhotoId(photo){
+      return String(
+        photo.id ||
+        photo.photo_id ||
+        photo.image_url ||
+        photo.created_at ||
+        `${photo.category || ""}-${photo.credit || ""}`
+      );
+    }
+
+    function getPhotoById(photoId){
+      return allPhotos.find(photo => getPhotoId(photo) === String(photoId)) || null;
+    }
+
+    
+function getSafePhotoTitle(photo){
+  const fields = [
+    photo.display_title,
+    photo.caption,
+    photo.headline,
+    photo.custom_title,
+    photo.public_title,
+    photo.title
+  ];
+
+  const found = fields.find(value => String(value || "").trim());
+  const clean = String(found || "").trim();
+
+  if(!clean) return "";
+  if(isLikelyFileName(clean)) return "";
+  return clean;
+}
+
+    function getDescription(photo){
+      return String(photo.description || "").trim();
+    }
+
+    function getPhotoAlt(photo){
+      return getSafePhotoTitle(photo) || getDescription(photo) || String(photo.category || "PixNest photo");
+    }
+
+    function getShareTitle(photo){
+      const safeTitle = getSafePhotoTitle(photo);
+      const description = getDescription(photo);
+      const category = String(photo.category || "").trim();
+
+      if(safeTitle) return `${safeTitle} on PixNest`;
+      if(description) return `${description} on PixNest`;
+      if(category) return `${category} photo on PixNest`;
+      return "Photo on PixNest";
+    }
+
+    
+function getPhotoTags(photo){
+  return (photo.tags || "")
+    .split(/[,|]/)
+    .map(tag => tag.trim())
+    .filter(Boolean)
+    .filter(tag => !isLikelyFileName(tag));
+}
+
+    function getNumberValue(photo, keys = []){
+      for(const key of keys){
+        const value = photo[key];
+
+        if(typeof value === "number" && Number.isFinite(value)){
+          return value;
+        }
+
+        if(typeof value === "string" && value.trim() !== "" && !Number.isNaN(Number(value))){
+          return Number(value);
+        }
+      }
+
+      return 0;
+    }
+
+    function getFavouriteBaseValue(photo){
+      const numericFavourite = getNumberValue(photo, [
+        "favourites",
+        "favorites",
+        "favourite_count",
+        "favorite_count",
+        "favourites_count",
+        "favorites_count",
+        "total_favourites",
+        "total_favorites"
+      ]);
+
+      if(numericFavourite) return numericFavourite;
+
+      const booleanKeys = [
+        "favourite",
+        "favorite",
+        "is_favourite",
+        "is_favorite"
+      ];
+
+      for(const key of booleanKeys){
+        if(typeof photo[key] === "boolean"){
+          return photo[key] ? 1 : 0;
+        }
+      }
+
+      return 0;
+    }
+
+    function getBasePhotoMetrics(photo){
+      return {
+        likes: getNumberValue(photo, ["likes","like_count","likes_count","total_likes"]),
+        views: getNumberValue(photo, ["views","view_count","views_count","total_views"]),
+        favourites: getFavouriteBaseValue(photo)
+      };
+    }
+
+    function getPhotoReactionState(photoId){
+      return reactionState[String(photoId)] || { liked:false, favourited:false };
+    }
+
+    function getPhotoMetrics(photo){
+      const id = getPhotoId(photo);
+      const state = getPhotoReactionState(id);
+      const base = getBasePhotoMetrics(photo);
+
+      return {
+        likes: base.likes + (state.liked ? 1 : 0),
+        views: base.views,
+        favourites: base.favourites + (state.favourited ? 1 : 0)
+      };
+    }
+
+    function toggleReaction(photoId, reactionType){
+      const key = reactionType === "like" ? "liked" : "favourited";
+      const current = {
+        liked: !!getPhotoReactionState(photoId).liked,
+        favourited: !!getPhotoReactionState(photoId).favourited
+      };
+
+      current[key] = !current[key];
+
+      if(!current.liked && !current.favourited){
+        delete reactionState[String(photoId)];
+      }else{
+        reactionState[String(photoId)] = current;
+      }
+
+      saveReactionState();
+      renderActiveGrid();
+
+      if(activeLightboxPhotoId && lightbox.classList.contains("show")){
+        const activePhoto = getPhotoById(activeLightboxPhotoId);
+        if(activePhoto){
+          renderLightboxContent(activePhoto);
+        }
+      }
+    }
+
+    function getCreatorName(photo){
+      return String(
+        photo.credit ||
+        photo.creator_name ||
+        photo.uploader_name ||
+        photo.author ||
+        "Unknown Creator"
+      ).trim();
+    }
+
+    function getCreatorKey(photo){
+      return normalize(
+        photo.creator_id ||
+        photo.profile_id ||
+        photo.user_id ||
+        photo.owner_id ||
+        photo.auth_user_id ||
+        photo.creator_key ||
+        getCreatorName(photo)
+      );
+    }
+
+    function getCreatorPref(photo){
+      return creatorPrefs[getCreatorKey(photo)] || {};
+    }
+
+    function updateCreatorPref(photo, updates = {}){
+      const key = getCreatorKey(photo);
+      creatorPrefs[key] = {
+        ...(creatorPrefs[key] || {}),
+        ...updates
+      };
+      saveCreatorPrefs();
+    }
+
+    function isCreatorFollowed(photo){
+      return !!getCreatorPref(photo).followed;
+    }
+
+    function isCreatorVerified(photo){
+      return Boolean(
+        photo.creator_verified ||
+        photo.verified ||
+        photo.is_verified ||
+        photo.creator_blue_check ||
+        photo.blue_check
+      );
+    }
+
+    function isCreatorPremium(photo){
+      return Boolean(
+        photo.creator_premium ||
+        photo.premium_creator ||
+        photo.creator_pro ||
+        normalize(photo.creator_plan) === "premium" ||
+        normalize(photo.membership_plan) === "premium"
+      );
+    }
+
+    function isPremiumPhoto(photo){
+      return Boolean(photo?.is_premium || photo?.premium_only);
+    }
+
+
+function isOwner(photo){
+  const user = getActiveUser();
+  if(!user) return false;
+
+  const currentId = normalize(user.id);
+  const ids = [
+    photo.user_id,
+    photo.owner_id,
+    photo.auth_user_id,
+    photo.profile_id,
+    photo.uploader_id,
+    photo.creator_id
+  ].map(normalize);
+
+  return ids.includes(currentId);
+}
+
+function canAccessPremiumPhoto(photo){
+  return !isPremiumPhoto(photo) || isPremiumMember(getActiveUser()) || isOwner(photo);
+}
+
+function isLockedPhoto(photo){
+  return isPremiumPhoto(photo) && !canAccessPremiumPhoto(photo);
+}
+
+function showPremiumLockNotice(){
+  showNotice("This premium photo is locked. Join premium to view, share, or download it.");
+}
+
+function handleLockedPremiumPhoto(){
+  showPremiumLockNotice();
+  window.location.href = "premium.html";
+}
+
+    function isRepostPhoto(photo){
+      return Boolean(
+        photo.is_repost ||
+        photo.repost_of_id ||
+        photo.reposted_from_id ||
+        photo.original_photo_id ||
+        photo.repost_id
+      );
+    }
+
+    function buildAvatarHtml(data){
+      const avatar = String(data.avatar || "").trim();
+      const name = String(data.name || "P").trim();
+
+      if(avatar){
+        return `<img src="${escapeHtml(avatar)}" alt="${escapeHtml(name)}">`;
+      }
+
+      return `<span>${escapeHtml(name.charAt(0).toUpperCase() || "P")}</span>`;
+    }
+
+    function buildCreatorBadges(photo){
+      const parts = [];
+
+      if(isCreatorVerified(photo)){
+        parts.push(`
+          <span class="pill trending"><i class="fa-solid fa-check"></i> Verified</span>
+        `);
+      }
+
+      if(isCreatorPremium(photo)){
+        parts.push(`
+          <span class="pill premium"><i class="fa-solid fa-crown"></i> Premium</span>
+        `);
+      }
+
+      return parts.join("");
+    }
+
+    function getPostDateValue(photo){
+      return (
+        photo.posted_at ||
+        photo.published_at ||
+        photo.created_at ||
+        photo.uploaded_at ||
+        photo.post_date ||
+        photo.date ||
+        ""
+      );
+    }
+
+    function formatPostDate(photo){
+      const value = getPostDateValue(photo);
+      if(!value) return "Unknown date";
+
+      const date = new Date(value);
+      if(Number.isNaN(date.getTime())){
+        return String(value);
+      }
+
+      return date.toLocaleDateString("en-GB", {
+        day:"numeric",
+        month:"short",
+        year:"numeric"
+      });
+    }
+
+    function getTrendingIds(rows){
+      const scored = [...rows].sort((a, b) => {
+        const am = getPhotoMetrics(a);
+        const bm = getPhotoMetrics(b);
+        const as = (am.views * 2) + (am.likes * 3) + (am.favourites * 3) + (a.featured ? 10 : 0);
+        const bs = (bm.views * 2) + (bm.likes * 3) + (bm.favourites * 3) + (b.featured ? 10 : 0);
+        return bs - as;
+      });
+
+      return new Set(scored.slice(0, 6).map(item => getPhotoId(item)));
+    }
+
+    function buildPhotoStats(photo, extraClass = "", stopCard = true){
+      const id = getPhotoId(photo);
+      const state = getPhotoReactionState(id);
+      const metrics = getPhotoMetrics(photo);
+      const stopCardAttr = stopCard ? "data-stop-card" : "";
+
+      return `
+        <div class="photo-stats ${escapeHtml(extraClass)}">
+          <button
+            type="button"
+            class="photo-stat react-btn ${state.liked ? "active" : ""}"
+            data-photo-id="${escapeHtml(id)}"
+            data-reaction="like"
+            aria-label="Like photo"
+            title="Like photo"
+            ${stopCardAttr}
+          >
+            <i class="fa-solid fa-heart"></i>
+            <span>${escapeHtml(compactNumber(metrics.likes))}</span>
+          </button>
+
+          <span class="photo-stat" aria-label="Views">
+            <i class="fa-solid fa-eye"></i>
+            <span>${escapeHtml(compactNumber(metrics.views))}</span>
+          </span>
+
+          <button
+            type="button"
+            class="photo-stat react-btn ${state.favourited ? "active" : ""}"
+            data-photo-id="${escapeHtml(id)}"
+            data-reaction="favourite"
+            aria-label="Favourite photo"
+            title="Favourite photo"
+            ${stopCardAttr}
+          >
+            <i class="fa-solid fa-star"></i>
+            <span>${escapeHtml(compactNumber(metrics.favourites))}</span>
+          </button>
+        </div>
+      `;
+    }
+
+    function sanitizeFileName(value = ""){
+      return String(value)
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "")
+        .slice(0, 60);
+    }
+
+    function getUrlExtension(url = ""){
+      try{
+        const pathname = new URL(url).pathname;
+        const cleanPath = pathname.split("?")[0];
+        const match = cleanPath.match(/\.([a-zA-Z0-9]+)$/);
+        if(match){
+          return match[1].toLowerCase();
+        }
+      }catch(error){
+      }
+      return "jpg";
+    }
+
+    function getDownloadFileName(photo, url = ""){
+      const safeTitle = getSafePhotoTitle(photo);
+      const description = getDescription(photo);
+      const category = String(photo.category || "").trim();
+      const creator = String(getCreatorName(photo) || "").trim();
+
+      const base =
+        sanitizeFileName(safeTitle) ||
+        sanitizeFileName(description.split(" ").slice(0, 6).join(" ")) ||
+        sanitizeFileName(category) ||
+        sanitizeFileName(creator) ||
+        "pixnest-photo";
+
+      const extension = getUrlExtension(url);
+      return `${base}.${extension}`;
+    }
+
+    function parseSupabaseStorageUrl(url = ""){
+      try{
+        const parsed = new URL(url);
+        const marker = "/storage/v1/object/public/";
+        const markerIndex = parsed.pathname.indexOf(marker);
+
+        if(markerIndex === -1){
+          return null;
+        }
+
+        const remainder = parsed.pathname.slice(markerIndex + marker.length);
+        const parts = remainder.split("/").filter(Boolean);
+
+        if(parts.length < 2){
+          return null;
+        }
+
+        const bucket = parts.shift();
+        const path = parts.join("/");
+
+        if(!bucket || !path){
+          return null;
+        }
+
+        return {
+          bucket,
+          path: decodeURIComponent(path)
+        };
+      }catch(error){
+        return null;
+      }
+    }
+
+    function triggerBlobDownload(blob, fileName){
+      const blobUrl = URL.createObjectURL(blob);
+      const anchor = document.createElement("a");
+      anchor.href = blobUrl;
+      anchor.download = fileName;
+      document.body.appendChild(anchor);
+      anchor.click();
+      anchor.remove();
+
+      setTimeout(() => {
+        URL.revokeObjectURL(blobUrl);
+      }, 1000);
+    }
+
+    async function downloadPhoto(url, fileName){
+      if(!url) throw new Error("No image URL");
+
+      const storageInfo = parseSupabaseStorageUrl(url);
+
+      if(storageInfo){
+        const { data, error } = await supabaseClient
+          .storage
+          .from(storageInfo.bucket)
+          .download(storageInfo.path);
+
+        if(!error && data){
+          triggerBlobDownload(data, fileName);
+          return;
+        }
+      }
+
+      const response = await fetch(url, { mode:"cors" });
+
+      if(!response.ok){
+        throw new Error("Download failed");
+      }
+
+      const blob = await response.blob();
+      triggerBlobDownload(blob, fileName);
+    }
+
+    
+async function handleDownloadButtonClick(button){
+  if(button.classList.contains("disabled") || button.dataset.premiumLocked === "true"){
+    handleLockedPremiumPhoto();
+    return;
+  }
+
+  const url = button.getAttribute("data-download-url") || "";
+  const fileName = button.getAttribute("data-download-name") || "pixnest-photo.jpg";
+
+  if(!url || url === LOCKED_SVG){
+    handleLockedPremiumPhoto();
+    return;
+  }
+
+  try{
+    setButtonLoadingState(button, true);
+    await downloadPhoto(url, fileName);
+  }catch(error){
+    console.error(error);
+    alert("Download could not start. Please try again.");
+  }finally{
+    setButtonLoadingState(button, false);
+  }
+}
+
+    
+    async function handleNativeShare(button){
+      if(button.classList.contains("disabled") || button.dataset.premiumLocked === "true"){
+        handleLockedPremiumPhoto();
+        return;
+      }
+
+      const url = button.getAttribute("data-share-url") || window.location.href;
+      const title = button.getAttribute("data-share-title") || "PixNest";
+
+      if(navigator.share){
+        try{
+          await navigator.share({ title, url });
+        }catch(error){
+        }
+      }else{
+        try{
+          await navigator.clipboard.writeText(url);
+          showNotice("Link copied.");
+        }catch(error){
+          alert("Link copy failed. You can copy it manually:\n" + url);
+        }
+      }
+    }
+
+    function getRequestedCreator(){
+      const params = new URLSearchParams(window.location.search);
+      return decodeURIComponent(params.get("creator") || params.get("user") || "").trim();
+    }
+
+    function getRequestedName(){
+      const params = new URLSearchParams(window.location.search);
+      return decodeURIComponent(params.get("name") || "").trim();
+    }
+
+    function getRequestedTab(){
+      const params = new URLSearchParams(window.location.search);
+      return decodeURIComponent(params.get("tab") || "").trim();
+    }
+
+    function getProfileCover(rows, fallbackName = ""){
+      const row = rows.find(photo => String(
+        photo.creator_cover ||
+        photo.creator_cover_url ||
+        photo.cover_image ||
+        photo.creator_banner ||
+        photo.creator_background ||
+        photo.creator_background_image
+      ).trim()) || rows[0];
+
+      return row
+        ? String(
+            row.creator_cover ||
+            row.creator_cover_url ||
+            row.cover_image ||
+            row.creator_banner ||
+            row.creator_background ||
+            row.creator_background_image ||
+            row.image_url ||
+            DEFAULT_COVER
+          ).trim()
+        : DEFAULT_COVER;
+    }
+
+    function getProfileAvatar(rows, fallbackName = ""){
+      const row = rows.find(photo => String(
+        photo.creator_photo ||
+        photo.creator_avatar ||
+        photo.avatar_url ||
+        photo.profile_photo
+      ).trim()) || rows[0];
+
+      return row
+        ? String(
+            row.creator_photo ||
+            row.creator_avatar ||
+            row.avatar_url ||
+            row.profile_photo ||
+            ""
+          ).trim()
+        : "";
+    }
+
+    function pickProfileValue(rows, keys = [], fallback = ""){
+      for(const row of rows){
+        for(const key of keys){
+          const value = row?.[key];
+          if(String(value || "").trim()){
+            return String(value).trim();
+          }
+        }
+      }
+      return fallback;
+    }
+
+    function pickProfileNumber(rows, keys = [], fallback = 0){
+      for(const row of rows){
+        const value = getNumberValue(row, keys);
+        if(value) return value;
+      }
+      return fallback;
+    }
+
+    function hasCreatorApproval(rows){
+      if(canCurrentUserAccessDashboard()) return true;
+
+      return rows.some(row => Boolean(
+        row.creator_approved ||
+        row.is_creator_approved ||
+        row.can_access_dashboard ||
+        row.dashboard_enabled ||
+        row.dashboard_unlocked ||
+        row.professional_dashboard ||
+        row.professional_dashboard_enabled ||
+        row.verification_approved
+      ));
+    }
+
+    function buildTargetProfile(rows){
+      const requestedCreator = getRequestedCreator();
+      const requestedName = getRequestedName();
+      const currentUser = getSessionUser();
+      const currentKeys = getCurrentUserKeys();
+      const requestedKeys = [normalize(requestedCreator), normalize(requestedName)].filter(Boolean);
+
+      const firstPhoto = rows[0] || null;
+      const derivedKey = requestedKeys[0] || (firstPhoto ? getCreatorKey(firstPhoto) : "");
+      const derivedName = requestedName || (firstPhoto ? getCreatorName(firstPhoto) : (currentUser ? getCurrentUserDisplayName() : "PixNest User"));
+      const viewingOwn = currentUser
+        ? (!requestedCreator && !requestedName) || requestedKeys.some(key => currentKeys.includes(key))
+        : false;
+
+      const verified = rows.some(isCreatorVerified);
+      const premium = rows.some(isCreatorPremium);
+      const dashboardAllowed = viewingOwn && hasCreatorApproval(rows);
+
+      const avatar = getProfileAvatar(rows, derivedName) || (viewingOwn ? currentUser?.user_metadata?.avatar_url || "" : "");
+      const cover = getProfileCover(rows, derivedName);
+      const username = pickProfileValue(rows, [
+        "creator_username",
+        "username",
+        "handle",
+        "creator_handle",
+        "profile_username"
+      ], viewingOwn ? (currentUser?.user_metadata?.username || "") : "");
+
+      const bio = pickProfileValue(rows, [
+        "creator_bio",
+        "bio",
+        "profile_bio",
+        "about_creator",
+        "about"
+      ], viewingOwn ? (currentUser?.user_metadata?.bio || "This profile has no bio yet.") : "This profile has no bio yet.");
+
+      const website = pickProfileValue(rows, [
+        "creator_website",
+        "website",
+        "site_url",
+        "portfolio_url"
+      ], "");
+
+      const location = pickProfileValue(rows, [
+        "creator_location",
+        "location",
+        "city",
+        "country"
+      ], "");
+
+      const joined = pickProfileValue(rows, [
+        "creator_joined_at",
+        "joined_at"
+      ], "");
+
+      const followersBase = pickProfileNumber(rows, [
+        "creator_followers",
+        "followers",
+        "followers_count",
+        "follower_count",
+        "creator_follower_count"
+      ], 0);
+
+      const followingBase = pickProfileNumber(rows, [
+        "creator_following",
+        "following",
+        "following_count",
+        "creator_following_count"
+      ], 0);
+
+      const profileKey = derivedKey || normalize(derivedName);
+      const isFollowed = rows[0] ? isCreatorFollowed(rows[0]) : false;
+
+      const repostRows = rows.filter(isRepostPhoto);
+      const postRows = rows.filter(row => !isRepostPhoto(row));
+      const favouriteRows = viewingOwn
+        ? allPhotos.filter(photo => getPhotoReactionState(getPhotoId(photo)).favourited)
+        : [];
+
+      return {
+        key: profileKey,
+        name: derivedName || "PixNest User",
+        username: username || derivedName.replace(/\s+/g, "").toLowerCase(),
+        avatar,
+        cover,
+        bio,
+        website,
+        location,
+        joined,
+        verified,
+        premium,
+        viewingOwn,
+        dashboardAllowed,
+        followers: followersBase + (isFollowed && !viewingOwn ? 1 : 0),
+        following: followingBase,
+        posts: postRows.length,
+        reposts: repostRows.length,
+        favourites: favouriteRows.length,
+        rows,
+        postRows,
+        repostRows,
+        favouriteRows
+      };
+    }
+
+    function matchesTargetProfile(photo){
+      const requestedCreator = normalize(getRequestedCreator());
+      const requestedName = normalize(getRequestedName());
+      const currentKeys = getCurrentUserKeys();
+
+      if(requestedCreator || requestedName){
+        return [requestedCreator, requestedName].filter(Boolean).some(key =>
+          getCreatorKey(photo) === key || normalize(getCreatorName(photo)) === key
+        );
+      }
+
+      if(currentKeys.length){
+        return currentKeys.some(key =>
+          getCreatorKey(photo) === key || normalize(getCreatorName(photo)) === key
+        );
+      }
+
+      return false;
+    }
+
+    function buildProfileBadges(profile){
+      const parts = [];
+
+      if(profile.premium){
+        parts.push(`
+          <span class="member-badge premium">
+            <i class="fa-solid fa-crown"></i>
+            Premium Member
+          </span>
+        `);
+      }
+
+      profileBadges.innerHTML = parts.join("");
+    }
+
+    function buildProfileDetails(profile){
+      const details = [];
+
+      if(profile.location){
+        details.push(`
+          <div class="detail-row">
+            <i class="fa-solid fa-location-dot"></i>
+            <span>${escapeHtml(profile.location)}</span>
+          </div>
+        `);
+      }
+
+      if(profile.website){
+        details.push(`
+          <div class="detail-row">
+            <i class="fa-solid fa-link"></i>
+            <a href="${escapeHtml(profile.website)}" target="_blank" rel="noopener noreferrer">${escapeHtml(profile.website)}</a>
+          </div>
+        `);
+      }
+
+      if(profile.joined){
+        details.push(`
+          <div class="detail-row">
+            <i class="fa-solid fa-calendar"></i>
+            <span>${escapeHtml(profile.joined)}</span>
+          </div>
+        `);
+      }
+
+      if(!details.length){
+        details.push(`
+          <div class="detail-row">
+            <i class="fa-solid fa-circle-info"></i>
+            <span>No extra profile details added yet.</span>
+          </div>
+        `);
+      }
+
+      profileDetails.innerHTML = details.join("");
+    }
+
+    function buildProfileStats(profile){
+      profileStats.innerHTML = `
+        <div class="stat-card">
+          <strong>${escapeHtml(compactNumber(profile.following))}</strong>
+          <span>Following</span>
+        </div>
+
+        <div class="stat-card">
+          <strong>${escapeHtml(compactNumber(profile.followers))}</strong>
+          <span>Followers</span>
+        </div>
+
+        <div class="stat-card">
+          <strong>${escapeHtml(compactNumber(profile.posts))}</strong>
+          <span>Posts</span>
+        </div>
+      `;
+    }
+
+    function renderProfileActions(profile){
+      if(profile.viewingOwn){
+        profileActions.innerHTML = `
+          <a href="account.html" class="action-btn">
+            <i class="fa-solid fa-pen-to-square"></i>
+            Edit Profile
+          </a>
+
+          ${profile.dashboardAllowed ? `
+            <a href="professional-dashboard.html" class="action-btn primary">
+              <i class="fa-solid fa-chart-line"></i>
+              Professional Dashboard
+            </a>
+          ` : `
+            <a href="help.html" class="action-btn">
+              <i class="fa-solid fa-circle-check"></i>
+              Request Dashboard Access
+            </a>
+          `}
+        `;
+      }else{
+        const firstPhoto = profile.rows[0];
+        const followed = firstPhoto ? isCreatorFollowed(firstPhoto) : false;
+
+        profileActions.innerHTML = `
+          <button type="button" class="action-btn ${followed ? "following" : "primary"}" id="followProfileBtn">
+            <i class="fa-solid ${followed ? "fa-check" : "fa-user-plus"}"></i>
+            ${followed ? "Following" : "Follow"}
+          </button>
+
+          <button type="button" class="action-btn" id="shareProfileBtn">
+            <i class="fa-solid fa-share-nodes"></i>
+            Share Profile
+          </button>
+        `;
+
+        const followProfileBtn = document.getElementById("followProfileBtn");
+        const shareProfileBtn = document.getElementById("shareProfileBtn");
+
+        if(followProfileBtn && firstPhoto){
+          followProfileBtn.addEventListener("click", () => {
+            updateCreatorPref(firstPhoto, { followed: !followed });
+            targetProfile.followers += followed ? -1 : 1;
+            renderProfilePage(targetProfile);
+            showNotice(followed ? "Profile unfollowed." : "Profile followed.");
+          });
+        }
+
+        if(shareProfileBtn){
+          shareProfileBtn.addEventListener("click", async () => {
+            const profileUrl = window.location.href;
+
+            if(navigator.share){
+              try{
+                await navigator.share({
+                  title: `${profile.name} on PixNest`,
+                  url: profileUrl
+                });
+              }catch(error){
+              }
+            }else{
+              try{
+                await navigator.clipboard.writeText(profileUrl);
+                showNotice("Profile link copied.");
+              }catch(error){
+                showNotice("Could not copy profile link.");
+              }
+            }
+          });
+        }
+      }
+    }
+
+    function renderDashboardPanel(profile){
+      if(profile.viewingOwn){
+        dashboardPanel.classList.remove("hidden");
+
+        if(profile.dashboardAllowed){
+          dashboardPanelBody.innerHTML = `
+            <p>Your professional dashboard is unlocked on this account.</p>
+            <a href="professional-dashboard.html" class="action-btn primary">
+              <i class="fa-solid fa-chart-line"></i>
+              Open Dashboard
+            </a>
+          `;
+        }else{
+          dashboardPanelBody.innerHTML = `
+            <p>Your dashboard is not visible yet. Once your creator access is approved, this section will unlock here.</p>
+            <a href="help.html" class="action-btn">
+              <i class="fa-solid fa-paper-plane"></i>
+              Submit Dashboard Request
+            </a>
+          `;
+        }
+      }else{
+        dashboardPanel.classList.add("hidden");
+      }
+    }
+
+    function renderTabs(profile){
+      viewedRows = {
+        posts: profile.postRows,
+        reposts: profile.repostRows,
+        favourites: profile.favouriteRows
+      };
+
+      const tabs = [
+        { key:"posts", label:"Posts", count:viewedRows.posts.length },
+        { key:"reposts", label:"Reposts", count:viewedRows.reposts.length },
+        { key:"favourites", label:"Favourites", count:viewedRows.favourites.length }
+      ];
+
+      if(!tabs.some(tab => tab.key === activeTab)){
+        activeTab = "posts";
+      }
+
+      tabBar.innerHTML = tabs.map(tab => `
+        <button
+          type="button"
+          class="tab-btn ${activeTab === tab.key ? "active" : ""}"
+          data-tab="${escapeHtml(tab.key)}"
+        >
+          ${escapeHtml(tab.label)}
+          <span>(${escapeHtml(String(tab.count))})</span>
+        </button>
+      `).join("");
+
+      tabBar.querySelectorAll(".tab-btn").forEach(button => {
+        button.addEventListener("click", () => {
+          activeTab = button.getAttribute("data-tab");
+          renderTabs(profile);
+          renderActiveGrid();
+        });
+      });
+    }
+
+    function renderProfilePage(profile){
+      targetProfile = profile;
+
+      coverWrap.style.background = `
+        linear-gradient(rgba(15,23,42,.26), rgba(15,23,42,.68)),
+        url('${profile.cover || DEFAULT_COVER}') center/cover no-repeat
+      `;
+
+      profileAvatar.innerHTML = buildAvatarHtml({ avatar: profile.avatar, name: profile.name });
+      profileRole.textContent = profile.viewingOwn ? "Your Profile" : "Creator Profile";
+      profileName.textContent = profile.name;
+      verifiedBadge.classList.toggle("hidden", !profile.verified);
+      profileHandle.textContent = `@${profile.username || profile.name.replace(/\s+/g, "").toLowerCase()}`;
+      profileBio.textContent = profile.bio || "This profile has no bio yet.";
+
+      buildProfileBadges(profile);
+      buildProfileDetails(profile);
+      buildProfileStats(profile);
+      renderProfileActions(profile);
+      renderDashboardPanel(profile);
+      renderTabs(profile);
+
+      contentTitle.textContent = profile.viewingOwn ? "Your Content" : `${profile.name}'s Content`;
+      contentText.textContent = profile.viewingOwn
+        ? "Your posts, reposts and favourites are shown here."
+        : "View this creator's public posts, reposts and visible favourites.";
+
+      document.title = profile.viewingOwn
+        ? "PixNest | My Profile"
+        : `PixNest | ${profile.name}`;
+
+      renderActiveGrid();
+    }
+
+    function getActiveRows(){
+      return viewedRows[activeTab] || [];
+    }
+
+    function filterRowsForView(rows){
+      const searchValue = profileSearchInput.value.trim().toLowerCase();
+      const filterValue = profileFilter.value;
+
+      return rows.filter(photo => {
+        const text = [
+          getSafePhotoTitle(photo),
+          getDescription(photo),
+          photo.tags,
+          photo.category,
+          getCreatorName(photo)
+        ].join(" ").toLowerCase();
+
+        const matchesText = !searchValue || text.includes(searchValue);
+
+        let matchesFilter = true;
+        if(filterValue === "featured"){
+          matchesFilter = Boolean(photo.featured);
+        }else if(filterValue === "premium"){
+          matchesFilter = isPremiumPhoto(photo);
+        }
+
+        return matchesText && matchesFilter;
+      });
+    }
+
+        function buildPhotoCard(photo, trendingIds){
+      const locked = isLockedPhoto(photo);
+      const description = locked ? "Premium members only." : getDescription(photo);
+      const creatorName = getCreatorName(photo) || "Unknown Creator";
+      const photoId = getPhotoId(photo);
+      const isTrending = trendingIds.has(photoId);
+      const imageSrc = locked ? LOCKED_SVG : (photo.image_url || DEFAULT_IMAGE);
+
+      return `
+        <article class="visual-card ${locked ? "locked-card" : ""}" data-photo-id="${escapeHtml(photoId)}">
+          <img src="${escapeHtml(imageSrc)}" alt="${escapeHtml(locked ? "Premium photo" : getPhotoAlt(photo))}">
+
+          <div class="card-top-row">
+            <div class="card-top-left">
+              ${isTrending && !photo.featured ? `<span class="pill trending"><i class="fa-solid fa-fire"></i> Trending</span>` : ``}
+              ${photo.featured ? `<span class="pill featured"><i class="fa-solid fa-bolt"></i> Featured</span>` : ``}
+            </div>
+
+            <div class="card-top-right">
+              ${isPremiumPhoto(photo) ? `<span class="pill premium"><i class="fa-solid fa-star"></i> Premium</span>` : ``}
+            </div>
+          </div>
+
+          <div class="photo-overlay">
+            <div class="overlay-category">
+              <span class="pill category-tag">${escapeHtml(photo.category || "Photo")}</span>
+            </div>
+
+            ${description ? `<p class="overlay-desc">${escapeHtml(description)}</p>` : ""}
+            <div class="credit">
+              <span>By ${escapeHtml(creatorName)}</span>
+            </div>
+
+            <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;">
+              <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                ${locked ? `
+                  <a
+                    class="action-icon"
+                    href="premium.html"
+                    aria-label="Unlock premium"
+                    title="Unlock premium"
+                    data-stop-card
+                  >
+                    <i class="fa-solid fa-crown"></i>
+                  </a>
+                ` : `
+                  <button
+                    type="button"
+                    class="action-icon share-btn"
+                    aria-label="Share"
+                    title="Share"
+                    data-share-url="${escapeHtml(photo.image_url || window.location.href)}"
+                    data-share-title="${escapeHtml(getShareTitle(photo))}"
+                    data-stop-card
+                  >
+                    <i class="fa-solid fa-share-nodes"></i>
+                  </button>
+
+                  <button
+                    type="button"
+                    class="action-icon download-btn"
+                    data-download-url="${escapeHtml(photo.image_url || "")}"
+                    data-download-name="${escapeHtml(getDownloadFileName(photo, photo.image_url || ""))}"
+                    aria-label="Download image"
+                    title="Download image"
+                    data-stop-card
+                  >
+                    <i class="fa-solid fa-download"></i>
+                  </button>
+                `}
+              </div>
+
+              <div>
+                ${locked ? `<div class="lock-note">Join premium to enlarge, share, or download.</div>` : buildPhotoStats(photo, "", true)}
+              </div>
+            </div>
+          </div>
+        </article>
+      `;
+    }
+
+    function activateCards(rows, container){
+      container.querySelectorAll(".visual-card").forEach(card => {
+        const photoId = card.getAttribute("data-photo-id");
+        const photo = rows.find(item => getPhotoId(item) === String(photoId));
+        if(!photo) return;
+
+        card.addEventListener("click", async (e) => {
+          if(e.target.closest("[data-stop-card]")){
+            return;
+          }
+          await openLightbox(photo);
+        });
+      });
+
+      container.querySelectorAll(".share-btn").forEach(button => {
+        button.addEventListener("click", async (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          await handleNativeShare(button);
+        });
+      });
+
+      container.querySelectorAll(".download-btn").forEach(button => {
+        button.addEventListener("click", async (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          await handleDownloadButtonClick(button);
+        });
+      });
+
+      container.querySelectorAll(".react-btn").forEach(button => {
+        button.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+
+          const photoId = button.getAttribute("data-photo-id");
+          const reactionType = button.getAttribute("data-reaction");
+
+          if(!photoId || !reactionType) return;
+          toggleReaction(photoId, reactionType);
+        });
+      });
+    }
+
+    function renderEmptyState(){
+      const isOwn = targetProfile?.viewingOwn;
+      const label = activeTab.charAt(0).toUpperCase() + activeTab.slice(1);
+
+      profileGrid.innerHTML = `
+        <div class="empty-box">
+          <strong>No ${escapeHtml(label)} yet</strong>
+          <div>${escapeHtml(isOwn ? `You do not have any ${activeTab} to show right now.` : `This profile does not have any ${activeTab} to show right now.`)}</div>
+          ${isOwn && activeTab === "posts" ? `
+            <div class="empty-actions">
+              <a href="upload.html" class="action-btn primary">
+                <i class="fa-solid fa-cloud-arrow-up"></i>
+                Upload a Photo
+              </a>
+            </div>
+          ` : ``}
+        </div>
+      `;
+    }
+
+    function renderActiveGrid(){
+      if(!targetProfile) return;
+
+      const rows = filterRowsForView(getActiveRows());
+      const trendingIds = getTrendingIds(targetProfile.rows);
+
+      contentNote.textContent = `${rows.length} ${activeTab} item${rows.length === 1 ? "" : "s"} found.`;
+
+      if(!rows.length){
+        renderEmptyState();
+        return;
+      }
+
+      profileGrid.innerHTML = rows.map(photo => buildPhotoCard(photo, trendingIds)).join("");
+      activateCards(rows, profileGrid);
+    }
+
+    function renderLightboxContent(photo){
+      lightboxImage.src = photo.image_url || DEFAULT_IMAGE;
+      lightboxImage.alt = getPhotoAlt(photo);
+      lightboxTitle.textContent = getSafePhotoTitle(photo) || photo.category || "Photo";
+      lightboxSub.textContent = `By ${getCreatorName(photo)} • ${formatPostDate(photo)}`;
+      document.getElementById("lightboxCategory").textContent = photo.category || "Uncategorized";
+      document.getElementById("lightboxCreator").textContent = getCreatorName(photo) || "Unknown";
+      document.getElementById("lightboxTags").textContent = getPhotoTags(photo).join(", ") || "No tags";
+      document.getElementById("lightboxDescription").textContent = getDescription(photo) || "No description added.";
+      document.getElementById("lightboxPosted").textContent = formatPostDate(photo);
+
+      lightboxStatsWrap.innerHTML = isLockedPhoto(photo) ? `<div class="lock-note">Join premium to enlarge, share, or download this photo.</div>` : buildPhotoStats(photo, "lightbox-stats", false);
+      lightboxActions.innerHTML = `
+        <button
+          type="button"
+          class="lightbox-social"
+          id="lightboxShareBtn"
+          data-share-url="${escapeHtml(photo.image_url || window.location.href)}"
+          data-share-title="${escapeHtml(getShareTitle(photo))}"
+          title="Share"
+          aria-label="Share"
+        >
+          <i class="fa-solid fa-share-nodes"></i>
+        </button>
+
+        <button
+          type="button"
+          class="lightbox-social download-btn"
+          data-download-url="${escapeHtml(photo.image_url || "")}"
+          data-download-name="${escapeHtml(getDownloadFileName(photo, photo.image_url || ""))}"
+          title="Download image"
+          aria-label="Download image"
+        >
+          <i class="fa-solid fa-download"></i>
+        </button>
+
+        ${buildCreatorBadges(photo)}
+      `;
+
+      const lightboxShareBtn = document.getElementById("lightboxShareBtn");
+      if(lightboxShareBtn){
+        lightboxShareBtn.addEventListener("click", async () => {
+          await handleNativeShare(lightboxShareBtn);
+        });
+      }
+
+      lightboxActions.querySelectorAll(".download-btn").forEach(button => {
+        button.addEventListener("click", async () => {
+          await handleDownloadButtonClick(button);
+        });
+      });
+
+      lightboxStatsWrap.querySelectorAll(".react-btn").forEach(button => {
+        button.addEventListener("click", (e) => {
+          e.preventDefault();
+          const photoId = button.getAttribute("data-photo-id");
+          const reactionType = button.getAttribute("data-reaction");
+          if(!photoId || !reactionType) return;
+          toggleReaction(photoId, reactionType);
+        });
+      });
+    }
+
+    function getViewColumnName(photo){
+      if(Object.prototype.hasOwnProperty.call(photo, "views")) return "views";
+      if(Object.prototype.hasOwnProperty.call(photo, "view_count")) return "view_count";
+      if(Object.prototype.hasOwnProperty.call(photo, "views_count")) return "views_count";
+      if(Object.prototype.hasOwnProperty.call(photo, "total_views")) return "total_views";
+      return "views";
+    }
+
+    function applyLocalViewIncrement(photo){
+      const photoId = getPhotoId(photo);
+      const column = getViewColumnName(photo);
+
+      allPhotos = allPhotos.map(item => {
+        if(getPhotoId(item) !== photoId) return item;
+        return {
+          ...item,
+          [column]: getNumberValue(item, [column]) + 1
+        };
+      });
+    }
+
+    async function incrementPhotoViews(photo){
+      const stableId = String(photo.id || getPhotoId(photo));
+      if(viewedSession[stableId]) return;
+
+      viewedSession[stableId] = true;
+      saveViewedSession();
+
+      applyLocalViewIncrement(photo);
+
+      if(!photo.id){
+        return;
+      }
+
+      try{
+        const column = getViewColumnName(photo);
+        const currentValue = getNumberValue(photo, [column]);
+        const nextValue = currentValue + 1;
+
+        const { error } = await supabaseClient
+          .from("photos")
+          .update({ [column]: nextValue })
+          .eq("id", photo.id);
+
+        if(error){
+          console.error("View update failed:", error);
+        }
+      }catch(error){
+        console.error("View increment error:", error);
+      }
+    }
+
+    
+async function openLightbox(photo){
+  if(isLockedPhoto(photo)){
+    handleLockedPremiumPhoto();
+    return;
+  }
+
+  await incrementPhotoViews(photo);
+  const freshPhoto = getPhotoById(getPhotoId(photo)) || photo;
+
+  activeLightboxPhotoId = getPhotoId(freshPhoto);
+  renderLightboxContent(freshPhoto);
+  lightbox.classList.add("show");
+  document.body.style.overflow = "hidden";
+}
+
+    function closeLightbox(){
+      activeLightboxPhotoId = "";
+      lightbox.classList.remove("show");
+      document.body.style.overflow = "";
+      lightboxImage.src = "";
+      lightboxImage.alt = "Large view";
+      lightboxActions.innerHTML = "";
+      lightboxStatsWrap.innerHTML = "";
+    }
+
+    lightboxClose.addEventListener("click", closeLightbox);
+
+    lightbox.addEventListener("click", (e) => {
+      if(e.target === lightbox){
+        closeLightbox();
+      }
+    });
+
+    document.addEventListener("keydown", (e) => {
+      if(e.key === "Escape"){
+        closeLightbox();
+      }
+    });
+
+    function showGuestEmptyState(){
+      profileGrid.innerHTML = `
+        <div class="empty-box">
+          <strong>Sign in to view your profile</strong>
+          <div>You can still open public profiles with a creator link, but your personal profile needs a logged in account.</div>
+          <div class="empty-actions">
+            <a href="signup.html" class="action-btn primary">
+              <i class="fa-solid fa-user-plus"></i>
+              Sign Up
+            </a>
+            <a href="login.html" class="action-btn">
+              <i class="fa-solid fa-right-to-bracket"></i>
+              Login
+            </a>
+          </div>
+        </div>
+      `;
+
+      coverWrap.style.background = `
+        linear-gradient(rgba(15,23,42,.26), rgba(15,23,42,.68)),
+        url('${DEFAULT_COVER}') center/cover no-repeat
+      `;
+      profileAvatar.innerHTML = `<span>P</span>`;
+      profileRole.textContent = "Profile";
+      profileName.textContent = "PixNest Profile";
+      verifiedBadge.classList.add("hidden");
+      profileHandle.textContent = "@pixnest";
+      profileBadges.innerHTML = "";
+      profileBio.textContent = "Sign in to see your full profile details.";
+      profileDetails.innerHTML = `
+        <div class="detail-row">
+          <i class="fa-solid fa-circle-info"></i>
+          <span>No profile selected yet.</span>
+        </div>
+      `;
+      profileStats.innerHTML = `
+        <div class="stat-card"><strong>0</strong><span>Following</span></div>
+        <div class="stat-card"><strong>0</strong><span>Followers</span></div>
+        <div class="stat-card"><strong>0</strong><span>Posts</span></div>
+      `;
+      profileActions.innerHTML = "";
+      dashboardPanel.classList.add("hidden");
+      contentTitle.textContent = "Profile Content";
+      contentText.textContent = "Posts, reposts and favourites will appear here.";
+      tabBar.innerHTML = "";
+      contentNote.textContent = "";
+      document.title = "PixNest | Profile";
+    }
+
+    function decideProfileMode(){
+      const requestedCreator = getRequestedCreator();
+      const requestedName = getRequestedName();
+
+      if(!allPhotos.length && !getSessionUser() && !requestedCreator && !requestedName){
+        showGuestEmptyState();
+        return;
+      }
+
+      const matchedRows = allPhotos.filter(matchesTargetProfile);
+
+      if(!matchedRows.length && !getSessionUser() && !requestedCreator && !requestedName){
+        showGuestEmptyState();
+        return;
+      }
+
+      if(!matchedRows.length && (requestedCreator || requestedName)){
+        const fallbackProfile = buildTargetProfile([]);
+        renderProfilePage(fallbackProfile);
+        return;
+      }
+
+      if(!matchedRows.length && getSessionUser()){
+        const fallbackProfile = buildTargetProfile([]);
+        renderProfilePage(fallbackProfile);
+        return;
+      }
+
+      const profile = buildTargetProfile(matchedRows);
+
+      const requestedTab = normalize(getRequestedTab());
+      if(["posts","reposts","favourites"].includes(requestedTab)){
+        activeTab = requestedTab;
+      }
+
+      renderProfilePage(profile);
+    }
+
+    async function loadPhotos(){
+      try{
+        const { data, error } = await supabaseClient
+          .from("photos")
+          .select("*")
+          .order("created_at", { ascending:false });
+
+        if(error){
+          throw error;
+        }
+
+        allPhotos = Array.isArray(data) ? data : [];
+        applyFooterText();
+        decideProfileMode();
+      }catch(error){
+        console.error(error);
+        showGuestEmptyState();
+        profileGrid.innerHTML = '<div class="empty-box"><strong>Could not load profile data</strong><div>Photos could not be loaded from Supabase.</div></div>';
+      }
+    }
+
+    profileSearchBtn.addEventListener("click", renderActiveGrid);
+
+    profileSearchInput.addEventListener("keydown", (e) => {
+      if(e.key === "Enter"){
+        e.preventDefault();
+        renderActiveGrid();
+      }
+    });
+
+    profileFilter.addEventListener("change", renderActiveGrid);
+
+    applyFooterText();
+    initAuthState();
+    (async function initPageData(){
+      await initActiveSessionUser();
+      await loadPhotos();
+    })();
+  </script>
+  <script src="site-auth.js"></script>
+</body>
+</html>
+ 
