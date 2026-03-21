@@ -645,9 +645,9 @@
             <textarea id="description" placeholder="Write a short description for this photo"></textarea>
           </div>
 
-          <div class="checkbox-row">
-            <input type="checkbox" id="featured" />
-            <label for="featured">Mark this photo as featured</label>
+          <div class="checkbox-row hidden" id="featuredRow">
+            <input type="checkbox" id="featured" disabled />
+            <label for="featured">Featured photos are chosen by the PixNest review team</label>
           </div>
 
           <div class="checkbox-row">
@@ -733,6 +733,7 @@
     const tagsInput = document.getElementById("tags");
     const descriptionInput = document.getElementById("description");
     const featuredInput = document.getElementById("featured");
+    const featuredRow = document.getElementById("featuredRow");
     const premiumInput = document.getElementById("isPremium");
 
     const previewImage = document.getElementById("previewImage");
@@ -835,7 +836,7 @@
       const category = categoryInput.value.trim();
       const tags = tagsInput.value.trim();
       const description = descriptionInput.value.trim();
-      const featured = featuredInput.checked;
+      const featured = false;
       const isPremium = premiumInput.checked;
 
       previewCreator.textContent = currentUser ? getDisplayName(currentUser) : "Not logged in";
@@ -949,12 +950,18 @@
         file_name: storageResult.filePath,
         storage_bucket: storageResult.bucket,
         storage_path: storageResult.filePath,
-        featured: featuredInput.checked,
+        featured: false,
+        uploaded_by: user.id,
+        creator_id: user.id,
+        approval_status: "pending",
+        admin_approved: false,
+        is_approved: false,
+        original_confirmed: true,
+        terms_accepted: true,
         is_premium: isPremium,
 
         user_id: user.id,
         owner_id: user.id,
-        auth_user_id: user.id,
         profile_id: user.id,
         uploader_id: user.id,
 

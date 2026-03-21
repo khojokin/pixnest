@@ -9,7 +9,7 @@
     { href:'index.html', label:'Home', keys:['index.html',''] },
     { href:'explore.html', label:'Explore', keys:['explore.html'] },
     { href:'category.html', label:'Categories', keys:['category.html'] },
-    { href:'premiumplans.html', label:'Features', keys:['premiumplans.html','features.html'] },
+    { href:'features.html', label:'Featured', keys:['features.html','featured.html','premiumplans.html'] },
     { href:'premium.html', label:'Premium', keys:['premium.html','checkout.html','payment.html'] },
     { href:'contact.html', label:'Contact', keys:['contact.html','help.html'] }
   ];
@@ -35,8 +35,18 @@
     return page === 'account.html' || page === 'profile.html' || page === 'professional-dashboard.html' || page === 'boss-admin.html';
   }
 
+  function isPublicAuthPage(){
+    const page = currentPage();
+    return page === 'login.html' || page === 'signup.html';
+  }
+
+  function isCustomMenuPage(){
+    const page = currentPage();
+    return page === 'premium.html';
+  }
+
   function shouldSkipAuthInjection(){
-    return isCustomAccountPage();
+    return isCustomAccountPage() || isPublicAuthPage() || isCustomMenuPage();
   }
 
   function ensureGlobalStyles(){
@@ -289,8 +299,8 @@
     menuWrap.innerHTML = `
       <button class="site-account-menu-toggle" id="siteAccountMenuToggle" aria-label="Open account menu"><i class="fa-solid fa-bars"></i></button>
       <div class="site-account-dropdown" id="siteAccountDropdown">
-        <a href="account.html"><i class="fa-solid fa-user"></i>My Account</a>
-        <a href="profile.html"><i class="fa-solid fa-address-card"></i>Profile</a>
+        <a href="profile.html"><i class="fa-solid fa-user"></i>Profile</a>
+        <a href="account.html"><i class="fa-solid fa-sliders"></i>Profile Settings</a>
         <a href="upload.html"><i class="fa-solid fa-upload"></i>Upload</a>
         <a href="professional-dashboard.html"><i class="fa-solid fa-chart-line"></i>Creator Dashboard</a>
         <a href="premium.html"><i class="fa-solid fa-crown"></i>Premium</a>
