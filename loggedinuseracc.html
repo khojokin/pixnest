@@ -1760,10 +1760,9 @@ Save it as account.html:
       const state = getPhotoReactionState(id);
       const metrics = getPhotoMetrics(photo);
       const stopCardAttr = stopCard ? "data-stop-card" : "";
-      const wrapClass = extraClass ? ` ${escapeHtml(extraClass)}` : "";
 
       return `
-        <div class="photo-stats pixnest-compact-stats${wrapClass}">
+        <div class="photo-stats ${escapeHtml(extraClass)}">
           <button
             type="button"
             class="photo-stat react-btn ${state.liked ? "active" : ""}"
@@ -1774,12 +1773,12 @@ Save it as account.html:
             ${stopCardAttr}
           >
             <i class="fa-solid fa-heart"></i>
-            <span>${escapeHtml(compactNumber(metrics.likes))}</span>
+            <span>${escapeHtml(String(metrics.likes))}</span>
           </button>
 
           <span class="photo-stat" aria-label="Views">
             <i class="fa-solid fa-eye"></i>
-            <span>${escapeHtml(compactNumber(metrics.views))}</span>
+            <span>${escapeHtml(String(metrics.views))}</span>
           </span>
 
           <button
@@ -1792,7 +1791,7 @@ Save it as account.html:
             ${stopCardAttr}
           >
             <i class="fa-solid fa-star"></i>
-            <span>${escapeHtml(compactNumber(metrics.favourites))}</span>
+            <span>${escapeHtml(String(metrics.favourites))}</span>
           </button>
         </div>
       `;

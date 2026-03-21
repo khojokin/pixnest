@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6723276431169192" crossorigin="anonymous"></script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>PixNest | Discover Photos</title>
@@ -1734,10 +1733,10 @@
                 Add Creator to Favourites
               </button>
 
-              <a href="#" class="creator-line-btn" id="viewCreatorProfileBtn">
+              <button type="button" class="creator-line-btn" id="viewProfileBtn">
                 <i class="fa-solid fa-user"></i>
                 View Profile
-              </a>
+              </button>
 
               <button type="button" class="creator-line-btn" id="shareProfileBtn">
                 <i class="fa-solid fa-share-nodes"></i>
@@ -1799,8 +1798,7 @@
   <script>
     const STORAGE_KEY = "pixnest_admin_v2";
     const REACTION_KEY = "pixnest_photo_reactions_v1";
-    const CREATOR_STATE_KEY = "pixnest_creator_prefs_v1";
-    const LEGACY_CREATOR_STATE_KEY = "pixnest_creator_state_v1";
+    const CREATOR_STATE_KEY = "pixnest_creator_state_v1";
     const VIEWED_SESSION_KEY = "pixnest_viewed_session_v1";
     const SUPABASE_URL = "https://vigczssznfvujttdapbv.supabase.co";
     const SUPABASE_KEY = "sb_publishable_UmF-mmVS42XeF6PqsNnCSw_wpA35wg2";
@@ -1872,7 +1870,6 @@
     const followCreatorBtn = document.getElementById("followCreatorBtn");
     const favouriteCreatorBtn = document.getElementById("favouriteCreatorBtn");
     const shareProfileBtn = document.getElementById("shareProfileBtn");
-    const viewCreatorProfileBtn = document.getElementById("viewCreatorProfileBtn");
     const creatorMenuBtn = document.getElementById("creatorMenuBtn");
     const creatorMenu = document.getElementById("creatorMenu");
     const hideCreatorBtn = document.getElementById("hideCreatorBtn");
@@ -1935,39 +1932,6 @@
       return String(value || "").trim().toLowerCase();
     }
 
-    function isPhotoPubliclyApproved(photo){
-      if(!photo || typeof photo !== "object") return false;
-
-      const approval = normalize(photo.approval_status || photo.review_status || photo.moderation_status || "");
-      const status = normalize(photo.status || photo.post_status || "");
-      const hasModerationFields = (
-        Object.prototype.hasOwnProperty.call(photo, "approval_status") ||
-        Object.prototype.hasOwnProperty.call(photo, "admin_approved") ||
-        Object.prototype.hasOwnProperty.call(photo, "is_approved") ||
-        Object.prototype.hasOwnProperty.call(photo, "review_status") ||
-        Object.prototype.hasOwnProperty.call(photo, "moderation_status")
-      );
-
-      if(["rejected", "deleted", "removed", "hidden", "draft", "archived"].includes(approval)) return false;
-      if(["rejected", "deleted", "removed", "hidden", "draft", "archived"].includes(status)) return false;
-
-      if(Object.prototype.hasOwnProperty.call(photo, "account_status")){
-        const accountStatus = normalize(photo.account_status);
-        if(["deleted", "banned", "suspended"].includes(accountStatus)) return false;
-      }
-
-      if(!hasModerationFields){
-        return true;
-      }
-
-      if(photo.admin_approved === true) return true;
-      if(photo.is_approved === true) return true;
-      if(approval === "approved") return true;
-      if(status === "approved") return true;
-
-      return false;
-    }
-
     function compactNumber(value){
       try{
         return new Intl.NumberFormat("en", {
@@ -2022,21 +1986,16 @@
 
     function loadCreatorState(){
       try{
-        const primary = JSON.parse(localStorage.getItem(CREATOR_STATE_KEY) || "{}");
-        const legacy = JSON.parse(localStorage.getItem(LEGACY_CREATOR_STATE_KEY) || "{}");
-        return {
-          ...(legacy && typeof legacy === "object" ? legacy : {}),
-          ...(primary && typeof primary === "object" ? primary : {})
-        };
+        const saved = localStorage.getItem(CREATOR_STATE_KEY);
+        const parsed = JSON.parse(saved || "{}");
+        return parsed && typeof parsed === "object" ? parsed : {};
       }catch(error){
         return {};
       }
     }
 
     function saveCreatorState(){
-      const payload = JSON.stringify(creatorState);
-      localStorage.setItem(CREATOR_STATE_KEY, payload);
-      localStorage.setItem(LEGACY_CREATOR_STATE_KEY, payload);
+      localStorage.setItem(CREATOR_STATE_KEY, JSON.stringify(creatorState));
     }
 
     function loadViewedSession(){
@@ -2775,9 +2734,9 @@
             <i class="fa-solid fa-images"></i>
             Explore Gallery
           </a>
-          <a href="account.html" class="btn btn-secondary">
+          <a href="profile.html" class="btn btn-secondary">
             <i class="fa-solid fa-user"></i>
-            View Account
+            View My Profile
           </a>
         `;
 
@@ -2842,8 +2801,8 @@
 
     async function initCurrentUser(){
       try{
-        const { data } = await supabaseClient.auth.getSession();
-        currentUser = data?.session?.user || null;
+        const { data } = await supabaseClient.auth.getUser();
+        currentUser = data?.user || null;
       }catch(error){
         currentUser = null;
       }
@@ -2864,7 +2823,7 @@
       const metrics = getPhotoMetrics(photo);
 
       return `
-        <div class="photo-stats pixnest-compact-stats">
+        <div class="photo-stats">
           <button
             type="button"
             class="photo-stat react-btn ${state.liked ? "active" : ""}"
@@ -3361,10 +3320,6 @@
       favouriteCreatorBtn.innerHTML = state.favourited
         ? '<i class="fa-solid fa-star"></i> Creator Saved'
         : '<i class="fa-solid fa-star"></i> Add Creator to Favourites';
-
-      if(viewCreatorProfileBtn){
-        viewCreatorProfileBtn.href = `profile.html?creator=${encodeURIComponent(creatorKey)}&name=${encodeURIComponent(creatorName)}`;
-      }
     }
 
     function renderLightboxContent(photo){
@@ -3456,14 +3411,13 @@
         const { data, error } = await supabaseClient
           .from("photos")
           .select("*")
-          .order("created_at", { ascending:false })
-          .limit(36);
+          .order("created_at", { ascending:false });
 
         if(error){
           throw error;
         }
 
-        rawPhotos = (Array.isArray(data) ? data : []).filter(isPhotoPubliclyApproved);
+        rawPhotos = Array.isArray(data) ? data : [];
         allPhotos = await Promise.all(rawPhotos.map(preparePhotoForDisplay));
 
         applyAdminText();
@@ -3539,11 +3493,19 @@
       showNotice(getCreatorState(activeCreatorKey).favourited ? "Creator added to favourites." : "Creator removed from favourites.");
     });
 
+    if(viewProfileBtn){
+      viewProfileBtn.addEventListener("click", () => {
+        const activePhoto = getPhotoById(activeLightboxPhotoId);
+        if(!activePhoto) return;
+        window.location.href = getCreatorProfileUrl(activePhoto);
+      });
+    }
+
     shareProfileBtn.addEventListener("click", async () => {
       const activePhoto = getPhotoById(activeLightboxPhotoId);
       if(!activePhoto) return;
 
-      const profileUrl = `${window.location.origin}${window.location.pathname.replace("index.html", "profile.html")}?creator=${encodeURIComponent(getCreatorKey(activePhoto))}&name=${encodeURIComponent(getCreatorName(activePhoto))}`;
+      const profileUrl = getCreatorProfileUrl(activePhoto);
 
       if(navigator.share){
         try{
@@ -3593,11 +3555,8 @@
       }
     });
 
-    supabaseClient.auth.onAuthStateChange(async (_event, session) => {
-      currentUser = session?.user || null;
-      if(!currentUser){
-        await initCurrentUser();
-      }
+    supabaseClient.auth.onAuthStateChange(async () => {
+      await initCurrentUser();
       updateAuthUI();
       await loadPhotos();
     });
@@ -3610,34 +3569,6 @@
     })();
   </script>
   <script src="site-auth.js"></script>
-
-<script id="pixnestActiveNavSync">
-(function(){
-  const page = (location.pathname.split('/').pop() || 'index.html').toLowerCase();
-  const groups = {
-    'index.html':'index.html',
-    'explore.html':'explore.html',
-    'category.html':'category.html',
-    'featured.html':'featured.html',
-    'features.html':'featured.html',
-    'premium.html':'premium.html',
-    'premiumplans.html':'premium.html',
-    'checkout.html':'premium.html',
-    'payment.html':'premium.html',
-    'contact.html':'contact.html',
-    'help.html':'contact.html',
-    'about.html':'contact.html',
-    'privacy.html':'contact.html',
-    'terms.html':'contact.html',
-    'license.html':'contact.html'
-  };
-  const activeHref = groups[page] || '';
-  document.querySelectorAll('.nav-links a[href]').forEach(function(link){
-    const href = (link.getAttribute('href') || '').toLowerCase();
-    link.classList.toggle('active', !!activeHref && href === activeHref);
-  });
-})();
-</script>
 </body>
 </html>
  

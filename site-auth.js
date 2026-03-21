@@ -9,9 +9,9 @@
     { href:'index.html', label:'Home', keys:['index.html',''] },
     { href:'explore.html', label:'Explore', keys:['explore.html'] },
     { href:'category.html', label:'Categories', keys:['category.html'] },
-    { href:'featured.html', label:'Featured', keys:['featured.html','features.html'] },
-    { href:'premium.html', label:'Premium', keys:['premium.html','premiumplans.html','checkout.html','payment.html'] },
-    { href:'contact.html', label:'Contact', keys:['contact.html','help.html','about.html','privacy.html','terms.html','license.html'] }
+    { href:'features.html', label:'Featured', keys:['features.html','featured.html','premiumplans.html'] },
+    { href:'premium.html', label:'Premium', keys:['premium.html','checkout.html','payment.html'] },
+    { href:'contact.html', label:'Contact', keys:['contact.html','help.html'] }
   ];
 
   const PREMIUM_FOOTER_ITEMS = [
@@ -30,29 +30,14 @@
     return (location.pathname.split('/').pop() || 'index.html').toLowerCase();
   }
 
-
-  function getActiveNavHref(page = currentPage()){
-    const normalized = (page || 'index.html').toLowerCase();
-    const item = NAV_ITEMS.find(entry => entry.keys.includes(normalized));
-    return item ? item.href : '';
-  }
-
-  function syncActiveNavLinks(root = document){
-    const activeHref = getActiveNavHref();
-    root.querySelectorAll('.nav-links a[href]').forEach(link => {
-      const href = String(link.getAttribute('href') || '').toLowerCase();
-      link.classList.toggle('active', Boolean(activeHref) && href === activeHref);
-    });
-  }
-
   function isCustomAccountPage(){
     const page = currentPage();
-    return page === 'account.html' || page === 'profile.html' || page === 'creator-studio.html' || page === 'professional-dashboard.html' || page === 'boss-admin.html';
+    return page === 'account.html' || page === 'profile.html' || page === 'professional-dashboard.html' || page === 'boss-admin.html';
   }
 
   function isPublicAuthPage(){
     const page = currentPage();
-    return page === 'login.html' || page === 'signup.html' || page === 'reset-password.html';
+    return page === 'login.html' || page === 'signup.html';
   }
 
   function isCustomMenuPage(){
@@ -71,30 +56,25 @@
     style.textContent = `
       html, body { min-height:100%; }
       body.site-flex-page { min-height:100vh !important; display:flex !important; flex-direction:column !important; }
-      header{ padding:16px 0 !important; border-bottom:1px solid rgba(255,255,255,.08) !important; background:#0f172a !important; position:sticky !important; top:0 !important; z-index:1000 !important; }
-      header .container.nav{ width:min(1200px,92%) !important; margin:auto !important; display:flex !important; align-items:center !important; justify-content:space-between !important; gap:24px !important; }
-      .logo-wrap{ display:flex !important; align-items:center !important; gap:14px !important; text-decoration:none !important; }
-      .logo-mark{ width:54px !important; height:54px !important; min-width:54px !important; min-height:54px !important; border-radius:18px !important; display:inline-flex !important; align-items:center !important; justify-content:center !important; font-size:30px !important; font-weight:900 !important; }
-      .logo-title{ font-size:24px !important; line-height:1 !important; font-weight:800 !important; color:#facc15 !important; }
-      .logo-sub{ display:block !important; font-size:12px !important; letter-spacing:.12em !important; text-transform:uppercase !important; color:#e5e7eb !important; opacity:.92 !important; margin-top:4px !important; }
-      .nav-right{ display:flex !important; align-items:center !important; gap:14px !important; margin-left:auto !important; }
       body.site-flex-page > footer { margin-top:auto !important; }
-      .site-auth-links{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-left:auto; }
-      .nav{ align-items:center !important; }
-      .nav-links{ display:flex !important; align-items:center !important; gap:20px !important; }
-      .nav-links a{ display:inline-flex !important; align-items:center !important; min-height:44px !important; padding:10px 0 !important; font-size:15px !important; font-weight:700 !important; }
-      .menu-toggle, .nav-toggle{ width:56px !important; height:56px !important; min-width:56px !important; min-height:56px !important; padding:0 !important; border-radius:18px !important; display:flex !important; flex-direction:column !important; align-items:center !important; justify-content:center !important; gap:5px !important; border:1px solid rgba(250,204,21,.22) !important; background:transparent !important; }
-      .menu-toggle span, .nav-toggle span{ display:block !important; width:20px !important; height:2px !important; border-radius:999px !important; background:#facc15 !important; }
-      .nav-links{ margin-left:auto !important; justify-content:flex-end !important; }
-      .menu-toggle{ flex-shrink:0 !important; }
+      .site-auth-links{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
       .site-auth-links .nav-auth-btn,
       .site-auth-links a{ display:inline-flex; align-items:center; justify-content:center; gap:8px; min-height:42px; padding:10px 14px; border-radius:12px; font-size:14px; font-weight:700; text-decoration:none; }
       .site-auth-links .secondary{ background:transparent; color:#fff; border:1px solid rgba(255,255,255,.15); }
       .site-auth-links .secondary:hover{ background:rgba(255,255,255,.06); color:#facc15; border-color:rgba(250,204,21,.28); }
       .site-auth-links .primary{ background:#facc15; color:#111827; border:none; }
       .site-auth-links .primary:hover{ transform:translateY(-2px); box-shadow:0 10px 24px rgba(250,204,21,.18); }
-      .site-auth-links .site-danger{ background:transparent; color:#fecaca; border:1px solid rgba(239,68,68,.25); }
-      .site-auth-links .site-danger:hover{ background:rgba(239,68,68,.10); color:#fecaca; }
+      .site-account-menu-wrap{ position:relative; display:inline-flex; align-items:center; }
+      .site-account-menu-toggle{ width:46px; height:46px; border-radius:12px; border:1px solid rgba(250,204,21,.35); background:#111827; color:#facc15; display:flex; align-items:center; justify-content:center; cursor:pointer; flex-shrink:0; font-size:17px; }
+      .site-account-menu-toggle:hover{ transform:translateY(-2px); border-color:rgba(250,204,21,.45); }
+      .site-account-dropdown{ position:absolute; top:calc(100% + 10px); right:0; width:min(320px,90vw); background:#111827; border:1px solid rgba(255,255,255,.08); border-radius:18px; padding:10px; box-shadow:0 18px 36px rgba(0,0,0,.28); display:none; z-index:1500; }
+      .site-account-dropdown.show{ display:block; }
+      .site-account-dropdown a,
+      .site-account-dropdown button{ width:100%; display:flex; align-items:center; gap:10px; padding:12px 12px; border:none; background:transparent; color:#e5e7eb; border-radius:12px; font-size:14px; cursor:pointer; text-align:left; text-decoration:none; }
+      .site-account-dropdown a:hover,
+      .site-account-dropdown button:hover{ background:rgba(250,204,21,.10); color:#facc15; }
+      .site-account-dropdown button.site-danger{ color:#fecaca; }
+      .site-account-dropdown button.site-danger:hover{ background:rgba(239,68,68,.10); color:#fecaca; }
       .site-auth-modal-backdrop{ position:fixed; inset:0; background:rgba(2,6,23,.72); display:none; align-items:center; justify-content:center; padding:18px; z-index:2500; }
       .site-auth-modal-backdrop.show{ display:flex; }
       .site-auth-modal{ width:min(460px,100%); background:linear-gradient(180deg, rgba(17,24,39,.98), rgba(15,23,42,.98)); border:1px solid rgba(250,204,21,.22); border-radius:22px; box-shadow:0 24px 60px rgba(0,0,0,.38); padding:22px; color:#e5e7eb; }
@@ -109,158 +89,84 @@
       .site-auth-modal-actions .site-auth-login:hover,
       .site-auth-modal-actions .site-auth-signup:hover,
       .site-auth-modal-actions .site-auth-cancel:hover{ transform:translateY(-1px); }
-
-      .nav-links a{ position:relative; }
-      .nav-links a.active{ color:#facc15 !important; font-weight:700 !important; }
-      .nav-links a.active::after{ content:''; position:absolute; left:0; right:0; bottom:-8px; height:2px; border-radius:999px; background:#facc15; box-shadow:0 0 12px rgba(250,204,21,.35); }
-      .creator-badge.premium,
-      .member-badge.premium,
-      .status-badge.premium,
-      .pill.premium,
-      .auth-pill.premium,
-      .nav-chip.premium{ background:rgba(250,204,21,.12) !important; color:#facc15 !important; border-color:rgba(250,204,21,.28) !important; }
-      .pixnest-site-toast{ position:fixed; left:50%; bottom:22px; transform:translateX(-50%) translateY(20px); min-width:min(92vw,420px); background:rgba(15,23,42,.96); color:#e5e7eb; border:1px solid rgba(250,204,21,.22); border-radius:14px; box-shadow:0 18px 40px rgba(0,0,0,.3); padding:12px 16px; font-size:14px; line-height:1.45; z-index:2800; opacity:0; pointer-events:none; transition:.25s; }
-      .pixnest-site-toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
-
-      .pixnest-extra-actions{ display:flex; gap:8px; flex-wrap:wrap; margin-left:0 !important; }
-      .pixnest-extra-actions .pixnest-repost-btn{
-        width:42px !important;
-        height:42px !important;
-        min-width:42px !important;
-        min-height:42px !important;
-        padding:0 !important;
-        border-radius:999px !important;
-        position:relative;
-        display:inline-flex !important;
-        align-items:center !important;
-        justify-content:center !important;
-        background:rgba(15,23,42,.86) !important;
-        border:1px solid rgba(255,255,255,.12) !important;
-        color:#fff !important;
-        backdrop-filter:blur(10px);
+      .site-header .container,
+      header .container{
+        max-width:1200px;
+        margin:0 auto;
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        gap:18px;
       }
-      .pixnest-extra-actions .pixnest-repost-btn i{ font-size:15px !important; color:#fff !important; }
-      .pixnest-extra-actions .pixnest-repost-btn.active i{ color:#facc15 !important; }
-      .pixnest-extra-actions .pixnest-repost-count{
+      .nav-links{
+        display:flex;
+        align-items:center;
+        gap:24px;
+        flex-wrap:wrap;
+      }
+      .nav-links a{
+        position:relative;
+        display:inline-flex;
+        align-items:center;
+        min-height:42px;
+        padding:8px 0;
+        color:#e5e7eb;
+        font-size:15px;
+        font-weight:700;
+        text-decoration:none;
+        transition:color .2s ease;
+      }
+      .nav-links a::after{
+        content:'';
         position:absolute;
-        right:-4px;
+        left:0;
+        right:0;
         bottom:-4px;
-        min-width:18px;
-        height:18px;
-        padding:0 4px;
+        height:3px;
         border-radius:999px;
+        background:#facc15;
+        opacity:0;
+        transform:scaleX(.55);
+        transition:opacity .2s ease, transform .2s ease;
+      }
+      .nav-links a:hover,
+      .nav-links a.active,
+      .nav-links a[aria-current="page"]{
+        color:#facc15;
+      }
+      .nav-links a:hover::after,
+      .nav-links a.active::after,
+      .nav-links a[aria-current="page"]::after{
+        opacity:1;
+        transform:scaleX(1);
+      }
+      .footer-links{
         display:flex;
         align-items:center;
         justify-content:center;
-        background:#facc15;
-        color:#111827;
-        font-size:10px;
-        font-weight:800;
-        line-height:1;
-        box-shadow:0 6px 16px rgba(0,0,0,.22);
+        gap:18px;
+        flex-wrap:wrap;
       }
-      #viewCreatorProfileBtn{ display:inline-flex !important; }
-      .photo-stats{ gap:8px !important; align-items:center !important; flex-wrap:wrap !important; }
-      .lightbox .creator-actions-line{ display:grid !important; grid-template-columns:repeat(3,minmax(0,1fr)) !important; gap:10px !important; }
-      .lightbox .creator-line-btn{ min-height:42px !important; padding:10px 12px !important; font-size:13px !important; border-radius:14px !important; }
-      .visual-card .photo-stat,
-      .card-bottom-right .photo-stat,
-      .pixnest-compact-stats .photo-stat{
-        width:50px !important;
-        height:50px !important;
-        min-width:50px !important;
-        min-height:50px !important;
-        padding:0 !important;
-        border-radius:999px !important;
-        display:inline-flex !important;
-        flex-direction:column !important;
-        align-items:center !important;
-        justify-content:center !important;
-        gap:4px !important;
-        background:rgba(15,23,42,.82) !important;
-        border:1px solid rgba(255,255,255,.12) !important;
-        box-shadow:none !important;
-        line-height:1 !important;
+      .footer-links a{
+        color:#cbd5e1;
+        font-size:15px;
+        font-weight:600;
+        text-decoration:none;
       }
-      .visual-card .photo-stat i,
-      .card-bottom-right .photo-stat i,
-      .pixnest-compact-stats .photo-stat i{ font-size:13px !important; color:#facc15 !important; }
-      .visual-card .photo-stat > span,
-      .card-bottom-right .photo-stat > span,
-      .pixnest-compact-stats .photo-stat > span{ font-size:11px !important; font-weight:800 !important; color:#f8fafc !important; }
-      .visual-card .photo-stat::after,
-      .card-bottom-right .photo-stat::after,
-      .pixnest-compact-stats .photo-stat::after{ display:none !important; content:none !important; }
-      .visual-card .photo-stat.react-btn.active,
-      .card-bottom-right .photo-stat.react-btn.active,
-      .pixnest-compact-stats .photo-stat.react-btn.active{
-        background:rgba(250,204,21,.16) !important;
-        border-color:rgba(250,204,21,.32) !important;
-      }
-      .lightbox .photo-stats{ gap:12px !important; align-items:center !important; }
-      .lightbox .photo-stat{
-        width:58px !important;
-        height:58px !important;
-        min-width:58px !important;
-        min-height:58px !important;
-        padding:0 !important;
-        border-radius:999px !important;
-        display:inline-flex !important;
-        flex-direction:column !important;
-        align-items:center !important;
-        justify-content:center !important;
+      .footer-links a:hover{ color:#facc15; }
+      .photo-stats{ gap:6px !important; }
+      .photo-stat{
+        padding:5px 8px !important;
+        font-size:10px !important;
         gap:5px !important;
-        background:rgba(15,23,42,.96) !important;
-        border:1px solid rgba(255,255,255,.18) !important;
-        box-shadow:0 10px 24px rgba(0,0,0,.18) !important;
       }
-      .lightbox .photo-stat i{ font-size:14px !important; color:#facc15 !important; }
-      .lightbox .photo-stat > span{ font-size:11px !important; font-weight:800 !important; color:#fff !important; }
-      .lightbox .photo-stat::after{ display:none !important; content:none !important; }
-      .lightbox .photo-stat.react-btn.active{ background:rgba(250,204,21,.18) !important; border-color:rgba(250,204,21,.34) !important; }
-
-      .lightbox .creator-action-btn{ min-height:44px !important; }
-      .lightbox .creator-social-proof{ grid-template-columns:repeat(3,minmax(0,1fr)) !important; }
-      .lightbox .creator-count{ min-width:0 !important; }
-      .lightbox .creator-count strong{ font-size:15px !important; }
-      .lightbox .creator-count span{ font-size:11px !important; }
-      .lightbox .lightbox-actions{ gap:12px !important; }
-      .lightbox .lightbox-social{ background:#0f172a !important; border-color:rgba(255,255,255,.14) !important; width:44px !important; height:44px !important; min-width:44px !important; min-height:44px !important; border-radius:999px !important; }
-      .action-icon{ width:42px !important; height:42px !important; min-width:42px !important; min-height:42px !important; border-radius:999px !important; }
-
-      .account-menu-wrap,
-      .account-menu-toggle,
-      .account-menu-btn,
-      #accountMenuWrap,
-      #accountMenuToggle,
-      #accountMenuBtn,
-      #accountDropdown,
-      #accountMenuDropdown{ display:none !important; }
-      .site-unified-menu-wrap{ position:relative; display:flex; align-items:center; flex-shrink:0; margin-left:8px; }
-      .site-unified-menu-panel{ position:absolute; top:calc(100% + 12px); right:0; width:min(360px,92vw); max-height:min(76vh,760px); overflow:auto; background:linear-gradient(180deg, rgba(15,23,42,.99), rgba(17,24,39,.98)); border:1px solid rgba(250,204,21,.18); border-radius:24px; box-shadow:0 26px 60px rgba(0,0,0,.38); padding:14px; z-index:2600; display:none; }
-      .site-unified-menu-panel.open{ display:block; }
-      .site-unified-menu-head{ display:flex; align-items:center; gap:12px; padding:6px 6px 14px; border-bottom:1px solid rgba(255,255,255,.08); margin-bottom:12px; }
-      .site-unified-menu-avatar{ width:42px; height:42px; border-radius:14px; background:linear-gradient(135deg,#facc15,#fb7185); color:#111827; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:18px; }
-      .site-unified-menu-head strong{ display:block; color:#f8fafc; font-size:15px; }
-      .site-unified-menu-head small{ color:#94a3b8; font-size:12px; }
-      .site-unified-menu-section{ display:grid; gap:6px; margin-bottom:10px; }
-      .site-unified-menu-section-title{ font-size:11px; text-transform:uppercase; letter-spacing:.12em; color:#94a3b8; padding:4px 8px; }
-      .site-unified-menu-link,
-      .site-unified-menu-action{ width:100%; display:flex; align-items:center; gap:12px; min-height:46px; padding:11px 12px; border-radius:16px; border:1px solid transparent; background:transparent; color:#e5e7eb; text-decoration:none; font-weight:700; font-size:14px; cursor:pointer; }
-      .site-unified-menu-link:hover,
-      .site-unified-menu-action:hover{ background:rgba(250,204,21,.10); border-color:rgba(250,204,21,.18); color:#facc15; }
-      .site-unified-menu-link.active{ background:rgba(250,204,21,.10); color:#facc15; border-color:rgba(250,204,21,.18); }
-      .site-unified-menu-action.site-danger{ color:#fecaca; }
-      .site-unified-menu-action.site-danger:hover{ color:#fff; background:rgba(239,68,68,.14); border-color:rgba(239,68,68,.24); }
-      .site-unified-menu-sep{ height:1px; background:rgba(255,255,255,.08); margin:6px 0 10px; }
-      @media (max-width:860px){
-        .site-unified-menu-panel{ left:18px; right:18px; width:auto; }
+      .photo-stat i{ font-size:10px !important; }
+      .action-icon,
+      .lightbox-social{
+        width:34px !important;
+        height:34px !important;
+        font-size:13px !important;
       }
-      @media (max-width:860px){
-        .nav-links a.active::after{ display:block !important; bottom:-4px !important; }
-        .menu-toggle, .nav-toggle{ width:52px !important; height:52px !important; min-width:52px !important; min-height:52px !important; }
-      }
-
       @media (max-width:860px){
         .site-auth-modal-actions{ grid-template-columns:1fr; }
         .site-auth-links{ width:100%; flex-direction:column; align-items:stretch; padding-top:10px; }
@@ -269,35 +175,20 @@
         .site-auth-links{ width:100%; flex-direction:column; align-items:stretch; padding-top:10px; }
         .site-auth-links .nav-auth-btn,
         .site-auth-links a,
-        .site-auth-links{ width:100%; }
-        .site-auth-links .nav-auth-btn,
-        .site-auth-links a{ width:100%; }
-        .lightbox{ padding:0 !important; }
-        .lightbox .lightbox-panel{ width:100vw !important; height:100dvh !important; max-height:100dvh !important; border-radius:0 !important; grid-template-columns:1fr !important; }
-        .lightbox .lightbox-image-wrap{ height:34vh !important; min-height:220px !important; padding:10px !important; }
-        .lightbox .lightbox-image-wrap img{ border-radius:16px !important; }
-        .lightbox .lightbox-info{ padding:12px 12px 18px !important; }
-        .lightbox .lightbox-close{ top:10px !important; right:10px !important; width:40px !important; height:40px !important; }
-        .lightbox .creator-cover{ height:84px !important; }
-        .lightbox .creator-profile-card{ margin-top:-24px !important; padding:0 12px 12px !important; }
-        .lightbox .creator-top{ padding-right:46px !important; gap:12px !important; align-items:flex-end !important; }
-        .lightbox .creator-avatar{ width:60px !important; height:60px !important; font-size:21px !important; }
-        .lightbox .creator-top-main{ min-width:0 !important; }
-        .lightbox .creator-name-link strong{ font-size:17px !important; }
-        .lightbox .follow-btn{ width:100% !important; }
-        .lightbox .creator-social-proof{ grid-template-columns:repeat(3,minmax(0,1fr)) !important; gap:8px !important; }
-        .lightbox .creator-count{ padding:8px 6px !important; border-radius:14px !important; }
-        .lightbox .photo-stats{ display:grid !important; grid-template-columns:repeat(3,minmax(0,1fr)) !important; }
-        .lightbox .photo-stat[data-label]{ min-width:0 !important; min-height:64px !important; padding:8px 6px !important; border-radius:16px !important; }
-        .lightbox .lightbox-actions{ display:grid !important; grid-template-columns:repeat(4,minmax(0,1fr)) !important; }
-        .lightbox .lightbox-social{ margin:0 auto !important; }
-        .lightbox .creator-menu-actions{ flex-direction:column !important; }
-        .lightbox .creator-action-btn{ width:100% !important; }
-        .lightbox .creator-posts-grid{ grid-template-columns:repeat(2,minmax(0,1fr)) !important; }
-      }
-      @media (max-width:480px){
-        .lightbox .creator-posts-grid{ grid-template-columns:1fr !important; }
-        .lightbox .lightbox-actions{ grid-template-columns:repeat(4,minmax(0,1fr)) !important; gap:10px !important; }
+        .site-account-menu-wrap,
+        .site-account-menu-toggle{ width:100%; }
+        .site-account-menu-toggle{ min-height:42px; border-radius:12px; }
+        .nav-links{
+          width:100%;
+          gap:14px;
+        }
+        .nav-links a{
+          min-height:36px;
+          padding:6px 0;
+        }
+        .footer-links{
+          gap:14px;
+        }
       }
     `;
     document.head.appendChild(style);
@@ -385,15 +276,6 @@
     });
   }
 
-  function removeLegacyMenus(){
-    document.querySelectorAll('.account-menu-wrap,.account-menu-toggle,.account-menu-btn').forEach(el => {
-      if(el.id === 'menuToggle' || el.id === 'navToggle') return;
-      if(el.classList.contains('menu-toggle') || el.classList.contains('nav-toggle')) return;
-      el.remove();
-    });
-    document.querySelectorAll('#accountDropdown,#accountMenuDropdown').forEach(el => el.remove());
-  }
-
   function ensureFooterFlex(){
     document.body.classList.add('site-flex-page');
   }
@@ -406,6 +288,7 @@
     Array.from(navLinks.children).forEach(child => {
       if(
         child.classList?.contains('site-auth-links') ||
+        child.classList?.contains('site-account-menu-wrap') ||
         child.classList?.contains('nav-auth') ||
         child.id === 'authNavLinks'
       ){
@@ -420,18 +303,17 @@
       const a = document.createElement('a');
       a.href = item.href;
       a.textContent = item.label;
-      if(item.href === getActiveNavHref(page)) a.classList.add('active');
+      if(item.keys.includes(page)) a.classList.add('active');
       navLinks.appendChild(a);
     });
 
     preserved.forEach(node => navLinks.appendChild(node));
-    syncActiveNavLinks();
   }
 
-  function standardizeFooter(isPremium, hasAccount){
+  function standardizeFooter(isPremium){
     const footerLinks = document.querySelector('.footer-links');
     if(!footerLinks) return;
-    const items = (isPremium || hasAccount) ? PREMIUM_FOOTER_ITEMS : NON_PREMIUM_FOOTER_ITEMS;
+    const items = isPremium ? PREMIUM_FOOTER_ITEMS : NON_PREMIUM_FOOTER_ITEMS;
     footerLinks.innerHTML = items.map(item => `<a href="${item.href}">${item.label}</a>`).join('');
   }
 
@@ -452,97 +334,27 @@
     }
   }
 
-
-  async function getAdminState(user, client){
-    if(!user) return false;
-
-    const role = String(user?.app_metadata?.role || '').toLowerCase();
-    if(role === 'admin' || role === 'founder' || user?.app_metadata?.is_admin === true) return true;
-
-    try{
-      const [profileRes, creatorRes] = await Promise.all([
-        client.from('profiles').select('site_admin,super_admin,role').eq('id', user.id).maybeSingle(),
-        client.from('creator_profiles').select('site_admin,super_admin,role').eq('user_id', user.id).maybeSingle()
-      ]);
-      const p = profileRes.data || {};
-      const c = creatorRes.data || {};
-      const pRole = String(p.role || '').toLowerCase();
-      const cRole = String(c.role || '').toLowerCase();
-      return Boolean(
-        p.site_admin === true ||
-        p.super_admin === true ||
-        c.site_admin === true ||
-        c.super_admin === true ||
-        pRole === 'admin' ||
-        pRole === 'founder' ||
-        cRole === 'admin' ||
-        cRole === 'founder'
-      );
-    }catch(_error){
-      return false;
-    }
-  }
-
-  function getAccountTargetPath(){
-    return window.pixnestUserIsAdmin ? 'boss-admin.html' : 'account.html';
-  }
-
-  function getCreatorStudioTargetPath(){
-    return window.pixnestUserIsAdmin ? 'boss-admin.html' : 'creator-studio.html';
-  }
-
-  async function getCreatorStudioAccess(user, client){
-    if(!user) return false;
-    if(window.pixnestUserIsAdmin) return true;
-
-    try{
-      const [profileRes, creatorRes, photoRes] = await Promise.all([
-        client.from('profiles').select('followers_count,total_views,professional_dashboard_approved,creator_approved').eq('id', user.id).maybeSingle(),
-        client.from('creator_profiles').select('followers_count,total_views,professional_dashboard_approved,creator_approved').eq('user_id', user.id).maybeSingle(),
-        client.from('photos').select('views,view_count,total_views').or(`uploaded_by.eq.${user.id},user_id.eq.${user.id},auth_user_id.eq.${user.id},creator_id.eq.${user.id},profile_id.eq.${user.id}`)
-      ]);
-
-      const profile = profileRes?.data || {};
-      const creator = creatorRes?.data || {};
-      const rows = Array.isArray(photoRes?.data) ? photoRes.data : [];
-      const followers = Number(creator.followers_count ?? profile.followers_count ?? 0);
-      const storedViews = Number(creator.total_views ?? profile.total_views ?? 0);
-      const countedViews = rows.reduce((sum, row) => sum + Number(row?.views ?? row?.view_count ?? row?.total_views ?? 0), 0);
-      const totalViews = Math.max(storedViews, countedViews);
-      const approved = Boolean(creator.professional_dashboard_approved || creator.creator_approved || profile.professional_dashboard_approved || profile.creator_approved || user?.user_metadata?.professional_dashboard_approved || user?.user_metadata?.creator_approved);
-      return approved || (followers >= 10000 && totalViews >= 100000);
-    }catch(_error){
-      return Boolean(user?.user_metadata?.professional_dashboard_approved || user?.user_metadata?.creator_approved);
-    }
-  }
-
   function setupIdleLogout(client){
-    if(window.__pixnestIdleLogoutBound) return;
-    window.__pixnestIdleLogoutBound = true;
     const markActive = () => localStorage.setItem(LAST_ACTIVE_KEY, String(Date.now()));
     ['mousemove','mousedown','keydown','scroll','touchstart','click'].forEach(eventName => {
       window.addEventListener(eventName, markActive, { passive:true });
     });
     markActive();
 
-    const checkIdle = async () => {
+    setInterval(async () => {
       try{
         const { data } = await client.auth.getSession();
         const session = data?.session || null;
-        if(session){
-          const last = Number(localStorage.getItem(LAST_ACTIVE_KEY) || 0);
-          if(last && (Date.now() - last) > IDLE_LIMIT_MS){
-            await client.auth.signOut();
-            localStorage.removeItem(LAST_ACTIVE_KEY);
-            sessionStorage.setItem(LOGOUT_NOTICE_KEY, 'true');
-            window.location.href = 'login.html?reason=inactive';
-            return;
-          }
+        if(!session) return;
+        const last = Number(localStorage.getItem(LAST_ACTIVE_KEY) || 0);
+        if(last && (Date.now() - last) > IDLE_LIMIT_MS){
+          await client.auth.signOut();
+          localStorage.removeItem(LAST_ACTIVE_KEY);
+          sessionStorage.setItem(LOGOUT_NOTICE_KEY, 'true');
+          window.location.href = 'login.html?reason=inactive';
         }
       }catch(_error){}
-      window.setTimeout(checkIdle, 60000);
-    };
-    window.setTimeout(checkIdle, 60000);
+    }, 60000);
   }
 
   function buildAuthUI(user, client){
@@ -570,240 +382,41 @@
       return;
     }
 
-    authLinks.innerHTML = ``;
-    authLinks.style.display = 'none';
-    navLinks.appendChild(authLinks);
-  }
-
-
-  function buildUnifiedMenuLink(href, label, icon, extraClass = ''){
-    const activeHref = getActiveNavHref();
-    const isActive = href && activeHref && href.toLowerCase() === activeHref.toLowerCase();
-    return `<a href="${href}" class="site-unified-menu-link ${extraClass} ${isActive ? 'active' : ''}"><i class="${icon}"></i><span>${label}</span></a>`;
-  }
-
-  function buildUnifiedActionLink(href, label, icon, dataAction = ''){
-    const actionAttr = dataAction ? ` data-site-action="${dataAction}"` : '';
-    return `<a href="${href}" class="site-unified-menu-link"${actionAttr}><i class="${icon}"></i><span>${label}</span></a>`;
-  }
-
-  function getUnifiedMenuMarkup(user){
-    const accountTarget = getAccountTargetPath();
-    const name = String(user?.user_metadata?.full_name || user?.user_metadata?.name || user?.email || 'PixNest User').trim();
-    const email = String(user?.email || 'Signed in').trim();
-    const initial = (name[0] || email[0] || 'P').toUpperCase();
-
-    const navSection = `
-      <div class="site-unified-menu-section">
-        <div class="site-unified-menu-section-title">Browse</div>
-        ${buildUnifiedMenuLink('index.html','Home','fa-solid fa-house')}
-        ${buildUnifiedMenuLink('explore.html','Explore','fa-solid fa-compass')}
-        ${buildUnifiedMenuLink('category.html','Categories','fa-solid fa-layer-group')}
-        ${buildUnifiedMenuLink('featured.html','Featured','fa-solid fa-star')}
-        ${buildUnifiedMenuLink('premium.html','Premium','fa-solid fa-crown')}
-        ${buildUnifiedMenuLink('contact.html','Contact','fa-solid fa-envelope')}
-      </div>`;
-
-    if(!user){
-      return `
-        <div class="site-unified-menu-head">
-          <div class="site-unified-menu-avatar">P</div>
-          <div><strong>PixNest Menu</strong><small>Browse or sign in</small></div>
-        </div>
-        ${navSection}
-        <div class="site-unified-menu-sep"></div>
-        <div class="site-unified-menu-section">
-          <div class="site-unified-menu-section-title">Account</div>
-          <a href="login.html" class="site-unified-menu-link"><i class="fa-solid fa-right-to-bracket"></i><span>Login</span></a>
-          <a href="signup.html" class="site-unified-menu-link"><i class="fa-solid fa-user-plus"></i><span>Create Account</span></a>
-        </div>`;
-    }
-
-    const adminSection = window.pixnestUserIsAdmin ? `
-      <div class="site-unified-menu-section">
-        <div class="site-unified-menu-section-title">Admin</div>
-        <a href="boss-admin.html" class="site-unified-menu-link"><i class="fa-solid fa-shield-halved"></i><span>Admin Interface</span></a>
-      </div>` : '';
-
-    return `
-      <div class="site-unified-menu-head">
-        <div class="site-unified-menu-avatar">${initial}</div>
-        <div><strong>${name}</strong><small>${email}</small></div>
+    const menuWrap = document.createElement('div');
+    menuWrap.className = 'site-account-menu-wrap';
+    menuWrap.id = 'siteAccountMenuWrap';
+    menuWrap.innerHTML = `
+      <button class="site-account-menu-toggle" id="siteAccountMenuToggle" aria-label="Open account menu"><i class="fa-solid fa-bars"></i></button>
+      <div class="site-account-dropdown" id="siteAccountDropdown">
+        <a href="profile.html"><i class="fa-solid fa-user"></i>Profile</a>
+        <a href="account.html"><i class="fa-solid fa-sliders"></i>Profile Settings</a>
+        <a href="upload.html"><i class="fa-solid fa-upload"></i>Upload</a>
+        <a href="professional-dashboard.html"><i class="fa-solid fa-chart-line"></i>Creator Dashboard</a>
+        <a href="premium.html"><i class="fa-solid fa-crown"></i>Premium</a>
+        <a href="contact.html"><i class="fa-solid fa-envelope"></i>Contact</a>
+        <button type="button" class="site-danger" id="siteLogoutBtn"><i class="fa-solid fa-right-from-bracket"></i>Logout</button>
       </div>
-      ${navSection}
-      ${adminSection}
-      <div class="site-unified-menu-section">
-        <div class="site-unified-menu-section-title">Account</div>
-        ${buildUnifiedActionLink(accountTarget,'Account','fa-solid fa-user')}
-        ${buildUnifiedActionLink('account.html#edit-profile','Edit profile','fa-solid fa-user-pen','edit-profile')}
-        ${buildUnifiedActionLink('account.html#change-profile-picture','Change profile picture','fa-solid fa-camera','change-profile-picture')}
-        ${buildUnifiedActionLink('account.html#change-cover-photo','Change cover photo','fa-solid fa-image','change-cover-photo')}
-        ${buildUnifiedActionLink('account.html#verification-request','Submit verification request','fa-solid fa-badge-check','verification-request')}
-        ${buildUnifiedActionLink('account.html#dashboard-request','Submit creator studio request','fa-solid fa-chart-line','dashboard-request')}
-        ${buildUnifiedActionLink('upload.html','Upload','fa-solid fa-cloud-arrow-up')}
-        ${window.pixnestUserHasStudioAccess ? buildUnifiedActionLink(getCreatorStudioTargetPath(),'Creator Studio','fa-solid fa-chart-pie') : ''}
-        ${buildUnifiedActionLink('premium.html','Buy premium membership','fa-solid fa-crown')}
-        ${buildUnifiedActionLink('account.html#muted-accounts','Muted accounts','fa-solid fa-volume-xmark')}
-        ${buildUnifiedActionLink('account.html#content-preferences','Content preferences','fa-solid fa-sliders')}
-        ${buildUnifiedActionLink('account.html#accessibility','Accessibility','fa-solid fa-universal-access')}
-        ${buildUnifiedActionLink('account.html#language-and-translations','Language and translations','fa-solid fa-language')}
-        ${buildUnifiedActionLink('account.html#media-quality','Media quality','fa-solid fa-photo-film')}
-        ${buildUnifiedActionLink('privacy.html','Privacy Centre','fa-solid fa-shield-heart')}
-        ${buildUnifiedActionLink('account.html#account-status','Account Status','fa-solid fa-circle-info')}
-      </div>
-      <div class="site-unified-menu-sep"></div>
-      <div class="site-unified-menu-section">
-        <button type="button" class="site-unified-menu-action site-danger" data-site-action="logout"><i class="fa-solid fa-right-from-bracket"></i><span>Log out</span></button>
-      </div>`;
-  }
+    `;
+    navLinks.appendChild(menuWrap);
 
-  function ensurePrimaryMenuToggle(){
-    let toggle = document.getElementById('menuToggle') || document.getElementById('navToggle') || document.querySelector('.menu-toggle') || document.querySelector('.nav-toggle');
-    if(toggle) return toggle;
-    const navLinks = document.getElementById('navLinks') || document.querySelector('.nav-links');
-    const host = navLinks?.parentElement || document.querySelector('.nav-right') || document.querySelector('header .nav') || document.querySelector('header');
-    if(!host) return null;
-    toggle = document.createElement('button');
-    toggle.type = 'button';
-    toggle.id = 'menuToggle';
-    toggle.className = 'menu-toggle';
-    toggle.setAttribute('aria-label', 'Open menu');
-    toggle.setAttribute('aria-expanded', 'false');
-    toggle.innerHTML = '<span></span><span></span><span></span>';
-    host.appendChild(toggle);
-    return toggle;
-  }
-
-  function bindAccountShortcutInterception(){
-    document.addEventListener('click', (event) => {
-      const link = event.target.closest('a[href]');
-      if(!link) return;
-      const href = String(link.getAttribute('href') || '').trim();
-      if(!window.pixnestUserIsAdmin) return;
-      if(href === 'account.html' || href === './account.html'){
-        event.preventDefault();
-        window.location.href = 'boss-admin.html';
+    const toggle = document.getElementById('siteAccountMenuToggle');
+    const dropdown = document.getElementById('siteAccountDropdown');
+    toggle.addEventListener('click', e => {
+      e.stopPropagation();
+      dropdown.classList.toggle('show');
+    });
+    document.addEventListener('click', e => {
+      if(!dropdown.contains(e.target) && !toggle.contains(e.target)) dropdown.classList.remove('show');
+    });
+    document.getElementById('siteLogoutBtn').addEventListener('click', async () => {
+      try{
+        await client.auth.signOut();
+        dropdown.classList.remove('show');
+        window.location.href = 'index.html';
+      }catch(_err){
+        alert('Could not log out.');
       }
-    }, true);
-  }
-
-  function bindAccountActionLinks(panel){
-    if(!panel) return;
-    const actionMap = {
-      'edit-profile':'editProfileMenuBtn',
-      'change-profile-picture':'changeAvatarMenuBtn',
-      'change-cover-photo':'changeCoverMenuBtn',
-      'verification-request':'verificationRequestBtn',
-      'dashboard-request':'dashboardRequestBtn'
-    };
-
-    panel.querySelectorAll('[data-site-action]').forEach(el => {
-      const action = el.getAttribute('data-site-action');
-      if(action === 'logout') return;
-      el.addEventListener('click', (event) => {
-        if(currentPage() !== 'account.html') return;
-        const targetId = actionMap[action];
-        const target = targetId ? document.getElementById(targetId) : null;
-        if(target){
-          event.preventDefault();
-          target.click();
-          const panelEl = document.getElementById('siteUnifiedMenuPanel');
-          if(panelEl) panelEl.classList.remove('open');
-          const toggle = ensurePrimaryMenuToggle();
-          if(toggle) toggle.setAttribute('aria-expanded', 'false');
-        }
-      });
     });
-  }
-
-  function setupUnifiedPageMenu(user, client){
-    ensureGlobalStyles();
-    removeLegacyMenus();
-    const toggle = ensurePrimaryMenuToggle();
-    if(!toggle) return;
-
-    let wrap = document.getElementById('siteUnifiedMenuWrap');
-    if(!wrap){
-      wrap = document.createElement('div');
-      wrap.className = 'site-unified-menu-wrap';
-      wrap.id = 'siteUnifiedMenuWrap';
-      const panel = document.createElement('div');
-      panel.className = 'site-unified-menu-panel';
-      panel.id = 'siteUnifiedMenuPanel';
-      wrap.appendChild(panel);
-      toggle.insertAdjacentElement('afterend', wrap);
-    }
-
-    const panel = document.getElementById('siteUnifiedMenuPanel');
-    if(!panel) return;
-    panel.innerHTML = getUnifiedMenuMarkup(user);
-    bindAccountActionLinks(panel);
-
-    const closeMenu = () => {
-      panel.classList.remove('open');
-      toggle.setAttribute('aria-expanded', 'false');
-    };
-    const openMenu = () => {
-      panel.classList.add('open');
-      toggle.setAttribute('aria-expanded', 'true');
-    };
-
-    if(!toggle.dataset.siteUnifiedMenuBound){
-      toggle.dataset.siteUnifiedMenuBound = 'true';
-      toggle.addEventListener('click', (event) => {
-        event.preventDefault();
-        event.stopImmediatePropagation();
-        if(panel.classList.contains('open')) closeMenu();
-        else openMenu();
-      }, true);
-
-      document.addEventListener('click', (event) => {
-        if(!panel.classList.contains('open')) return;
-        const clickedInside = panel.contains(event.target) || toggle.contains(event.target);
-        if(!clickedInside) closeMenu();
-      }, true);
-
-      window.addEventListener('resize', () => {
-        if(window.innerWidth > 860) closeMenu();
-      });
-    }
-
-    panel.querySelectorAll('a[href]').forEach(link => {
-      link.addEventListener('click', () => closeMenu());
-    });
-
-    const logoutBtn = panel.querySelector('[data-site-action="logout"]');
-    if(logoutBtn){
-      logoutBtn.addEventListener('click', async (event) => {
-        event.preventDefault();
-        closeMenu();
-        try{
-          if(client) await client.auth.signOut();
-          window.location.href = 'index.html';
-        }catch(_err){
-          alert('Could not log out.');
-        }
-      });
-    }
-  }
-
-  function handlePrivateSelfVsPublicRouting(user){
-    const page = currentPage();
-    const accountTarget = getAccountTargetPath();
-    const creatorId = String(new URLSearchParams(window.location.search).get('creator') || '').trim();
-    const viewingSelf = Boolean(user && creatorId && creatorId === String(user.id || '').trim());
-
-    if(page === 'account.html' && user && window.pixnestUserIsAdmin && !window.location.hash && !window.location.search){
-      window.location.replace('boss-admin.html');
-      return true;
-    }
-
-    if(page === 'profile.html' && user && viewingSelf){
-      window.location.replace(accountTarget);
-      return true;
-    }
-
-    return false;
   }
 
   function removeHelpTeamSection(){
@@ -827,295 +440,18 @@
     }
   }
 
-
-
-  const REPOST_KEY = 'pixnest_photo_reposts_v1';
-  const REPORT_KEY = 'pixnest_post_reports_v1';
-
-  function showSiteToast(message){
-    let toast = document.getElementById('pixnestSiteToast');
-    if(!toast){
-      toast = document.createElement('div');
-      toast.id = 'pixnestSiteToast';
-      toast.className = 'pixnest-site-toast';
-      document.body.appendChild(toast);
-    }
-    toast.textContent = message;
-    toast.classList.add('show');
-    clearTimeout(showSiteToast._timer);
-    showSiteToast._timer = setTimeout(() => toast.classList.remove('show'), 2400);
-  }
-
-  function loadJsonStorage(key){
-    try{
-      const parsed = JSON.parse(localStorage.getItem(key) || '{}');
-      return parsed && typeof parsed === 'object' ? parsed : {};
-    }catch(_error){
-      return {};
-    }
-  }
-
-  function saveJsonStorage(key, value){
-    localStorage.setItem(key, JSON.stringify(value));
-  }
-
-  function getRepostState(){
-    return loadJsonStorage(REPOST_KEY);
-  }
-
-  function setRepostState(next){
-    saveJsonStorage(REPOST_KEY, next);
-  }
-
-  function getReportState(){
-    return loadJsonStorage(REPORT_KEY);
-  }
-
-  function currentSignedUser(){
-    return window.pixnestAuthUser || null;
-  }
-
-  function getCurrentUserIdentity(){
-    const user = currentSignedUser();
-    if(!user) return null;
-    return {
-      id: String(user.id || '').trim(),
-      email: String(user.email || '').trim().toLowerCase()
-    };
-  }
-
-  function getPhotoIdFromCard(card){
-    return String(card?.getAttribute('data-photo-id') || '').trim();
-  }
-
-  function getRepostInfo(photoId){
-    const state = getRepostState();
-    const entry = state[String(photoId)] || { count:0, by:{} };
-    const identity = getCurrentUserIdentity();
-    const key = identity?.id || identity?.email || '';
-    const active = Boolean(key && entry.by && entry.by[key]);
-    return {
-      count: Number(entry.count || 0),
-      active
-    };
-  }
-
-  function toggleRepost(photoId){
-    const identity = getCurrentUserIdentity();
-    if(!identity){
-      if(typeof window.pixnestPromptAuthRequired === 'function') window.pixnestPromptAuthRequired('repost photos');
-      return;
-    }
-
-    const state = getRepostState();
-    const key = identity.id || identity.email;
-    const entry = state[String(photoId)] || { count:0, by:{} };
-    entry.by = entry.by || {};
-
-    if(entry.by[key]){
-      delete entry.by[key];
-      entry.count = Math.max(0, Number(entry.count || 0) - 1);
-      showSiteToast('Repost removed.');
-    }else{
-      entry.by[key] = {
-        user_id: identity.id,
-        email: identity.email,
-        created_at: new Date().toISOString()
-      };
-      entry.count = Number(entry.count || 0) + 1;
-      showSiteToast('Photo reposted to your profile.');
-    }
-
-    state[String(photoId)] = entry;
-    setRepostState(state);
-    queueExtraPhotoRefresh();
-    window.dispatchEvent(new CustomEvent('pixnest-repost-change', { detail:{ photoId } }));
-  }
-
-  async function submitPostReport(client, photoId, reason){
-    const identity = getCurrentUserIdentity();
-    if(!identity){
-      if(typeof window.pixnestPromptAuthRequired === 'function') window.pixnestPromptAuthRequired('report posts');
-      return;
-    }
-
-    const trimmed = String(reason || '').trim();
-    if(!trimmed) return;
-
-    let savedToDb = false;
-    if(client){
-      try{
-        const { error } = await client.from('post_reports').insert({
-          photo_id: String(photoId),
-          reporter_user_id: identity.id || null,
-          reporter_email: identity.email || null,
-          reason: trimmed,
-          status: 'submitted'
-        });
-        if(!error) savedToDb = true;
-      }catch(_error){}
-    }
-
-    if(!savedToDb){
-      const reports = getReportState();
-      const bucket = reports[String(photoId)] || [];
-      bucket.push({
-        reporter_user_id: identity.id || null,
-        reporter_email: identity.email || null,
-        reason: trimmed,
-        created_at: new Date().toISOString()
-      });
-      reports[String(photoId)] = bucket;
-      saveJsonStorage(REPORT_KEY, reports);
-    }
-
-    
-showSiteToast('Report sent. Thanks for letting us know.');
-  }
-
-  async function submitUserReport(client, targetUserId, targetName, reason){
-    const identity = getCurrentUserIdentity();
-    if(!identity){
-      if(typeof window.pixnestPromptAuthRequired === 'function') window.pixnestPromptAuthRequired('report creators');
-      return;
-    }
-
-    const trimmed = String(reason || '').trim();
-    if(!trimmed) return;
-
-    const rawTarget = String(targetUserId || '').trim();
-    const safeTargetUserId = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(rawTarget) ? rawTarget : null;
-    let savedToDb = false;
-
-    if(client){
-      try{
-        const payload = {
-          photo_id: '',
-          report_type: 'user',
-          target_user_id: safeTargetUserId,
-          reporter_user_id: identity.id || null,
-          reporter_email: identity.email || null,
-          reason: trimmed,
-          status: 'submitted',
-          severity: 'medium'
-        };
-        const { error } = await client.from('post_reports').insert(payload);
-        if(!error) savedToDb = true;
-      }catch(_error){}
-    }
-
-    if(!savedToDb){
-      const reports = getReportState();
-      const key = `creator:${safeTargetUserId || String(targetName || 'unknown').toLowerCase()}`;
-      const bucket = reports[key] || [];
-      bucket.push({
-        report_type: 'user',
-        target_user_id: safeTargetUserId,
-        target_name: String(targetName || '').trim(),
-        reporter_user_id: identity.id || null,
-        reporter_email: identity.email || null,
-        reason: trimmed,
-        created_at: new Date().toISOString()
-      });
-      reports[key] = bucket;
-      saveJsonStorage(REPORT_KEY, reports);
-    }
-
-    showSiteToast('Creator report sent. Thanks for letting us know.');
-  }
-
-  function addExtraActionsToStats(statsWrap){
-    if(!statsWrap || statsWrap.classList.contains('lightbox-stats')) return;
-    if(statsWrap.dataset.pixnestExtraReady === 'true') return;
-
-    const card = statsWrap.closest('.visual-card');
-    const photoId = getPhotoIdFromCard(card);
-    if(!photoId) return;
-
-    const info = getRepostInfo(photoId);
-    const holder = document.createElement('div');
-    holder.className = 'pixnest-extra-actions';
-    holder.innerHTML = `
-      <button type="button" class="pixnest-repost-btn ${info.active ? 'active' : ''}" data-photo-id="${photoId}" data-stop-card title="Repost photo" aria-label="Repost photo">
-        <i class="fa-solid fa-retweet"></i>
-        <span class="pixnest-repost-count">${info.count}</span>
-      </button>
-    `;
-    statsWrap.appendChild(holder);
-    statsWrap.dataset.pixnestExtraReady = 'true';
-  }
-
-  let extraPhotoRefreshFrame = 0;
-  function refreshExtraPhotoActions(root){
-    const scope = root && typeof root.querySelectorAll === 'function' ? root : document;
-    scope.querySelectorAll('.visual-card .photo-stats').forEach(addExtraActionsToStats);
-    document.querySelectorAll('.pixnest-repost-btn').forEach(button => {
-      const photoId = String(button.getAttribute('data-photo-id') || '');
-      const info = getRepostInfo(photoId);
-      button.classList.toggle('active', info.active);
-      const countSpan = button.querySelector('.pixnest-repost-count');
-      if(countSpan) countSpan.textContent = String(info.count);
-    });
-    document.querySelectorAll('.creator-badge.premium i, .member-badge.premium i, .status-badge.premium i, .pill.premium i, .auth-pill.premium i, .nav-chip.premium i').forEach(icon => {
-      icon.className = 'fa-solid fa-circle-check';
-    });
-  }
-
-  function queueExtraPhotoRefresh(root){
-    if(extraPhotoRefreshFrame) return;
-    extraPhotoRefreshFrame = window.requestAnimationFrame(() => {
-      extraPhotoRefreshFrame = 0;
-      refreshExtraPhotoActions(root);
-    });
-  }
-
-  function bindGlobalExtraActions(client){
-    if(!document.body.dataset.pixnestExtraActionClickBound){
-      document.body.dataset.pixnestExtraActionClickBound = 'true';
-      document.addEventListener('click', async (event) => {
-        const repostBtn = event.target.closest('.pixnest-repost-btn');
-        if(repostBtn){
-          event.preventDefault();
-          event.stopPropagation();
-          toggleRepost(repostBtn.getAttribute('data-photo-id'));
-          return;
-        }
-      });
-    }
-
-    queueExtraPhotoRefresh();
-    [500, 1500].forEach(delay => window.setTimeout(() => queueExtraPhotoRefresh(), delay));
-    window.addEventListener('load', () => queueExtraPhotoRefresh(), { once:true });
-    window.addEventListener('pixnest-repost-change', () => queueExtraPhotoRefresh());
-  }
-
   function init(){
-    if(window.__pixnestSiteAuthInitDone) return;
-    window.__pixnestSiteAuthInitDone = true;
     ensureGlobalStyles();
     ensureFooterFlex();
     standardizeNav();
     removeHelpTeamSection();
     showIdleNoticeIfNeeded();
     ensureAuthPromptShell();
-    removeLegacyMenus();
-    bindAccountShortcutInterception();
-    syncActiveNavLinks();
-    const navTarget = document.getElementById('navLinks') || document.querySelector('.nav-links');
-    if(navTarget){
-      const navSync = () => syncActiveNavLinks(navTarget);
-      navSync();
-      window.addEventListener('popstate', navSync, { passive:true });
-      window.addEventListener('hashchange', navSync, { passive:true });
-    }
 
     ensureSupabase(async function(){
       try{
         const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         setupIdleLogout(client);
-
-        bindGlobalExtraActions(client);
-        window.pixnestSubmitUserReport = async (targetUserId, targetName, reason) => submitUserReport(client, targetUserId, targetName, reason);
 
         const updateUi = async (sessionUser) => {
           window.pixnestAuthUser = sessionUser || null;
@@ -1123,15 +459,9 @@ showSiteToast('Report sent. Thanks for letting us know.');
             openAuthPrompt(actionText);
           };
           const isPremium = await getPremiumState(sessionUser, client);
-          const isAdmin = await getAdminState(sessionUser, client);
           window.pixnestUserIsPremium = isPremium;
-          window.pixnestUserIsAdmin = isAdmin;
-          window.pixnestUserHasStudioAccess = isAdmin ? true : await getCreatorStudioAccess(sessionUser, client);
-          standardizeFooter(isPremium, Boolean(sessionUser));
+          standardizeFooter(isPremium);
           buildAuthUI(sessionUser, client);
-          setupUnifiedPageMenu(sessionUser, client);
-          if(handlePrivateSelfVsPublicRouting(sessionUser)) return;
-          queueExtraPhotoRefresh();
         };
 
         const { data } = await client.auth.getSession();

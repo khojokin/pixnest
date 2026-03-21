@@ -587,43 +587,6 @@
    grid-column:1 / -1;
  }
 
- .inline-note{
-   color:#94a3b8;
-   font-size:13px;
-   line-height:1.6;
-   margin-top:6px;
- }
-
- .check-row{
-   display:flex;
-   flex-wrap:wrap;
-   gap:14px;
-   margin:6px 0 16px;
- }
-
- .check-row label{
-   display:inline-flex;
-   align-items:center;
-   gap:8px;
-   padding:10px 12px;
-   border-radius:12px;
-   background:#0f172a;
-   border:1px solid rgba(255,255,255,0.08);
-   color:#e5e7eb;
-   font-size:13px;
-   font-weight:700;
- }
-
- .check-row input{
-   width:auto;
-   accent-color:#facc15;
- }
-
- .panel-stack{
-   display:grid;
-   gap:18px;
- }
-
  .field label{
    color:#e2e8f0;
    font-size:14px;
@@ -1123,12 +1086,12 @@
          </div>
 
          <div class="account-menu-links">
-           <a class="account-link" href="account.html">
+           <a class="account-link" href="profile.html">
              <i class="fa-solid fa-user"></i>
-             Account
+             My Profile
            </a>
 
-           <a class="account-link" href="creator-studio.html">
+           <a class="account-link" href="professional-dashboard.html">
              <i class="fa-solid fa-chart-line"></i>
              Dashboard
            </a>
@@ -1238,7 +1201,7 @@
 
              <div class="item-card">
                <div class="item-title">Payout control</div>
-               <div class="item-body">Use payout enable or disable when you want to allow or block creator withdrawals from the creator studio.</div>
+               <div class="item-body">Use payout enable or disable when you want to allow or block creator withdrawals from the professional dashboard.</div>
              </div>
 
              <div class="item-card">
@@ -1345,94 +1308,24 @@
      </div>
 
      <div class="tab-section" id="tab-users">
-       <div class="panel-stack">
-         <div class="panel">
-           <h2>Create or Restore User</h2>
-           <p class="panel-sub">Create a brand-new login account from admin, or restore an existing deleted, banned, suspended, or frozen account by email.</p>
+       <div class="panel">
+         <h2>User Control</h2>
+         <p class="panel-sub">Grant checkmarks, premium, creator access, dashboard access, ban, freeze, remove, enable or disable payouts, and fraud hold.</p>
 
-           <form id="createUserForm">
-             <div class="field-grid">
-               <div class="field">
-                 <label for="createUserName">Full name</label>
-                 <input type="text" id="createUserName" placeholder="e.g. Natalie Kinnear">
-               </div>
-               <div class="field">
-                 <label for="createUserEmail">Email address</label>
-                 <input type="email" id="createUserEmail" placeholder="name@example.com" required>
-               </div>
-               <div class="field">
-                 <label for="createUserPassword">Temporary password</label>
-                 <input type="text" id="createUserPassword" placeholder="At least 8 chars, number and symbol" required>
-               </div>
-               <div class="field">
-                 <label for="createUserPhone">Phone number</label>
-                 <input type="text" id="createUserPhone" placeholder="Optional phone number">
-               </div>
-               <div class="field">
-                 <label for="createUserRole">Role</label>
-                 <select id="createUserRole">
-                   <option value="user">User</option>
-                   <option value="creator">Creator</option>
-                   <option value="moderator">Moderator</option>
-                   <option value="admin">Admin</option>
-                 </select>
-               </div>
-               <div class="field">
-                 <label for="createUserStatus">Account status</label>
-                 <select id="createUserStatus">
-                   <option value="active">Active</option>
-                   <option value="under_review">Under Review</option>
-                   <option value="suspended">Suspended</option>
-                   <option value="frozen">Frozen</option>
-                   <option value="banned">Banned</option>
-                 </select>
-               </div>
-             </div>
-
-             <div class="check-row">
-               <label><input type="checkbox" id="createUserVerified"> Blue tick</label>
-               <label><input type="checkbox" id="createUserPremium"> Premium</label>
-               <label><input type="checkbox" id="createUserCreator"> Creator access</label>
-               <label><input type="checkbox" id="createUserStudio"> Creator Studio</label>
-               <label><input type="checkbox" id="createUserEmailConfirm" checked> Mark email confirmed</label>
-             </div>
-
-             <div class="action-row">
-               <button type="submit" class="mini-btn success" id="createUserBtn">
-                 <i class="fa-solid fa-user-plus"></i>
-                 Create or Restore User
-               </button>
-               <button type="button" class="mini-btn info" id="refreshUsersBtn">
-                 <i class="fa-solid fa-rotate"></i>
-                 Refresh Users
-               </button>
-             </div>
-
-             <div class="inline-note">
-               If this email already belongs to a removed or blocked account, the admin page restores that user instead of creating a duplicate. Brand-new login account creation uses the included <strong>admin-create-user</strong> Edge Function.
-             </div>
-           </form>
+         <div class="search-bar">
+           <input type="text" id="userSearch" placeholder="Search by name, email, phone, role or status">
+           <select id="userFilter">
+             <option value="all">All Users</option>
+             <option value="active">Active</option>
+             <option value="under_review">Under Review</option>
+             <option value="suspended">Suspended</option>
+             <option value="frozen">Frozen</option>
+             <option value="banned">Banned</option>
+             <option value="deleted">Deleted</option>
+           </select>
          </div>
 
-         <div class="panel">
-           <h2>User Control</h2>
-           <p class="panel-sub">Grant checkmarks, premium, creator access, dashboard access, ban, freeze, remove, enable or disable payouts, and fraud hold.</p>
-
-           <div class="search-bar">
-             <input type="text" id="userSearch" placeholder="Search by name, email, phone, role or status">
-             <select id="userFilter">
-               <option value="all">All Users</option>
-               <option value="active">Active</option>
-               <option value="under_review">Under Review</option>
-               <option value="suspended">Suspended</option>
-               <option value="frozen">Frozen</option>
-               <option value="banned">Banned</option>
-               <option value="deleted">Deleted</option>
-             </select>
-           </div>
-
-           <div class="user-grid" id="usersList"></div>
-         </div>
+         <div class="user-grid" id="usersList"></div>
        </div>
      </div>
 
@@ -1510,20 +1403,6 @@
  const photoFilter = document.getElementById("photoFilter");
  const userSearch = document.getElementById("userSearch");
  const userFilter = document.getElementById("userFilter");
- const createUserForm = document.getElementById("createUserForm");
- const createUserBtn = document.getElementById("createUserBtn");
- const refreshUsersBtn = document.getElementById("refreshUsersBtn");
- const createUserName = document.getElementById("createUserName");
- const createUserEmail = document.getElementById("createUserEmail");
- const createUserPassword = document.getElementById("createUserPassword");
- const createUserPhone = document.getElementById("createUserPhone");
- const createUserRole = document.getElementById("createUserRole");
- const createUserStatus = document.getElementById("createUserStatus");
- const createUserVerified = document.getElementById("createUserVerified");
- const createUserPremium = document.getElementById("createUserPremium");
- const createUserCreator = document.getElementById("createUserCreator");
- const createUserStudio = document.getElementById("createUserStudio");
- const createUserEmailConfirm = document.getElementById("createUserEmailConfirm");
 
  const settingsForm = document.getElementById("settingsForm");
  const homeBanner = document.getElementById("homeBanner");
@@ -1604,13 +1483,6 @@
  photoFilter.addEventListener("change", renderPhotos);
  userSearch.addEventListener("input", renderUsers);
  userFilter.addEventListener("change", renderUsers);
- createUserForm?.addEventListener("submit", handleAdminCreateUser);
- refreshUsersBtn?.addEventListener("click", async () => {
-   await loadCreatorProfiles();
-   await loadUsers();
-   await loadOverviewStats();
-   showNotice("Users refreshed.");
- });
  settingsForm?.addEventListener("submit", saveSiteSettings);
 
  function showNotice(text){
@@ -2528,7 +2400,6 @@
      patch = {
        approval_status: "approved",
        admin_approved: true,
-       is_approved: true,
        reviewed_by: adminProfile.id,
        reviewed_at: now
      };
@@ -2537,8 +2408,6 @@
      patch = {
        approval_status: "rejected",
        admin_approved: false,
-       is_approved: false,
-       featured: false,
        rejected_reason: reason,
        reviewed_by: adminProfile.id,
        reviewed_at: now
@@ -2547,8 +2416,6 @@
      patch = {
        approval_status: "under_review",
        admin_approved: false,
-       is_approved: false,
-       featured: false,
        reviewed_by: adminProfile.id,
        reviewed_at: now
      };
@@ -2700,13 +2567,6 @@
              ${creatorProfile.professional_dashboard_approved ? "Disable Dashboard" : "Enable Dashboard"}
            </button>
 
-           ${status !== "active" ? `
-           <button class="mini-btn success" data-user-action="activate" data-user-id="${escapeHtml(user.id)}">
-             <i class="fa-solid fa-user-check"></i>
-             Activate User
-           </button>
-           ` : ""}
-
            <button class="mini-btn warn" data-user-action="suspend" data-user-id="${escapeHtml(user.id)}">
              <i class="fa-solid fa-ban"></i>
              Suspend
@@ -2734,7 +2594,7 @@
 
            <button class="mini-btn danger" data-user-action="remove" data-user-id="${escapeHtml(user.id)}">
              <i class="fa-solid fa-trash"></i>
-             ${status === "deleted" ? "Restore User" : "Remove User"}
+             Remove User
            </button>
          </div>
        </div>
@@ -2771,137 +2631,6 @@
    if(error) throw error;
  }
 
- async function restoreExistingUserByEmail(existingUser, payload){
-   const profilePatch = {
-     full_name: payload.full_name || existingUser.full_name || existingUser.display_name || "User",
-     display_name: payload.full_name || existingUser.display_name || existingUser.full_name || "User",
-     email: payload.email || existingUser.email || null,
-     phone: payload.phone || existingUser.phone || null,
-     role: payload.role || existingUser.role || "user",
-     account_status: payload.account_status || "active",
-     deleted_at: null,
-     ban_reason: null,
-     freeze_reason: null,
-     fraud_hold: false,
-     updated_at: new Date().toISOString()
-   };
-
-   const { error } = await supabaseClient
-     .from("profiles")
-     .update(profilePatch)
-     .eq("id", existingUser.id);
-
-   if(error) throw error;
-
-   await updateCreatorProfileForUser(existingUser, {
-     verified: payload.verified,
-     premium_member: payload.premium_member,
-     creator_approved: payload.creator_approved,
-     professional_dashboard_approved: payload.professional_dashboard_approved,
-     payout_enabled: payload.creator_approved || payload.professional_dashboard_approved ? true : false
-   });
-
-   await logAudit("restore_existing_user", "profiles", existingUser.id, { payload });
-   await loadCreatorProfiles();
-   await loadUsers();
-   await loadOverviewStats();
- }
-
- function getCreateUserPayload(){
-   return {
-     full_name: createUserName?.value.trim() || "",
-     email: createUserEmail?.value.trim().toLowerCase() || "",
-     password: createUserPassword?.value || "",
-     phone: createUserPhone?.value.trim() || "",
-     role: createUserRole?.value || "user",
-     account_status: createUserStatus?.value || "active",
-     verified: !!createUserVerified?.checked,
-     premium_member: !!createUserPremium?.checked,
-     creator_approved: !!createUserCreator?.checked,
-     professional_dashboard_approved: !!createUserStudio?.checked,
-     email_confirm: createUserEmailConfirm?.checked !== false
-   };
- }
-
- function resetCreateUserForm(){
-   createUserForm?.reset();
-   if(createUserRole) createUserRole.value = "user";
-   if(createUserStatus) createUserStatus.value = "active";
-   if(createUserEmailConfirm) createUserEmailConfirm.checked = true;
- }
-
- async function handleAdminCreateUser(e){
-   e.preventDefault();
-
-   const payload = getCreateUserPayload();
-   if(!payload.email){
-     showNotice("Email is required.");
-     createUserEmail?.focus();
-     return;
-   }
-
-   if(!payload.password || payload.password.length < 8 || !/[0-9]/.test(payload.password) || !/[^A-Za-z0-9]/.test(payload.password)) {
-     showNotice("Password needs 8+ characters with a number and symbol.");
-     createUserPassword?.focus();
-     return;
-   }
-
-   const existingUser = usersData.find(item => normalize(item.email) === normalize(payload.email));
-   const existingStatus = normalize(existingUser?.account_status || "");
-
-   if(existingUser && ["deleted", "banned", "suspended", "frozen", "under_review"].includes(existingStatus)){
-     try{
-       createUserBtn.disabled = true;
-       createUserBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Restoring...';
-       await restoreExistingUserByEmail(existingUser, payload);
-       resetCreateUserForm();
-       showNotice("Existing user restored and re-activated.");
-       return;
-     }catch(error){
-       console.error(error);
-       showNotice("Could not restore this existing user.");
-       return;
-     } finally {
-       createUserBtn.disabled = false;
-       createUserBtn.innerHTML = '<i class="fa-solid fa-user-plus"></i> Create or Restore User';
-     }
-   }
-
-   if(existingUser){
-     showNotice("That email already belongs to an active account. Use the user controls below.");
-     return;
-   }
-
-   try{
-     createUserBtn.disabled = true;
-     createUserBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Creating...';
-
-     const { data, error } = await supabaseClient.functions.invoke("admin-create-user", {
-       body: payload
-     });
-
-     if(error) throw error;
-     if(data?.error) throw new Error(data.error);
-
-     await loadCreatorProfiles();
-     await loadUsers();
-     await loadOverviewStats();
-     resetCreateUserForm();
-     showNotice(data?.message || "User created.");
-   }catch(error){
-     console.error(error);
-     const message = String(error?.message || error || "");
-     if(message.toLowerCase().includes("functionshttperror") || message.toLowerCase().includes("admin-create-user")){
-       showNotice("Deploy the admin-create-user Edge Function first.");
-     }else{
-       showNotice(message || "Could not create user.");
-     }
-   } finally {
-     createUserBtn.disabled = false;
-     createUserBtn.innerHTML = '<i class="fa-solid fa-user-plus"></i> Create or Restore User';
-   }
- }
-
  async function handleUserAction(user, action){
    const status = normalize(user.account_status || "active");
    const creatorProfile = getCreatorProfile(user.id) || {};
@@ -2926,14 +2655,6 @@
      creatorPatch = {
        professional_dashboard_approved: next,
        payout_enabled: next ? true : creatorProfile.payout_enabled
-     };
-   }else if(action === "activate"){
-     profilePatch = {
-       account_status: "active",
-       deleted_at: null,
-       ban_reason: null,
-       freeze_reason: null,
-       fraud_hold: false
      };
    }else if(action === "suspend"){
      const reason = prompt("Reason for suspension:", "") || "";
@@ -2981,28 +2702,16 @@
        payout_enabled: hold ? false : creatorProfile.payout_enabled
      };
    }else if(action === "remove"){
-     if(status === "deleted"){
-       profilePatch = {
-         account_status: "active",
-         deleted_at: null,
-         ban_reason: null,
-         fraud_hold: false
-       };
-       creatorPatch = {
-         payout_enabled: creatorProfile.payout_enabled === false ? true : creatorProfile.payout_enabled
-       };
-     }else{
-       const reason = prompt("Reason for removing this user:", "") || "";
-       profilePatch = {
-         account_status: "deleted",
-         deleted_at: new Date().toISOString(),
-         ban_reason: reason,
-         fraud_hold: true
-       };
-       creatorPatch = {
-         payout_enabled: false
-       };
-     }
+     const reason = prompt("Reason for removing this user:", "") || "";
+     profilePatch = {
+       account_status: "deleted",
+       deleted_at: new Date().toISOString(),
+       ban_reason: reason,
+       fraud_hold: true
+     };
+     creatorPatch = {
+       payout_enabled: false
+     };
    }
 
    try{
@@ -3245,34 +2954,6 @@
  }
 
  initAuthState();
-</script>
-
-<script id="pixnestActiveNavSync">
-(function(){
-  const page = (location.pathname.split('/').pop() || 'index.html').toLowerCase();
-  const groups = {
-    'index.html':'index.html',
-    'explore.html':'explore.html',
-    'category.html':'category.html',
-    'featured.html':'featured.html',
-    'features.html':'featured.html',
-    'premium.html':'premium.html',
-    'premiumplans.html':'premium.html',
-    'checkout.html':'premium.html',
-    'payment.html':'premium.html',
-    'contact.html':'contact.html',
-    'help.html':'contact.html',
-    'about.html':'contact.html',
-    'privacy.html':'contact.html',
-    'terms.html':'contact.html',
-    'license.html':'contact.html'
-  };
-  const activeHref = groups[page] || '';
-  document.querySelectorAll('.nav-links a[href]').forEach(function(link){
-    const href = (link.getAttribute('href') || '').toLowerCase();
-    link.classList.toggle('active', !!activeHref && href === activeHref);
-  });
-})();
 </script>
 </body>
 </html>

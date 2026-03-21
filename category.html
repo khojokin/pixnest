@@ -1824,39 +1824,6 @@ const LOCKED_SVG =
       return String(value || "").trim().toLowerCase();
     }
 
-    function isPhotoPubliclyApproved(photo){
-      if(!photo || typeof photo !== "object") return false;
-
-      const approval = normalize(photo.approval_status || photo.review_status || photo.moderation_status || "");
-      const status = normalize(photo.status || photo.post_status || "");
-      const hasModerationFields = (
-        Object.prototype.hasOwnProperty.call(photo, "approval_status") ||
-        Object.prototype.hasOwnProperty.call(photo, "admin_approved") ||
-        Object.prototype.hasOwnProperty.call(photo, "is_approved") ||
-        Object.prototype.hasOwnProperty.call(photo, "review_status") ||
-        Object.prototype.hasOwnProperty.call(photo, "moderation_status")
-      );
-
-      if(["rejected", "deleted", "removed", "hidden", "draft", "archived"].includes(approval)) return false;
-      if(["rejected", "deleted", "removed", "hidden", "draft", "archived"].includes(status)) return false;
-
-      if(Object.prototype.hasOwnProperty.call(photo, "account_status")){
-        const accountStatus = normalize(photo.account_status);
-        if(["deleted", "banned", "suspended"].includes(accountStatus)) return false;
-      }
-
-      if(!hasModerationFields){
-        return true;
-      }
-
-      if(photo.admin_approved === true) return true;
-      if(photo.is_approved === true) return true;
-      if(approval === "approved") return true;
-      if(status === "approved") return true;
-
-      return false;
-    }
-
     function compactNumber(value){
       try{
         return new Intl.NumberFormat("en", {
@@ -1943,8 +1910,8 @@ let activeSessionUser = null;
 
 async function initActiveSessionUser(){
   try{
-    const { data } = await supabaseClient.auth.getSession();
-    activeSessionUser = data?.session?.user || null;
+    const { data } = await supabaseClient.auth.getUser();
+    activeSessionUser = data?.user || null;
   }catch(error){
     activeSessionUser = null;
   }
@@ -2394,6 +2361,7 @@ function handleLockedPremiumPhoto(){
         photo.creator_banner ||
         photo.creator_background ||
         photo.creator_background_image ||
+        photo.image_url ||
         DEFAULT_CATEGORY_IMAGE
       ).trim();
     }
@@ -2509,10 +2477,9 @@ function handleLockedPremiumPhoto(){
       const state = getPhotoReactionState(id);
       const metrics = getPhotoMetrics(photo);
       const stopCardAttr = stopCard ? "data-stop-card" : "";
-      const wrapClass = extraClass ? ` ${escapeHtml(extraClass)}` : "";
 
       return `
-        <div class="photo-stats pixnest-compact-stats${wrapClass}">
+        <div class="photo-stats ${escapeHtml(extraClass)}">
           <button
             type="button"
             class="photo-stat react-btn ${state.liked ? "active" : ""}"
@@ -3007,25 +2974,14 @@ async function handleDownloadButtonClick(button){
           ${favourited ? "Creator in Favourites" : "Add Creator to Favourites"}
         </button>
 
-        <a href="${escapeHtml(getCreatorProfileHref(photo))}" class="creator-action-btn" id="viewCreatorProfileBtn">
-          <i class="fa-solid fa-user"></i>
-          View Profile
-        </a>
-
         <button type="button" class="creator-action-btn" id="shareProfileBtn">
           <i class="fa-solid fa-share-nodes"></i>
           Share Profile
-        </button>
-
-        <button type="button" class="creator-action-btn" id="reportCreatorBtn">
-          <i class="fa-solid fa-flag"></i>
-          Report Profile
         </button>
       `;
 
       const favouriteCreatorBtn = document.getElementById("favouriteCreatorBtn");
       const shareProfileBtn = document.getElementById("shareProfileBtn");
-      const reportCreatorBtn = document.getElementById("reportCreatorBtn");
 
       if(favouriteCreatorBtn){
         favouriteCreatorBtn.addEventListener("click", () => {
@@ -3041,18 +2997,6 @@ async function handleDownloadButtonClick(button){
           await shareProfileLink(photo, shareProfileBtn);
         });
       }
-
-      if(reportCreatorBtn){
-        reportCreatorBtn.addEventListener("click", async () => {
-          const reason = window.prompt("Why are you reporting this creator?", "");
-          if(reason === null) return;
-          if(typeof window.pixnestSubmitUserReport === "function"){
-            await window.pixnestSubmitUserReport(photo.user_id || photo.auth_user_id || photo.uploaded_by || "", getCreatorName(photo), reason);
-          }else if(typeof window.pixnestPromptAuthRequired === "function"){
-            window.pixnestPromptAuthRequired("report creators");
-          }
-        });
-      }
     }
 
     function renderLightboxContent(photo){
@@ -3062,8 +3006,8 @@ async function handleDownloadButtonClick(button){
       lightboxImage.src = imageUrl;
       lightboxImage.alt = getPhotoAlt(photo);
 
-      lightboxTitle.textContent = safeTitle;
-      lightboxTitle.classList.toggle("is-hidden", !safeTitle);
+      lightboxTitle.textContent = safeTitle || photo.category || "Photo";
+      lightboxTitle.classList.toggle("is-hidden", !safeTitle && !photo.category);
 
       document.getElementById("lightboxCategory").textContent = photo.category || "Uncategorized";
       document.getElementById("lightboxCredit").textContent = getCreatorName(photo) || "Unknown";
@@ -3418,14 +3362,13 @@ async function openLightbox(photo){
         const { data, error } = await supabaseClient
           .from("photos")
           .select("*")
-          .order("created_at", { ascending:false })
-          .limit(90);
+          .order("created_at", { ascending:false });
 
         if(error){
           throw error;
         }
 
-        allPhotos = (Array.isArray(data) ? data : []).filter(isPhotoPubliclyApproved);
+        allPhotos = Array.isArray(data) ? data : [];
         applyFooterText();
         decideMode();
       }catch(error){
@@ -3469,34 +3412,6 @@ async function openLightbox(photo){
     });
   </script>
   <script src="site-auth.js"></script>
-
-<script id="pixnestActiveNavSync">
-(function(){
-  const page = (location.pathname.split('/').pop() || 'index.html').toLowerCase();
-  const groups = {
-    'index.html':'index.html',
-    'explore.html':'explore.html',
-    'category.html':'category.html',
-    'featured.html':'featured.html',
-    'features.html':'featured.html',
-    'premium.html':'premium.html',
-    'premiumplans.html':'premium.html',
-    'checkout.html':'premium.html',
-    'payment.html':'premium.html',
-    'contact.html':'contact.html',
-    'help.html':'contact.html',
-    'about.html':'contact.html',
-    'privacy.html':'contact.html',
-    'terms.html':'contact.html',
-    'license.html':'contact.html'
-  };
-  const activeHref = groups[page] || '';
-  document.querySelectorAll('.nav-links a[href]').forEach(function(link){
-    const href = (link.getAttribute('href') || '').toLowerCase();
-    link.classList.toggle('active', !!activeHref && href === activeHref);
-  });
-})();
-</script>
 </body>
 </html>
  

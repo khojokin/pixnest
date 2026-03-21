@@ -917,14 +917,14 @@
            </div>
 
            <div class="account-menu-links">
-             <a class="account-link" href="account.html">
+             <a class="account-link" href="profile.html">
                <i class="fa-solid fa-user"></i>
-               Account
+               My Profile
              </a>
 
              <a class="account-link" href="account.html">
                <i class="fa-solid fa-id-card"></i>
-               Account Settings
+               Account
              </a>
 
              <a class="account-link" href="upload.html">
@@ -932,9 +932,9 @@
                Upload
              </a>
 
-             <a class="account-link" href="creator-studio.html">
+             <a class="account-link" href="professional-dashboard.html">
                <i class="fa-solid fa-chart-line"></i>
-               Creator Studio
+               Professional Dashboard
              </a>
 
              <a class="account-link" href="help.html">
@@ -1407,33 +1407,5 @@
    initAuthState();
  </script>
   <script src="site-auth.js"></script>
-
-<script id="pixnestActiveNavSync">
-(function(){
-  const page = (location.pathname.split('/').pop() || 'index.html').toLowerCase();
-  const groups = {
-    'index.html':'index.html',
-    'explore.html':'explore.html',
-    'category.html':'category.html',
-    'featured.html':'featured.html',
-    'features.html':'featured.html',
-    'premium.html':'premium.html',
-    'premiumplans.html':'premium.html',
-    'checkout.html':'premium.html',
-    'payment.html':'premium.html',
-    'contact.html':'contact.html',
-    'help.html':'contact.html',
-    'about.html':'contact.html',
-    'privacy.html':'contact.html',
-    'terms.html':'contact.html',
-    'license.html':'contact.html'
-  };
-  const activeHref = groups[page] || '';
-  document.querySelectorAll('.nav-links a[href]').forEach(function(link){
-    const href = (link.getAttribute('href') || '').toLowerCase();
-    link.classList.toggle('active', !!activeHref && href === activeHref);
-  });
-})();
-</script>
 </body>
 </html>

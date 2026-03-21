@@ -811,7 +811,7 @@
         <h1>PixNest is built for creators, collections, premium content, and real platform growth.</h1>
         <p>
           PixNest is a photo discovery platform where people explore visual collections, follow creators, unlock premium work,
-          request verification, and grow toward creator approval and creator studio access.
+          request verification, and grow toward creator approval and professional dashboard access.
         </p>
 
         <div class="hero-actions" id="heroActions">
@@ -921,7 +921,7 @@
           </div>
           <h3>Professional dashboard</h3>
           <p>
-            The creator studio is reserved for stronger creator accounts. It can unlock automatically after reaching
+            The professional dashboard is reserved for stronger creator accounts. It can unlock automatically after reaching
             follower and view targets, or through review-team approval after a submitted request.
           </p>
         </div>
@@ -1000,7 +1000,7 @@
 
             <div class="list-item">
               <i class="fa-solid fa-hourglass-half"></i>
-              <span>Requests can be submitted to the PixNest review team for account review, verification, or creator studio access.</span>
+              <span>Requests can be submitted to the PixNest review team for account review, verification, or professional dashboard access.</span>
             </div>
 
             <div class="list-item">
@@ -1013,7 +1013,7 @@
         <div class="panel">
           <h3>Professional dashboard requirements</h3>
           <p>
-            The creator studio is meant for creators who have already built traction on PixNest and are ready
+            The professional dashboard is meant for creators who have already built traction on PixNest and are ready
             for stronger creator tools.
           </p>
 
@@ -1069,7 +1069,7 @@
         </div>
 
         <div class="faq-card">
-          <h3>How do I unlock the creator studio?</h3>
+          <h3>How do I unlock the professional dashboard?</h3>
           <p>Either meet the follower and view targets or submit a request for review-team approval.</p>
         </div>
 
@@ -1180,8 +1180,8 @@
 
     async function initCurrentUser(){
       try{
-        const { data } = await supabaseClient.auth.getSession();
-        currentUser = data?.session?.user || null;
+        const { data } = await supabaseClient.auth.getUser();
+        currentUser = data?.user || null;
       }catch(error){
         currentUser = null;
       }
@@ -1314,11 +1314,8 @@
       }
     });
 
-    supabaseClient.auth.onAuthStateChange(async (_event, session) => {
-      currentUser = session?.user || null;
-      if(!currentUser){
-        await initCurrentUser();
-      }
+    supabaseClient.auth.onAuthStateChange(async () => {
+      await initCurrentUser();
       updateAuthUI();
     });
 
@@ -1328,33 +1325,5 @@
     })();
   </script>
   <script src="site-auth.js"></script>
-
-<script id="pixnestActiveNavSync">
-(function(){
-  const page = (location.pathname.split('/').pop() || 'index.html').toLowerCase();
-  const groups = {
-    'index.html':'index.html',
-    'explore.html':'explore.html',
-    'category.html':'category.html',
-    'featured.html':'featured.html',
-    'features.html':'featured.html',
-    'premium.html':'premium.html',
-    'premiumplans.html':'premium.html',
-    'checkout.html':'premium.html',
-    'payment.html':'premium.html',
-    'contact.html':'contact.html',
-    'help.html':'contact.html',
-    'about.html':'contact.html',
-    'privacy.html':'contact.html',
-    'terms.html':'contact.html',
-    'license.html':'contact.html'
-  };
-  const activeHref = groups[page] || '';
-  document.querySelectorAll('.nav-links a[href]').forEach(function(link){
-    const href = (link.getAttribute('href') || '').toLowerCase();
-    link.classList.toggle('active', !!activeHref && href === activeHref);
-  });
-})();
-</script>
 </body>
 </html>

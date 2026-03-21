@@ -187,49 +187,6 @@
       display:block;
     }
 
-
-    .nav-auth-actions{
-      display:flex;
-      align-items:center;
-      gap:10px;
-    }
-
-    .nav-auth-link{
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      min-height:42px;
-      padding:10px 16px;
-      border-radius:12px;
-      font-size:14px;
-      font-weight:700;
-      text-decoration:none;
-      border:1px solid rgba(255,255,255,.14);
-    }
-
-    .nav-auth-link.secondary{
-      color:#e5e7eb;
-      background:transparent;
-    }
-
-    .nav-auth-link.secondary:hover,
-    .nav-auth-link.secondary.active-auth{
-      color:var(--accent);
-      border-color:rgba(250,204,21,.32);
-      background:rgba(250,204,21,.10);
-    }
-
-    .nav-auth-link.primary{
-      color:#111827;
-      background:var(--accent);
-      border:none;
-    }
-
-    .nav-auth-link.primary:hover{
-      transform:translateY(-2px);
-      box-shadow:0 12px 24px rgba(250,204,21,.16);
-    }
-
     .auth-wrap{
       min-height:calc(100vh - 86px);
       display:grid;
@@ -521,50 +478,7 @@
     }
 
     @media(max-width:900px){
-  
-    .nav-auth-actions{
-      display:flex;
-      align-items:center;
-      gap:10px;
-    }
-
-    .nav-auth-link{
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      min-height:42px;
-      padding:10px 16px;
-      border-radius:12px;
-      font-size:14px;
-      font-weight:700;
-      text-decoration:none;
-      border:1px solid rgba(255,255,255,.14);
-    }
-
-    .nav-auth-link.secondary{
-      color:#e5e7eb;
-      background:transparent;
-    }
-
-    .nav-auth-link.secondary:hover,
-    .nav-auth-link.secondary.active-auth{
-      color:var(--accent);
-      border-color:rgba(250,204,21,.32);
-      background:rgba(250,204,21,.10);
-    }
-
-    .nav-auth-link.primary{
-      color:#111827;
-      background:var(--accent);
-      border:none;
-    }
-
-    .nav-auth-link.primary:hover{
-      transform:translateY(-2px);
-      box-shadow:0 12px 24px rgba(250,204,21,.16);
-    }
-
-    .auth-wrap{
+      .auth-wrap{
         grid-template-columns:1fr;
       }
 
@@ -667,13 +581,7 @@
         font-size:9px;
       }
     }
-  
-    .social-auth-wrap{display:grid;gap:12px;margin-bottom:18px;}
-    .social-auth-btn{width:100%;display:flex;align-items:center;justify-content:center;gap:10px;min-height:50px;border-radius:14px;border:1px solid rgba(255,255,255,.12);background:rgba(15,23,42,.72);color:#e5e7eb;font-weight:700;cursor:pointer;}
-    .social-auth-btn:hover{transform:translateY(-1px);border-color:rgba(250,204,21,.28);color:#facc15;}
-    .social-divider{display:flex;align-items:center;gap:12px;margin:10px 0 18px;color:#94a3b8;font-size:13px;text-transform:uppercase;letter-spacing:.12em;}
-    .social-divider::before,.social-divider::after{content:'';flex:1;height:1px;background:rgba(255,255,255,.08);}
-    </style>
+  </style>
 </head>
 <body>
 
@@ -693,17 +601,13 @@
         <span></span>
       </button>
 
-            <nav class="nav-links" id="navLinks">
+      <nav class="nav-links" id="navLinks">
         <a href="index.html">Home</a>
         <a href="explore.html">Explore</a>
         <a href="category.html">Categories</a>
-        <a href="featured.html">Featured</a>
         <a href="premium.html">Premium</a>
-        <a href="contact.html">Contact</a>
-        <div class="nav-auth-actions">
-          <a href="login.html" class="nav-auth-link secondary ">Log In</a>
-          <a href="signup.html" class="nav-auth-link secondary active-auth">Sign Up</a>
-        </div>
+        <a href="login.html">Log In</a>
+        <a href="signup.html" class="active">Sign Up</a>
       </nav>
     </div>
   </header>
@@ -742,13 +646,6 @@
 
         <div class="message" id="formMessage"></div>
 
-        
-        <div class="social-auth-wrap">
-          <button type="button" class="social-auth-btn" id="googleAuthBtn"><i class="fa-brands fa-google"></i>Continue with Google</button>
-          <button type="button" class="social-auth-btn" id="appleAuthBtn"><i class="fa-brands fa-apple"></i>Continue with Apple / iCloud</button>
-        </div>
-        <div class="social-divider">or continue with email</div>
-
         <form id="signupForm" class="form-grid">
           <div class="field">
             <label for="fullName">Full name</label>
@@ -770,12 +667,12 @@
             <label for="password">Password</label>
             <div class="input-wrap">
               <i class="fa-solid fa-lock left-icon"></i>
-              <input type="password" id="password" class="with-toggle" placeholder="Create a password" minlength="8" required />
+              <input type="password" id="password" class="with-toggle" placeholder="Create a password" required />
               <button type="button" class="toggle-password" data-target="password" aria-label="Show password">
                 <i class="fa-solid fa-eye"></i>
               </button>
             </div>
-            <div class="hint">Use at least 8 characters with at least 1 number and 1 symbol.</div>
+            <div class="hint">Use at least 6 characters.</div>
           </div>
 
           <div class="field">
@@ -840,10 +737,6 @@
     const passwordInput = document.getElementById("password");
     const confirmPasswordInput = document.getElementById("confirmPassword");
 
-    const googleAuthBtn = document.getElementById("googleAuthBtn");
-    const appleAuthBtn = document.getElementById("appleAuthBtn");
-
-
     if(menuToggle && navLinks){
       menuToggle.addEventListener("click", () => {
         navLinks.classList.toggle("show");
@@ -896,74 +789,6 @@
       return "https://pixnest.uk";
     }
 
-
-async function checkEmailAlreadyInUse(email){
-  const normalizedEmail = String(email || '').trim().toLowerCase();
-  if(!normalizedEmail) return false;
-
-  const lookups = [
-    () => supabaseClient.from('profiles').select('id', { count:'exact', head:true }).ilike('email', normalizedEmail).limit(1),
-    () => supabaseClient.from('creator_profiles').select('id', { count:'exact', head:true }).ilike('email', normalizedEmail).limit(1)
-  ];
-
-  for (const runLookup of lookups){
-    try{
-      const { count, error } = await runLookup();
-      if(!error && Number(count || 0) > 0){
-        return true;
-      }
-    }catch(_error){}
-  }
-
-  return false;
-}
-
-function isDuplicateSignupResponse(data, error){
-  const message = String(error?.message || '').toLowerCase();
-  if(message.includes('already registered') || message.includes('already exists') || message.includes('already been registered')){
-    return true;
-  }
-
-  const identities = Array.isArray(data?.user?.identities) ? data.user.identities : null;
-  if(data?.user && data?.session == null && identities && identities.length === 0){
-    return true;
-  }
-
-  return false;
-}
-
-let lastDuplicateEmailHint = "";
-
-async function showDuplicateEmailHint(email){
-  const normalizedEmail = String(email || '').trim().toLowerCase();
-  if(!normalizedEmail || normalizedEmail === lastDuplicateEmailHint) return;
-
-  const emailAlreadyInUse = await checkEmailAlreadyInUse(normalizedEmail);
-  if(emailAlreadyInUse){
-    lastDuplicateEmailHint = normalizedEmail;
-    showMessage("That email is already in use. Please log in or reset your password instead.");
-  }
-}
-
-
-    async function startOAuth(provider){
-      clearMessage();
-      try{
-        const { error } = await supabaseClient.auth.signInWithOAuth({
-          provider,
-          options:{
-            redirectTo: getAuthRedirectBase() + '/index.html'
-          }
-        });
-        if(error) throw error;
-      }catch(error){
-        showMessage(error.message || 'Could not start social sign in. Make sure the provider is enabled in Supabase.');
-      }
-    }
-
-    googleAuthBtn?.addEventListener('click', () => startOAuth('google'));
-    appleAuthBtn?.addEventListener('click', () => startOAuth('apple'));
-
     document.querySelectorAll(".toggle-password").forEach(button => {
       button.addEventListener("click", () => {
         const targetId = button.getAttribute("data-target");
@@ -976,23 +801,6 @@ async function showDuplicateEmailHint(email){
         input.type = isPassword ? "text" : "password";
         icon.className = isPassword ? "fa-solid fa-eye-slash" : "fa-solid fa-eye";
       });
-    });
-
-    emailInput.addEventListener("input", () => {
-      const current = emailInput.value.trim().toLowerCase();
-      if(current !== lastDuplicateEmailHint && formMessage.classList.contains("show")) {
-        clearMessage();
-      }
-      if(current !== lastDuplicateEmailHint){
-        lastDuplicateEmailHint = "";
-      }
-    });
-
-    emailInput.addEventListener("blur", async () => {
-      const email = emailInput.value.trim();
-      if(email){
-        await showDuplicateEmailHint(email);
-      }
     });
 
     signupForm.addEventListener("submit", async (e) => {
@@ -1009,10 +817,8 @@ async function showDuplicateEmailHint(email){
         return;
       }
 
-      const strongPassword = /^(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/;
-
-      if(!strongPassword.test(password)){
-        showMessage('Password must be at least 8 characters and include at least 1 number and 1 symbol.');
+      if(password.length < 6){
+        showMessage("Password must be at least 6 characters long.");
         return;
       }
 
@@ -1021,15 +827,8 @@ async function showDuplicateEmailHint(email){
         return;
       }
 
-
       try{
         setLoading(true);
-
-        const emailAlreadyInUse = await checkEmailAlreadyInUse(email);
-        if(emailAlreadyInUse){
-          showMessage("That email is already in use. Please log in or reset your password instead.");
-          return;
-        }
 
         const { data, error } = await supabaseClient.auth.signUp({
           email,
@@ -1043,16 +842,7 @@ async function showDuplicateEmailHint(email){
         });
 
         if(error){
-          if(isDuplicateSignupResponse(data, error)){
-            showMessage("That email is already in use. Please log in or reset your password instead.");
-            return;
-          }
           throw error;
-        }
-
-        if(isDuplicateSignupResponse(data, error)){
-          showMessage("That email is already in use. Please log in or reset your password instead.");
-          return;
         }
 
         if(data?.user){

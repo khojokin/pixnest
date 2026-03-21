@@ -188,49 +188,6 @@
       display:block;
     }
 
-
-    .nav-auth-actions{
-      display:flex;
-      align-items:center;
-      gap:10px;
-    }
-
-    .nav-auth-link{
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      min-height:42px;
-      padding:10px 16px;
-      border-radius:12px;
-      font-size:14px;
-      font-weight:700;
-      text-decoration:none;
-      border:1px solid rgba(255,255,255,.14);
-    }
-
-    .nav-auth-link.secondary{
-      color:#e5e7eb;
-      background:transparent;
-    }
-
-    .nav-auth-link.secondary:hover,
-    .nav-auth-link.secondary.active-auth{
-      color:var(--accent);
-      border-color:rgba(250,204,21,.32);
-      background:rgba(250,204,21,.10);
-    }
-
-    .nav-auth-link.primary{
-      color:#111827;
-      background:var(--accent);
-      border:none;
-    }
-
-    .nav-auth-link.primary:hover{
-      transform:translateY(-2px);
-      box-shadow:0 12px 24px rgba(250,204,21,.16);
-    }
-
     .auth-wrap{
       min-height:calc(100vh - 86px);
       display:grid;
@@ -521,50 +478,7 @@
     }
 
     @media(max-width:900px){
-  
-    .nav-auth-actions{
-      display:flex;
-      align-items:center;
-      gap:10px;
-    }
-
-    .nav-auth-link{
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      min-height:42px;
-      padding:10px 16px;
-      border-radius:12px;
-      font-size:14px;
-      font-weight:700;
-      text-decoration:none;
-      border:1px solid rgba(255,255,255,.14);
-    }
-
-    .nav-auth-link.secondary{
-      color:#e5e7eb;
-      background:transparent;
-    }
-
-    .nav-auth-link.secondary:hover,
-    .nav-auth-link.secondary.active-auth{
-      color:var(--accent);
-      border-color:rgba(250,204,21,.32);
-      background:rgba(250,204,21,.10);
-    }
-
-    .nav-auth-link.primary{
-      color:#111827;
-      background:var(--accent);
-      border:none;
-    }
-
-    .nav-auth-link.primary:hover{
-      transform:translateY(-2px);
-      box-shadow:0 12px 24px rgba(250,204,21,.16);
-    }
-
-    .auth-wrap{
+      .auth-wrap{
         grid-template-columns:1fr;
       }
 
@@ -667,13 +581,7 @@
         font-size:9px;
       }
     }
-  
-    .social-auth-wrap{display:grid;gap:12px;margin-bottom:18px;}
-    .social-auth-btn{width:100%;display:flex;align-items:center;justify-content:center;gap:10px;min-height:50px;border-radius:14px;border:1px solid rgba(255,255,255,.12);background:rgba(15,23,42,.72);color:#e5e7eb;font-weight:700;cursor:pointer;}
-    .social-auth-btn:hover{transform:translateY(-1px);border-color:rgba(250,204,21,.28);color:#facc15;}
-    .social-divider{display:flex;align-items:center;gap:12px;margin:10px 0 18px;color:#94a3b8;font-size:13px;text-transform:uppercase;letter-spacing:.12em;}
-    .social-divider::before,.social-divider::after{content:'';flex:1;height:1px;background:rgba(255,255,255,.08);}
-    </style>
+  </style>
 </head>
 <body>
 
@@ -693,17 +601,13 @@
         <span></span>
       </button>
 
-            <nav class="nav-links" id="navLinks">
+      <nav class="nav-links" id="navLinks">
         <a href="index.html">Home</a>
         <a href="explore.html">Explore</a>
         <a href="category.html">Categories</a>
-        <a href="featured.html">Featured</a>
         <a href="premium.html">Premium</a>
-        <a href="contact.html">Contact</a>
-        <div class="nav-auth-actions">
-          <a href="login.html" class="nav-auth-link secondary active-auth">Log In</a>
-          <a href="signup.html" class="nav-auth-link primary">Sign Up</a>
-        </div>
+        <a href="login.html" class="active">Log In</a>
+        <a href="signup.html">Sign Up</a>
       </nav>
     </div>
   </header>
@@ -742,13 +646,6 @@
 
         <div class="message" id="formMessage"></div>
 
-        
-        <div class="social-auth-wrap">
-          <button type="button" class="social-auth-btn" id="googleAuthBtn"><i class="fa-brands fa-google"></i>Continue with Google</button>
-          <button type="button" class="social-auth-btn" id="appleAuthBtn"><i class="fa-brands fa-apple"></i>Continue with Apple / iCloud</button>
-        </div>
-        <div class="social-divider">or continue with email</div>
-
         <form id="loginForm" class="form-grid">
           <div class="field">
             <label for="email">Email address</label>
@@ -775,7 +672,7 @@
               <span>Remember me</span>
             </label>
 
-            <a href="reset-password.html" class="forgot-link" id="forgotPasswordLink">Forgot password?</a>
+            <a href="#" class="forgot-link" id="forgotPasswordLink">Forgot password?</a>
           </div>
 
           <button type="submit" class="auth-btn" id="loginBtn">Log In</button>
@@ -821,10 +718,6 @@
     const emailInput = document.getElementById("email");
     const passwordInput = document.getElementById("password");
     const rememberMeInput = document.getElementById("rememberMe");
-
-    const googleAuthBtn = document.getElementById("googleAuthBtn");
-    const appleAuthBtn = document.getElementById("appleAuthBtn");
-
 
     if(menuToggle && navLinks){
       menuToggle.addEventListener("click", () => {
@@ -878,25 +771,6 @@
       return "https://pixnest.uk";
     }
 
-
-    async function startOAuth(provider){
-      clearMessage();
-      try{
-        const { error } = await supabaseClient.auth.signInWithOAuth({
-          provider,
-          options:{
-            redirectTo: getAuthRedirectBase() + '/index.html'
-          }
-        });
-        if(error) throw error;
-      }catch(error){
-        showMessage(error.message || 'Could not start social sign in. Make sure the provider is enabled in Supabase.');
-      }
-    }
-
-    googleAuthBtn?.addEventListener('click', () => startOAuth('google'));
-    appleAuthBtn?.addEventListener('click', () => startOAuth('apple'));
-
     document.querySelectorAll(".toggle-password").forEach(button => {
       button.addEventListener("click", () => {
         const targetId = button.getAttribute("data-target");
@@ -911,16 +785,33 @@
       });
     });
 
-    
-forgotPasswordLink.addEventListener("click", (e) => {
+    forgotPasswordLink.addEventListener("click", async (e) => {
       e.preventDefault();
+      clearMessage();
+
       const email = emailInput.value.trim();
-      const next = email ? `?email=${encodeURIComponent(email)}` : "";
-      window.location.href = `reset-password.html${next}`;
+
+      if(!email){
+        showMessage("Enter your email address first so a reset link can be sent.");
+        return;
+      }
+
+      try{
+        const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
+          redirectTo: getAuthRedirectBase() + "/login.html"
+        });
+
+        if(error){
+          throw error;
+        }
+
+        showMessage("Password reset email sent. Check your inbox.", "success");
+      }catch(error){
+        showMessage(error.message || "Could not send password reset email.");
+      }
     });
 
-
-loginForm.addEventListener("submit", async (e) => {
+    loginForm.addEventListener("submit", async (e) => {
       e.preventDefault();
       clearMessage();
 

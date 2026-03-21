@@ -1485,14 +1485,14 @@
             </div>
 
             <div class="account-menu-links">
-              <a class="account-link" href="account.html">
+              <a class="account-link" href="profile.html">
                 <i class="fa-solid fa-user"></i>
-                Account
+                My Profile
               </a>
 
               <a class="account-link" href="account.html">
                 <i class="fa-solid fa-id-card"></i>
-                Account Settings
+                Account
               </a>
 
               <a class="account-link" href="upload.html">
@@ -1505,9 +1505,9 @@
                 Help
               </a>
 
-              <a class="account-link hidden" href="creator-studio.html" id="menuDashboardLink">
+              <a class="account-link hidden" href="professional-dashboard.html" id="menuDashboardLink">
                 <i class="fa-solid fa-chart-line"></i>
-                Creator Studio
+                Professional Dashboard
               </a>
 
               <button type="button" class="account-logout" id="logoutBtn">
@@ -1568,7 +1568,7 @@
               </div>
 
               <div class="panel" id="dashboardPanel">
-                <h3>Creator Studio</h3>
+                <h3>Professional Dashboard</h3>
                 <div class="dashboard-lock" id="dashboardPanelBody"></div>
               </div>
             </aside>
@@ -1798,12 +1798,6 @@ const LOCKED_SVG =
       }
     });
 
-    window.addEventListener('pixnest-repost-change', () => {
-      if(targetProfile && targetProfile.viewingOwn){
-        renderProfilePage(buildTargetProfile(allPhotos.filter(matchesTargetProfile)));
-      }
-    });
-
     window.addEventListener("resize", () => {
       if(window.innerWidth > 768){
         navLinks.classList.remove("show");
@@ -1868,39 +1862,6 @@ const LOCKED_SVG =
 
     function normalize(value = ""){
       return String(value || "").trim().toLowerCase();
-    }
-
-    function isPhotoPubliclyApproved(photo){
-      if(!photo || typeof photo !== "object") return false;
-
-      const approval = normalize(photo.approval_status || photo.review_status || photo.moderation_status || "");
-      const status = normalize(photo.status || photo.post_status || "");
-      const hasModerationFields = (
-        Object.prototype.hasOwnProperty.call(photo, "approval_status") ||
-        Object.prototype.hasOwnProperty.call(photo, "admin_approved") ||
-        Object.prototype.hasOwnProperty.call(photo, "is_approved") ||
-        Object.prototype.hasOwnProperty.call(photo, "review_status") ||
-        Object.prototype.hasOwnProperty.call(photo, "moderation_status")
-      );
-
-      if(["rejected", "deleted", "removed", "hidden", "draft", "archived"].includes(approval)) return false;
-      if(["rejected", "deleted", "removed", "hidden", "draft", "archived"].includes(status)) return false;
-
-      if(Object.prototype.hasOwnProperty.call(photo, "account_status")){
-        const accountStatus = normalize(photo.account_status);
-        if(["deleted", "banned", "suspended"].includes(accountStatus)) return false;
-      }
-
-      if(!hasModerationFields){
-        return true;
-      }
-
-      if(photo.admin_approved === true) return true;
-      if(photo.is_approved === true) return true;
-      if(approval === "approved") return true;
-      if(status === "approved") return true;
-
-      return false;
     }
 
     function compactNumber(value){
@@ -1980,37 +1941,12 @@ const LOCKED_SVG =
     }
 
 
-
-    function loadRepostState(){
-      try{
-        const saved = localStorage.getItem('pixnest_photo_reposts_v1');
-        const parsed = JSON.parse(saved || '{}');
-        return parsed && typeof parsed === 'object' ? parsed : {};
-      }catch(error){
-        return {};
-      }
-    }
-
-    function getLocalRepostedPhotos(rowsPool){
-      const currentUser = getActiveUser ? getActiveUser() : null;
-      if(!currentUser) return [];
-      const keyOptions = [String(currentUser.id || '').trim(), String(currentUser.email || '').trim().toLowerCase()].filter(Boolean);
-      if(!keyOptions.length) return [];
-      const repostState = loadRepostState();
-      const pool = Array.isArray(rowsPool) ? rowsPool : allPhotos;
-      return pool.filter(photo => {
-        const entry = repostState[String(getPhotoId(photo))];
-        if(!entry || !entry.by) return false;
-        return keyOptions.some(key => entry.by[key]);
-      });
-    }
-
 let activeSessionUser = null;
 
 async function initActiveSessionUser(){
   try{
-    const { data } = await supabaseClient.auth.getSession();
-    activeSessionUser = data?.session?.user || null;
+    const { data } = await supabaseClient.auth.getUser();
+    activeSessionUser = data?.user || null;
   }catch(error){
     activeSessionUser = null;
   }
@@ -2486,10 +2422,9 @@ function handleLockedPremiumPhoto(){
       const state = getPhotoReactionState(id);
       const metrics = getPhotoMetrics(photo);
       const stopCardAttr = stopCard ? "data-stop-card" : "";
-      const wrapClass = extraClass ? ` ${escapeHtml(extraClass)}` : "";
 
       return `
-        <div class="photo-stats pixnest-compact-stats${wrapClass}">
+        <div class="photo-stats ${escapeHtml(extraClass)}">
           <button
             type="button"
             class="photo-stat react-btn ${state.liked ? "active" : ""}"
@@ -2853,12 +2788,8 @@ async function handleDownloadButtonClick(button){
       const profileKey = derivedKey || normalize(derivedName);
       const isFollowed = rows[0] ? isCreatorFollowed(rows[0]) : false;
 
-      const localRepostRows = viewingOwn ? getLocalRepostedPhotos(allPhotos) : [];
-      const repostRows = viewingOwn
-        ? localRepostRows
-        : rows.filter(isRepostPhoto);
-      const repostIds = new Set(repostRows.map(row => String(getPhotoId(row))));
-      const postRows = rows.filter(row => !isRepostPhoto(row) && !repostIds.has(String(getPhotoId(row))));
+      const repostRows = rows.filter(isRepostPhoto);
+      const postRows = rows.filter(row => !isRepostPhoto(row));
       const favouriteRows = viewingOwn
         ? allPhotos.filter(photo => getPhotoReactionState(getPhotoId(photo)).favourited)
         : [];
@@ -3010,14 +2941,14 @@ async function handleDownloadButtonClick(button){
           </a>
 
           ${profile.dashboardAllowed ? `
-            <a href="creator-studio.html" class="action-btn primary">
+            <a href="professional-dashboard.html" class="action-btn primary">
               <i class="fa-solid fa-chart-line"></i>
-              Creator Studio
+              Professional Dashboard
             </a>
           ` : `
             <a href="help.html" class="action-btn">
               <i class="fa-solid fa-circle-check"></i>
-              Request Creator Studio Access
+              Request Dashboard Access
             </a>
           `}
         `;
@@ -3035,16 +2966,10 @@ async function handleDownloadButtonClick(button){
             <i class="fa-solid fa-share-nodes"></i>
             Share Profile
           </button>
-
-          <button type="button" class="action-btn" id="reportProfileBtn">
-            <i class="fa-solid fa-flag"></i>
-            Report Profile
-          </button>
         `;
 
         const followProfileBtn = document.getElementById("followProfileBtn");
         const shareProfileBtn = document.getElementById("shareProfileBtn");
-        const reportProfileBtn = document.getElementById("reportProfileBtn");
 
         if(followProfileBtn && firstPhoto){
           followProfileBtn.addEventListener("click", () => {
@@ -3078,18 +3003,6 @@ async function handleDownloadButtonClick(button){
             }
           });
         }
-
-        if(reportProfileBtn){
-          reportProfileBtn.addEventListener("click", async () => {
-            const reason = window.prompt("Why are you reporting this creator?", "");
-            if(reason === null) return;
-            if(typeof window.pixnestSubmitUserReport === "function"){
-              await window.pixnestSubmitUserReport(profile.userId || "", profile.name || "", reason);
-            }else if(typeof window.pixnestPromptAuthRequired === "function"){
-              window.pixnestPromptAuthRequired("report creators");
-            }
-          });
-        }
       }
     }
 
@@ -3099,18 +3012,18 @@ async function handleDownloadButtonClick(button){
 
         if(profile.dashboardAllowed){
           dashboardPanelBody.innerHTML = `
-            <p>Your creator studio is unlocked on this account.</p>
-            <a href="creator-studio.html" class="action-btn primary">
+            <p>Your professional dashboard is unlocked on this account.</p>
+            <a href="professional-dashboard.html" class="action-btn primary">
               <i class="fa-solid fa-chart-line"></i>
-              Open Creator Studio
+              Open Dashboard
             </a>
           `;
         }else{
           dashboardPanelBody.innerHTML = `
-            <p>Your creator studio is not visible yet. Once your creator access is approved, this section will unlock here.</p>
+            <p>Your dashboard is not visible yet. Once your creator access is approved, this section will unlock here.</p>
             <a href="help.html" class="action-btn">
               <i class="fa-solid fa-paper-plane"></i>
-              Submit Creator Studio Request
+              Submit Dashboard Request
             </a>
           `;
         }
@@ -3184,7 +3097,7 @@ async function handleDownloadButtonClick(button){
         : "View this creator's public posts, reposts and visible favourites.";
 
       document.title = profile.viewingOwn
-        ? "PixNest | Account"
+        ? "PixNest | My Profile"
         : `PixNest | ${profile.name}`;
 
       renderActiveGrid();
@@ -3346,12 +3259,21 @@ async function handleDownloadButtonClick(button){
     }
 
     function renderEmptyState(){
+      const isOwn = targetProfile?.viewingOwn;
       const label = activeTab.charAt(0).toUpperCase() + activeTab.slice(1);
 
       profileGrid.innerHTML = `
         <div class="empty-box">
           <strong>No ${escapeHtml(label)} yet</strong>
-          <div>${escapeHtml(`This profile does not have any ${activeTab} to show right now.`)}</div>
+          <div>${escapeHtml(isOwn ? `You do not have any ${activeTab} to show right now.` : `This profile does not have any ${activeTab} to show right now.`)}</div>
+          ${isOwn && activeTab === "posts" ? `
+            <div class="empty-actions">
+              <a href="upload.html" class="action-btn primary">
+                <i class="fa-solid fa-cloud-arrow-up"></i>
+                Upload a Photo
+              </a>
+            </div>
+          ` : ``}
         </div>
       `;
     }
@@ -3376,7 +3298,7 @@ async function handleDownloadButtonClick(button){
     function renderLightboxContent(photo){
       lightboxImage.src = photo.image_url || DEFAULT_IMAGE;
       lightboxImage.alt = getPhotoAlt(photo);
-      lightboxTitle.textContent = getSafePhotoTitle(photo);
+      lightboxTitle.textContent = getSafePhotoTitle(photo) || photo.category || "Photo";
       lightboxSub.textContent = `By ${getCreatorName(photo)} • ${formatPostDate(photo)}`;
       document.getElementById("lightboxCategory").textContent = photo.category || "Uncategorized";
       document.getElementById("lightboxCreator").textContent = getCreatorName(photo) || "Unknown";
@@ -3578,11 +3500,6 @@ async function openLightbox(photo){
     }
 
     function decideProfileMode(){
-      const explicitProfileTarget = Boolean(getRequestedCreator() || getRequestedName());
-      if(!explicitProfileTarget && getSessionUser()){
-        window.location.replace("account.html");
-        return;
-      }
       const requestedCreator = getRequestedCreator();
       const requestedName = getRequestedName();
 
@@ -3612,11 +3529,6 @@ async function openLightbox(photo){
 
       const profile = buildTargetProfile(matchedRows);
 
-      if(profile.viewingOwn){
-        window.location.replace("account.html");
-        return;
-      }
-
       const requestedTab = normalize(getRequestedTab());
       if(["posts","reposts","favourites"].includes(requestedTab)){
         activeTab = requestedTab;
@@ -3630,14 +3542,13 @@ async function openLightbox(photo){
         const { data, error } = await supabaseClient
           .from("photos")
           .select("*")
-          .order("created_at", { ascending:false })
-          .limit(60);
+          .order("created_at", { ascending:false });
 
         if(error){
           throw error;
         }
 
-        allPhotos = (Array.isArray(data) ? data : []).filter(isPhotoPubliclyApproved);
+        allPhotos = Array.isArray(data) ? data : [];
         applyFooterText();
         decideProfileMode();
       }catch(error){
@@ -3666,34 +3577,6 @@ async function openLightbox(photo){
     })();
   </script>
   <script src="site-auth.js"></script>
-
-<script id="pixnestActiveNavSync">
-(function(){
-  const page = (location.pathname.split('/').pop() || 'index.html').toLowerCase();
-  const groups = {
-    'index.html':'index.html',
-    'explore.html':'explore.html',
-    'category.html':'category.html',
-    'featured.html':'featured.html',
-    'features.html':'featured.html',
-    'premium.html':'premium.html',
-    'premiumplans.html':'premium.html',
-    'checkout.html':'premium.html',
-    'payment.html':'premium.html',
-    'contact.html':'contact.html',
-    'help.html':'contact.html',
-    'about.html':'contact.html',
-    'privacy.html':'contact.html',
-    'terms.html':'contact.html',
-    'license.html':'contact.html'
-  };
-  const activeHref = groups[page] || '';
-  document.querySelectorAll('.nav-links a[href]').forEach(function(link){
-    const href = (link.getAttribute('href') || '').toLowerCase();
-    link.classList.toggle('active', !!activeHref && href === activeHref);
-  });
-})();
-</script>
 </body>
 </html>
  

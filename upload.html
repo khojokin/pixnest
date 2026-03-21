@@ -368,35 +368,6 @@
       box-shadow:none;
     }
 
-
-    .tag-helper-text{
-      display:block;
-      color:#94a3b8;
-      margin-top:8px;
-      font-size:13px;
-    }
-
-    .related-tags{
-      display:flex;
-      flex-wrap:wrap;
-      gap:10px;
-      margin-top:14px;
-    }
-
-    .related-tag-chip{
-      border:1px solid rgba(250,204,21,.24);
-      background:rgba(250,204,21,.10);
-      color:#facc15;
-      border-radius:999px;
-      padding:8px 12px;
-      font-size:13px;
-      cursor:pointer;
-    }
-
-    .related-tag-chip:hover{
-      transform:translateY(-1px);
-      background:rgba(250,204,21,.16);
-    }
     .preview-box{
       background:#0f172a;
       border:1px solid var(--line);
@@ -666,10 +637,7 @@
 
           <div class="field">
             <label for="tags">Tags</label>
-            <input type="text" id="tags" list="tagSuggestions" placeholder="e.g. forest, green, calm" />
-            <small class="tag-helper-text">Use comma-separated searchable tags. Suggested tags update from your category and related keywords.</small>
-            <datalist id="tagSuggestions"></datalist>
-            <div class="related-tags" id="relatedTags"></div>
+            <input type="text" id="tags" placeholder="e.g. forest, green, calm" />
           </div>
 
           <div class="field">
@@ -764,8 +732,6 @@
     const categoryInput = document.getElementById("category");
     const tagsInput = document.getElementById("tags");
     const descriptionInput = document.getElementById("description");
-    const tagSuggestions = document.getElementById("tagSuggestions");
-    const relatedTags = document.getElementById("relatedTags");
     const featuredInput = document.getElementById("featured");
     const featuredRow = document.getElementById("featuredRow");
     const premiumInput = document.getElementById("isPremium");
@@ -779,29 +745,6 @@
 
     let currentUser = null;
     let previewUrl = "";
-
-    const TAG_LIBRARY = {
-      nature:["nature","forest","outdoors","green","wildlife","landscape","mountains","lake","sunset","calm"],
-      travel:["travel","city","beach","adventure","destination","culture","roadtrip","skyline","holiday","journey"],
-      fashion:["fashion","style","editorial","portrait","luxury","outfit","beauty","model","streetwear","trend"],
-      food:["food","restaurant","dessert","breakfast","fresh","kitchen","drink","coffee","recipe","dining"],
-      home:["home decor","interior","furniture","modern","cozy","design","living room","minimal","wooden","lifestyle"],
-      tech:["technology","workspace","laptop","mobile","coding","digital","startup","gadgets","office","creative"],
-      people:["people","portrait","smile","lifestyle","community","friends","family","creator","candid","person"],
-      business:["business","office","teamwork","professional","meeting","startup","career","finance","productivity","brand"]
-    };
-
-    const RELATED_TAGS = {
-      forest:["trees","nature","green","outdoors"],
-      green:["nature","fresh","botanical"],
-      home:["interior","design","decor"],
-      decor:["interior","home decor","design"],
-      portrait:["people","face","lifestyle"],
-      food:["fresh","restaurant","dining"],
-      travel:["adventure","destination","journey"],
-      tech:["digital","workspace","startup"],
-      fashion:["style","editorial","beauty"]
-    };
 
     function getMembershipPlan(user){
       return String(
@@ -883,78 +826,6 @@
         .slice(0, 60);
     }
 
-    function normalizeTag(tag = ""){
-      return String(tag || "")
-        .trim()
-        .toLowerCase()
-        .replace(/\s+/g, " ");
-    }
-
-    function getNormalizedTags(){
-      const seen = new Set();
-      return String(tagsInput.value || "")
-        .split(/[,|]/)
-        .map(normalizeTag)
-        .filter(Boolean)
-        .filter(tag => {
-          if(seen.has(tag)) return false;
-          seen.add(tag);
-          return true;
-        })
-        .slice(0, 10);
-    }
-
-    function setTagsValue(tags){
-      tagsInput.value = tags.join(", ");
-    }
-
-    function addTagValue(tag){
-      const clean = normalizeTag(tag);
-      if(!clean) return;
-      const tags = getNormalizedTags();
-      if(!tags.includes(clean)) tags.push(clean);
-      setTagsValue(tags.slice(0, 10));
-      renderTagSuggestions();
-      updatePreview();
-    }
-
-    function getCategorySuggestionKey(){
-      const category = normalizeTag(categoryInput.value);
-      if(!category) return "";
-      if(category.includes("nature")) return "nature";
-      if(category.includes("travel")) return "travel";
-      if(category.includes("fashion")) return "fashion";
-      if(category.includes("food")) return "food";
-      if(category.includes("home") || category.includes("decor") || category.includes("interior")) return "home";
-      if(category.includes("tech") || category.includes("digital")) return "tech";
-      if(category.includes("people") || category.includes("portrait")) return "people";
-      if(category.includes("business")) return "business";
-      return "";
-    }
-
-    function getRelatedTagPool(){
-      const selected = getNormalizedTags();
-      const pool = [];
-      const key = getCategorySuggestionKey();
-      if(key && TAG_LIBRARY[key]) pool.push(...TAG_LIBRARY[key]);
-      selected.forEach(tag => {
-        if(RELATED_TAGS[tag]) pool.push(...RELATED_TAGS[tag]);
-      });
-      return [...new Set(pool.map(normalizeTag).filter(Boolean))].filter(tag => !selected.includes(tag)).slice(0, 12);
-    }
-
-    function renderTagSuggestions(){
-      const suggestions = getRelatedTagPool();
-      tagSuggestions.innerHTML = suggestions.map(tag => `<option value="${tag}"></option>`).join("");
-      relatedTags.innerHTML = suggestions.length
-        ? suggestions.map(tag => `<button type="button" class="related-tag-chip" data-tag="${tag}">#${tag}</button>`).join("")
-        : `<span class="tag-helper-text">Pick a category or type a few tags to see related suggestions.</span>`;
-
-      relatedTags.querySelectorAll("[data-tag]").forEach(button => {
-        button.addEventListener("click", () => addTagValue(button.dataset.tag || ""));
-      });
-    }
-
     function getFileExtension(fileName = ""){
       const parts = String(fileName).split(".");
       return parts.length > 1 ? parts.pop().toLowerCase() : "jpg";
@@ -963,7 +834,7 @@
     function updatePreview(){
       const title = titleInput.value.trim();
       const category = categoryInput.value.trim();
-      const tags = getNormalizedTags();
+      const tags = tagsInput.value.trim();
       const description = descriptionInput.value.trim();
       const featured = false;
       const isPremium = premiumInput.checked;
@@ -975,7 +846,7 @@
       const pills = [];
       pills.push(`<span class="pill">${category || "No category yet"}</span>`);
 
-      tags.slice(0, 4).forEach(tag => {
+      tags.split(/[,|]/).map(tag => tag.trim()).filter(Boolean).slice(0,4).forEach(tag => {
         pills.push(`<span class="pill">${tag}</span>`);
       });
 
@@ -1010,14 +881,14 @@
     }
 
     async function requireUser(){
-      const { data, error } = await supabaseClient.auth.getSession();
+      const { data, error } = await supabaseClient.auth.getUser();
 
-      if(error || !data?.session?.user){
+      if(error || !data?.user){
         window.location.href = "login.html";
         return null;
       }
 
-      return data.session.user;
+      return data.user;
     }
 
     async function uploadToStorage(file, user, isPremium){
@@ -1060,15 +931,15 @@
       };
     }
 
-    function buildBasePhotoRecord(storageResult, user, isPremium){
+    async function savePhotoRecord(file, storageResult, user, isPremium){
       const fullName = getDisplayName(user);
       const email = String(user.email || "").trim();
       const description = descriptionInput.value.trim();
       const category = categoryInput.value.trim();
-      const tags = getNormalizedTags().join(", ");
+      const tags = tagsInput.value.trim();
       const title = titleInput.value.trim();
 
-      return {
+      const photoRecord = {
         title: title || "",
         public_title: title || "",
         display_title: title || "",
@@ -1109,44 +980,18 @@
         views: 0,
         favourites: 0
       };
-    }
 
-    function getMissingColumnFromError(error){
-      const message = String(error?.message || error?.error_description || error || "");
-      const match = message.match(/Could not find the '([^']+)' column/i) || message.match(/column \"?([^\"']+)\"? of .* does not exist/i);
-      return match ? match[1] : "";
-    }
+      const { data, error } = await supabaseClient
+        .from("photos")
+        .insert([photoRecord])
+        .select()
+        .single();
 
-    async function insertPhotoRecordWithFallbacks(photoRecord){
-      const triedMissing = new Set();
-      let record = { ...photoRecord };
-
-      for(let attempt = 0; attempt < 16; attempt += 1){
-        const { data, error } = await supabaseClient
-          .from("photos")
-          .insert([record])
-          .select()
-          .single();
-
-        if(!error){
-          return data;
-        }
-
-        const missingColumn = getMissingColumnFromError(error);
-        if(!missingColumn || triedMissing.has(missingColumn) || !(missingColumn in record)){
-          throw error;
-        }
-
-        triedMissing.add(missingColumn);
-        delete record[missingColumn];
+      if(error){
+        throw error;
       }
 
-      throw new Error("Could not save the photo because your photos table is missing several fields.");
-    }
-
-    async function savePhotoRecord(file, storageResult, user, isPremium){
-      const photoRecord = buildBasePhotoRecord(storageResult, user, isPremium);
-      return insertPhotoRecordWithFallbacks(photoRecord);
+      return data;
     }
 
     uploadForm.addEventListener("submit", async (e) => {
@@ -1205,52 +1050,17 @@
     });
 
     [titleInput, categoryInput, tagsInput, descriptionInput, featuredInput, premiumInput].forEach(input => {
-      input.addEventListener("input", () => {
-        renderTagSuggestions();
-        updatePreview();
-      });
-      input.addEventListener("change", () => {
-        renderTagSuggestions();
-        updatePreview();
-      });
+      input.addEventListener("input", updatePreview);
+      input.addEventListener("change", updatePreview);
     });
 
     (async function init(){
       currentUser = await requireUser();
       if(!currentUser) return;
       previewCreator.textContent = getDisplayName(currentUser);
-      renderTagSuggestions();
       updatePreview();
     })();
   </script>
   <script src="site-auth.js"></script>
-
-<script id="pixnestActiveNavSync">
-(function(){
-  const page = (location.pathname.split('/').pop() || 'index.html').toLowerCase();
-  const groups = {
-    'index.html':'index.html',
-    'explore.html':'explore.html',
-    'category.html':'category.html',
-    'featured.html':'featured.html',
-    'features.html':'featured.html',
-    'premium.html':'premium.html',
-    'premiumplans.html':'premium.html',
-    'checkout.html':'premium.html',
-    'payment.html':'premium.html',
-    'contact.html':'contact.html',
-    'help.html':'contact.html',
-    'about.html':'contact.html',
-    'privacy.html':'contact.html',
-    'terms.html':'contact.html',
-    'license.html':'contact.html'
-  };
-  const activeHref = groups[page] || '';
-  document.querySelectorAll('.nav-links a[href]').forEach(function(link){
-    const href = (link.getAttribute('href') || '').toLowerCase();
-    link.classList.toggle('active', !!activeHref && href === activeHref);
-  });
-})();
-</script>
 </body>
 </html>

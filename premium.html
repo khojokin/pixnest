@@ -1565,7 +1565,7 @@
           <a href="index.html">Home</a>
           <a href="explore.html">Explore</a>
           <a href="category.html">Categories</a>
-          <a href="featured.html">Featured</a>
+          <a href="features.html">Featured</a>
           <a href="premium.html" class="active">Premium</a>
           <a href="contact.html">Contact</a>
 
@@ -1590,14 +1590,14 @@
             </div>
 
             <div class="account-menu-links">
-              <a class="account-link" href="account.html">
+              <a class="account-link" href="profile.html">
                 <i class="fa-solid fa-user"></i>
-                Account
+                My Profile
               </a>
 
               <a class="account-link" href="account.html">
                 <i class="fa-solid fa-id-card"></i>
-                Account Settings
+                Profile Settings
               </a>
 
               <a class="account-link" href="upload.html">
@@ -1605,9 +1605,9 @@
                 Upload
               </a>
 
-              <a class="account-link hidden" href="creator-studio.html" id="menuDashboardLink">
+              <a class="account-link hidden" href="professional-dashboard.html" id="menuDashboardLink">
                 <i class="fa-solid fa-chart-line"></i>
-                Creator Studio
+                Professional Dashboard
               </a>
 
               <a class="account-link" href="help.html">
@@ -2020,8 +2020,8 @@ let activeSessionUser = null;
 
 async function initActiveSessionUser(){
   try{
-    const { data } = await supabaseClient.auth.getSession();
-    activeSessionUser = data?.session?.user || null;
+    const { data } = await supabaseClient.auth.getUser();
+    activeSessionUser = data?.user || null;
   }catch(error){
     activeSessionUser = null;
   }
@@ -2504,6 +2504,7 @@ function getPhotoTags(photo){
         photo.creator_banner ||
         photo.creator_background ||
         photo.creator_background_image ||
+        photo.image_url ||
         DEFAULT_CATEGORY_IMAGE
       ).trim();
     }
@@ -2658,10 +2659,9 @@ function getPhotoTags(photo){
       const state = getPhotoReactionState(id);
       const metrics = getPhotoMetrics(photo);
       const stopCardAttr = stopCard ? "data-stop-card" : "";
-      const wrapClass = extraClass ? ` ${escapeHtml(extraClass)}` : "";
 
       return `
-        <div class="photo-stats pixnest-compact-stats${wrapClass}">
+        <div class="photo-stats ${escapeHtml(extraClass)}">
           <button
             type="button"
             class="photo-stat react-btn ${state.liked ? "active" : ""}"
@@ -3005,16 +3005,10 @@ async function handleDownloadButtonClick(button){
           <i class="fa-solid fa-share-nodes"></i>
           Share Profile
         </button>
-
-        <button type="button" class="creator-action-btn" id="reportCreatorBtn">
-          <i class="fa-solid fa-flag"></i>
-          Report Profile
-        </button>
       `;
 
       const favouriteCreatorBtn = document.getElementById("favouriteCreatorBtn");
       const shareProfileBtn = document.getElementById("shareProfileBtn");
-      const reportCreatorBtn = document.getElementById("reportCreatorBtn");
 
       if(favouriteCreatorBtn){
         favouriteCreatorBtn.addEventListener("click", () => {
@@ -3058,8 +3052,8 @@ async function handleDownloadButtonClick(button){
       lightboxImage.src = visibleUrl;
       lightboxImage.alt = getPhotoAlt(photo);
 
-      lightboxTitle.textContent = safeTitle;
-      lightboxTitle.classList.toggle("is-hidden", !safeTitle);
+      lightboxTitle.textContent = safeTitle || photo.category || "Photo";
+      lightboxTitle.classList.toggle("is-hidden", !safeTitle && !photo.category);
 
       document.getElementById("lightboxCategory").textContent = photo.category || "Uncategorized";
       document.getElementById("lightboxCredit").textContent = getCreatorName(photo) || "Unknown";
@@ -3421,9 +3415,9 @@ async function openLightbox(photo){
             <i class="fa-solid fa-crown"></i>
             Join Premium
           </a>
-          <a href="account.html" class="btn">
+          <a href="profile.html" class="btn">
             <i class="fa-solid fa-user"></i>
-            Back to Account
+            Back to Profile
           </a>
         </div>
       `;
@@ -3542,34 +3536,6 @@ async function openLightbox(photo){
     })();
   </script>
   <script src="site-auth.js"></script>
-
-<script id="pixnestActiveNavSync">
-(function(){
-  const page = (location.pathname.split('/').pop() || 'index.html').toLowerCase();
-  const groups = {
-    'index.html':'index.html',
-    'explore.html':'explore.html',
-    'category.html':'category.html',
-    'featured.html':'featured.html',
-    'features.html':'featured.html',
-    'premium.html':'premium.html',
-    'premiumplans.html':'premium.html',
-    'checkout.html':'premium.html',
-    'payment.html':'premium.html',
-    'contact.html':'contact.html',
-    'help.html':'contact.html',
-    'about.html':'contact.html',
-    'privacy.html':'contact.html',
-    'terms.html':'contact.html',
-    'license.html':'contact.html'
-  };
-  const activeHref = groups[page] || '';
-  document.querySelectorAll('.nav-links a[href]').forEach(function(link){
-    const href = (link.getAttribute('href') || '').toLowerCase();
-    link.classList.toggle('active', !!activeHref && href === activeHref);
-  });
-})();
-</script>
 </body>
 </html>
 

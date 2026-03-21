@@ -587,7 +587,7 @@
       <nav class="nav-links">
         <a href="index.html">Home</a>
         <a href="premium.html" class="active">Premium</a>
-        <a href="account.html">Account</a>
+        <a href="profile.html">Profile</a>
       </nav>
     </div>
   </header>
@@ -786,43 +786,6 @@
       checkoutBtn.textContent = isLoading ? "Redirecting..." : "Continue to Secure Payment";
     }
 
-    async function callCheckoutFunction(plan, accessToken){
-      const functionNames = ["checkout-session", "create-checkout-session"];
-      let lastError = null;
-
-      for(const functionName of functionNames){
-        try{
-          const response = await fetch(`${SUPABASE_URL}/functions/v1/${functionName}`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              "apikey": SUPABASE_KEY,
-              "Authorization": `Bearer ${accessToken}`
-            },
-            body: JSON.stringify({ plan })
-          });
-
-          const rawText = await response.text();
-          let result = {};
-          try{
-            result = rawText ? JSON.parse(rawText) : {};
-          }catch(_error){
-            result = { error: rawText || "Could not start checkout." };
-          }
-
-          if(response.ok && result?.url){
-            return result.url;
-          }
-
-          lastError = new Error(result.error || `Could not start checkout from ${functionName}.`);
-        }catch(error){
-          lastError = error;
-        }
-      }
-
-      throw lastError || new Error("Could not start checkout.");
-    }
-
     async function startCheckout(){
       clearMessage();
 
@@ -851,22 +814,36 @@
           return;
         }
 
-        const checkoutUrl = await callCheckoutFunction(plan, accessToken);
-        if(!checkoutUrl){
+        const response = await fetch(`${SUPABASE_URL}/functions/v1/create-checkout-session`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "apikey": SUPABASE_KEY,
+            "Authorization": `Bearer ${accessToken}`
+          },
+          body: JSON.stringify({ plan })
+        });
+
+        const rawText = await response.text();
+        let result = {};
+        try{
+          result = rawText ? JSON.parse(rawText) : {};
+        }catch(_error){
+          result = { error: rawText || "Could not start checkout." };
+        }
+
+        if(!response.ok){
+          throw new Error(result.error || "Could not start checkout.");
+        }
+
+        if(!result.url){
           throw new Error("No checkout URL returned.");
         }
 
-        window.location.href = checkoutUrl;
+        window.location.href = result.url;
       }catch(error){
         console.error(error);
-        const message = String(error?.message || "Could not start checkout.");
-        if(/Missing required environment secrets/i.test(message)){
-          showMessage("Checkout is almost ready, but the payment function secrets still need to be added in Supabase.");
-        }else if(/Failed to fetch|NetworkError/i.test(message)){
-          showMessage("Could not reach the payment function. Check that your Supabase Edge Function is deployed.");
-        }else{
-          showMessage(message || "Could not start checkout.");
-        }
+        showMessage(error.message || "Could not start checkout.");
         setLoading(false);
       }
     }
@@ -880,33 +857,5 @@
     setPlanSummary();
   </script>
   <script src="site-auth.js"></script>
-
-<script id="pixnestActiveNavSync">
-(function(){
-  const page = (location.pathname.split('/').pop() || 'index.html').toLowerCase();
-  const groups = {
-    'index.html':'index.html',
-    'explore.html':'explore.html',
-    'category.html':'category.html',
-    'featured.html':'featured.html',
-    'features.html':'featured.html',
-    'premium.html':'premium.html',
-    'premiumplans.html':'premium.html',
-    'checkout.html':'premium.html',
-    'payment.html':'premium.html',
-    'contact.html':'contact.html',
-    'help.html':'contact.html',
-    'about.html':'contact.html',
-    'privacy.html':'contact.html',
-    'terms.html':'contact.html',
-    'license.html':'contact.html'
-  };
-  const activeHref = groups[page] || '';
-  document.querySelectorAll('.nav-links a[href]').forEach(function(link){
-    const href = (link.getAttribute('href') || '').toLowerCase();
-    link.classList.toggle('active', !!activeHref && href === activeHref);
-  });
-})();
-</script>
 </body>
 </html>
