@@ -1060,7 +1060,7 @@
       };
     }
 
-    async function savePhotoRecord(file, storageResult, user, isPremium){
+    function buildBasePhotoRecord(storageResult, user, isPremium){
       const fullName = getDisplayName(user);
       const email = String(user.email || "").trim();
       const description = descriptionInput.value.trim();
@@ -1068,7 +1068,7 @@
       const tags = getNormalizedTags().join(", ");
       const title = titleInput.value.trim();
 
-      const photoRecord = {
+      return {
         title: title || "",
         public_title: title || "",
         display_title: title || "",
@@ -1109,18 +1109,44 @@
         views: 0,
         favourites: 0
       };
+    }
 
-      const { data, error } = await supabaseClient
-        .from("photos")
-        .insert([photoRecord])
-        .select()
-        .single();
+    function getMissingColumnFromError(error){
+      const message = String(error?.message || error?.error_description || error || "");
+      const match = message.match(/Could not find the '([^']+)' column/i);
+      return match ? match[1] : "";
+    }
 
-      if(error){
-        throw error;
+    async function insertPhotoRecordWithFallbacks(photoRecord){
+      const triedMissing = new Set();
+      let record = { ...photoRecord };
+
+      for(let attempt = 0; attempt < 16; attempt += 1){
+        const { data, error } = await supabaseClient
+          .from("photos")
+          .insert([record])
+          .select()
+          .single();
+
+        if(!error){
+          return data;
+        }
+
+        const missingColumn = getMissingColumnFromError(error);
+        if(!missingColumn || triedMissing.has(missingColumn) || !(missingColumn in record)){
+          throw error;
+        }
+
+        triedMissing.add(missingColumn);
+        delete record[missingColumn];
       }
 
-      return data;
+      throw new Error("Could not save the photo because your photos table is missing several fields.");
+    }
+
+    async function savePhotoRecord(file, storageResult, user, isPremium){
+      const photoRecord = buildBasePhotoRecord(storageResult, user, isPremium);
+      return insertPhotoRecordWithFallbacks(photoRecord);
     }
 
     uploadForm.addEventListener("submit", async (e) => {

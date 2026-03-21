@@ -1408,6 +1408,10 @@
         display:flex;
       }
 
+      .account-menu-wrap{
+        display:none;
+      }
+
       .nav-links{
         position:absolute;
         top:100%;
@@ -2200,6 +2204,11 @@
     const savedCreatorsCountChip = document.getElementById("savedCreatorsCountChip");
     const likesCountChip = document.getElementById("likesCountChip");
     const favouritesCountChip = document.getElementById("favouritesCountChip");
+    const postsSection = document.getElementById("postsSection");
+    const repostsSection = document.getElementById("repostsSection");
+    const savedCreatorsSection = document.getElementById("savedCreatorsSection");
+    const likesSection = document.getElementById("likesSection");
+    const favouritesSection = document.getElementById("favouritesSection");
 
     const settingsModal = document.getElementById("settingsModal");
     const closeSettingsBtn = document.getElementById("closeSettingsBtn");
@@ -3850,6 +3859,14 @@
       favouritesCountChip.textContent = "0 favourited";
     }
 
+    function setPrivateSectionsVisibility(isVisible){
+      [postsSection, repostsSection, savedCreatorsSection, likesSection, favouritesSection].forEach(section => {
+        if(section){
+          section.classList.toggle("hidden", !isVisible);
+        }
+      });
+    }
+
     function renderHeader(){
       if(!currentUser){
         renderLoggedOutState();
@@ -3909,8 +3926,11 @@
 
     function renderSections(){
       if(!currentUser){
+        setPrivateSectionsVisibility(false);
         return;
       }
+
+      setPrivateSectionsVisibility(true);
 
       const myPosts = getMyPosts();
       const myReposts = getMyReposts();
