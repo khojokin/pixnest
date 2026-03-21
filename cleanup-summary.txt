@@ -1,0 +1,17 @@
+PixNest cleanup patch summary
+
+Canonical pages now:
+- account.html = own account
+- profile.html = public/other-user profile
+- featured.html = featured page
+- premium.html = premium page
+- creator-studio.html = creator dashboard
+
+Retired pages now redirect:
+- features.html -> featured.html
+- premiumplans.html -> premium.html
+- professional-dashboard.html -> creator-studio.html
+- loggedinuseracc.html -> account.html
+- test.html -> index.html
+
+This patch also updates old self-profile menu links from profile.html to account.html where they were plain page links.

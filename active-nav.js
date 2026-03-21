@@ -7,11 +7,11 @@
     home: ['index.html', ''],
     explore: ['explore.html'],
     categories: ['category.html'],
-    featured: ['features.html', 'featured.html', 'premiumplans.html'],
+    featured: ['featured.html', 'features.html'],
     premium: ['premium.html', 'checkout.html', 'payment.html'],
     about: ['about.html'],
     contact: ['contact.html', 'help.html'],
-    account: ['account.html', 'profile.html', 'loggedinuseracc.html', 'boss-admin.html', 'professional-dashboard.html', 'upload.html']
+    account: ['account.html', 'profile.html', 'loggedinuseracc.html', 'boss-admin.html', 'creator-studio.html', 'upload.html']
   };
 
   const KNOWN = new Set(Object.values(GROUPS).flat().filter(Boolean));

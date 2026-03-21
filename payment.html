@@ -257,7 +257,7 @@
             <i class="fa-solid fa-arrow-right"></i>
             Continue
           </a>
-          <a class="btn" href="premiumplans.html">
+          <a class="btn" href="premium.html">
             <i class="fa-solid fa-crown"></i>
             View Plans
           </a>
@@ -330,13 +330,13 @@
       summary.appendChild(row("Status", "Needs backend payment setup"));
       noticeBox.classList.add("warning");
       noticeBox.textContent = "The page is fixed, but the boost-views payment logic still needs to be added before users can pay here.";
-      primaryAction.href = "professional-dashboard.html";
-      primaryAction.innerHTML = '<i class="fa-solid fa-gauge"></i> Back to Dashboard';
+      primaryAction.href = "creator-studio.html";
+      primaryAction.innerHTML = '<i class="fa-solid fa-gauge"></i> Back to Creator Studio';
     } else {
       pageTitle.textContent = "Choose your payment route";
       pageText.textContent = "Select a plan to continue with secure checkout.";
       summary.appendChild(row("Available route", "Premium membership"));
-      primaryAction.href = "premiumplans.html";
+      primaryAction.href = "premium.html";
       primaryAction.innerHTML = '<i class="fa-solid fa-crown"></i> Choose a Plan';
     }
   </script>

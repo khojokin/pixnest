@@ -1531,14 +1531,14 @@
             </div>
 
             <div class="account-menu-links">
-              <a class="account-link" href="profile.html">
+              <a class="account-link" href="account.html">
                 <i class="fa-solid fa-user"></i>
-                My Profile
+                Account
               </a>
 
               <a class="account-link" href="account.html">
                 <i class="fa-solid fa-id-card"></i>
-                Account
+                Account Settings
               </a>
 
               <a class="account-link" href="upload.html">
@@ -1551,9 +1551,9 @@
                 Help
               </a>
 
-              <a class="account-link hidden" href="professional-dashboard.html" id="menuDashboardLink">
+              <a class="account-link hidden" href="creator-studio.html" id="menuDashboardLink">
                 <i class="fa-solid fa-chart-line"></i>
-                Professional Dashboard
+                Creator Studio
               </a>
 
               <button type="button" class="account-logout" id="logoutBtn">
@@ -1614,7 +1614,7 @@
               </div>
 
               <div class="panel" id="dashboardPanel">
-                <h3>Professional Dashboard</h3>
+                <h3>Creator Studio</h3>
                 <div class="dashboard-lock" id="dashboardPanelBody"></div>
               </div>
             </aside>
@@ -2999,9 +2999,9 @@ async function handleDownloadButtonClick(button){
           </a>
 
           ${profile.dashboardAllowed ? `
-            <a href="professional-dashboard.html" class="action-btn primary">
+            <a href="creator-studio.html" class="action-btn primary">
               <i class="fa-solid fa-chart-line"></i>
-              Professional Dashboard
+              Creator Studio
             </a>
           ` : `
             <a href="help.html" class="action-btn">
@@ -3070,10 +3070,10 @@ async function handleDownloadButtonClick(button){
 
         if(profile.dashboardAllowed){
           dashboardPanelBody.innerHTML = `
-            <p>Your professional dashboard is unlocked on this account.</p>
-            <a href="professional-dashboard.html" class="action-btn primary">
+            <p>Your creator studio is unlocked on this account.</p>
+            <a href="creator-studio.html" class="action-btn primary">
               <i class="fa-solid fa-chart-line"></i>
-              Open Dashboard
+              Open Creator Studio
             </a>
           `;
         }else{
@@ -3155,7 +3155,7 @@ async function handleDownloadButtonClick(button){
         : "View this creator's public posts, reposts and visible favourites.";
 
       document.title = profile.viewingOwn
-        ? "PixNest | My Profile"
+        ? "PixNest | Account"
         : `PixNest | ${profile.name}`;
 
       renderActiveGrid();

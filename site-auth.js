@@ -11,7 +11,7 @@
     { href:'index.html', label:'Home', keys:['index.html',''] },
     { href:'explore.html', label:'Explore', keys:['explore.html'] },
     { href:'category.html', label:'Categories', keys:['category.html'] },
-    { href:'features.html', label:'Featured', keys:['features.html','featured.html','premiumplans.html'] },
+    { href:'featured.html', label:'Featured', keys:['featured.html','features.html'] },
     { href:'premium.html', label:'Premium', keys:['premium.html','checkout.html','payment.html'] },
     { href:'contact.html', label:'Contact', keys:['contact.html','help.html'] }
   ];
@@ -34,7 +34,7 @@
 
   function isCustomAccountPage(){
     const page = currentPage();
-    return page === 'account.html' || page === 'profile.html' || page === 'professional-dashboard.html' || page === 'boss-admin.html';
+    return page === 'account.html' || page === 'profile.html' || page === 'creator-studio.html' || page === 'professional-dashboard.html' || page === 'boss-admin.html';
   }
 
   function isPublicAuthPage(){

@@ -1622,7 +1622,7 @@
 
             <button type="button" id="dashboardRequestBtn">
               <i class="fa-solid fa-chart-line"></i>
-              Submit dashboard request
+              Submit creator studio request
             </button>
 
             <a href="premium.html">
@@ -1738,12 +1738,12 @@
 
           <div class="pro-board">
             <div>
-              <h3>Professional Dashboard</h3>
-              <p id="proBoardText">Available when your creator profile has professional dashboard approval.</p>
+              <h3>Creator Studio</h3>
+              <p id="proBoardText">Available when your creator profile has creator studio approval.</p>
             </div>
 
             <button type="button" class="pro-btn" id="professionalDashboardBtn" disabled>
-              Open Dashboard
+              Open Creator Studio
             </button>
           </div>
 
@@ -3358,7 +3358,7 @@
         showNotice(
           requestType === "verification"
             ? "Verification request submitted."
-            : "Professional dashboard request submitted."
+            : "Creator studio request submitted."
         );
       }catch(error){
         console.error(error);
@@ -3810,7 +3810,7 @@
 
     professionalDashboardBtn.addEventListener("click", () => {
       if(!professionalDashboardBtn.disabled){
-        window.location.href = "professional-dashboard.html";
+        window.location.href = "creator-studio.html";
       }
     });
 

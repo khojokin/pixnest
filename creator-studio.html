@@ -1352,9 +1352,9 @@
               Account
             </a>
 
-            <a class="account-link" href="account.html">
+            <a class="account-link" href="account.html#overview">
               <i class="fa-solid fa-id-card"></i>
-              Account Settings
+              Account Overview
             </a>
 
             <a class="account-link" href="upload.html">
@@ -1416,7 +1416,7 @@
 
     <section class="gate hidden" id="authGate">
       <h2>Log in to open your dashboard</h2>
-      <p>Your creator studio is only for your own account. Other users cannot view it.</p>
+      <p>Your professional dashboard is only for your own account. Other users cannot view it.</p>
       <div class="gate-actions">
         <a href="signup.html" class="btn primary">Sign Up</a>
         <a href="login.html" class="btn">Login</a>
@@ -1426,12 +1426,12 @@
     <section class="gate hidden" id="approvalGate">
       <h2>Professional dashboard is not unlocked yet</h2>
       <p>
-        This dashboard becomes available when the PixNest review team approves your creator studio access or when you reach the creator requirements of 10k followers and 100k total views. Bank withdrawals also need saved bank details and an approved tax form.
+        This dashboard becomes available when the PixNest review team approves your creator access or when you reach the creator requirements of 10k followers and 100k total views. Bank withdrawals also need saved bank details and an approved tax form.
       </p>
       <div class="gate-actions">
         <a href="help.html" class="btn primary">
           <i class="fa-solid fa-paper-plane"></i>
-          Submit Creator Studio Request
+          Submit Access Request
         </a>
         <a href="account.html" class="btn">
           <i class="fa-solid fa-user"></i>
@@ -1586,7 +1586,7 @@
             <i class="fa-solid fa-circle-info"></i>
             <div>
               <strong id="payoutStatusHeading">Withdrawal access is being checked</strong>
-              <span id="payoutStatusText">You need an approved creator studio or at least 10k followers and 100k total views. An approved tax form is required before the PixNest review team can process payouts.</span>
+              <span id="payoutStatusText">You need an approved creator dashboard or at least 10k followers and 100k total views. An approved tax form is required before the PixNest review team can process payouts.</span>
             </div>
           </div>
 
@@ -2873,10 +2873,10 @@
 
     if(withdrawUnlocked){
       payoutStatusHeading.textContent = "You can request a bank withdrawal";
-      payoutStatusText.textContent = "Your creator studio access is unlocked, your bank profile is saved, and your latest tax form is approved by the PixNest review team.";
+      payoutStatusText.textContent = "Your creator access is unlocked, your bank profile is saved, and your latest tax form is approved by the PixNest review team.";
     }else if(!eligibility.eligible){
       payoutStatusHeading.textContent = "Eligibility requirements are not met yet";
-      payoutStatusText.textContent = "You need an approved creator studio or at least 10k followers and 100k total views before withdrawal tools unlock.";
+      payoutStatusText.textContent = "You need an approved creator dashboard or at least 10k followers and 100k total views before withdrawal tools unlock.";
     }else if(!bankSaved){
       payoutStatusHeading.textContent = "Save your bank profile first";
       payoutStatusText.textContent = "Withdrawal requests stay locked until you save valid bank payout details for admin to review.";
@@ -3111,32 +3111,6 @@
 </script>
 <script src="site-auth.js"></script>
 
-<script id="pixnestActiveNavSync">
-(function(){
-  const page = (location.pathname.split('/').pop() || 'index.html').toLowerCase();
-  const groups = {
-    'index.html':'index.html',
-    'explore.html':'explore.html',
-    'category.html':'category.html',
-    'featured.html':'featured.html',
-    'features.html':'featured.html',
-    'premium.html':'premium.html',
-    'premiumplans.html':'premium.html',
-    'checkout.html':'premium.html',
-    'payment.html':'premium.html',
-    'contact.html':'contact.html',
-    'help.html':'contact.html',
-    'about.html':'contact.html',
-    'privacy.html':'contact.html',
-    'terms.html':'contact.html',
-    'license.html':'contact.html'
-  };
-  const activeHref = groups[page] || '';
-  document.querySelectorAll('.nav-links a[href]').forEach(function(link){
-    const href = (link.getAttribute('href') || '').toLowerCase();
-    link.classList.toggle('active', !!activeHref && href === activeHref);
-  });
-})();
-</script>
+<script src="active-nav.js"></script>
 </body>
 </html>
