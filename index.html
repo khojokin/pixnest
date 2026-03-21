@@ -2864,7 +2864,7 @@
       const metrics = getPhotoMetrics(photo);
 
       return `
-        <div class="photo-stats">
+        <div class="photo-stats pixnest-compact-stats">
           <button
             type="button"
             class="photo-stat react-btn ${state.liked ? "active" : ""}"
@@ -2872,13 +2872,12 @@
             data-reaction="like"
             aria-label="Like photo"
             title="Like photo"
-            data-label="Likes"
           >
             <i class="fa-solid fa-heart"></i>
             <span>${escapeHtml(compactNumber(metrics.likes))}</span>
           </button>
 
-          <span class="photo-stat" aria-label="Views" data-label="Views">
+          <span class="photo-stat" aria-label="Views">
             <i class="fa-solid fa-eye"></i>
             <span>${escapeHtml(compactNumber(metrics.views))}</span>
           </span>
@@ -2890,7 +2889,6 @@
             data-reaction="favourite"
             aria-label="Favourite photo"
             title="Favourite photo"
-            data-label="Favourites"
           >
             <i class="fa-solid fa-star"></i>
             <span>${escapeHtml(compactNumber(metrics.favourites))}</span>

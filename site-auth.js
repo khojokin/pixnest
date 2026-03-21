@@ -110,27 +110,102 @@
       .nav-chip.premium{ background:rgba(250,204,21,.12) !important; color:#facc15 !important; border-color:rgba(250,204,21,.28) !important; }
       .pixnest-site-toast{ position:fixed; left:50%; bottom:22px; transform:translateX(-50%) translateY(20px); min-width:min(92vw,420px); background:rgba(15,23,42,.96); color:#e5e7eb; border:1px solid rgba(250,204,21,.22); border-radius:14px; box-shadow:0 18px 40px rgba(0,0,0,.3); padding:12px 16px; font-size:14px; line-height:1.45; z-index:2800; opacity:0; pointer-events:none; transition:.25s; }
       .pixnest-site-toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
-      .pixnest-extra-actions{ display:flex; gap:8px; flex-wrap:wrap; margin-left:6px; }
-      .pixnest-extra-actions .photo-stat{ border:1px solid rgba(255,255,255,.08); background:rgba(15,23,42,.82); color:#e5e7eb; }
-      .pixnest-extra-actions .photo-stat.active{ color:#facc15; border-color:rgba(250,204,21,.28); }
+
+      .pixnest-extra-actions{ display:flex; gap:8px; flex-wrap:wrap; margin-left:0 !important; }
+      .pixnest-extra-actions .pixnest-repost-btn{
+        width:48px !important;
+        height:48px !important;
+        min-width:48px !important;
+        min-height:48px !important;
+        padding:0 !important;
+        border-radius:999px !important;
+        position:relative;
+        display:inline-flex !important;
+        align-items:center !important;
+        justify-content:center !important;
+        background:rgba(15,23,42,.86) !important;
+        border:1px solid rgba(255,255,255,.12) !important;
+        color:#fff !important;
+        backdrop-filter:blur(10px);
+      }
+      .pixnest-extra-actions .pixnest-repost-btn i{ font-size:15px !important; color:#fff !important; }
+      .pixnest-extra-actions .pixnest-repost-btn.active i{ color:#facc15 !important; }
+      .pixnest-extra-actions .pixnest-repost-count{
+        position:absolute;
+        right:-4px;
+        bottom:-4px;
+        min-width:18px;
+        height:18px;
+        padding:0 4px;
+        border-radius:999px;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        background:#facc15;
+        color:#111827;
+        font-size:10px;
+        font-weight:800;
+        line-height:1;
+        box-shadow:0 6px 16px rgba(0,0,0,.22);
+      }
       #viewCreatorProfileBtn{ display:none !important; }
-      .photo-stats{ gap:10px !important; align-items:stretch !important; flex-wrap:wrap !important; }
-      .photo-stat[data-label]{ display:flex !important; flex-direction:column !important; align-items:center !important; justify-content:center !important; gap:6px !important; min-width:82px !important; min-height:76px !important; padding:10px 12px !important; border-radius:18px !important; background:rgba(255,255,255,.08) !important; border:1px solid rgba(255,255,255,.12) !important; line-height:1.1 !important; }
-      .photo-stat[data-label] > span{ font-size:14px !important; font-weight:800 !important; color:#f8fafc !important; }
-      .photo-stat[data-label] i{ font-size:15px !important; color:#facc15 !important; }
-      .photo-stat[data-label]::after{ content:attr(data-label); font-size:11px; font-weight:600; color:#cbd5e1; }
-      .pixnest-extra-actions{ margin-left:0 !important; }
-      .lightbox .photo-stats{ gap:12px !important; align-items:stretch !important; }
-      .lightbox .photo-stat[data-label]{
+      .photo-stats{ gap:10px !important; align-items:center !important; flex-wrap:wrap !important; }
+      .visual-card .photo-stat,
+      .card-bottom-right .photo-stat,
+      .pixnest-compact-stats .photo-stat{
+        width:56px !important;
+        height:56px !important;
+        min-width:56px !important;
+        min-height:56px !important;
+        padding:0 !important;
+        border-radius:999px !important;
+        display:inline-flex !important;
+        flex-direction:column !important;
+        align-items:center !important;
+        justify-content:center !important;
+        gap:4px !important;
+        background:rgba(15,23,42,.82) !important;
+        border:1px solid rgba(255,255,255,.12) !important;
+        box-shadow:none !important;
+        line-height:1 !important;
+      }
+      .visual-card .photo-stat i,
+      .card-bottom-right .photo-stat i,
+      .pixnest-compact-stats .photo-stat i{ font-size:14px !important; color:#facc15 !important; }
+      .visual-card .photo-stat > span,
+      .card-bottom-right .photo-stat > span,
+      .pixnest-compact-stats .photo-stat > span{ font-size:12px !important; font-weight:800 !important; color:#f8fafc !important; }
+      .visual-card .photo-stat::after,
+      .card-bottom-right .photo-stat::after,
+      .pixnest-compact-stats .photo-stat::after{ display:none !important; content:none !important; }
+      .visual-card .photo-stat.react-btn.active,
+      .card-bottom-right .photo-stat.react-btn.active,
+      .pixnest-compact-stats .photo-stat.react-btn.active{
+        background:rgba(250,204,21,.16) !important;
+        border-color:rgba(250,204,21,.32) !important;
+      }
+      .lightbox .photo-stats{ gap:12px !important; align-items:center !important; }
+      .lightbox .photo-stat{
+        width:66px !important;
+        height:66px !important;
+        min-width:66px !important;
+        min-height:66px !important;
+        padding:0 !important;
+        border-radius:999px !important;
+        display:inline-flex !important;
+        flex-direction:column !important;
+        align-items:center !important;
+        justify-content:center !important;
+        gap:5px !important;
         background:rgba(15,23,42,.96) !important;
         border:1px solid rgba(255,255,255,.18) !important;
         box-shadow:0 10px 24px rgba(0,0,0,.18) !important;
       }
-      .lightbox .photo-stat[data-label].react-btn.active{
-        background:rgba(250,204,21,.18) !important;
-        border-color:rgba(250,204,21,.34) !important;
-      }
-      .lightbox .photo-stat[data-label]::after{ margin-top:2px; }
+      .lightbox .photo-stat i{ font-size:16px !important; color:#facc15 !important; }
+      .lightbox .photo-stat > span{ font-size:13px !important; font-weight:800 !important; color:#fff !important; }
+      .lightbox .photo-stat::after{ display:none !important; content:none !important; }
+      .lightbox .photo-stat.react-btn.active{ background:rgba(250,204,21,.18) !important; border-color:rgba(250,204,21,.34) !important; }
+
       .lightbox .creator-action-btn{ min-height:44px !important; }
       .lightbox .creator-social-proof{ grid-template-columns:repeat(3,minmax(0,1fr)) !important; }
       .lightbox .creator-count{ min-width:0 !important; }
@@ -873,11 +948,63 @@
       saveJsonStorage(REPORT_KEY, reports);
     }
 
-    showSiteToast('Report sent. Thanks for letting us know.');
+    
+showSiteToast('Report sent. Thanks for letting us know.');
+  }
+
+  async function submitUserReport(client, targetUserId, targetName, reason){
+    const identity = getCurrentUserIdentity();
+    if(!identity){
+      if(typeof window.pixnestPromptAuthRequired === 'function') window.pixnestPromptAuthRequired('report creators');
+      return;
+    }
+
+    const trimmed = String(reason || '').trim();
+    if(!trimmed) return;
+
+    const rawTarget = String(targetUserId || '').trim();
+    const safeTargetUserId = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(rawTarget) ? rawTarget : null;
+    let savedToDb = false;
+
+    if(client){
+      try{
+        const payload = {
+          photo_id: '',
+          report_type: 'user',
+          target_user_id: safeTargetUserId,
+          reporter_user_id: identity.id || null,
+          reporter_email: identity.email || null,
+          reason: trimmed,
+          status: 'submitted',
+          severity: 'medium'
+        };
+        const { error } = await client.from('post_reports').insert(payload);
+        if(!error) savedToDb = true;
+      }catch(_error){}
+    }
+
+    if(!savedToDb){
+      const reports = getReportState();
+      const key = `creator:${safeTargetUserId || String(targetName || 'unknown').toLowerCase()}`;
+      const bucket = reports[key] || [];
+      bucket.push({
+        report_type: 'user',
+        target_user_id: safeTargetUserId,
+        target_name: String(targetName || '').trim(),
+        reporter_user_id: identity.id || null,
+        reporter_email: identity.email || null,
+        reason: trimmed,
+        created_at: new Date().toISOString()
+      });
+      reports[key] = bucket;
+      saveJsonStorage(REPORT_KEY, reports);
+    }
+
+    showSiteToast('Creator report sent. Thanks for letting us know.');
   }
 
   function addExtraActionsToStats(statsWrap){
-    if(!statsWrap || statsWrap.querySelector('.pixnest-extra-actions')) return;
+    if(!statsWrap || statsWrap.classList.contains('lightbox-stats') || statsWrap.querySelector('.pixnest-extra-actions')) return;
     const card = statsWrap.closest('.visual-card');
     const photoId = getPhotoIdFromCard(card);
     if(!photoId) return;
@@ -886,25 +1013,21 @@
     const holder = document.createElement('div');
     holder.className = 'pixnest-extra-actions';
     holder.innerHTML = `
-      <button type="button" class="photo-stat pixnest-repost-btn ${info.active ? 'active' : ''}" data-photo-id="${photoId}" data-stop-card title="Repost photo" aria-label="Repost photo" data-label="Reposts">
+      <button type="button" class="pixnest-repost-btn ${info.active ? 'active' : ''}" data-photo-id="${photoId}" data-stop-card title="Repost photo" aria-label="Repost photo">
         <i class="fa-solid fa-retweet"></i>
-        <span>${info.count}</span>
-      </button>
-      <button type="button" class="photo-stat pixnest-report-btn" data-photo-id="${photoId}" data-stop-card title="Report photo" aria-label="Report photo" data-label="Report">
-        <i class="fa-solid fa-flag"></i>
-        <span>1</span>
+        <span class="pixnest-repost-count">${info.count}</span>
       </button>
     `;
     statsWrap.appendChild(holder);
   }
 
   function refreshExtraPhotoActions(){
-    document.querySelectorAll('.photo-stats').forEach(addExtraActionsToStats);
+    document.querySelectorAll('.visual-card .photo-stats').forEach(addExtraActionsToStats);
     document.querySelectorAll('.pixnest-repost-btn').forEach(button => {
       const photoId = String(button.getAttribute('data-photo-id') || '');
       const info = getRepostInfo(photoId);
       button.classList.toggle('active', info.active);
-      const countSpan = button.querySelector('span');
+      const countSpan = button.querySelector('.pixnest-repost-count');
       if(countSpan) countSpan.textContent = String(info.count);
     });
     document.querySelectorAll('.creator-badge.premium i, .member-badge.premium i, .status-badge.premium i, .pill.premium i, .auth-pill.premium i, .nav-chip.premium i').forEach(icon => {
@@ -921,15 +1044,6 @@
         toggleRepost(repostBtn.getAttribute('data-photo-id'));
         return;
       }
-
-      const reportBtn = event.target.closest('.pixnest-report-btn');
-      if(reportBtn){
-        event.preventDefault();
-        event.stopPropagation();
-        const reason = window.prompt('Why are you reporting this post?', '');
-        if(reason === null) return;
-        await submitPostReport(client, reportBtn.getAttribute('data-photo-id'), reason);
-      }
     });
 
     let refreshQueued = false;
@@ -945,14 +1059,23 @@
     const observer = new MutationObserver((mutations) => {
       for(const mutation of mutations){
         if(mutation.type !== 'childList') continue;
-        const nodes = [...mutation.addedNodes, ...mutation.removedNodes];
-        if(nodes.some(node => node?.nodeType === 1)){
+        if(mutation.addedNodes.length || mutation.removedNodes.length){
           queueRefresh();
           break;
         }
       }
     });
-    observer.observe(document.body, { childList:true, subtree:true });
+    const observeTargets = [
+      document.querySelector('main'),
+      document.getElementById('resultsGrid'),
+      document.querySelector('.photos-grid'),
+      document.querySelector('.gallery-grid'),
+      document.querySelector('.visual-grid'),
+      document.querySelector('.lightbox')
+    ].filter(Boolean);
+    if(observeTargets.length){
+      observeTargets.forEach(target => observer.observe(target, { childList:true, subtree:true }));
+    }
     refreshExtraPhotoActions();
     window.addEventListener('pixnest-repost-change', queueRefresh);
   }
@@ -979,6 +1102,7 @@
         setupIdleLogout(client);
 
         bindGlobalExtraActions(client);
+        window.pixnestSubmitUserReport = async (targetUserId, targetName, reason) => submitUserReport(client, targetUserId, targetName, reason);
 
         const updateUi = async (sessionUser) => {
           window.pixnestAuthUser = sessionUser || null;

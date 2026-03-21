@@ -2658,9 +2658,10 @@ function getPhotoTags(photo){
       const state = getPhotoReactionState(id);
       const metrics = getPhotoMetrics(photo);
       const stopCardAttr = stopCard ? "data-stop-card" : "";
+      const wrapClass = extraClass ? ` ${escapeHtml(extraClass)}` : "";
 
       return `
-        <div class="photo-stats ${escapeHtml(extraClass)}">
+        <div class="photo-stats pixnest-compact-stats${wrapClass}">
           <button
             type="button"
             class="photo-stat react-btn ${state.liked ? "active" : ""}"
@@ -2668,14 +2669,13 @@ function getPhotoTags(photo){
             data-reaction="like"
             aria-label="Like photo"
             title="Like photo"
-            data-label="Likes"
             ${stopCardAttr}
           >
             <i class="fa-solid fa-heart"></i>
             <span>${escapeHtml(compactNumber(metrics.likes))}</span>
           </button>
 
-          <span class="photo-stat" aria-label="Views" data-label="Views">
+          <span class="photo-stat" aria-label="Views">
             <i class="fa-solid fa-eye"></i>
             <span>${escapeHtml(compactNumber(metrics.views))}</span>
           </span>
@@ -2687,7 +2687,6 @@ function getPhotoTags(photo){
             data-reaction="favourite"
             aria-label="Favourite photo"
             title="Favourite photo"
-            data-label="Favourites"
             ${stopCardAttr}
           >
             <i class="fa-solid fa-star"></i>
@@ -3006,10 +3005,16 @@ async function handleDownloadButtonClick(button){
           <i class="fa-solid fa-share-nodes"></i>
           Share Profile
         </button>
+
+        <button type="button" class="creator-action-btn" id="reportCreatorBtn">
+          <i class="fa-solid fa-flag"></i>
+          Report Profile
+        </button>
       `;
 
       const favouriteCreatorBtn = document.getElementById("favouriteCreatorBtn");
       const shareProfileBtn = document.getElementById("shareProfileBtn");
+      const reportCreatorBtn = document.getElementById("reportCreatorBtn");
 
       if(favouriteCreatorBtn){
         favouriteCreatorBtn.addEventListener("click", () => {
@@ -3053,8 +3058,8 @@ async function handleDownloadButtonClick(button){
       lightboxImage.src = visibleUrl;
       lightboxImage.alt = getPhotoAlt(photo);
 
-      lightboxTitle.textContent = safeTitle || photo.category || "Photo";
-      lightboxTitle.classList.toggle("is-hidden", !safeTitle && !photo.category);
+      lightboxTitle.textContent = safeTitle;
+      lightboxTitle.classList.toggle("is-hidden", !safeTitle);
 
       document.getElementById("lightboxCategory").textContent = photo.category || "Uncategorized";
       document.getElementById("lightboxCredit").textContent = getCreatorName(photo) || "Unknown";

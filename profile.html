@@ -2486,9 +2486,10 @@ function handleLockedPremiumPhoto(){
       const state = getPhotoReactionState(id);
       const metrics = getPhotoMetrics(photo);
       const stopCardAttr = stopCard ? "data-stop-card" : "";
+      const wrapClass = extraClass ? ` ${escapeHtml(extraClass)}` : "";
 
       return `
-        <div class="photo-stats ${escapeHtml(extraClass)}">
+        <div class="photo-stats pixnest-compact-stats${wrapClass}">
           <button
             type="button"
             class="photo-stat react-btn ${state.liked ? "active" : ""}"
@@ -2496,14 +2497,13 @@ function handleLockedPremiumPhoto(){
             data-reaction="like"
             aria-label="Like photo"
             title="Like photo"
-            data-label="Likes"
             ${stopCardAttr}
           >
             <i class="fa-solid fa-heart"></i>
             <span>${escapeHtml(compactNumber(metrics.likes))}</span>
           </button>
 
-          <span class="photo-stat" aria-label="Views" data-label="Views">
+          <span class="photo-stat" aria-label="Views">
             <i class="fa-solid fa-eye"></i>
             <span>${escapeHtml(compactNumber(metrics.views))}</span>
           </span>
@@ -2515,7 +2515,6 @@ function handleLockedPremiumPhoto(){
             data-reaction="favourite"
             aria-label="Favourite photo"
             title="Favourite photo"
-            data-label="Favourites"
             ${stopCardAttr}
           >
             <i class="fa-solid fa-star"></i>
@@ -3036,10 +3035,16 @@ async function handleDownloadButtonClick(button){
             <i class="fa-solid fa-share-nodes"></i>
             Share Profile
           </button>
+
+          <button type="button" class="action-btn" id="reportProfileBtn">
+            <i class="fa-solid fa-flag"></i>
+            Report Profile
+          </button>
         `;
 
         const followProfileBtn = document.getElementById("followProfileBtn");
         const shareProfileBtn = document.getElementById("shareProfileBtn");
+        const reportProfileBtn = document.getElementById("reportProfileBtn");
 
         if(followProfileBtn && firstPhoto){
           followProfileBtn.addEventListener("click", () => {
@@ -3070,6 +3075,18 @@ async function handleDownloadButtonClick(button){
               }catch(error){
                 showNotice("Could not copy profile link.");
               }
+            }
+          });
+        }
+
+        if(reportProfileBtn){
+          reportProfileBtn.addEventListener("click", async () => {
+            const reason = window.prompt("Why are you reporting this creator?", "");
+            if(reason === null) return;
+            if(typeof window.pixnestSubmitUserReport === "function"){
+              await window.pixnestSubmitUserReport(profile.userId || "", profile.name || "", reason);
+            }else if(typeof window.pixnestPromptAuthRequired === "function"){
+              window.pixnestPromptAuthRequired("report creators");
             }
           });
         }
@@ -3359,7 +3376,7 @@ async function handleDownloadButtonClick(button){
     function renderLightboxContent(photo){
       lightboxImage.src = photo.image_url || DEFAULT_IMAGE;
       lightboxImage.alt = getPhotoAlt(photo);
-      lightboxTitle.textContent = getSafePhotoTitle(photo) || photo.category || "Photo";
+      lightboxTitle.textContent = getSafePhotoTitle(photo);
       lightboxSub.textContent = `By ${getCreatorName(photo)} • ${formatPostDate(photo)}`;
       document.getElementById("lightboxCategory").textContent = photo.category || "Uncategorized";
       document.getElementById("lightboxCreator").textContent = getCreatorName(photo) || "Unknown";
