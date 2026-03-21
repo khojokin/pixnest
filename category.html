@@ -1557,7 +1557,7 @@
       <div class="search-bar">
         <div class="search-input-wrap">
           <i class="fa-solid fa-magnifying-glass"></i>
-          <input type="text" id="overviewSearchInput" placeholder="Search categories by name or description">
+          <input type="text" id="overviewSearchInput" placeholder="Search categories, descriptions, or creator names">
         </div>
 
         <select id="overviewFilter" class="search-select">
@@ -3268,9 +3268,11 @@ async function openLightbox(photo){
         const photoCount = category.photos.length;
         const featuredCount = category.photos.filter(photo => photo.featured).length;
 
+        const creatorNames = category.photos.map(photo => getCreatorName(photo)).filter(Boolean).join(' ');
         const matchesText = !searchValue || [
           category.name,
-          category.description
+          category.description,
+          creatorNames
         ].join(" ").toLowerCase().includes(searchValue);
 
         let matchesFilter = true;

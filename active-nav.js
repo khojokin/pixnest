@@ -138,11 +138,17 @@
     candidateAnchors().forEach((a) => {
       a.classList.remove('active');
       a.removeAttribute('aria-current');
+      a.style.boxShadow = '';
+      a.style.borderBottom = '';
+      a.style.color = '';
       const href = basename(a.getAttribute('href') || '');
       if(!href) return;
       if(groupPages.has(href) || directPages.has(href)){
         a.classList.add('active');
         a.setAttribute('aria-current', 'page');
+        a.style.color = '#facc15';
+        a.style.borderBottom = '3px solid #facc15';
+        a.style.paddingBottom = '6px';
       }
     });
   }

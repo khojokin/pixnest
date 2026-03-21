@@ -1079,6 +1079,16 @@
   }
   .chat-session-card:hover,.chat-session-card.active{border-color:rgba(96,165,250,0.5); transform:translateY(-1px);}
 
+
+ .category-admin-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:18px;margin-top:18px;}
+ .category-admin-list{display:grid;gap:12px;}
+ .category-admin-card{border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:16px;background:rgba(15,23,42,.72);}
+ .category-admin-card strong{display:block;color:#fff;font-size:18px;margin-bottom:6px;}
+ .category-admin-card p{margin:0 0 10px;color:#94a3b8;line-height:1.5;}
+ .category-admin-meta{font-size:12px;color:#94a3b8;}
+ .category-admin-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;}
+ @media (max-width: 900px){ .category-admin-grid{grid-template-columns:1fr;} }
+
 </style>
 </head>
 <body>
@@ -1801,10 +1811,12 @@
  }
 
  async function loadAllAdminData(){
+   setupCategoryManagerUI();
    await Promise.all([
      loadCreatorProfiles(),
      loadOverviewStats(),
      loadSiteSettings(),
+     loadAdminCategories(),
      loadRequests(),
      loadFinanceData(false),
      loadPhotos(),
@@ -3292,6 +3304,156 @@
      await loadAudit();
    }catch(error){
      console.error("Audit log insert failed:", error);
+   }
+ }
+
+ 
+ let adminCategoriesData = [];
+
+ function setupCategoryManagerUI(){
+   if(document.getElementById('categoryManagerPanel')) return;
+   const settingsTab = document.getElementById('tab-settings');
+   if(!settingsTab) return;
+
+   const panel = document.createElement('div');
+   panel.className = 'panel';
+   panel.id = 'categoryManagerPanel';
+   panel.innerHTML = `
+     <h2>Manage Upload Categories</h2>
+     <p class="panel-sub">Only admin-created categories appear in the upload page dropdown.</p>
+     <div class="category-admin-grid">
+       <form id="categoryManagerForm">
+         <div class="field-grid">
+           <div class="field">
+             <label for="adminCategoryName">Category Name</label>
+             <input type="text" id="adminCategoryName" placeholder="e.g. Cars, Plants, Fashion" required>
+           </div>
+           <div class="field full">
+             <label for="adminCategoryDescription">Category Description</label>
+             <textarea id="adminCategoryDescription" placeholder="Short description for this category..."></textarea>
+           </div>
+         </div>
+         <div class="action-row">
+           <button type="submit" class="btn primary" id="saveCategoryBtn">
+             <i class="fa-solid fa-folder-plus"></i>
+             Save Category
+           </button>
+         </div>
+       </form>
+       <div>
+         <div class="card-list category-admin-list" id="adminCategoryList">
+           <div class="empty-box">Categories will appear here.</div>
+         </div>
+       </div>
+     </div>
+   `;
+   settingsTab.appendChild(panel);
+
+   document.getElementById('categoryManagerForm')?.addEventListener('submit', saveAdminCategory);
+ }
+
+ async function loadAdminCategories(){
+   setupCategoryManagerUI();
+   const list = document.getElementById('adminCategoryList');
+   if(!list) return;
+
+   try{
+     const { data, error } = await supabaseClient
+       .from('categories')
+       .select('*')
+       .order('name', { ascending:true });
+
+     if(error) throw error;
+     adminCategoriesData = Array.isArray(data) ? data : [];
+     renderAdminCategories();
+   }catch(error){
+     console.error(error);
+     list.innerHTML = '<div class="empty-box">Could not load categories. Run the categories setup SQL first.</div>';
+   }
+ }
+
+ function renderAdminCategories(){
+   const list = document.getElementById('adminCategoryList');
+   if(!list) return;
+   if(!adminCategoriesData.length){
+     list.innerHTML = '<div class="empty-box">No categories created yet.</div>';
+     return;
+   }
+
+   list.innerHTML = adminCategoriesData.map(item => `
+     <div class="category-admin-card">
+       <strong>${escapeHtml(item.name || 'Untitled Category')}</strong>
+       <p>${escapeHtml(item.description || 'No description added.')}</p>
+       <div class="category-admin-meta">Status: ${item.is_active === false ? 'Hidden' : 'Active'}</div>
+       <div class="category-admin-actions">
+         <button class="mini-btn ${item.is_active === false ? 'success' : 'warn'}" data-category-toggle="${escapeHtml(item.id)}" data-active="${item.is_active === false ? '0' : '1'}">
+           <i class="fa-solid ${item.is_active === false ? 'fa-rotate-left' : 'fa-eye-slash'}"></i>
+           ${item.is_active === false ? 'Restore' : 'Hide'}
+         </button>
+       </div>
+     </div>
+   `).join('');
+
+   list.querySelectorAll('[data-category-toggle]').forEach(button => {
+     button.addEventListener('click', async () => {
+       const id = button.getAttribute('data-category-toggle');
+       const isActive = button.getAttribute('data-active') === '1';
+       await toggleAdminCategory(id, !isActive);
+     });
+   });
+ }
+
+ async function saveAdminCategory(event){
+   event.preventDefault();
+   const nameInput = document.getElementById('adminCategoryName');
+   const descInput = document.getElementById('adminCategoryDescription');
+   const saveBtn = document.getElementById('saveCategoryBtn');
+   const name = String(nameInput?.value || '').trim();
+   const description = String(descInput?.value || '').trim();
+
+   if(!name){
+     showNotice('Enter a category name.');
+     return;
+   }
+
+   try{
+     if(saveBtn) saveBtn.disabled = true;
+     const payload = {
+       name,
+       description,
+       is_active: true,
+       created_by: adminProfile?.id || null,
+       updated_at: new Date().toISOString()
+     };
+
+     const { error } = await supabaseClient.from('categories').upsert(payload, { onConflict:'name' });
+     if(error) throw error;
+     await logAudit('save_category', 'categories', name, payload);
+     if(nameInput) nameInput.value = '';
+     if(descInput) descInput.value = '';
+     showNotice('Category saved.');
+     await loadAdminCategories();
+   }catch(error){
+     console.error(error);
+     showNotice('Could not save category.');
+   }finally{
+     if(saveBtn) saveBtn.disabled = false;
+   }
+ }
+
+ async function toggleAdminCategory(id, makeActive){
+   try{
+     const { error } = await supabaseClient
+       .from('categories')
+       .update({ is_active: makeActive, updated_at: new Date().toISOString() })
+       .eq('id', id);
+     if(error) throw error;
+     await logAudit(makeActive ? 'restore_category' : 'hide_category', 'categories', id, { is_active: makeActive });
+     showNotice(makeActive ? 'Category restored.' : 'Category hidden from uploads.');
+     await loadAdminCategories();
+   }catch(error){
+     console.error(error);
+     showNotice('Could not update category.');
    }
  }
 

@@ -632,7 +632,8 @@
 
           <div class="field">
             <label for="category">Category</label>
-            <input type="text" id="category" placeholder="e.g. Nature, Travel, Fashion" required />
+            <select id="category" required><option value="">Select a category</option></select>
+            <small class="field-note">Categories are created by the admin. Choose one from the list.</small>
           </div>
 
           <div class="field">
@@ -861,6 +862,51 @@
       previewPills.innerHTML = pills.join("");
     }
 
+    let availableCategories = [];
+
+    function deriveFallbackCategories(photos = []){
+      return [...new Set((Array.isArray(photos) ? photos : [])
+        .map(photo => String(photo?.category || '').trim())
+        .filter(Boolean))]
+        .sort((a,b) => a.localeCompare(b));
+    }
+
+    function populateCategoryOptions(names = []){
+      availableCategories = [...new Set((Array.isArray(names) ? names : []).map(name => String(name || '').trim()).filter(Boolean))]
+        .sort((a,b) => a.localeCompare(b));
+
+      const currentValue = categoryInput.value;
+      categoryInput.innerHTML = '<option value="">Select a category</option>' + availableCategories.map(name => `<option value="${name.replace(/"/g, '&quot;')}">${name}</option>`).join('');
+      if(currentValue && availableCategories.includes(currentValue)){
+        categoryInput.value = currentValue;
+      }
+    }
+
+    async function loadAvailableCategories(){
+      try{
+        const { data, error } = await supabaseClient
+          .from('categories')
+          .select('name,is_active')
+          .order('name', { ascending:true });
+
+        if(!error && Array.isArray(data) && data.length){
+          populateCategoryOptions(data.filter(item => item?.is_active !== false).map(item => item.name));
+          return;
+        }
+      }catch(_error){}
+
+      try{
+        const { data } = await supabaseClient
+          .from('photos')
+          .select('category')
+          .eq('admin_approved', true)
+          .limit(500);
+        populateCategoryOptions(deriveFallbackCategories(data));
+      }catch(_error){
+        populateCategoryOptions([]);
+      }
+    }
+
     function updateImagePreview(file){
       if(previewUrl){
         URL.revokeObjectURL(previewUrl);
@@ -1013,7 +1059,12 @@
       }
 
       if(!category){
-        showMessage("Please enter a category.");
+        showMessage("Please choose a category.");
+        return;
+      }
+
+      if(Array.isArray(availableCategories) && availableCategories.length && !availableCategories.includes(category)){
+        showMessage("Please choose a category from the admin list.");
         return;
       }
 
@@ -1058,6 +1109,7 @@
       currentUser = await requireUser();
       if(!currentUser) return;
       previewCreator.textContent = getDisplayName(currentUser);
+      await loadAvailableCategories();
       updatePreview();
     })();
   </script>

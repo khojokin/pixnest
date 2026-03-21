@@ -32,23 +32,13 @@
     return (location.pathname.split('/').pop() || 'index.html').toLowerCase();
   }
 
-  function isCustomAccountPage(){
-    const page = currentPage();
-    return page === 'account.html' || page === 'profile.html' || page === 'creator-studio.html' || page === 'professional-dashboard.html' || page === 'boss-admin.html';
-  }
-
   function isPublicAuthPage(){
     const page = currentPage();
-    return page === 'login.html' || page === 'signup.html';
-  }
-
-  function isCustomMenuPage(){
-    const page = currentPage();
-    return page === 'premium.html';
+    return page === 'login.html' || page === 'signup.html' || page === 'reset-password.html';
   }
 
   function shouldSkipAuthInjection(){
-    return isCustomAccountPage() || isPublicAuthPage() || isCustomMenuPage();
+    return isPublicAuthPage();
   }
 
   function ensureGlobalStyles(){
@@ -59,7 +49,7 @@
       html, body { min-height:100%; }
       body.site-flex-page { min-height:100vh !important; display:flex !important; flex-direction:column !important; }
       body.site-flex-page > footer { margin-top:auto !important; }
-      .site-auth-links{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+      .site-auth-links{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-left:8px; }
       #authNavLinks[data-auth-pending="true"]{ visibility:hidden; opacity:0; pointer-events:none; }
       #authNavLinks[data-auth-ready="true"]{ visibility:visible; opacity:1; pointer-events:auto; }
       .site-auth-links .nav-auth-btn,
@@ -68,13 +58,21 @@
       .site-auth-links .secondary:hover{ background:rgba(255,255,255,.06); color:#facc15; border-color:rgba(250,204,21,.28); }
       .site-auth-links .primary{ background:#facc15; color:#111827; border:none; }
       .site-auth-links .primary:hover{ transform:translateY(-2px); box-shadow:0 10px 24px rgba(250,204,21,.18); }
-      .site-account-menu-wrap{ position:relative; display:inline-flex; align-items:center; }
-      .site-account-menu-toggle{ width:46px; height:46px; border-radius:12px; border:1px solid rgba(250,204,21,.35); background:#111827; color:#facc15; display:flex; align-items:center; justify-content:center; cursor:pointer; flex-shrink:0; font-size:17px; }
+      .site-account-menu-wrap{ position:relative; display:inline-flex; align-items:center; justify-content:flex-end; }
+      .site-account-menu-toggle{ width:52px; height:52px; border-radius:16px; border:1px solid rgba(250,204,21,.35); background:rgba(15,23,42,.96); color:#facc15; display:flex; align-items:center; justify-content:center; cursor:pointer; flex-shrink:0; font-size:18px; box-shadow:0 12px 28px rgba(0,0,0,.18); }
       .site-account-menu-toggle:hover{ transform:translateY(-2px); border-color:rgba(250,204,21,.45); }
-      .site-account-dropdown{ position:absolute; top:calc(100% + 10px); right:0; width:min(320px,90vw); background:#111827; border:1px solid rgba(255,255,255,.08); border-radius:18px; padding:10px; box-shadow:0 18px 36px rgba(0,0,0,.28); display:none; z-index:1500; }
+      .site-account-dropdown{ position:absolute; top:calc(100% + 10px); right:0; width:min(360px,92vw); background:#111827; border:1px solid rgba(255,255,255,.08); border-radius:18px; padding:10px; box-shadow:0 18px 36px rgba(0,0,0,.28); display:none; z-index:1500; }
       .site-account-dropdown.show{ display:block; }
+
+      .site-account-menu-head{ display:flex; align-items:center; gap:12px; padding:8px 8px 14px; }
+      .site-account-menu-avatar{ width:52px; height:52px; border-radius:50%; background:linear-gradient(135deg,#facc15,#fb7185); color:#111827; font-weight:800; display:flex; align-items:center; justify-content:center; overflow:hidden; flex-shrink:0; }
+      .site-account-menu-avatar img{ width:100%; height:100%; object-fit:cover; display:block; }
+      .site-account-menu-head strong{ display:block; color:#fff; font-size:18px; line-height:1.2; }
+      .site-account-menu-head small{ display:block; color:#94a3b8; margin-top:4px; font-size:13px; word-break:break-word; }
       .site-account-dropdown a,
-      .site-account-dropdown button{ width:100%; display:flex; align-items:center; gap:10px; padding:12px 12px; border:none; background:transparent; color:#e5e7eb; border-radius:12px; font-size:14px; cursor:pointer; text-align:left; text-decoration:none; }
+      .site-account-dropdown button{ width:100%; display:flex; align-items:center; gap:10px; padding:14px 14px; border:1px solid rgba(255,255,255,.08); background:rgba(15,23,42,.88); color:#e5e7eb; border-radius:14px; font-size:14px; cursor:pointer; text-align:left; text-decoration:none; margin:0 0 8px; }
+      .site-account-dropdown a:last-child,
+      .site-account-dropdown button:last-child{ margin-bottom:0; }
       .site-account-dropdown a:hover,
       .site-account-dropdown button:hover{ background:rgba(250,204,21,.10); color:#facc15; }
       .site-account-dropdown button.site-danger{ color:#fecaca; }
@@ -293,6 +291,7 @@
       if(el.id === 'authNavLinks') el.innerHTML = '';
       else el.remove();
     });
+    document.querySelectorAll('header .account-menu-wrap, header .nav-auth, header .auth-links, header .account-menu-toggle, header #accountMenuToggle').forEach(el => el.remove());
   }
 
   function ensureFooterFlex(){
@@ -318,11 +317,16 @@
     navLinks.innerHTML = '';
     const page = currentPage();
 
+    const activeItem = NAV_ITEMS.find(item => item.keys.includes(page)) || null;
+
     NAV_ITEMS.forEach(item => {
       const a = document.createElement('a');
       a.href = item.href;
       a.textContent = item.label;
-      if(item.keys.includes(page)) a.classList.add('active');
+      if(activeItem && activeItem.href === item.href){
+        a.classList.add('active');
+        a.setAttribute('aria-current','page');
+      }
       navLinks.appendChild(a);
     });
 
@@ -371,6 +375,59 @@
     }
   }
 
+  async function getAccountAccess(user, client){
+    const fallbackName = String(
+      user?.user_metadata?.full_name ||
+      user?.user_metadata?.name ||
+      user?.email?.split('@')[0] ||
+      'PixNest User'
+    ).trim();
+
+    const access = {
+      displayName: fallbackName,
+      email: String(user?.email || '').trim(),
+      avatarUrl: String(user?.user_metadata?.avatar_url || '').trim(),
+      isAdmin: false,
+      canOpenStudio: false,
+      accountHref: 'account.html',
+      studioHref: 'creator-studio.html',
+      studioLabel: 'Creator Studio'
+    };
+
+    if(!user) return access;
+
+    try{
+      const [profileRes, creatorRes] = await Promise.all([
+        client.from('profiles').select('full_name,name,email,avatar_url,role,site_admin,super_admin,dashboard_enabled,creator_approved').eq('id', user.id).maybeSingle(),
+        client.from('creator_profiles').select('display_name,name,email,avatar_url,professional_dashboard_approved,creator_approved').eq('user_id', user.id).maybeSingle()
+      ]);
+
+      const profile = profileRes.data || {};
+      const creator = creatorRes.data || {};
+      access.displayName = String(profile.full_name || profile.name || creator.display_name || creator.name || access.displayName).trim();
+      access.email = String(profile.email || creator.email || access.email).trim();
+      access.avatarUrl = String(profile.avatar_url || creator.avatar_url || access.avatarUrl).trim();
+      access.isAdmin = Boolean(profile.site_admin || profile.super_admin || ['admin','founder'].includes(String(profile.role || '').toLowerCase()));
+      access.canOpenStudio = access.isAdmin || Boolean(profile.dashboard_enabled || profile.creator_approved || creator.professional_dashboard_approved || creator.creator_approved);
+      if(access.isAdmin){
+        access.accountHref = 'boss-admin.html';
+        access.studioHref = 'boss-admin.html';
+        access.studioLabel = 'Boss Admin';
+      }
+    }catch(_error){}
+
+    return access;
+  }
+
+  function buildMenuAvatar(access){
+    const avatarUrl = String(access?.avatarUrl || '').trim();
+    const displayName = String(access?.displayName || 'P').trim();
+    if(avatarUrl){
+      return `<img src="${avatarUrl.replace(/"/g,'&quot;')}" alt="${displayName.replace(/"/g,'&quot;')}">`;
+    }
+    return displayName.charAt(0).toUpperCase() || 'P';
+  }
+
   function setupIdleLogout(client){
     if(window.__pixnestIdleLogoutBound) return;
     window.__pixnestIdleLogoutBound = true;
@@ -396,7 +453,7 @@
     }, 60000);
   }
 
-  function buildAuthUI(user, client){
+  async function buildAuthUI(user, client){
     ensureGlobalStyles();
     ensureFooterFlex();
     standardizeNav();
@@ -412,28 +469,75 @@
     authLinks.className = 'site-auth-links';
     authLinks.id = 'siteAuthLinks';
 
+    const menuWrap = document.createElement('div');
+    menuWrap.className = 'site-account-menu-wrap';
+    menuWrap.id = 'siteAccountMenuWrap';
+
+    const toggle = document.createElement('button');
+    toggle.type = 'button';
+    toggle.className = 'site-account-menu-toggle';
+    toggle.id = 'siteAccountMenuToggle';
+    toggle.setAttribute('aria-label', 'Open account menu');
+    toggle.setAttribute('aria-expanded', 'false');
+    toggle.innerHTML = '<i class="fa-solid fa-bars"></i>';
+
+    const dropdown = document.createElement('div');
+    dropdown.className = 'site-account-dropdown';
+    dropdown.id = 'siteAccountDropdown';
+
     if(!user){
-      authLinks.innerHTML = `
-        <a href="login.html" class="nav-auth-btn secondary"><i class="fa-solid fa-right-to-bracket"></i>Login</a>
-        <a href="signup.html" class="nav-auth-btn primary"><i class="fa-solid fa-user-plus"></i>Sign Up</a>
+      dropdown.innerHTML = `
+        <a href="login.html"><i class="fa-solid fa-right-to-bracket"></i> Login</a>
+        <a href="signup.html"><i class="fa-solid fa-user-plus"></i> Create Account</a>
+        <a href="help.html"><i class="fa-solid fa-circle-question"></i> Help</a>
       `;
-      navLinks.appendChild(authLinks);
-      markAuthNavReady();
-      window.__pixnestManagedAuthNav = true;
-      document.dispatchEvent(new Event('pixnest:auth-ui-updated'));
-      return;
+    }else{
+      const access = await getAccountAccess(user, client);
+      dropdown.innerHTML = `
+        <div class="site-account-menu-head">
+          <div class="site-account-menu-avatar">${buildMenuAvatar(access)}</div>
+          <div>
+            <strong>${access.displayName}</strong>
+            <small>${access.email}</small>
+          </div>
+        </div>
+        <a href="${access.accountHref}"><i class="fa-solid fa-user"></i> Account</a>
+        <a href="${access.accountHref}#settings"><i class="fa-solid fa-id-card"></i> Account Settings</a>
+        <a href="upload.html"><i class="fa-solid fa-cloud-arrow-up"></i> Upload</a>
+        ${access.canOpenStudio ? `<a href="${access.studioHref}"><i class="fa-solid fa-chart-line"></i> ${access.studioLabel}</a>` : ''}
+        <a href="help.html"><i class="fa-solid fa-circle-question"></i> Help</a>
+        <button type="button" class="site-danger" id="siteLogoutBtn"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+      `;
     }
 
-    authLinks.innerHTML = `
-      <a href="account.html" class="nav-auth-btn secondary"><i class="fa-solid fa-user"></i>Account</a>
-      <a href="upload.html" class="nav-auth-btn primary"><i class="fa-solid fa-upload"></i>Upload</a>
-      <button type="button" class="nav-auth-btn secondary" id="siteLogoutBtn"><i class="fa-solid fa-right-from-bracket"></i>Logout</button>
-    `;
-
+    menuWrap.appendChild(toggle);
+    menuWrap.appendChild(dropdown);
+    authLinks.appendChild(menuWrap);
     navLinks.appendChild(authLinks);
     markAuthNavReady();
     window.__pixnestManagedAuthNav = true;
     document.dispatchEvent(new Event('pixnest:auth-ui-updated'));
+
+    const closeMenu = () => {
+      dropdown.classList.remove('show');
+      toggle.setAttribute('aria-expanded', 'false');
+    };
+
+    toggle.addEventListener('click', (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      const willOpen = !dropdown.classList.contains('show');
+      dropdown.classList.toggle('show', willOpen);
+      toggle.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+    });
+
+    document.addEventListener('click', (event) => {
+      if(!menuWrap.contains(event.target)) closeMenu();
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if(event.key === 'Escape') closeMenu();
+    });
 
     const logoutBtn = document.getElementById('siteLogoutBtn');
     if(logoutBtn){
