@@ -2757,7 +2757,7 @@
           </button>
         `);
 
-        authNavLinks.innerHTML = navBits.join("");
+        authNavLinks.innerHTML = "";
 
         heroActions.innerHTML = `
           <a href="explore.html" class="btn btn-primary">
@@ -2793,16 +2793,7 @@
           </span>
         `;
 
-        authNavLinks.innerHTML = `
-          <a href="login.html" class="nav-auth-btn secondary">
-            <i class="fa-solid fa-right-to-bracket"></i>
-            Login
-          </a>
-          <a href="signup.html" class="nav-auth-btn primary">
-            <i class="fa-solid fa-user-plus"></i>
-            Sign Up
-          </a>
-        `;
+        authNavLinks.innerHTML = "";
 
         heroActions.innerHTML = `
           <a href="explore.html" class="btn btn-primary">
@@ -3481,29 +3472,50 @@
       }
     }
 
-    async function loadPhotos(){
-      try{
-        const { data, error } = await supabaseClient
-          .from("photos")
-          .select("*")
-          .order("created_at", { ascending:false })
-          .limit(36);
-
-        if(error){
-          throw error;
-        }
-
-        rawPhotos = (Array.isArray(data) ? data : []).filter(isPhotoPubliclyApproved);
-        allPhotos = await Promise.all(rawPhotos.map(preparePhotoForDisplay));
-
-        applyAdminText();
-        refreshPhotoSections();
-      }catch(error){
-        console.error(error);
-        categoryGrid.innerHTML = `<div class="empty-box">Could not load categories from Supabase.</div>`;
-        featuredGrid.innerHTML = `<div class="empty-box">Could not load featured photos from Supabase.</div>`;
-        trendingGrid.innerHTML = `<div class="empty-box">Could not load trending photos from Supabase.</div>`;
+    async function loadPhotos(force = false){
+      if(loadPhotosPromise && !force){
+        return loadPhotosPromise;
       }
+
+      if(hasLoadedPhotosOnce && !force){
+        return allPhotos;
+      }
+
+      loadPhotosPromise = (async () => {
+        try{
+          const { data, error } = await supabaseClient
+            .from("photos")
+            .select("*")
+            .order("created_at", { ascending:false })
+            .limit(12);
+
+          if(error){
+            throw error;
+          }
+
+          rawPhotos = (Array.isArray(data) ? data : []).filter(isPhotoPubliclyApproved);
+          const prepared = [];
+          for(const item of rawPhotos){
+            prepared.push(await preparePhotoForDisplay(item));
+          }
+          allPhotos = prepared;
+          hasLoadedPhotosOnce = true;
+
+          applyAdminText();
+          refreshPhotoSections();
+          return allPhotos;
+        }catch(error){
+          console.error(error);
+          categoryGrid.innerHTML = `<div class="empty-box">Could not load categories from Supabase.</div>`;
+          featuredGrid.innerHTML = `<div class="empty-box">Could not load featured photos from Supabase.</div>`;
+          trendingGrid.innerHTML = `<div class="empty-box">Could not load trending photos from Supabase.</div>`;
+          return [];
+        }finally{
+          loadPhotosPromise = null;
+        }
+      })();
+
+      return loadPhotosPromise;
     }
 
     homeSearchBtn.addEventListener("click", runHomeSearch);
@@ -3623,23 +3635,26 @@
       }
     });
 
+    let homeAuthBootUserId = null;
+
     supabaseClient.auth.onAuthStateChange(async (_event, session) => {
-      currentUser = session?.user || null;
-      if(!currentUser){
-        await initCurrentUser();
-      }
+      const nextUser = session?.user || null;
+      const nextId = nextUser?.id || null;
+      if(nextId === homeAuthBootUserId) return;
+      homeAuthBootUserId = nextId;
+      currentUser = nextUser;
       updateAuthUI();
-      await loadPhotos();
     });
 
     (async function init(){
       await initCurrentUser();
+      homeAuthBootUserId = currentUser?.id || null;
       updateAuthUI();
       applyAdminText();
-      await loadPhotos();
+      window.setTimeout(() => { loadPhotos(); }, 80);
     })();
   </script>
-  <script src="site-auth.js"></script>
+  <!-- site-auth.js removed on home page to prevent duplicate auth/menu boot loops -->
 
 <script id="pixnestActiveNavSync">
 (function(){
