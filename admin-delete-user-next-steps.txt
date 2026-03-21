@@ -1,0 +1,19 @@
+To make full user deletion work from Boss Admin:
+
+1. Deploy the Edge Function:
+   supabase functions deploy admin-delete-user
+
+2. Make sure these secrets exist in Supabase:
+   SUPABASE_URL
+   SUPABASE_ANON_KEY
+   SUPABASE_SERVICE_ROLE_KEY
+
+3. Run admin-chat-and-role-policies.sql in the SQL Editor so admins can read/write live support tables.
+
+4. Then test from boss-admin.html:
+   - Grant Admin / Remove Admin
+   - Open Live Chat tab and reply to users
+   - Full Delete on a non-admin account
+
+Note:
+Full delete uses the service role on the server side. It should not be done directly in browser code.

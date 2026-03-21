@@ -1030,6 +1030,55 @@
      width:min(320px,92vw);
    }
  }
+
+  .live-admin-shell{
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+  }
+  .live-admin-meta{
+    padding:14px 16px;
+    border-radius:16px;
+    border:1px solid rgba(255,255,255,0.08);
+    background:rgba(15,23,42,0.55);
+    color:#cbd5e1;
+    line-height:1.6;
+  }
+  .live-admin-messages{
+    min-height:320px;
+    max-height:460px;
+    overflow:auto;
+    padding:16px;
+    border-radius:18px;
+    border:1px solid rgba(255,255,255,0.08);
+    background:rgba(15,23,42,0.55);
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+  }
+  .admin-chat-message{display:flex;}
+  .admin-chat-message.user{justify-content:flex-start;}
+  .admin-chat-message.agent{justify-content:flex-end;}
+  .admin-chat-bubble{
+    max-width:min(90%, 520px);
+    padding:12px 14px;
+    border-radius:16px;
+    background:rgba(30,41,59,0.95);
+    border:1px solid rgba(255,255,255,0.08);
+    color:#e2e8f0;
+  }
+  .admin-chat-message.agent .admin-chat-bubble{
+    background:rgba(37,99,235,0.16);
+    border-color:rgba(96,165,250,0.35);
+  }
+  .admin-chat-bubble strong{display:block; margin-bottom:6px;}
+  .admin-chat-bubble small{display:block; margin-top:8px; color:#94a3b8;}
+  .chat-session-card{
+    width:100%; text-align:left; background:rgba(15,23,42,0.45); border:1px solid rgba(255,255,255,0.08); color:#e2e8f0;
+    border-radius:18px; padding:16px; cursor:pointer; transition:0.2s;
+  }
+  .chat-session-card:hover,.chat-session-card.active{border-color:rgba(96,165,250,0.5); transform:translateY(-1px);}
+
 </style>
 </head>
 <body>
@@ -1140,6 +1189,7 @@
        <button class="tab-btn" data-tab="photos">Photo Review</button>
        <button class="tab-btn" data-tab="users">Users</button>
        <button class="tab-btn" data-tab="flags">Flags & Holds</button>
+       <button class="tab-btn" data-tab="chat">Live Chat</button>
        <button class="tab-btn" data-tab="audit">Audit Log</button>
      </div>
 
@@ -1337,6 +1387,54 @@
        </div>
      </div>
 
+     <div class="tab-section" id="tab-chat">
+       <div class="finance-admin-grid">
+         <div class="panel">
+           <h2>Live Support Sessions</h2>
+           <p class="panel-sub">Open a support session and reply to users live from the boss page.</p>
+           <div class="search-bar">
+             <input type="text" id="chatSearch" placeholder="Search by visitor name, email, user id or status">
+             <select id="chatFilter">
+               <option value="all">All Sessions</option>
+               <option value="open">Open</option>
+               <option value="pending">Pending</option>
+               <option value="closed">Closed</option>
+             </select>
+           </div>
+           <div class="card-list" id="chatSessionsList"></div>
+         </div>
+
+         <div class="panel">
+           <h2>Conversation</h2>
+           <p class="panel-sub">Choose a session on the left to load the full message thread.</p>
+           <div class="live-admin-shell">
+             <div class="live-admin-meta" id="chatSessionMeta">No support session selected yet.</div>
+             <div class="live-admin-messages" id="chatMessagesList">
+               <div class="empty-box">Pick a session to view messages.</div>
+             </div>
+             <div class="field">
+               <label for="chatReplyInput">Reply as support</label>
+               <textarea id="chatReplyInput" placeholder="Write your reply here..."></textarea>
+             </div>
+             <div class="action-row">
+               <button class="btn primary" id="sendChatReplyBtn">
+                 <i class="fa-solid fa-paper-plane"></i>
+                 Send Reply
+               </button>
+               <button class="btn ghost" id="markChatClosedBtn">
+                 <i class="fa-solid fa-circle-check"></i>
+                 Mark Closed
+               </button>
+               <button class="btn ghost" id="markChatOpenBtn">
+                 <i class="fa-solid fa-rotate-left"></i>
+                 Reopen
+               </button>
+             </div>
+           </div>
+         </div>
+       </div>
+     </div>
+
      <div class="tab-section" id="tab-audit">
        <div class="panel">
          <h2>Audit Log</h2>
@@ -1397,12 +1495,21 @@
  const photosList = document.getElementById("photosList");
  const usersList = document.getElementById("usersList");
  const flagsList = document.getElementById("flagsList");
+ const chatSessionsList = document.getElementById("chatSessionsList");
+ const chatMessagesList = document.getElementById("chatMessagesList");
+ const chatSessionMeta = document.getElementById("chatSessionMeta");
+ const chatReplyInput = document.getElementById("chatReplyInput");
+ const sendChatReplyBtn = document.getElementById("sendChatReplyBtn");
+ const markChatClosedBtn = document.getElementById("markChatClosedBtn");
+ const markChatOpenBtn = document.getElementById("markChatOpenBtn");
  const auditList = document.getElementById("auditList");
 
  const photoSearch = document.getElementById("photoSearch");
  const photoFilter = document.getElementById("photoFilter");
  const userSearch = document.getElementById("userSearch");
  const userFilter = document.getElementById("userFilter");
+ const chatSearch = document.getElementById("chatSearch");
+ const chatFilter = document.getElementById("chatFilter");
 
  const settingsForm = document.getElementById("settingsForm");
  const homeBanner = document.getElementById("homeBanner");
@@ -1463,6 +1570,7 @@
 
  logoutBtn?.addEventListener("click", async () => {
    try{
+     clearAdminChatSubscription();
      await supabaseClient.auth.signOut();
      window.location.href = "index.html";
    }catch(error){
@@ -1483,6 +1591,11 @@
  photoFilter.addEventListener("change", renderPhotos);
  userSearch.addEventListener("input", renderUsers);
  userFilter.addEventListener("change", renderUsers);
+ chatSearch?.addEventListener("input", renderChatSessions);
+ chatFilter?.addEventListener("change", renderChatSessions);
+ sendChatReplyBtn?.addEventListener("click", sendAdminChatReply);
+ markChatClosedBtn?.addEventListener("click", () => updateActiveChatStatus("closed"));
+ markChatOpenBtn?.addEventListener("click", () => updateActiveChatStatus("open"));
  settingsForm?.addEventListener("submit", saveSiteSettings);
 
  function showNotice(text){
@@ -1505,6 +1618,10 @@
 
  function normalize(value = ""){
    return String(value || "").trim().toLowerCase();
+ }
+
+ function isAdminProfile(profile = {}){
+   return normalize(profile.role) === "admin" || normalize(profile.role) === "founder" || profile.site_admin === true || profile.super_admin === true;
  }
 
  function compactNumber(value){
@@ -1693,6 +1810,7 @@
      loadPhotos(),
      loadUsers(),
      loadFlags(),
+     loadSupportSessions(),
      loadAudit()
    ]);
 
@@ -2557,6 +2675,11 @@
              ${creatorProfile.premium_member ? "Remove Premium" : "Grant Premium"}
            </button>
 
+           <button class="mini-btn info" data-user-action="admin" data-user-id="${escapeHtml(user.id)}">
+             <i class="fa-solid fa-user-shield"></i>
+             ${isAdminProfile(user) ? "Remove Admin" : "Grant Admin"}
+           </button>
+
            <button class="mini-btn success" data-user-action="creator" data-user-id="${escapeHtml(user.id)}">
              <i class="fa-solid fa-camera"></i>
              ${creatorProfile.creator_approved ? "Revoke Creator" : "Approve Creator"}
@@ -2594,7 +2717,12 @@
 
            <button class="mini-btn danger" data-user-action="remove" data-user-id="${escapeHtml(user.id)}">
              <i class="fa-solid fa-trash"></i>
-             Remove User
+             ${status === "deleted" ? "Restore User" : "Remove User"}
+           </button>
+
+           <button class="mini-btn danger" data-user-action="hard-delete" data-user-id="${escapeHtml(user.id)}">
+             <i class="fa-solid fa-user-xmark"></i>
+             Full Delete
            </button>
          </div>
        </div>
@@ -2641,6 +2769,17 @@
      creatorPatch = { verified: !creatorProfile.verified };
    }else if(action === "premium"){
      creatorPatch = { premium_member: !creatorProfile.premium_member };
+   }else if(action === "admin"){
+     if(String(user.id) === String(adminProfile?.id || "")){
+       showNotice("Use another admin account before changing your own admin access.");
+       return;
+     }
+     const makeAdmin = !isAdminProfile(user);
+     profilePatch = {
+       role: makeAdmin ? "admin" : "user",
+       site_admin: makeAdmin,
+       super_admin: false
+     };
    }else if(action === "creator"){
      creatorPatch = { creator_approved: !creatorProfile.creator_approved };
      if(!creatorProfile.creator_approved){
@@ -2702,16 +2841,52 @@
        payout_enabled: hold ? false : creatorProfile.payout_enabled
      };
    }else if(action === "remove"){
-     const reason = prompt("Reason for removing this user:", "") || "";
-     profilePatch = {
-       account_status: "deleted",
-       deleted_at: new Date().toISOString(),
-       ban_reason: reason,
-       fraud_hold: true
-     };
-     creatorPatch = {
-       payout_enabled: false
-     };
+     if(status === "deleted"){
+       profilePatch = {
+         account_status: "active",
+         deleted_at: null,
+         fraud_hold: false
+       };
+     }else{
+       const reason = prompt("Reason for removing this user:", "") || "";
+       profilePatch = {
+         account_status: "deleted",
+         deleted_at: new Date().toISOString(),
+         ban_reason: reason,
+         fraud_hold: true
+       };
+       creatorPatch = {
+         payout_enabled: false
+       };
+     }
+   }else if(action === "hard-delete"){
+     const confirmed = window.confirm(`Fully delete ${user.email || user.full_name || 'this user'} from auth and the site? This should only be used for serious cases.`);
+     if(!confirmed) return;
+     try{
+       const res = await fetch(`${SUPABASE_URL}/functions/v1/admin-delete-user`, {
+         method: "POST",
+         headers: {
+           "Content-Type": "application/json",
+           apikey: SUPABASE_KEY,
+           Authorization: `Bearer ${currentSession?.access_token || ''}`
+         },
+         body: JSON.stringify({ user_id: user.id, email: user.email || null })
+       });
+       const data = await res.json().catch(() => ({}));
+       if(!res.ok){
+         throw new Error(data?.error || data?.message || "Full delete function is not deployed yet.");
+       }
+       await logAudit("hard_delete_user", "profiles", user.id, { response: data });
+       showNotice(data?.message || "User fully deleted.");
+       await loadCreatorProfiles();
+       await loadUsers();
+       await loadOverviewStats();
+       return;
+     }catch(error){
+       console.error(error);
+       showNotice(error.message || "Could not fully delete user.");
+       return;
+     }
    }
 
    try{
@@ -2739,6 +2914,173 @@
    }catch(error){
      console.error(error);
      showNotice("Could not update user.");
+   }
+ }
+
+ function formatChatTime(value){
+   if(!value) return "";
+   const date = new Date(value);
+   if(Number.isNaN(date.getTime())) return "";
+   return date.toLocaleString("en-GB", { day:"numeric", month:"short", hour:"2-digit", minute:"2-digit" });
+ }
+
+ function clearAdminChatSubscription(){
+   if(adminChatChannel){
+     supabaseClient.removeChannel(adminChatChannel);
+     adminChatChannel = null;
+   }
+ }
+
+ async function loadSupportSessions(){
+   try{
+     const { data, error } = await supabaseClient
+       .from("live_support_sessions")
+       .select("*")
+       .order("created_at", { ascending:false })
+       .limit(100);
+     if(error) throw error;
+     liveSupportSessions = Array.isArray(data) ? data : [];
+     renderChatSessions();
+     if(activeAdminChatSession?.id){
+       const fresh = liveSupportSessions.find(item => String(item.id) === String(activeAdminChatSession.id));
+       if(fresh) activeAdminChatSession = fresh;
+     }
+   }catch(error){
+     console.error(error);
+     chatSessionsList.innerHTML = '<div class="empty-box">Could not load live support sessions.</div>';
+   }
+ }
+
+ function renderChatSessions(){
+   const q = normalize(chatSearch?.value);
+   const f = normalize(chatFilter?.value || 'all');
+   const rows = liveSupportSessions.filter(item => {
+     const text = [item.visitor_name, item.visitor_email, item.user_id, item.status].join(' ').toLowerCase();
+     const matchQ = !q || text.includes(q);
+     const matchF = f === 'all' ? true : normalize(item.status) === f;
+     return matchQ && matchF;
+   });
+   if(!rows.length){
+     chatSessionsList.innerHTML = '<div class="empty-box">No support sessions match this filter.</div>';
+     return;
+   }
+   chatSessionsList.innerHTML = rows.map(item => `
+     <button class="chat-session-card ${activeAdminChatSession?.id === item.id ? 'active' : ''}" data-chat-session-id="${escapeHtml(item.id)}">
+       <div class="item-title">${escapeHtml(item.visitor_name || item.visitor_email || 'Visitor')}</div>
+       <div class="item-meta">${escapeHtml(item.visitor_email || 'No email')}<br>Status: ${escapeHtml(item.status || 'open')} • ${escapeHtml(formatDate(item.created_at))}</div>
+     </button>
+   `).join('');
+   chatSessionsList.querySelectorAll('[data-chat-session-id]').forEach(btn => {
+     btn.addEventListener('click', async () => {
+       const id = btn.getAttribute('data-chat-session-id');
+       const row = liveSupportSessions.find(item => String(item.id) === String(id));
+       if(row) await openAdminChatSession(row);
+     });
+   });
+ }
+
+ function renderAdminChatMessages(rows = []){
+   if(!rows.length){
+     chatMessagesList.innerHTML = '<div class="empty-box">No messages in this session yet.</div>';
+     return;
+   }
+   chatMessagesList.innerHTML = rows.map(item => {
+     const own = normalize(item.sender_type) === 'admin' || normalize(item.sender_type) === 'agent' || normalize(item.sender_type) === 'support';
+     return `
+       <div class="admin-chat-message ${own ? 'agent' : 'user'}">
+         <div class="admin-chat-bubble">
+           <strong>${escapeHtml(item.sender_name || (own ? 'Support' : 'User'))}</strong>
+           <div>${escapeHtml(item.message || '')}</div>
+           <small>${escapeHtml(formatChatTime(item.created_at))}</small>
+         </div>
+       </div>
+     `;
+   }).join('');
+   chatMessagesList.scrollTop = chatMessagesList.scrollHeight;
+ }
+
+ async function loadAdminChatMessages(){
+   if(!activeAdminChatSession?.id) return;
+   try{
+     const { data, error } = await supabaseClient
+       .from('live_support_messages')
+       .select('*')
+       .eq('session_id', activeAdminChatSession.id)
+       .order('created_at', { ascending:true });
+     if(error) throw error;
+     liveSupportMessages = Array.isArray(data) ? data : [];
+     renderAdminChatMessages(liveSupportMessages);
+   }catch(error){
+     console.error(error);
+     chatMessagesList.innerHTML = '<div class="empty-box">Could not load chat messages.</div>';
+   }
+ }
+
+ async function openAdminChatSession(sessionRow){
+   activeAdminChatSession = sessionRow;
+   chatSessionMeta.innerHTML = `
+     <strong>${escapeHtml(sessionRow.visitor_name || sessionRow.visitor_email || 'Visitor')}</strong><br>
+     Email: ${escapeHtml(sessionRow.visitor_email || 'No email')}<br>
+     Status: ${escapeHtml(sessionRow.status || 'open')}<br>
+     Opened: ${escapeHtml(formatDate(sessionRow.created_at))}
+   `;
+   renderChatSessions();
+   await loadAdminChatMessages();
+   clearAdminChatSubscription();
+   adminChatChannel = supabaseClient
+     .channel(`admin-live-support-${sessionRow.id}`)
+     .on('postgres_changes', { event:'*', schema:'public', table:'live_support_messages', filter:`session_id=eq.${sessionRow.id}` }, async () => {
+       await loadAdminChatMessages();
+     })
+     .subscribe();
+ }
+
+ async function sendAdminChatReply(){
+   if(!activeAdminChatSession?.id){
+     showNotice('Pick a support session first.');
+     return;
+   }
+   const message = chatReplyInput.value.trim();
+   if(!message){
+     showNotice('Write a reply first.');
+     return;
+   }
+   try{
+     sendChatReplyBtn.disabled = true;
+     const senderName = adminProfile?.full_name || adminProfile?.display_name || adminProfile?.email || 'Support';
+     const { error } = await supabaseClient
+       .from('live_support_messages')
+       .insert({ session_id: activeAdminChatSession.id, sender_name: senderName, sender_type:'admin', message });
+     if(error) throw error;
+     chatReplyInput.value = '';
+     await loadAdminChatMessages();
+     showNotice('Reply sent.');
+   }catch(error){
+     console.error(error);
+     showNotice('Could not send reply.');
+   }finally{
+     sendChatReplyBtn.disabled = false;
+   }
+ }
+
+ async function updateActiveChatStatus(nextStatus){
+   if(!activeAdminChatSession?.id){
+     showNotice('Pick a support session first.');
+     return;
+   }
+   try{
+     const { error } = await supabaseClient
+       .from('live_support_sessions')
+       .update({ status: nextStatus, updated_at: new Date().toISOString() })
+       .eq('id', activeAdminChatSession.id);
+     if(error) throw error;
+     activeAdminChatSession = { ...activeAdminChatSession, status: nextStatus };
+     await loadSupportSessions();
+     await openAdminChatSession(activeAdminChatSession);
+     showNotice(`Session marked ${nextStatus}.`);
+   }catch(error){
+     console.error(error);
+     showNotice('Could not update session status.');
    }
  }
 
