@@ -3486,7 +3486,8 @@
         const { data, error } = await supabaseClient
           .from("photos")
           .select("*")
-          .order("created_at", { ascending:false });
+          .order("created_at", { ascending:false })
+          .limit(36);
 
         if(error){
           throw error;

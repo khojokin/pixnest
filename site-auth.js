@@ -502,26 +502,32 @@
   }
 
   function setupIdleLogout(client){
+    if(window.__pixnestIdleLogoutBound) return;
+    window.__pixnestIdleLogoutBound = true;
     const markActive = () => localStorage.setItem(LAST_ACTIVE_KEY, String(Date.now()));
     ['mousemove','mousedown','keydown','scroll','touchstart','click'].forEach(eventName => {
       window.addEventListener(eventName, markActive, { passive:true });
     });
     markActive();
 
-    setInterval(async () => {
+    const checkIdle = async () => {
       try{
         const { data } = await client.auth.getSession();
         const session = data?.session || null;
-        if(!session) return;
-        const last = Number(localStorage.getItem(LAST_ACTIVE_KEY) || 0);
-        if(last && (Date.now() - last) > IDLE_LIMIT_MS){
-          await client.auth.signOut();
-          localStorage.removeItem(LAST_ACTIVE_KEY);
-          sessionStorage.setItem(LOGOUT_NOTICE_KEY, 'true');
-          window.location.href = 'login.html?reason=inactive';
+        if(session){
+          const last = Number(localStorage.getItem(LAST_ACTIVE_KEY) || 0);
+          if(last && (Date.now() - last) > IDLE_LIMIT_MS){
+            await client.auth.signOut();
+            localStorage.removeItem(LAST_ACTIVE_KEY);
+            sessionStorage.setItem(LOGOUT_NOTICE_KEY, 'true');
+            window.location.href = 'login.html?reason=inactive';
+            return;
+          }
         }
       }catch(_error){}
-    }, 60000);
+      window.setTimeout(checkIdle, 60000);
+    };
+    window.setTimeout(checkIdle, 60000);
   }
 
   function buildAuthUI(user, client){
@@ -1036,15 +1042,18 @@ showSiteToast('Report sent. Thanks for letting us know.');
   }
 
   function bindGlobalExtraActions(client){
-    document.addEventListener('click', async (event) => {
-      const repostBtn = event.target.closest('.pixnest-repost-btn');
-      if(repostBtn){
-        event.preventDefault();
-        event.stopPropagation();
-        toggleRepost(repostBtn.getAttribute('data-photo-id'));
-        return;
-      }
-    });
+    if(!document.body.dataset.pixnestExtraActionClickBound){
+      document.body.dataset.pixnestExtraActionClickBound = 'true';
+      document.addEventListener('click', async (event) => {
+        const repostBtn = event.target.closest('.pixnest-repost-btn');
+        if(repostBtn){
+          event.preventDefault();
+          event.stopPropagation();
+          toggleRepost(repostBtn.getAttribute('data-photo-id'));
+          return;
+        }
+      });
+    }
 
     let refreshQueued = false;
     const queueRefresh = () => {
@@ -1056,31 +1065,18 @@ showSiteToast('Report sent. Thanks for letting us know.');
       });
     };
 
-    const observer = new MutationObserver((mutations) => {
-      for(const mutation of mutations){
-        if(mutation.type !== 'childList') continue;
-        if(mutation.addedNodes.length || mutation.removedNodes.length){
-          queueRefresh();
-          break;
-        }
-      }
-    });
-    const observeTargets = [
-      document.querySelector('main'),
-      document.getElementById('resultsGrid'),
-      document.querySelector('.photos-grid'),
-      document.querySelector('.gallery-grid'),
-      document.querySelector('.visual-grid'),
-      document.querySelector('.lightbox')
-    ].filter(Boolean);
-    if(observeTargets.length){
-      observeTargets.forEach(target => observer.observe(target, { childList:true, subtree:true }));
-    }
     refreshExtraPhotoActions();
+    [120, 500, 1200, 2500].forEach(delay => window.setTimeout(queueRefresh, delay));
+    window.addEventListener('load', queueRefresh, { once:true });
     window.addEventListener('pixnest-repost-change', queueRefresh);
+    document.addEventListener('visibilitychange', () => {
+      if(document.visibilityState === 'visible') queueRefresh();
+    });
   }
 
   function init(){
+    if(window.__pixnestSiteAuthInitDone) return;
+    window.__pixnestSiteAuthInitDone = true;
     ensureGlobalStyles();
     ensureFooterFlex();
     standardizeNav();
@@ -1092,8 +1088,10 @@ showSiteToast('Report sent. Thanks for letting us know.');
     syncActiveNavLinks();
     const navTarget = document.getElementById('navLinks') || document.querySelector('.nav-links');
     if(navTarget){
-      const navObserver = new MutationObserver(() => syncActiveNavLinks(navTarget));
-      navObserver.observe(navTarget, { childList:true, subtree:true, attributes:true, attributeFilter:['class','href'] });
+      const navSync = () => syncActiveNavLinks(navTarget);
+      navSync();
+      window.addEventListener('popstate', navSync, { passive:true });
+      window.addEventListener('hashchange', navSync, { passive:true });
     }
 
     ensureSupabase(async function(){
