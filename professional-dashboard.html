@@ -1419,7 +1419,7 @@
     <section class="gate hidden" id="approvalGate">
       <h2>Professional dashboard is not unlocked yet</h2>
       <p>
-        This dashboard becomes available when admin approves your creator access or when you reach the creator requirements of 10k followers and 100k total views. Bank withdrawals also need saved bank details and an approved tax form.
+        This dashboard becomes available when the PixNest review team approves your creator access or when you reach the creator requirements of 10k followers and 100k total views. Bank withdrawals also need saved bank details and an approved tax form.
       </p>
       <div class="gate-actions">
         <a href="help.html" class="btn primary">
@@ -1579,7 +1579,7 @@
             <i class="fa-solid fa-circle-info"></i>
             <div>
               <strong id="payoutStatusHeading">Withdrawal access is being checked</strong>
-              <span id="payoutStatusText">You need an approved creator dashboard or at least 10k followers and 100k total views. An approved tax form is required before admin can process payouts.</span>
+              <span id="payoutStatusText">You need an approved creator dashboard or at least 10k followers and 100k total views. An approved tax form is required before the PixNest review team can process payouts.</span>
             </div>
           </div>
 
@@ -1639,7 +1639,7 @@
           <div class="panel-head">
             <div>
               <h3>Tax Form & Withdrawal Requests</h3>
-              <p>Submit your tax form first, then request a withdrawal for admin approval.</p>
+              <p>Submit your tax form first, then request a withdrawal for review-team approval.</p>
             </div>
           </div>
 
@@ -1682,7 +1682,7 @@
               </div>
               <div class="field-group" style="grid-column:1 / -1;">
                 <label for="taxNotes">Notes</label>
-                <textarea id="taxNotes" placeholder="Anything admin should know about this tax form"></textarea>
+                <textarea id="taxNotes" placeholder="Anything the PixNest review team should know about this tax form"></textarea>
               </div>
             </div>
             <div class="action-row">
@@ -1709,7 +1709,7 @@
               </div>
               <div class="field-group" style="grid-column:1 / -1;">
                 <label for="withdrawNotes">Withdrawal Notes</label>
-                <textarea id="withdrawNotes" placeholder="Optional note for admin about this withdrawal"></textarea>
+                <textarea id="withdrawNotes" placeholder="Optional note for the PixNest review team about this withdrawal"></textarea>
               </div>
             </div>
             <div class="action-row">
@@ -2866,7 +2866,7 @@
 
     if(withdrawUnlocked){
       payoutStatusHeading.textContent = "You can request a bank withdrawal";
-      payoutStatusText.textContent = "Your creator access is unlocked, your bank profile is saved, and your latest tax form is approved by admin.";
+      payoutStatusText.textContent = "Your creator access is unlocked, your bank profile is saved, and your latest tax form is approved by the PixNest review team.";
     }else if(!eligibility.eligible){
       payoutStatusHeading.textContent = "Eligibility requirements are not met yet";
       payoutStatusText.textContent = "You need an approved creator dashboard or at least 10k followers and 100k total views before withdrawal tools unlock.";
@@ -3012,7 +3012,7 @@
       }]);
       if(error) throw error;
       await loadDashboard();
-      showNotice("Tax form submitted for admin approval.");
+      showNotice("Tax form submitted for review-team approval.");
     }catch(error){
       console.error(error);
       showNotice("Could not submit tax form.");
@@ -3049,7 +3049,7 @@
       if(error) throw error;
       withdrawForm.reset();
       await loadDashboard();
-      showNotice("Withdrawal request submitted for admin approval.");
+      showNotice("Withdrawal request submitted for review-team approval.");
     }catch(error){
       console.error(error);
       showNotice("Could not submit withdrawal request.");

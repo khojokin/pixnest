@@ -3340,7 +3340,7 @@
         proBoardText.textContent = `Professional dashboard unlocked. Followers: ${compactNumber(followerCount)}. Total views: ${compactNumber(totalViews)}.`;
         professionalDashboardBtn.disabled = false;
       }else{
-        proBoardText.textContent = `Professional dashboard is locked until admin approves your creator profile for dashboard access.`;
+        proBoardText.textContent = `Professional dashboard is locked until the PixNest review team approves your creator profile for dashboard access.`;
         professionalDashboardBtn.disabled = true;
       }
     }
@@ -3358,7 +3358,7 @@
         myPosts,
         postsGrid,
         "No posts yet",
-        "Your uploaded photos will show here. If your creator uploads require admin review, pending posts will show a pending badge.",
+        "Your uploaded photos will show here. If your creator uploads require review-team approval, pending posts will show a pending badge.",
         postsCountChip,
         "posts"
       );

@@ -1,14 +1,33 @@
 (function(){
   const SUPABASE_URL = 'https://vigczssznfvujttdapbv.supabase.co';
   const SUPABASE_KEY = 'sb_publishable_UmF-mmVS42XeF6PqsNnCSw_wpA35wg2';
+  const IDLE_LIMIT_MS = 30 * 60 * 1000;
+  const LAST_ACTIVE_KEY = 'pixnest_last_active_at';
+  const LOGOUT_NOTICE_KEY = 'pixnest_idle_logout_notice';
+
+  const NAV_ITEMS = [
+    { href:'index.html', label:'Home', keys:['index.html',''] },
+    { href:'explore.html', label:'Explore', keys:['explore.html'] },
+    { href:'category.html', label:'Categories', keys:['category.html'] },
+    { href:'premiumplans.html', label:'Features', keys:['premiumplans.html','features.html'] },
+    { href:'premium.html', label:'Premium', keys:['premium.html','checkout.html','payment.html'] },
+    { href:'contact.html', label:'Contact', keys:['contact.html','help.html'] }
+  ];
+
+  const PREMIUM_FOOTER_ITEMS = [
+    { href:'about.html', label:'About' },
+    { href:'license.html', label:'License' },
+    { href:'privacy.html', label:'Privacy' },
+    { href:'terms.html', label:'Terms' },
+    { href:'contact.html', label:'Contact' }
+  ];
+
+  const NON_PREMIUM_FOOTER_ITEMS = [
+    { href:'premium.html', label:'Join Premium Membership' }
+  ];
 
   function currentPage(){
     return (location.pathname.split('/').pop() || 'index.html').toLowerCase();
-  }
-
-  function isAuthPage(){
-    const page = currentPage();
-    return page === 'login.html' || page === 'signup.html';
   }
 
   function isCustomAccountPage(){
@@ -16,8 +35,8 @@
     return page === 'account.html' || page === 'profile.html' || page === 'professional-dashboard.html' || page === 'boss-admin.html';
   }
 
-  function shouldSkipInjection(){
-    return isAuthPage() || isCustomAccountPage();
+  function shouldSkipAuthInjection(){
+    return isCustomAccountPage();
   }
 
   function ensureGlobalStyles(){
@@ -72,14 +91,6 @@
     document.head.appendChild(script);
   }
 
-  function getDisplayName(user){
-    return String(user?.user_metadata?.full_name || user?.user_metadata?.name || user?.email?.split('@')[0] || 'Account').trim();
-  }
-
-  function findNavLinks(){
-    return document.getElementById('navLinks') || document.querySelector('.nav-links');
-  }
-
   function removeExistingAuthBits(){
     document.querySelectorAll('.site-auth-links,#siteAccountMenuWrap').forEach(el => el.remove());
     document.querySelectorAll('.auth-links,.nav-auth,#authNavLinks').forEach(el => {
@@ -92,17 +103,94 @@
     document.body.classList.add('site-flex-page');
   }
 
+  function standardizeNav(){
+    const navLinks = document.getElementById('navLinks') || document.querySelector('.nav-links');
+    if(!navLinks) return;
+
+    const preserved = [];
+    Array.from(navLinks.children).forEach(child => {
+      if(
+        child.classList?.contains('site-auth-links') ||
+        child.classList?.contains('site-account-menu-wrap') ||
+        child.classList?.contains('nav-auth') ||
+        child.id === 'authNavLinks'
+      ){
+        preserved.push(child);
+      }
+    });
+
+    navLinks.innerHTML = '';
+    const page = currentPage();
+
+    NAV_ITEMS.forEach(item => {
+      const a = document.createElement('a');
+      a.href = item.href;
+      a.textContent = item.label;
+      if(item.keys.includes(page)) a.classList.add('active');
+      navLinks.appendChild(a);
+    });
+
+    preserved.forEach(node => navLinks.appendChild(node));
+  }
+
+  function standardizeFooter(isPremium){
+    const footerLinks = document.querySelector('.footer-links');
+    if(!footerLinks) return;
+    const items = isPremium ? PREMIUM_FOOTER_ITEMS : NON_PREMIUM_FOOTER_ITEMS;
+    footerLinks.innerHTML = items.map(item => `<a href="${item.href}">${item.label}</a>`).join('');
+  }
+
+  async function getPremiumState(user, client){
+    if(!user) return false;
+
+    const appPlan = String(user?.app_metadata?.membership_plan || '').toLowerCase();
+    if(appPlan.includes('premium')) return true;
+
+    try{
+      const [profileRes, creatorRes] = await Promise.all([
+        client.from('profiles').select('premium_member').eq('id', user.id).maybeSingle(),
+        client.from('creator_profiles').select('premium_member').eq('user_id', user.id).maybeSingle()
+      ]);
+      return Boolean(profileRes.data?.premium_member || creatorRes.data?.premium_member);
+    }catch(_error){
+      return false;
+    }
+  }
+
+  function setupIdleLogout(client){
+    const markActive = () => localStorage.setItem(LAST_ACTIVE_KEY, String(Date.now()));
+    ['mousemove','mousedown','keydown','scroll','touchstart','click'].forEach(eventName => {
+      window.addEventListener(eventName, markActive, { passive:true });
+    });
+    markActive();
+
+    setInterval(async () => {
+      try{
+        const { data } = await client.auth.getSession();
+        const session = data?.session || null;
+        if(!session) return;
+        const last = Number(localStorage.getItem(LAST_ACTIVE_KEY) || 0);
+        if(last && (Date.now() - last) > IDLE_LIMIT_MS){
+          await client.auth.signOut();
+          localStorage.removeItem(LAST_ACTIVE_KEY);
+          sessionStorage.setItem(LOGOUT_NOTICE_KEY, 'true');
+          window.location.href = 'login.html?reason=inactive';
+        }
+      }catch(_error){}
+    }, 60000);
+  }
+
   function buildAuthUI(user, client){
     ensureGlobalStyles();
     ensureFooterFlex();
+    standardizeNav();
 
-    if(shouldSkipInjection()) return;
+    if(shouldSkipAuthInjection()) return;
 
     removeExistingAuthBits();
 
-    const nav = document.querySelector('.nav');
-    const navLinks = findNavLinks();
-    if(!nav || !navLinks) return;
+    const navLinks = document.getElementById('navLinks') || document.querySelector('.nav-links');
+    if(!navLinks) return;
 
     const authLinks = document.createElement('div');
     authLinks.className = 'site-auth-links';
@@ -126,6 +214,7 @@
         <a href="account.html"><i class="fa-solid fa-user"></i>My Account</a>
         <a href="profile.html"><i class="fa-solid fa-address-card"></i>Profile</a>
         <a href="upload.html"><i class="fa-solid fa-upload"></i>Upload</a>
+        <a href="professional-dashboard.html"><i class="fa-solid fa-chart-line"></i>Creator Dashboard</a>
         <a href="premium.html"><i class="fa-solid fa-crown"></i>Premium</a>
         <a href="contact.html"><i class="fa-solid fa-envelope"></i>Contact</a>
         <button type="button" class="site-danger" id="siteLogoutBtn"><i class="fa-solid fa-right-from-bracket"></i>Logout</button>
@@ -147,32 +236,64 @@
         await client.auth.signOut();
         dropdown.classList.remove('show');
         window.location.href = 'index.html';
-      }catch(err){
+      }catch(_err){
         alert('Could not log out.');
       }
     });
   }
 
+  function removeHelpTeamSection(){
+    if(currentPage() !== 'help.html') return;
+    const section = document.getElementById('teamSection');
+    if(section) section.remove();
+    const statusWrap = document.querySelector('.status-row');
+    if(statusWrap){
+      Array.from(statusWrap.querySelectorAll('.pill')).forEach(pill => {
+        if(pill.textContent.toLowerCase().includes('team directory')) pill.remove();
+      });
+    }
+  }
+
+  function showIdleNoticeIfNeeded(){
+    if(sessionStorage.getItem(LOGOUT_NOTICE_KEY) === 'true'){
+      sessionStorage.removeItem(LOGOUT_NOTICE_KEY);
+      setTimeout(() => {
+        alert('You were logged out after 30 minutes of inactivity.');
+      }, 100);
+    }
+  }
+
   function init(){
     ensureGlobalStyles();
     ensureFooterFlex();
-    if(shouldSkipInjection()) return;
+    standardizeNav();
+    removeHelpTeamSection();
+    showIdleNoticeIfNeeded();
 
     ensureSupabase(async function(){
       try{
         const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-        const { data } = await client.auth.getSession();
-        window.pixnestAuthUser = data?.session?.user || null;
-        window.pixnestPromptAuthRequired = function(actionText){
-          const action = String(actionText || 'continue').trim();
-          const next = encodeURIComponent(window.location.href);
-          const goLogin = window.confirm(`Please log in or sign up to ${action}.\n\nPress OK for Login or Cancel for Sign Up.`);
-          window.location.href = goLogin ? `login.html?next=${next}` : `signup.html?next=${next}`;
+        setupIdleLogout(client);
+
+        const updateUi = async (sessionUser) => {
+          window.pixnestAuthUser = sessionUser || null;
+          window.pixnestPromptAuthRequired = function(actionText){
+            const action = String(actionText || 'continue').trim();
+            const next = encodeURIComponent(window.location.href);
+            const goLogin = window.confirm(`Please log in or sign up to ${action}.\n\nPress OK for Login or Cancel for Sign Up.`);
+            window.location.href = goLogin ? `login.html?next=${next}` : `signup.html?next=${next}`;
+          };
+          const isPremium = await getPremiumState(sessionUser, client);
+          window.pixnestUserIsPremium = isPremium;
+          standardizeFooter(isPremium);
+          buildAuthUI(sessionUser, client);
         };
-        buildAuthUI(data?.session?.user || null, client);
-        client.auth.onAuthStateChange((_event, session) => {
-          window.pixnestAuthUser = session?.user || null;
-          buildAuthUI(session?.user || null, client);
+
+        const { data } = await client.auth.getSession();
+        await updateUi(data?.session?.user || null);
+
+        client.auth.onAuthStateChange(async (_event, session) => {
+          await updateUi(session?.user || null);
         });
       }catch(err){
         console.error('site-auth init failed', err);
