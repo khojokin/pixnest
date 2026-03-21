@@ -1827,6 +1827,21 @@ const LOCKED_SVG =
       }, 2200);
     }
 
+    function ensureSignedInForAction(actionText = "continue"){
+      if(getActiveUser()) return true;
+      showNotice(`Please log in or sign up to ${actionText}.`);
+      setTimeout(() => {
+        if(typeof window.pixnestPromptAuthRequired === "function"){
+          window.pixnestPromptAuthRequired(actionText);
+        }else{
+          const next = encodeURIComponent(window.location.href);
+          const goLogin = window.confirm(`Please log in or sign up to ${actionText}.\n\nPress OK for Login or Cancel for Sign Up.`);
+          window.location.href = goLogin ? `login.html?next=${next}` : `signup.html?next=${next}`;
+        }
+      }, 180);
+      return false;
+    }
+
     function escapeHtml(value = ""){
       return String(value)
         .replace(/&/g, "&amp;")
@@ -2190,6 +2205,7 @@ function getPhotoTags(photo){
     }
 
     function toggleReaction(photoId, reactionType){
+      if(!ensureSignedInForAction(reactionType === "like" ? "like photos" : "add photos to favourites")) return;
       const key = reactionType === "like" ? "liked" : "favourited";
       const current = {
         liked: !!getPhotoReactionState(photoId).liked,
@@ -2827,6 +2843,15 @@ async function handleDownloadButtonClick(button){
         `);
       }
 
+      if(profile.verified){
+        parts.push(`
+          <span class="member-badge verified">
+            <i class="fa-solid fa-check"></i>
+            Verified
+          </span>
+        `);
+      }
+
       profileBadges.innerHTML = parts.join("");
     }
 
@@ -2873,14 +2898,16 @@ async function handleDownloadButtonClick(button){
     }
 
     function buildProfileStats(profile){
+      const signedIn = !!getActiveUser();
+      const showSocialCounts = profile.viewingOwn || signedIn;
       profileStats.innerHTML = `
-        <div class="stat-card">
-          <strong>${escapeHtml(compactNumber(profile.following))}</strong>
+        <div class="stat-card ${showSocialCounts ? '' : 'needs-auth'}" data-auth-action="view who creators follow">
+          <strong>${escapeHtml(showSocialCounts ? compactNumber(profile.following) : 'Login')}</strong>
           <span>Following</span>
         </div>
 
-        <div class="stat-card">
-          <strong>${escapeHtml(compactNumber(profile.followers))}</strong>
+        <div class="stat-card ${showSocialCounts ? '' : 'needs-auth'}" data-auth-action="view creator followers">
+          <strong>${escapeHtml(showSocialCounts ? compactNumber(profile.followers) : 'Login')}</strong>
           <span>Followers</span>
         </div>
 
@@ -2889,6 +2916,11 @@ async function handleDownloadButtonClick(button){
           <span>Posts</span>
         </div>
       `;
+
+      profileStats.querySelectorAll('.stat-card.needs-auth').forEach(card => {
+        card.style.cursor = 'pointer';
+        card.addEventListener('click', () => ensureSignedInForAction(card.getAttribute('data-auth-action') || 'view creator details'));
+      });
     }
 
     function renderProfileActions(profile){
@@ -2932,6 +2964,7 @@ async function handleDownloadButtonClick(button){
 
         if(followProfileBtn && firstPhoto){
           followProfileBtn.addEventListener("click", () => {
+            if(!ensureSignedInForAction("follow creators")) return;
             updateCreatorPref(firstPhoto, { followed: !followed });
             targetProfile.followers += followed ? -1 : 1;
             renderProfilePage(targetProfile);

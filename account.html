@@ -2124,6 +2124,15 @@
         `);
       }
 
+      if(isVerified(user)){
+        items.push(`
+          <span class="status-badge verified">
+            <i class="fa-solid fa-circle-check"></i>
+            Verified
+          </span>
+        `);
+      }
+
       if(isCreatorApproved(user) || isProfessionalApproved(user)){
         items.push(`
           <span class="status-badge approved">
@@ -2916,34 +2925,6 @@
         .upsert(payload, { onConflict:"user_id" });
 
       if(error) throw error;
-    }
-
-    async function syncProfileTables(payload){
-      if(!currentUser) return;
-
-      const profilePayload = {
-        id: currentUser.id,
-        email: currentUser.email || '',
-        full_name: payload.full_name || getDisplayName(currentUser),
-        display_name: payload.full_name || getDisplayName(currentUser),
-        bio: payload.bio || '',
-        avatar_url: payload.avatar_url || '',
-        cover_photo_url: payload.cover_url || '',
-        followers_count: Number(payload.followers_count || 0),
-        updated_at: new Date().toISOString()
-      };
-
-      const creatorPayload = {
-        user_id: currentUser.id,
-        email: currentUser.email || '',
-        display_name: payload.full_name || getDisplayName(currentUser),
-        avatar_url: payload.avatar_url || '',
-        followers_count: Number(payload.followers_count || 0),
-        updated_at: new Date().toISOString()
-      };
-
-      await supabaseClient.from('profiles').upsert(profilePayload);
-      await supabaseClient.from('creator_profiles').upsert(creatorPayload);
     }
 
     async function saveSettings(e){

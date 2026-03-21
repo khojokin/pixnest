@@ -1787,6 +1787,21 @@ const LOCKED_SVG =
       }, 2200);
     }
 
+    function ensureSignedInForAction(actionText = "continue"){
+      if(getActiveUser()) return true;
+      showNotice(`Please log in or sign up to ${actionText}.`);
+      setTimeout(() => {
+        if(typeof window.pixnestPromptAuthRequired === "function"){
+          window.pixnestPromptAuthRequired(actionText);
+        }else{
+          const next = encodeURIComponent(window.location.href);
+          const goLogin = window.confirm(`Please log in or sign up to ${actionText}.\n\nPress OK for Login or Cancel for Sign Up.`);
+          window.location.href = goLogin ? `login.html?next=${next}` : `signup.html?next=${next}`;
+        }
+      }, 180);
+      return false;
+    }
+
     function escapeHtml(value = ""){
       return String(value)
         .replace(/&/g, "&amp;")
@@ -2062,6 +2077,7 @@ function getPhotoTags(photo){
     }
 
     function toggleReaction(photoId, reactionType){
+      if(!ensureSignedInForAction(reactionType === "like" ? "like photos" : "add photos to favourites")) return;
       const key = reactionType === "like" ? "liked" : "favourited";
       const current = {
         liked: !!getPhotoReactionState(photoId).liked,
@@ -2356,6 +2372,7 @@ function handleLockedPremiumPhoto(){
     }
 
     function buildCreatorSocialProof(photo){
+      const signedIn = !!getActiveUser();
       const photoCount = getCreatorPhotos(photo).length;
       const followers = getCreatorMetricValue(photo, [
         "creator_followers",
@@ -2373,12 +2390,12 @@ function handleLockedPremiumPhoto(){
       ]);
 
       return `
-        <div class="creator-count">
-          <strong>${escapeHtml(compactNumber(following))}</strong>
+        <div class="creator-count ${signedIn ? '' : 'needs-auth'}" data-auth-action="view who creators follow">
+          <strong>${signedIn ? escapeHtml(compactNumber(following)) : 'Login'}</strong>
           <span>Following</span>
         </div>
-        <div class="creator-count">
-          <strong>${escapeHtml(compactNumber(followers))}</strong>
+        <div class="creator-count ${signedIn ? '' : 'needs-auth'}" data-auth-action="view creator followers">
+          <strong>${signedIn ? escapeHtml(compactNumber(followers)) : 'Login'}</strong>
           <span>Followers</span>
         </div>
         <div class="creator-count">
@@ -2386,6 +2403,13 @@ function handleLockedPremiumPhoto(){
           <span>Posts</span>
         </div>
       `;
+    }
+
+    function bindLockedCreatorCounts(scope){
+      scope.querySelectorAll('.creator-count.needs-auth').forEach(item => {
+        item.style.cursor = 'pointer';
+        item.onclick = () => ensureSignedInForAction(item.getAttribute('data-auth-action') || 'view creator details');
+      });
     }
 
     function getPostDateValue(photo){
@@ -2925,6 +2949,7 @@ async function handleDownloadButtonClick(button){
         : '<i class="fa-solid fa-user-plus"></i> Follow';
 
       followCreatorBtn.onclick = () => {
+        if(!ensureSignedInForAction("follow creators")) return;
         updateCreatorPref(photo, { followed: !followed });
         showNotice(followed ? "Creator unfollowed." : "Creator followed.");
         refreshPhotoDisplays();
@@ -2951,6 +2976,7 @@ async function handleDownloadButtonClick(button){
 
       if(favouriteCreatorBtn){
         favouriteCreatorBtn.addEventListener("click", () => {
+          if(!ensureSignedInForAction("add creators to favourites")) return;
           updateCreatorPref(photo, { favourited: !favourited });
           showNotice(favourited ? "Creator removed from favourites." : "Creator added to favourites.");
           refreshPhotoDisplays();
@@ -2986,6 +3012,7 @@ async function handleDownloadButtonClick(button){
       creatorCover.style.backgroundImage = `url("${getCreatorCoverImage(photo).replace(/"/g, '\\"')}")`;
       lightboxCreatorBadges.innerHTML = buildCreatorBadges(photo);
       creatorSocialProof.innerHTML = buildCreatorSocialProof(photo);
+      bindLockedCreatorCounts(creatorSocialProof);
 
       openCreatorProfileBtn.href = getCreatorProfileHref(photo);
 

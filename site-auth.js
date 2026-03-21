@@ -16,18 +16,8 @@
     return page === 'account.html' || page === 'profile.html' || page === 'professional-dashboard.html' || page === 'boss-admin.html';
   }
 
-  function pageHasOwnAuthUI(){
-    return Boolean(
-      document.getElementById('navAuth') ||
-      document.getElementById('accountMenuWrap') ||
-      document.getElementById('authNavLinks') ||
-      document.getElementById('topMenuBtn') ||
-      document.getElementById('authMenuBtn')
-    );
-  }
-
   function shouldSkipInjection(){
-    return isAuthPage() || isCustomAccountPage() || pageHasOwnAuthUI();
+    return isAuthPage() || isCustomAccountPage();
   }
 
   function ensureGlobalStyles(){
@@ -84,57 +74,6 @@
 
   function getDisplayName(user){
     return String(user?.user_metadata?.full_name || user?.user_metadata?.name || user?.email?.split('@')[0] || 'Account').trim();
-  }
-
-  const IDLE_LIMIT_MS = 30 * 60 * 1000;
-  const ACTIVITY_KEY = 'pixnest_last_activity_v1';
-  let inactivityInterval = null;
-  let activityBound = false;
-  let idleSigningOut = false;
-  let lastActivityWrite = 0;
-
-  function markActivity(){
-    const now = Date.now();
-    if(now - lastActivityWrite < 5000) return;
-    lastActivityWrite = now;
-    try{
-      localStorage.setItem(ACTIVITY_KEY, String(now));
-    }catch(err){}
-  }
-
-  function bindActivityListeners(){
-    if(activityBound) return;
-    activityBound = true;
-    ['click','keydown','mousemove','scroll','touchstart'].forEach(eventName => {
-      window.addEventListener(eventName, markActivity, { passive:true });
-    });
-  }
-
-  function stopInactivityWatch(){
-    if(inactivityInterval){
-      clearInterval(inactivityInterval);
-      inactivityInterval = null;
-    }
-  }
-
-  function startInactivityWatch(user, client){
-    stopInactivityWatch();
-    if(!user) return;
-    bindActivityListeners();
-    markActivity();
-    inactivityInterval = setInterval(async () => {
-      if(idleSigningOut) return;
-      let last = Date.now();
-      try{
-        const raw = localStorage.getItem(ACTIVITY_KEY);
-        if(raw && !Number.isNaN(Number(raw))) last = Number(raw);
-      }catch(err){}
-      if(Date.now() - last < IDLE_LIMIT_MS) return;
-      idleSigningOut = true;
-      try{ await client.auth.signOut(); } catch(err){}
-      if(!isAuthPage()) window.location.href = 'login.html?reason=inactive';
-      idleSigningOut = false;
-    }, 60000);
   }
 
   function findNavLinks(){
@@ -217,16 +156,23 @@
   function init(){
     ensureGlobalStyles();
     ensureFooterFlex();
+    if(shouldSkipInjection()) return;
 
     ensureSupabase(async function(){
       try{
         const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         const { data } = await client.auth.getSession();
-        if(!shouldSkipInjection()) buildAuthUI(data?.session?.user || null, client);
-        startInactivityWatch(data?.session?.user || null, client);
+        window.pixnestAuthUser = data?.session?.user || null;
+        window.pixnestPromptAuthRequired = function(actionText){
+          const action = String(actionText || 'continue').trim();
+          const next = encodeURIComponent(window.location.href);
+          const goLogin = window.confirm(`Please log in or sign up to ${action}.\n\nPress OK for Login or Cancel for Sign Up.`);
+          window.location.href = goLogin ? `login.html?next=${next}` : `signup.html?next=${next}`;
+        };
+        buildAuthUI(data?.session?.user || null, client);
         client.auth.onAuthStateChange((_event, session) => {
-          if(!shouldSkipInjection()) buildAuthUI(session?.user || null, client);
-          startInactivityWatch(session?.user || null, client);
+          window.pixnestAuthUser = session?.user || null;
+          buildAuthUI(session?.user || null, client);
         });
       }catch(err){
         console.error('site-auth init failed', err);

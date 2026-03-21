@@ -1194,21 +1194,36 @@
       authNavLinks.innerHTML = "";
 
       if(currentUser){
-        authNavLinks.innerHTML = `
-          <div class="site-account-menu-wrap">
-            <button class="site-account-menu-toggle" id="siteInlineMenuToggle" aria-label="Open account menu">
-              <i class="fa-solid fa-bars"></i>
-            </button>
-            <div class="site-account-dropdown" id="siteInlineMenuDropdown">
-              <a href="account.html"><i class="fa-solid fa-user"></i>My Account</a>
-              <a href="profile.html"><i class="fa-solid fa-address-card"></i>Profile</a>
-              <a href="upload.html"><i class="fa-solid fa-upload"></i>Upload</a>
-              <a href="premium.html"><i class="fa-solid fa-crown"></i>Premium</a>
-              <a href="contact.html"><i class="fa-solid fa-envelope"></i>Contact</a>
-              <button type="button" class="site-danger" id="logoutBtnNav"><i class="fa-solid fa-right-from-bracket"></i>Logout</button>
-            </div>
-          </div>
-        `;
+        const displayName = getDisplayName(currentUser);
+        const items = [];
+
+        if(isFounder(currentUser)){
+          items.push(`<span class="nav-chip founder"><i class="fa-solid fa-crown"></i>Founder</span>`);
+        }
+
+        if(isVerified(currentUser)){
+          items.push(`<span class="nav-chip verified"><i class="fa-solid fa-circle-check"></i>Verified</span>`);
+        }
+
+        if(isPremiumMember(currentUser)){
+          items.push(`<span class="nav-chip premium"><i class="fa-solid fa-star"></i>Premium</span>`);
+        }
+
+        items.push(`
+          <a href="account.html" class="nav-auth-btn secondary">
+            <i class="fa-solid fa-user"></i>
+            ${displayName}
+          </a>
+        `);
+
+        items.push(`
+          <button type="button" class="nav-auth-btn secondary" id="logoutBtnNav">
+            <i class="fa-solid fa-right-from-bracket"></i>
+            Logout
+          </button>
+        `);
+
+        authNavLinks.innerHTML = items.join("");
 
         heroActions.innerHTML = `
           <a href="account.html" class="btn btn-primary">
@@ -1233,19 +1248,6 @@
         `;
 
         const logoutBtnNav = document.getElementById("logoutBtnNav");
-        const siteInlineMenuToggle = document.getElementById("siteInlineMenuToggle");
-        const siteInlineMenuDropdown = document.getElementById("siteInlineMenuDropdown");
-        if(siteInlineMenuToggle && siteInlineMenuDropdown){
-          siteInlineMenuToggle.addEventListener("click", (e) => {
-            e.stopPropagation();
-            siteInlineMenuDropdown.classList.toggle("show");
-          });
-          document.addEventListener("click", (e) => {
-            if(!siteInlineMenuDropdown.contains(e.target) && !siteInlineMenuToggle.contains(e.target)){
-              siteInlineMenuDropdown.classList.remove("show");
-            }
-          });
-        }
         if(logoutBtnNav){
           logoutBtnNav.addEventListener("click", handleLogout);
         }

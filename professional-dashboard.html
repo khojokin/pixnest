@@ -1038,6 +1038,127 @@
     color:var(--accent);
   }
 
+
+  .payout-tools-layout{
+    margin-top:20px;
+  }
+
+  .form-stack{
+    display:grid;
+    gap:14px;
+  }
+
+  .field-two-grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:14px;
+  }
+
+  .field-group{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+  }
+
+  .field-group label{
+    color:#e2e8f0;
+    font-size:13px;
+    font-weight:700;
+  }
+
+  .field-group input,
+  .field-group select,
+  .field-group textarea{
+    width:100%;
+    min-height:48px;
+    background:#0f172a;
+    border:1px solid rgba(255,255,255,0.08);
+    border-radius:14px;
+    color:#fff;
+    font-size:15px;
+    padding:12px 14px;
+    outline:none;
+  }
+
+  .field-group textarea{
+    min-height:120px;
+    resize:vertical;
+  }
+
+  .field-group input:focus,
+  .field-group select:focus,
+  .field-group textarea:focus{
+    border-color:rgba(250,204,21,.55);
+    box-shadow:0 0 0 3px rgba(250,204,21,.08);
+  }
+
+  .status-note{
+    display:flex;
+    align-items:flex-start;
+    gap:12px;
+    padding:14px;
+    border-radius:18px;
+    background:#0f172a;
+    border:1px solid var(--line);
+    margin-bottom:14px;
+  }
+
+  .status-note i{
+    color:var(--accent);
+    margin-top:3px;
+    flex-shrink:0;
+  }
+
+  .status-note strong{
+    display:block;
+    color:#fff;
+    margin-bottom:4px;
+  }
+
+  .status-note span{
+    color:#cbd5e1;
+    font-size:14px;
+  }
+
+  .status-chip-row{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    margin-bottom:14px;
+  }
+
+  .history-list{
+    display:grid;
+    gap:10px;
+  }
+
+  .history-item{
+    padding:14px;
+    border-radius:18px;
+    background:#0f172a;
+    border:1px solid var(--line);
+  }
+
+  .history-item strong{
+    display:block;
+    color:#fff;
+    font-size:15px;
+    margin-bottom:4px;
+  }
+
+  .history-item small{
+    color:#94a3b8;
+    font-size:12px;
+    display:block;
+    margin-bottom:6px;
+  }
+
+  .history-item p{
+    color:#cbd5e1;
+    font-size:13px;
+    margin:0 0 8px;
+  }
+
   @media(max-width:1100px){
     .toolbar{
       grid-template-columns:repeat(2,1fr);
@@ -1048,7 +1169,8 @@
     }
 
     .dashboard-layout,
-    .bottom-layout{
+    .bottom-layout,
+    .payout-tools-layout{
       grid-template-columns:1fr;
     }
 
@@ -1114,7 +1236,8 @@
     }
 
     .toolbar,
-    .stats-grid{
+    .stats-grid,
+    .field-two-grid{
       grid-template-columns:1fr;
     }
 
@@ -1296,7 +1419,7 @@
     <section class="gate hidden" id="approvalGate">
       <h2>Professional dashboard is not unlocked yet</h2>
       <p>
-        This dashboard becomes fully available when your creator access is approved from admin or when your creator profile has professional dashboard approval. Until then, other users still cannot see your dashboard.
+        This dashboard becomes available when admin approves your creator access or when you reach the creator requirements of 10k followers and 100k total views. Bank withdrawals also need saved bank details and an approved tax form.
       </p>
       <div class="gate-actions">
         <a href="help.html" class="btn primary">
@@ -1436,6 +1559,173 @@
           </div>
         </div>
       </div>
+
+      <div class="bottom-layout payout-tools-layout">
+        <div class="panel">
+          <div class="panel-head">
+            <div>
+              <h3>Bank Withdrawals</h3>
+              <p>Creators who meet requirements can save bank details and request withdrawals.</p>
+            </div>
+          </div>
+
+          <div class="status-chip-row">
+            <span class="badge-pill approved" id="payoutEligibilityPill"><i class="fa-solid fa-wallet"></i> Checking access</span>
+            <span class="badge-pill" id="bankProfilePill"><i class="fa-solid fa-building-columns"></i> Bank profile not saved</span>
+            <span class="badge-pill" id="taxFormPill"><i class="fa-solid fa-file-invoice"></i> Tax form required</span>
+          </div>
+
+          <div class="status-note">
+            <i class="fa-solid fa-circle-info"></i>
+            <div>
+              <strong id="payoutStatusHeading">Withdrawal access is being checked</strong>
+              <span id="payoutStatusText">You need an approved creator dashboard or at least 10k followers and 100k total views. An approved tax form is required before admin can process payouts.</span>
+            </div>
+          </div>
+
+          <form id="payoutProfileForm" class="form-stack">
+            <div class="field-two-grid">
+              <div class="field-group">
+                <label for="accountName">Account Name</label>
+                <input id="accountName" type="text" placeholder="Account holder name">
+              </div>
+              <div class="field-group">
+                <label for="bankName">Bank Name</label>
+                <input id="bankName" type="text" placeholder="Your bank name">
+              </div>
+              <div class="field-group">
+                <label for="accountNumber">Account Number</label>
+                <input id="accountNumber" type="text" placeholder="12345678">
+              </div>
+              <div class="field-group">
+                <label for="sortCode">Sort Code</label>
+                <input id="sortCode" type="text" placeholder="00-00-00">
+              </div>
+              <div class="field-group">
+                <label for="iban">IBAN</label>
+                <input id="iban" type="text" placeholder="Optional IBAN">
+              </div>
+              <div class="field-group">
+                <label for="swiftCode">SWIFT / BIC</label>
+                <input id="swiftCode" type="text" placeholder="Optional SWIFT code">
+              </div>
+              <div class="field-group">
+                <label for="bankCountry">Country</label>
+                <input id="bankCountry" type="text" placeholder="United Kingdom">
+              </div>
+              <div class="field-group">
+                <label for="bankCurrency">Currency</label>
+                <select id="bankCurrency">
+                  <option value="GBP">GBP</option>
+                  <option value="USD">USD</option>
+                  <option value="EUR">EUR</option>
+                </select>
+              </div>
+              <div class="field-group" style="grid-column:1 / -1;">
+                <label for="payoutEmail">Payout Email</label>
+                <input id="payoutEmail" type="email" placeholder="Where PixNest can contact you about payouts">
+              </div>
+            </div>
+            <div class="action-row">
+              <button type="submit" class="btn primary" id="savePayoutProfileBtn">
+                <i class="fa-solid fa-floppy-disk"></i>
+                Save Bank Details
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <div>
+              <h3>Tax Form & Withdrawal Requests</h3>
+              <p>Submit your tax form first, then request a withdrawal for admin approval.</p>
+            </div>
+          </div>
+
+          <form id="taxFormForm" class="form-stack" style="margin-bottom:18px;">
+            <div class="field-two-grid">
+              <div class="field-group">
+                <label for="taxLegalName">Legal Name</label>
+                <input id="taxLegalName" type="text" placeholder="Full legal name">
+              </div>
+              <div class="field-group">
+                <label for="taxBusinessName">Business Name</label>
+                <input id="taxBusinessName" type="text" placeholder="Optional business name">
+              </div>
+              <div class="field-group">
+                <label for="taxFormType">Tax Form Type</label>
+                <select id="taxFormType">
+                  <option value="individual">Individual</option>
+                  <option value="sole_trader">Sole Trader</option>
+                  <option value="business">Business</option>
+                  <option value="w8ben">W-8BEN</option>
+                  <option value="w9">W-9</option>
+                  <option value="vat">VAT</option>
+                </select>
+              </div>
+              <div class="field-group">
+                <label for="taxCountry">Tax Country</label>
+                <input id="taxCountry" type="text" placeholder="Country of tax residence">
+              </div>
+              <div class="field-group">
+                <label for="taxIdentifier">Tax ID / National Insurance / VAT</label>
+                <input id="taxIdentifier" type="text" placeholder="Tax identifier">
+              </div>
+              <div class="field-group">
+                <label for="taxDocumentUrl">Document URL</label>
+                <input id="taxDocumentUrl" type="text" placeholder="Optional uploaded document URL">
+              </div>
+              <div class="field-group" style="grid-column:1 / -1;">
+                <label for="taxAddress">Address</label>
+                <textarea id="taxAddress" placeholder="Address for the tax form"></textarea>
+              </div>
+              <div class="field-group" style="grid-column:1 / -1;">
+                <label for="taxNotes">Notes</label>
+                <textarea id="taxNotes" placeholder="Anything admin should know about this tax form"></textarea>
+              </div>
+            </div>
+            <div class="action-row">
+              <button type="submit" class="btn primary" id="submitTaxFormBtn">
+                <i class="fa-solid fa-file-circle-check"></i>
+                Submit Tax Form
+              </button>
+            </div>
+          </form>
+
+          <form id="withdrawForm" class="form-stack" style="margin-bottom:18px;">
+            <div class="field-two-grid">
+              <div class="field-group">
+                <label for="withdrawAmount">Withdrawal Amount</label>
+                <input id="withdrawAmount" type="number" min="1" step="0.01" placeholder="50.00">
+              </div>
+              <div class="field-group">
+                <label for="withdrawCurrency">Currency</label>
+                <select id="withdrawCurrency">
+                  <option value="GBP">GBP</option>
+                  <option value="USD">USD</option>
+                  <option value="EUR">EUR</option>
+                </select>
+              </div>
+              <div class="field-group" style="grid-column:1 / -1;">
+                <label for="withdrawNotes">Withdrawal Notes</label>
+                <textarea id="withdrawNotes" placeholder="Optional note for admin about this withdrawal"></textarea>
+              </div>
+            </div>
+            <div class="action-row">
+              <button type="submit" class="btn primary" id="requestWithdrawBtn">
+                <i class="fa-solid fa-money-bill-transfer"></i>
+                Submit Withdrawal Request
+              </button>
+            </div>
+          </form>
+
+          <div class="sub-panel">
+            <h4>Withdrawal History</h4>
+            <div class="history-list" id="withdrawalHistoryList"></div>
+          </div>
+        </div>
+      </div>
     </section>
   </div>
 </main>
@@ -1506,6 +1796,39 @@
   const payoutList = document.getElementById("payoutList");
   const giftList = document.getElementById("giftList");
 
+  const payoutEligibilityPill = document.getElementById("payoutEligibilityPill");
+  const bankProfilePill = document.getElementById("bankProfilePill");
+  const taxFormPill = document.getElementById("taxFormPill");
+  const payoutStatusHeading = document.getElementById("payoutStatusHeading");
+  const payoutStatusText = document.getElementById("payoutStatusText");
+  const payoutProfileForm = document.getElementById("payoutProfileForm");
+  const savePayoutProfileBtn = document.getElementById("savePayoutProfileBtn");
+  const accountName = document.getElementById("accountName");
+  const bankName = document.getElementById("bankName");
+  const accountNumber = document.getElementById("accountNumber");
+  const sortCode = document.getElementById("sortCode");
+  const iban = document.getElementById("iban");
+  const swiftCode = document.getElementById("swiftCode");
+  const bankCountry = document.getElementById("bankCountry");
+  const bankCurrency = document.getElementById("bankCurrency");
+  const payoutEmail = document.getElementById("payoutEmail");
+  const taxFormForm = document.getElementById("taxFormForm");
+  const submitTaxFormBtn = document.getElementById("submitTaxFormBtn");
+  const taxLegalName = document.getElementById("taxLegalName");
+  const taxBusinessName = document.getElementById("taxBusinessName");
+  const taxFormType = document.getElementById("taxFormType");
+  const taxCountry = document.getElementById("taxCountry");
+  const taxIdentifier = document.getElementById("taxIdentifier");
+  const taxDocumentUrl = document.getElementById("taxDocumentUrl");
+  const taxAddress = document.getElementById("taxAddress");
+  const taxNotes = document.getElementById("taxNotes");
+  const withdrawForm = document.getElementById("withdrawForm");
+  const requestWithdrawBtn = document.getElementById("requestWithdrawBtn");
+  const withdrawAmount = document.getElementById("withdrawAmount");
+  const withdrawCurrency = document.getElementById("withdrawCurrency");
+  const withdrawNotes = document.getElementById("withdrawNotes");
+  const withdrawalHistoryList = document.getElementById("withdrawalHistoryList");
+
   const footerText = document.getElementById("footerText");
   const noticeBar = document.getElementById("noticeBar");
 
@@ -1519,6 +1842,9 @@
   let creatorPayouts = [];
   let creatorGifts = [];
   let creatorAnalytics = [];
+  let creatorPayoutProfile = null;
+  let creatorTaxForms = [];
+  let latestTaxForm = null;
   let dashboardAllowed = false;
 
   if(menuToggle && navLinks){
@@ -2007,14 +2333,18 @@
       partnerAds,
       payouts,
       gifts,
-      analytics
+      analytics,
+      payoutProfiles,
+      taxForms
     ] = await Promise.all([
       safeSelect("photos", query => query.order("created_at", { ascending:false })),
       safeSelect("creator_followers", query => query.eq("creator_user_id", userId).order("created_at", { ascending:false })),
       safeSelect("creator_partner_ads", query => query.eq("creator_user_id", userId).order("created_at", { ascending:false })),
       safeSelect("creator_payout_requests", query => query.eq("user_id", userId).order("created_at", { ascending:false })),
       safeSelect("creator_gifts", query => query.eq("creator_user_id", userId).order("created_at", { ascending:false })),
-      safeSelect("creator_analytics_daily", query => query.eq("creator_user_id", userId).order("date", { ascending:true }))
+      safeSelect("creator_analytics_daily", query => query.eq("creator_user_id", userId).order("date", { ascending:true })),
+      safeSelect("creator_payout_profiles", query => query.eq("user_id", userId).order("updated_at", { ascending:false }).limit(1)),
+      safeSelect("creator_tax_forms", query => query.eq("user_id", userId).order("created_at", { ascending:false }).limit(20))
     ]);
 
     allPhotos = photos;
@@ -2024,16 +2354,26 @@
     creatorPayouts = payouts;
     creatorGifts = gifts;
     creatorAnalytics = analytics;
+    creatorPayoutProfile = Array.isArray(payoutProfiles) && payoutProfiles.length ? payoutProfiles[0] : null;
+    creatorTaxForms = Array.isArray(taxForms) ? taxForms : [];
+    latestTaxForm = creatorTaxForms.length ? creatorTaxForms[0] : null;
+  }
+
+  function getEligibilitySnapshot(){
+    const followers = Number(currentCreatorProfile?.followers_count || creatorFollowers.length || 0);
+    const countedViews = safeSum(myPhotos, row => getPhotoMetrics(row).views);
+    const totalViews = Number(currentCreatorProfile?.total_views || countedViews || 0);
+    const approved = Boolean(currentCreatorProfile?.professional_dashboard_approved || currentCreatorProfile?.creator_approved);
+    const eligible = approved || (followers >= 10000 && totalViews >= 100000);
+
+    return { followers, totalViews, approved, eligible };
   }
 
   function computeDashboardAccess(){
     const user = getSessionUser();
     if(!user) return false;
 
-    return Boolean(
-      currentCreatorProfile?.professional_dashboard_approved ||
-      currentCreatorProfile?.creator_approved
-    );
+    return getEligibilitySnapshot().eligible;
   }
 
   function updateHero(){
@@ -2459,8 +2799,264 @@
     }
   }
 
-  function renderDashboard(){
-    const summary = getSummaryStats();
+
+  function hasSavedBankProfile(){
+    if(!creatorPayoutProfile) return false;
+
+    const hasUkBank = Boolean(creatorPayoutProfile.account_name && creatorPayoutProfile.bank_name && creatorPayoutProfile.account_number);
+    const hasIbanRoute = Boolean(creatorPayoutProfile.account_name && creatorPayoutProfile.bank_name && creatorPayoutProfile.iban);
+    return hasUkBank || hasIbanRoute;
+  }
+
+  function getTaxFormStatus(){
+    return normalize(latestTaxForm?.status || "missing");
+  }
+
+  function isWithdrawalUnlocked(){
+    return getEligibilitySnapshot().eligible && hasSavedBankProfile() && getTaxFormStatus() === "approved";
+  }
+
+  function renderWithdrawalHistory(){
+    if(!creatorPayouts.length){
+      withdrawalHistoryList.innerHTML = `<div class="empty-box">No withdrawal requests yet.</div>`;
+      return;
+    }
+
+    withdrawalHistoryList.innerHTML = creatorPayouts.slice(0, 8).map(row => {
+      const amount = getNumberValue(row, ["amount","payout_amount","cash_value"]);
+      const status = normalize(row.status || "pending");
+      const statusClass = status === "paid" ? "status-paid" : status === "pending" || status === "reviewing" ? "status-pending" : "status-open";
+      return `
+        <div class="history-item">
+          <strong>${escapeHtml(formatCurrency(amount))} • ${escapeHtml((row.currency || 'GBP').toString())}</strong>
+          <small>${escapeHtml(formatDateTime(getPostDateValue(row)))} • ${escapeHtml(row.payout_method || row.source || 'bank_transfer')}</small>
+          <p>${escapeHtml(row.notes || row.source || 'Withdrawal request')}</p>
+          <span class="pill ${statusClass}">${escapeHtml((row.status || 'pending').toString())}</span>
+        </div>
+      `;
+    }).join("");
+  }
+
+  function renderPayoutTools(){
+    const eligibility = getEligibilitySnapshot();
+    const bankSaved = hasSavedBankProfile();
+    const taxStatus = getTaxFormStatus();
+    const taxApproved = taxStatus === "approved";
+    const withdrawUnlocked = isWithdrawalUnlocked();
+
+    payoutEligibilityPill.className = `badge-pill ${eligibility.eligible ? "approved" : ""}`;
+    payoutEligibilityPill.innerHTML = eligibility.eligible
+      ? '<i class="fa-solid fa-circle-check"></i> Withdrawal eligibility unlocked'
+      : '<i class="fa-solid fa-lock"></i> Withdrawal eligibility locked';
+
+    bankProfilePill.className = `badge-pill ${bankSaved ? "approved" : ""}`;
+    bankProfilePill.innerHTML = bankSaved
+      ? '<i class="fa-solid fa-building-columns"></i> Bank profile saved'
+      : '<i class="fa-solid fa-building-columns"></i> Bank profile not saved';
+
+    const taxLabels = {
+      approved: 'Tax form approved',
+      pending: 'Tax form pending review',
+      reviewing: 'Tax form under review',
+      rejected: 'Tax form rejected',
+      missing: 'Tax form required'
+    };
+    taxFormPill.className = `badge-pill ${taxApproved ? "approved" : (taxStatus === "pending" || taxStatus === "reviewing") ? "verified" : ""}`;
+    taxFormPill.innerHTML = `<i class="fa-solid fa-file-invoice"></i> ${taxLabels[taxStatus] || 'Tax form required'}`;
+
+    if(withdrawUnlocked){
+      payoutStatusHeading.textContent = "You can request a bank withdrawal";
+      payoutStatusText.textContent = "Your creator access is unlocked, your bank profile is saved, and your latest tax form is approved by admin.";
+    }else if(!eligibility.eligible){
+      payoutStatusHeading.textContent = "Eligibility requirements are not met yet";
+      payoutStatusText.textContent = "You need an approved creator dashboard or at least 10k followers and 100k total views before withdrawal tools unlock.";
+    }else if(!bankSaved){
+      payoutStatusHeading.textContent = "Save your bank profile first";
+      payoutStatusText.textContent = "Withdrawal requests stay locked until you save valid bank payout details for admin to review.";
+    }else if(!taxApproved){
+      payoutStatusHeading.textContent = "Submit and approve a tax form first";
+      payoutStatusText.textContent = taxStatus === "rejected"
+        ? "Your last tax form was rejected. Submit a corrected tax form before requesting a withdrawal."
+        : "Admin must approve your latest tax form before your withdrawal request can be submitted.";
+    }
+
+    savePayoutProfileBtn.disabled = !eligibility.eligible;
+    submitTaxFormBtn.disabled = !eligibility.eligible;
+    requestWithdrawBtn.disabled = !withdrawUnlocked;
+
+    if(creatorPayoutProfile){
+      accountName.value = creatorPayoutProfile.account_name || "";
+      bankName.value = creatorPayoutProfile.bank_name || "";
+      accountNumber.value = creatorPayoutProfile.account_number || "";
+      sortCode.value = creatorPayoutProfile.sort_code || "";
+      iban.value = creatorPayoutProfile.iban || "";
+      swiftCode.value = creatorPayoutProfile.swift_code || "";
+      bankCountry.value = creatorPayoutProfile.country || "";
+      bankCurrency.value = creatorPayoutProfile.currency || "GBP";
+      payoutEmail.value = creatorPayoutProfile.payout_email || getSessionUser()?.email || "";
+    }else if(!payoutEmail.value){
+      payoutEmail.value = getSessionUser()?.email || "";
+    }
+
+    if(latestTaxForm){
+      taxLegalName.value = latestTaxForm.legal_name || "";
+      taxBusinessName.value = latestTaxForm.business_name || "";
+      taxFormType.value = latestTaxForm.tax_form_type || "individual";
+      taxCountry.value = latestTaxForm.tax_country || "";
+      taxIdentifier.value = latestTaxForm.tax_identifier || "";
+      taxDocumentUrl.value = latestTaxForm.document_url || "";
+      taxAddress.value = [
+        latestTaxForm.address_line1,
+        latestTaxForm.address_line2,
+        latestTaxForm.city,
+        latestTaxForm.region,
+        latestTaxForm.postcode
+      ].filter(Boolean).join("\n");
+      taxNotes.value = latestTaxForm.notes || "";
+    }
+
+    renderWithdrawalHistory();
+  }
+
+  function splitAddressLines(value){
+    const lines = String(value || "").split(/\n+/).map(item => item.trim()).filter(Boolean);
+    return {
+      address_line1: lines[0] || "",
+      address_line2: lines[1] || "",
+      city: lines[2] || "",
+      region: lines[3] || "",
+      postcode: lines[4] || ""
+    };
+  }
+
+  async function savePayoutProfile(event){
+    event.preventDefault();
+
+    if(!getEligibilitySnapshot().eligible){
+      showNotice("Withdrawal tools unlock after creator approval or when you hit the creator requirements.");
+      return;
+    }
+
+    const user = getSessionUser();
+    if(!user) return;
+
+    const payload = {
+      user_id: user.id,
+      account_name: accountName.value.trim(),
+      bank_name: bankName.value.trim(),
+      account_number: accountNumber.value.trim(),
+      sort_code: sortCode.value.trim(),
+      iban: iban.value.trim(),
+      swift_code: swiftCode.value.trim(),
+      country: bankCountry.value.trim(),
+      currency: bankCurrency.value,
+      payout_email: payoutEmail.value.trim(),
+      is_payout_enabled: true,
+      updated_at: new Date().toISOString()
+    };
+
+    if(!payload.account_name || !payload.bank_name || !(payload.account_number || payload.iban)){
+      showNotice("Add account name, bank name, and either an account number or IBAN.");
+      return;
+    }
+
+    try{
+      const { error } = await supabaseClient.from("creator_payout_profiles").upsert(payload, { onConflict: "user_id" });
+      if(error) throw error;
+      await loadDashboard();
+      showNotice("Bank payout details saved.");
+    }catch(error){
+      console.error(error);
+      showNotice("Could not save bank payout details.");
+    }
+  }
+
+  async function submitTaxForm(event){
+    event.preventDefault();
+
+    if(!getEligibilitySnapshot().eligible){
+      showNotice("Tax form tools unlock after creator approval or when you hit the creator requirements.");
+      return;
+    }
+
+    const user = getSessionUser();
+    if(!user) return;
+
+    const legalName = taxLegalName.value.trim();
+    const taxCountryValue = taxCountry.value.trim();
+    const taxIdentifierValue = taxIdentifier.value.trim();
+
+    if(!legalName || !taxCountryValue || !taxIdentifierValue){
+      showNotice("Add legal name, tax country, and tax identifier before submitting.");
+      return;
+    }
+
+    const addressParts = splitAddressLines(taxAddress.value);
+
+    try{
+      const { error } = await supabaseClient.from("creator_tax_forms").insert([{
+        user_id: user.id,
+        legal_name: legalName,
+        business_name: taxBusinessName.value.trim(),
+        tax_form_type: taxFormType.value,
+        tax_country: taxCountryValue,
+        tax_identifier: taxIdentifierValue,
+        document_url: taxDocumentUrl.value.trim(),
+        address_line1: addressParts.address_line1,
+        address_line2: addressParts.address_line2,
+        city: addressParts.city,
+        region: addressParts.region,
+        postcode: addressParts.postcode,
+        notes: taxNotes.value.trim(),
+        status: "pending"
+      }]);
+      if(error) throw error;
+      await loadDashboard();
+      showNotice("Tax form submitted for admin approval.");
+    }catch(error){
+      console.error(error);
+      showNotice("Could not submit tax form.");
+    }
+  }
+
+  async function submitWithdrawalRequest(event){
+    event.preventDefault();
+
+    if(!isWithdrawalUnlocked()){
+      showNotice("You need unlocked access, saved bank details, and an approved tax form before requesting a withdrawal.");
+      return;
+    }
+
+    const user = getSessionUser();
+    if(!user) return;
+
+    const amount = Number(withdrawAmount.value || 0);
+    if(amount <= 0){
+      showNotice("Enter a valid withdrawal amount.");
+      return;
+    }
+
+    try{
+      const { error } = await supabaseClient.from("creator_payout_requests").insert([{
+        user_id: user.id,
+        source: "bank_withdrawal",
+        amount,
+        currency: withdrawCurrency.value,
+        payout_method: "bank_transfer",
+        notes: withdrawNotes.value.trim(),
+        status: "pending"
+      }]);
+      if(error) throw error;
+      withdrawForm.reset();
+      await loadDashboard();
+      showNotice("Withdrawal request submitted for admin approval.");
+    }catch(error){
+      console.error(error);
+      showNotice("Could not submit withdrawal request.");
+    }
+  }
+
+  function renderDashboard(){    const summary = getSummaryStats();
     const series = buildChartSeries(summary);
 
     updateHero();
@@ -2471,6 +3067,7 @@
     renderFinanceList(partnerAdsList, summary.partnerAdsRows, "partner ads");
     renderFinanceList(payoutList, summary.payoutRows, "payouts");
     renderFinanceList(giftList, summary.giftRows, "gifts");
+    renderPayoutTools();
   }
 
   function showDashboardState(){
@@ -2497,6 +3094,9 @@
   groupSelect.addEventListener("change", renderDashboard);
   metricSelect.addEventListener("change", renderDashboard);
   refreshBtn.addEventListener("click", loadDashboard);
+  payoutProfileForm?.addEventListener("submit", savePayoutProfile);
+  taxFormForm?.addEventListener("submit", submitTaxForm);
+  withdrawForm?.addEventListener("submit", submitWithdrawalRequest);
 
   applyFooterText();
   initAuthState();

@@ -910,6 +910,13 @@
    color:var(--accent);
  }
 
+
+ .finance-admin-grid{
+   display:grid;
+   grid-template-columns:repeat(3,minmax(0,1fr));
+   gap:22px;
+ }
+
  @media(max-width:1200px){
    .stats-grid{
      grid-template-columns:repeat(3,1fr);
@@ -920,6 +927,10 @@
    }
 
    .user-grid{
+     grid-template-columns:1fr;
+   }
+
+   .finance-admin-grid{
      grid-template-columns:1fr;
    }
  }
@@ -1116,6 +1127,7 @@
        <button class="tab-btn active" data-tab="overview">Overview</button>
        <button class="tab-btn" data-tab="settings">Site Settings</button>
        <button class="tab-btn" data-tab="requests">Requests</button>
+       <button class="tab-btn" data-tab="finance">Payouts & Tax</button>
        <button class="tab-btn" data-tab="photos">Photo Review</button>
        <button class="tab-btn" data-tab="users">Users</button>
        <button class="tab-btn" data-tab="flags">Flags & Holds</button>
@@ -1243,6 +1255,29 @@
        </div>
      </div>
 
+
+
+     <div class="tab-section" id="tab-finance">
+       <div class="finance-admin-grid">
+         <div class="panel">
+           <h2>Bank & Payout Profiles</h2>
+           <p class="panel-sub">Creators can save bank details here once they unlock withdrawal access.</p>
+           <div class="card-list" id="payoutProfilesList"></div>
+         </div>
+
+         <div class="panel">
+           <h2>Tax Forms</h2>
+           <p class="panel-sub">Creators must file tax information before withdrawal requests should be approved.</p>
+           <div class="card-list" id="taxFormsList"></div>
+         </div>
+
+         <div class="panel">
+           <h2>Withdrawal Requests</h2>
+           <p class="panel-sub">Approve, reject, or mark paid after bank details and tax status are checked.</p>
+           <div class="card-list" id="withdrawalsList"></div>
+         </div>
+       </div>
+     </div>
      <div class="tab-section" id="tab-photos">
        <div class="panel">
          <h2>Photo Review Queue</h2>
@@ -1347,6 +1382,9 @@
 
  const overviewStats = document.getElementById("overviewStats");
  const requestsList = document.getElementById("requestsList");
+ const payoutProfilesList = document.getElementById("payoutProfilesList");
+ const taxFormsList = document.getElementById("taxFormsList");
+ const withdrawalsList = document.getElementById("withdrawalsList");
  const photosList = document.getElementById("photosList");
  const usersList = document.getElementById("usersList");
  const flagsList = document.getElementById("flagsList");
@@ -1374,6 +1412,9 @@
  let auditData = [];
  let siteSettings = null;
  let creatorProfilesMap = {};
+ let payoutProfilesData = [];
+ let taxFormsData = [];
+ let withdrawalsData = [];
 
  if(menuToggle && navLinks){
    menuToggle.addEventListener("click", () => {
@@ -1639,11 +1680,14 @@
      loadOverviewStats(),
      loadSiteSettings(),
      loadRequests(),
+     loadFinanceData(false),
      loadPhotos(),
      loadUsers(),
      loadFlags(),
      loadAudit()
    ]);
+
+   renderFinanceData();
  }
 
  async function loadCreatorProfiles(){
@@ -1924,6 +1968,296 @@
    }catch(error){
      console.error(error);
      showNotice("Could not update request.");
+   }
+ }
+
+
+ async function loadFinanceData(renderNow = true){
+   const [payoutProfilesRes, taxFormsRes, withdrawalsRes] = await Promise.all([
+     supabaseClient.from("creator_payout_profiles").select("*").order("updated_at", { ascending:false }).limit(120),
+     supabaseClient.from("creator_tax_forms").select("*").order("created_at", { ascending:false }).limit(120),
+     supabaseClient.from("creator_payout_requests").select("*").order("created_at", { ascending:false }).limit(120)
+   ]);
+
+   payoutProfilesData = payoutProfilesRes.error ? [] : (Array.isArray(payoutProfilesRes.data) ? payoutProfilesRes.data : []);
+   taxFormsData = taxFormsRes.error ? [] : (Array.isArray(taxFormsRes.data) ? taxFormsRes.data : []);
+   withdrawalsData = withdrawalsRes.error ? [] : (Array.isArray(withdrawalsRes.data) ? withdrawalsRes.data : []);
+
+   if(renderNow){
+     renderFinanceData();
+   }
+ }
+
+ function getProfileNameByUserId(userId){
+   const userRow = usersData.find(item => String(item.id) === String(userId));
+   if(userRow){
+     return userRow.full_name || userRow.display_name || userRow.email || userRow.phone || String(userId);
+   }
+
+   const creatorRow = getCreatorProfile(userId);
+   if(creatorRow){
+     return creatorRow.display_name || creatorRow.email || String(userId);
+   }
+
+   return String(userId || "Unknown user");
+ }
+
+ function getApprovedTaxFormForUser(userId){
+   return taxFormsData.find(item => String(item.user_id) === String(userId) && normalize(item.status) === "approved") || null;
+ }
+
+ function renderFinanceData(){
+   renderPayoutProfiles();
+   renderTaxForms();
+   renderWithdrawals();
+ }
+
+ function renderPayoutProfiles(){
+   if(!payoutProfilesData.length){
+     payoutProfilesList.innerHTML = '<div class="empty-box">No payout profiles saved yet.</div>';
+     return;
+   }
+
+   payoutProfilesList.innerHTML = payoutProfilesData.map(profile => {
+     const creatorProfile = getCreatorProfile(profile.user_id) || {};
+     const enabled = creatorProfile.payout_enabled === true || profile.is_payout_enabled === true;
+     return `
+       <div class="item-card">
+         <div class="item-head">
+           <div>
+             <div class="item-title">${escapeHtml(getProfileNameByUserId(profile.user_id))}</div>
+             <div class="item-meta">
+               User: ${escapeHtml(profile.user_id || "—")}<br>
+               Email: ${escapeHtml(profile.payout_email || profile.email || "—")}<br>
+               Updated: ${escapeHtml(formatDate(profile.updated_at || profile.created_at))}
+             </div>
+           </div>
+           <div>
+             ${enabled ? getStatusPill("Payout Enabled", "success") : getStatusPill("Payout Locked", "danger")}
+           </div>
+         </div>
+
+         <div class="item-body">Bank: ${escapeHtml(profile.bank_name || "—")}\nAccount name: ${escapeHtml(profile.account_name || "—")}\nAccount number: ${escapeHtml(profile.account_number || "—")}\nSort code: ${escapeHtml(profile.sort_code || "—")}\nIBAN: ${escapeHtml(profile.iban || "—")}\nSWIFT: ${escapeHtml(profile.swift_code || "—")}\nCountry: ${escapeHtml(profile.country || "—")}\nCurrency: ${escapeHtml(profile.currency || "GBP")}</div>
+
+         <div class="action-row">
+           <button class="mini-btn ${enabled ? 'danger' : 'success'}" data-payout-profile-action="toggle" data-payout-profile-user="${escapeHtml(profile.user_id)}">
+             <i class="fa-solid fa-wallet"></i>
+             ${enabled ? "Disable Payout" : "Enable Payout"}
+           </button>
+         </div>
+       </div>
+     `;
+   }).join("");
+
+   payoutProfilesList.querySelectorAll("[data-payout-profile-action]").forEach(button => {
+     button.addEventListener("click", async () => {
+       const userId = button.getAttribute("data-payout-profile-user");
+       const profile = payoutProfilesData.find(item => String(item.user_id) === String(userId));
+       if(profile){
+         await handlePayoutProfileAction(profile);
+       }
+     });
+   });
+ }
+
+ async function handlePayoutProfileAction(profile){
+   try{
+     const creatorProfile = await ensureCreatorProfile(profile.user_id, profile.payout_email || "", getProfileNameByUserId(profile.user_id));
+     const next = !(creatorProfile?.payout_enabled === true || profile.is_payout_enabled === true);
+
+     const { error: creatorError } = await supabaseClient
+       .from(CREATOR_PROFILE_TABLE)
+       .update({ payout_enabled: next, updated_at: new Date().toISOString() })
+       .eq("user_id", profile.user_id);
+
+     if(creatorError) throw creatorError;
+
+     const { error: payoutError } = await supabaseClient
+       .from("creator_payout_profiles")
+       .update({ is_payout_enabled: next, updated_at: new Date().toISOString() })
+       .eq("user_id", profile.user_id);
+
+     if(payoutError) throw payoutError;
+
+     await logAudit("toggle_payout_profile", "creator_payout_profiles", profile.user_id, { enabled: next });
+     showNotice(next ? "Payout enabled for creator." : "Payout disabled for creator.");
+     await loadCreatorProfiles();
+     await loadFinanceData();
+     await loadUsers();
+   }catch(error){
+     console.error(error);
+     showNotice("Could not update payout access.");
+   }
+ }
+
+ function renderTaxForms(){
+   if(!taxFormsData.length){
+     taxFormsList.innerHTML = '<div class="empty-box">No tax forms submitted yet.</div>';
+     return;
+   }
+
+   taxFormsList.innerHTML = taxFormsData.map(form => `
+     <div class="item-card">
+       <div class="item-head">
+         <div>
+           <div class="item-title">${escapeHtml(getProfileNameByUserId(form.user_id))}</div>
+           <div class="item-meta">
+             Type: ${escapeHtml(form.tax_form_type || "individual")}<br>
+             Country: ${escapeHtml(form.tax_country || "—")}<br>
+             Submitted: ${escapeHtml(formatDate(form.created_at))}
+           </div>
+         </div>
+         <div>
+           ${
+             normalize(form.status) === "approved"
+               ? getStatusPill("Approved", "success")
+               : normalize(form.status) === "rejected"
+                 ? getStatusPill("Rejected", "danger")
+                 : normalize(form.status) === "reviewing"
+                   ? getStatusPill("Reviewing", "warn")
+                   : getStatusPill("Pending", "info")
+           }
+         </div>
+       </div>
+
+       <div class="item-body">Legal name: ${escapeHtml(form.legal_name || "—")}\nBusiness name: ${escapeHtml(form.business_name || "—")}\nTax ID: ${escapeHtml(form.tax_identifier || "—")}\nAddress: ${escapeHtml([form.address_line1, form.address_line2, form.city, form.region, form.postcode].filter(Boolean).join(', ') || "—")}\nDocument URL: ${escapeHtml(form.document_url || "—")}\nNotes: ${escapeHtml(form.notes || "—")}</div>
+
+       <div class="action-row">
+         <button class="mini-btn warn" data-tax-action="reviewing" data-tax-id="${escapeHtml(form.id)}"><i class="fa-solid fa-eye"></i>Review</button>
+         <button class="mini-btn success" data-tax-action="approve" data-tax-id="${escapeHtml(form.id)}"><i class="fa-solid fa-check"></i>Approve</button>
+         <button class="mini-btn danger" data-tax-action="reject" data-tax-id="${escapeHtml(form.id)}"><i class="fa-solid fa-xmark"></i>Reject</button>
+       </div>
+     </div>
+   `).join("");
+
+   taxFormsList.querySelectorAll("[data-tax-action]").forEach(button => {
+     button.addEventListener("click", async () => {
+       const action = button.getAttribute("data-tax-action");
+       const id = button.getAttribute("data-tax-id");
+       const form = taxFormsData.find(item => String(item.id) === String(id));
+       if(form){
+         await handleTaxFormAction(form, action);
+       }
+     });
+   });
+ }
+
+ async function handleTaxFormAction(form, action){
+   const status = action === "approve" ? "approved" : action === "reject" ? "rejected" : "reviewing";
+   try{
+     const patch = {
+       status,
+       reviewed_by: adminProfile.id,
+       reviewed_at: new Date().toISOString(),
+       updated_at: new Date().toISOString()
+     };
+
+     const { error } = await supabaseClient
+       .from("creator_tax_forms")
+       .update(patch)
+       .eq("id", form.id);
+
+     if(error) throw error;
+
+     await logAudit("review_tax_form", "creator_tax_forms", form.id, { action, user_id: form.user_id });
+     showNotice(`Tax form ${status}.`);
+     await loadFinanceData();
+   }catch(error){
+     console.error(error);
+     showNotice("Could not update tax form.");
+   }
+ }
+
+ function renderWithdrawals(){
+   if(!withdrawalsData.length){
+     withdrawalsList.innerHTML = '<div class="empty-box">No withdrawal requests found.</div>';
+     return;
+   }
+
+   withdrawalsList.innerHTML = withdrawalsData.map(row => {
+     const approvedTax = getApprovedTaxFormForUser(row.user_id);
+     return `
+       <div class="item-card">
+         <div class="item-head">
+           <div>
+             <div class="item-title">${escapeHtml(getProfileNameByUserId(row.user_id))}</div>
+             <div class="item-meta">
+               Amount: £${Number(row.amount || 0).toFixed(2)} ${escapeHtml(row.currency || "GBP")}<br>
+               Submitted: ${escapeHtml(formatDate(row.created_at))}<br>
+               Method: ${escapeHtml(row.payout_method || row.source || "bank_transfer")}
+             </div>
+           </div>
+           <div style="display:flex; gap:8px; flex-wrap:wrap;">
+             ${
+               normalize(row.status) === "paid"
+                 ? getStatusPill("Paid", "success")
+                 : normalize(row.status) === "approved"
+                   ? getStatusPill("Approved", "success")
+                   : normalize(row.status) === "rejected"
+                     ? getStatusPill("Rejected", "danger")
+                     : normalize(row.status) === "reviewing"
+                       ? getStatusPill("Reviewing", "warn")
+                       : getStatusPill("Pending", "info")
+             }
+             ${approvedTax ? getStatusPill("Tax Approved", "success") : getStatusPill("Tax Missing / Pending", "danger")}
+           </div>
+         </div>
+
+         <div class="item-body">${escapeHtml(row.notes || "No withdrawal note added.")}</div>
+
+         <div class="action-row">
+           <button class="mini-btn warn" data-withdraw-action="reviewing" data-withdraw-id="${escapeHtml(row.id)}"><i class="fa-solid fa-eye"></i>Review</button>
+           <button class="mini-btn success" data-withdraw-action="approve" data-withdraw-id="${escapeHtml(row.id)}"><i class="fa-solid fa-check"></i>Approve</button>
+           <button class="mini-btn info" data-withdraw-action="paid" data-withdraw-id="${escapeHtml(row.id)}"><i class="fa-solid fa-sterling-sign"></i>Mark Paid</button>
+           <button class="mini-btn danger" data-withdraw-action="reject" data-withdraw-id="${escapeHtml(row.id)}"><i class="fa-solid fa-xmark"></i>Reject</button>
+         </div>
+       </div>
+     `;
+   }).join("");
+
+   withdrawalsList.querySelectorAll("[data-withdraw-action]").forEach(button => {
+     button.addEventListener("click", async () => {
+       const action = button.getAttribute("data-withdraw-action");
+       const id = button.getAttribute("data-withdraw-id");
+       const row = withdrawalsData.find(item => String(item.id) === String(id));
+       if(row){
+         await handleWithdrawalAction(row, action);
+       }
+     });
+   });
+ }
+
+ async function handleWithdrawalAction(row, action){
+   const approvedTax = getApprovedTaxFormForUser(row.user_id);
+   if((action === "approve" || action === "paid") && !approvedTax){
+     showNotice("Approve the creator tax form before approving or paying this withdrawal.");
+     return;
+   }
+
+   const patch = {
+     status: action === "approve" ? "approved" : action === "reject" ? "rejected" : action === "paid" ? "paid" : "reviewing",
+     reviewed_by: adminProfile.id,
+     reviewed_at: new Date().toISOString()
+   };
+
+   if(action === "paid"){
+     patch.paid_at = new Date().toISOString();
+   }
+
+   try{
+     const { error } = await supabaseClient
+       .from("creator_payout_requests")
+       .update(patch)
+       .eq("id", row.id);
+
+     if(error) throw error;
+
+     await logAudit("review_withdrawal", "creator_payout_requests", row.id, { action, user_id: row.user_id, amount: row.amount });
+     showNotice(`Withdrawal ${patch.status}.`);
+     await loadFinanceData();
+   }catch(error){
+     console.error(error);
+     showNotice("Could not update withdrawal request.");
    }
  }
 
