@@ -1180,8 +1180,8 @@
 
     async function initCurrentUser(){
       try{
-        const { data } = await supabaseClient.auth.getUser();
-        currentUser = data?.user || null;
+        const { data } = await supabaseClient.auth.getSession();
+        currentUser = data?.session?.user || null;
       }catch(error){
         currentUser = null;
       }
@@ -1314,8 +1314,11 @@
       }
     });
 
-    supabaseClient.auth.onAuthStateChange(async () => {
-      await initCurrentUser();
+    supabaseClient.auth.onAuthStateChange(async (_event, session) => {
+      currentUser = session?.user || null;
+      if(!currentUser){
+        await initCurrentUser();
+      }
       updateAuthUI();
     });
 

@@ -587,6 +587,141 @@
       transform:none;
     }
 
+    .danger-zone{
+      margin-top:18px;
+      background:linear-gradient(135deg,rgba(239,68,68,.14),rgba(127,29,29,.16));
+      border:1px solid rgba(239,68,68,.28);
+      border-radius:22px;
+      padding:20px;
+    }
+
+    .danger-zone-head{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:14px;
+      flex-wrap:wrap;
+      margin-bottom:16px;
+    }
+
+    .danger-zone-head h3{
+      color:#fff;
+      font-size:26px;
+      line-height:1.15;
+      margin-bottom:6px;
+    }
+
+    .danger-zone-head p{
+      color:#fecaca;
+      max-width:760px;
+      font-size:15px;
+    }
+
+    .danger-chip{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 12px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(255,255,255,.08);
+      color:#fff;
+      font-size:12px;
+      font-weight:800;
+      letter-spacing:.02em;
+      white-space:nowrap;
+    }
+
+    .delete-form{
+      display:grid;
+      gap:14px;
+    }
+
+    .delete-label{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      color:#fff;
+      font-size:15px;
+      font-weight:700;
+      flex-wrap:wrap;
+    }
+
+    .delete-label span{
+      color:#fecaca;
+      font-size:13px;
+      font-weight:700;
+    }
+
+    .delete-textarea{
+      min-height:132px;
+      border-radius:18px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(15,23,42,.55);
+      color:#fff;
+      padding:16px 18px;
+      font-size:15px;
+      resize:vertical;
+      outline:none;
+    }
+
+    .delete-textarea:focus{
+      border-color:rgba(239,68,68,.45);
+      box-shadow:0 0 0 3px rgba(239,68,68,.12);
+    }
+
+    .delete-check{
+      display:flex;
+      align-items:flex-start;
+      gap:12px;
+      color:#fff;
+      font-size:15px;
+      line-height:1.5;
+    }
+
+    .delete-check input{
+      margin-top:3px;
+      width:18px;
+      height:18px;
+      accent-color:var(--danger);
+      flex-shrink:0;
+    }
+
+    .delete-actions{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:16px;
+      flex-wrap:wrap;
+    }
+
+    .danger-btn{
+      background:var(--danger);
+      color:#fff;
+      border:none;
+    }
+
+    .danger-btn:hover{
+      transform:translateY(-2px);
+      box-shadow:0 12px 26px rgba(239,68,68,.24);
+    }
+
+    .danger-btn:disabled{
+      background:rgba(255,255,255,.12);
+      color:#94a3b8;
+      cursor:not-allowed;
+      box-shadow:none;
+      transform:none;
+    }
+
+    .delete-note{
+      color:#fecaca;
+      max-width:520px;
+      font-size:14px;
+      line-height:1.5;
+    }
+
     section{
       padding:36px 0 0;
       background:#0f172a;
@@ -1382,6 +1517,126 @@
         font-size:14px;
       }
     }
+  
+    .creator-save-grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+      gap:18px;
+    }
+
+    .saved-creator-card{
+      border:1px solid var(--line);
+      border-radius:22px;
+      background:linear-gradient(180deg, rgba(17,24,39,.98), rgba(15,23,42,.98));
+      overflow:hidden;
+      box-shadow:0 18px 36px rgba(0,0,0,.18);
+    }
+
+    .saved-creator-cover{
+      height:120px;
+      background:#1e293b center/cover no-repeat;
+    }
+
+    .saved-creator-body{
+      padding:18px;
+      display:grid;
+      gap:14px;
+    }
+
+    .saved-creator-head{
+      display:flex;
+      align-items:center;
+      gap:12px;
+    }
+
+    .saved-creator-avatar{
+      width:58px;
+      height:58px;
+      border-radius:50%;
+      overflow:hidden;
+      border:2px solid rgba(250,204,21,.28);
+      background:rgba(255,255,255,.06);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight:800;
+      color:#f8fafc;
+      flex-shrink:0;
+    }
+
+    .saved-creator-avatar img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+    }
+
+    .saved-creator-meta strong{
+      display:block;
+      font-size:18px;
+      color:#fff;
+    }
+
+    .saved-creator-meta span{
+      color:#94a3b8;
+      font-size:13px;
+    }
+
+    .saved-creator-stats{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:10px;
+    }
+
+    .saved-creator-stat{
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:10px 12px;
+      background:rgba(255,255,255,.02);
+    }
+
+    .saved-creator-stat strong{
+      display:block;
+      color:#fff;
+      font-size:18px;
+    }
+
+    .saved-creator-stat span{
+      color:#94a3b8;
+      font-size:12px;
+    }
+
+    .saved-creator-actions{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:10px;
+    }
+
+    .saved-creator-link,
+    .saved-creator-remove{
+      min-height:42px;
+      border-radius:14px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      font-weight:700;
+      font-size:14px;
+      text-decoration:none;
+      cursor:pointer;
+    }
+
+    .saved-creator-link{
+      background:#facc15;
+      color:#111827;
+      border:none;
+    }
+
+    .saved-creator-remove{
+      border:1px solid rgba(255,255,255,.12);
+      color:#e5e7eb;
+      background:transparent;
+    }
+
   </style>
 </head>
 <body>
@@ -1484,6 +1739,11 @@
               Account Status
             </button>
 
+            <button type="button" class="danger hidden" id="deleteAccountMenuBtn">
+              <i class="fa-solid fa-user-xmark"></i>
+              Delete my account
+            </button>
+
             <button type="button" class="danger" id="logoutBtn">
               <i class="fa-solid fa-right-from-bracket"></i>
               Log out
@@ -1560,6 +1820,37 @@
               Open Dashboard
             </button>
           </div>
+
+          <section class="danger-zone hidden" id="deleteAccountSection">
+            <div class="danger-zone-head">
+              <div>
+                <h3>Delete Account</h3>
+                <p>Permanently delete your own PixNest account here. The reason box is optional. Admin and founder accounts cannot be deleted from this form.</p>
+              </div>
+              <span class="danger-chip">User only</span>
+            </div>
+
+            <form id="deleteAccountForm" class="delete-form">
+              <label class="delete-label" for="deleteReasonInput">
+                Why are you leaving?
+                <span>Optional</span>
+              </label>
+              <textarea id="deleteReasonInput" class="delete-textarea" placeholder="Tell us anything you want us to improve. You can leave this blank."></textarea>
+
+              <label class="delete-check" for="deleteConfirmCheck">
+                <input type="checkbox" id="deleteConfirmCheck">
+                <span>I understand this permanently deletes my account and profile access.</span>
+              </label>
+
+              <div class="delete-actions">
+                <button type="submit" class="main-btn danger-btn" id="deleteAccountBtn">
+                  <i class="fa-solid fa-trash-can"></i>
+                  Delete My Account
+                </button>
+                <p class="delete-note" id="deleteAccountNote">Only you can delete your own account here. Your reason is optional and used only to improve PixNest.</p>
+              </div>
+            </form>
+          </section>
         </div>
 
         <div class="login-box hidden" id="loginRequiredBox">
@@ -1624,20 +1915,59 @@
     </div>
   </section>
 
+
+  <section id="savedCreatorsSection">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <h2>Saved Creators</h2>
+          <p>Creators you saved to revisit later.</p>
+        </div>
+        <div class="section-count" id="savedCreatorsCountChip">0 creators</div>
+      </div>
+
+      <div class="creator-save-grid" id="savedCreatorsGrid">
+        <div class="empty-box">
+          <h3>No saved creators yet</h3>
+          <p>Creators you add to favourites will show here.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="likesSection">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <h2>Liked Photos</h2>
+          <p>Photos you liked across PixNest.</p>
+        </div>
+        <div class="section-count" id="likesCountChip">0 likes</div>
+      </div>
+
+      <div class="photo-grid" id="likesGrid">
+        <div class="empty-box">
+          <h3>No liked photos yet</h3>
+          <p>Photos you like will show here.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <section id="favouritesSection" style="padding-bottom:54px;">
     <div class="container">
       <div class="section-head">
         <div>
-          <h2>My Favourites</h2>
-          <p>Posts you saved to favourites.</p>
+          <h2>Favourited Photos</h2>
+          <p>Photos you saved to favourites.</p>
         </div>
-        <div class="section-count" id="favouritesCountChip">0 favourites</div>
+        <div class="section-count" id="favouritesCountChip">0 favourited</div>
       </div>
 
       <div class="photo-grid" id="favouritesGrid">
         <div class="empty-box">
-          <h3>No favourites yet</h3>
-          <p>Posts you favourite will show here.</p>
+          <h3>No favourited photos yet</h3>
+          <p>Photos you favourite will show here.</p>
         </div>
       </div>
     </div>
@@ -1805,6 +2135,7 @@
   <script>
     const REACTION_KEY = "pixnest_photo_reactions_v1";
     const CREATOR_PREFS_KEY = "pixnest_creator_prefs_v1";
+    const LEGACY_CREATOR_PREFS_KEY = "pixnest_creator_state_v1";
     const VIEWED_SESSION_KEY = "pixnest_viewed_session_v1";
     const SUPABASE_URL = "https://vigczssznfvujttdapbv.supabase.co";
     const SUPABASE_KEY = "sb_publishable_UmF-mmVS42XeF6PqsNnCSw_wpA35wg2";
@@ -1861,9 +2192,13 @@
 
     const postsGrid = document.getElementById("postsGrid");
     const repostsGrid = document.getElementById("repostsGrid");
+    const savedCreatorsGrid = document.getElementById("savedCreatorsGrid");
+    const likesGrid = document.getElementById("likesGrid");
     const favouritesGrid = document.getElementById("favouritesGrid");
     const postsCountChip = document.getElementById("postsCountChip");
     const repostsCountChip = document.getElementById("repostsCountChip");
+    const savedCreatorsCountChip = document.getElementById("savedCreatorsCountChip");
+    const likesCountChip = document.getElementById("likesCountChip");
     const favouritesCountChip = document.getElementById("favouritesCountChip");
 
     const settingsModal = document.getElementById("settingsModal");
@@ -1899,7 +2234,15 @@
     const mediaQualityBtn = document.getElementById("mediaQualityBtn");
     const privacyCentreBtn = document.getElementById("privacyCentreBtn");
     const accountStatusBtn = document.getElementById("accountStatusBtn");
+    const deleteAccountMenuBtn = document.getElementById("deleteAccountMenuBtn");
     const logoutBtn = document.getElementById("logoutBtn");
+
+    const deleteAccountSection = document.getElementById("deleteAccountSection");
+    const deleteAccountForm = document.getElementById("deleteAccountForm");
+    const deleteReasonInput = document.getElementById("deleteReasonInput");
+    const deleteConfirmCheck = document.getElementById("deleteConfirmCheck");
+    const deleteAccountBtn = document.getElementById("deleteAccountBtn");
+    const deleteAccountNote = document.getElementById("deleteAccountNote");
 
     const lightbox = document.getElementById("lightbox");
     const lightboxClose = document.getElementById("lightboxClose");
@@ -1965,11 +2308,20 @@
       localStorage.setItem(REACTION_KEY, JSON.stringify(reactionState));
     }
 
+    function saveCreatorPrefs(){
+      const payload = JSON.stringify(creatorPrefs);
+      localStorage.setItem(CREATOR_PREFS_KEY, payload);
+      localStorage.setItem(LEGACY_CREATOR_PREFS_KEY, payload);
+    }
+
     function loadCreatorPrefs(){
       try{
-        const saved = localStorage.getItem(CREATOR_PREFS_KEY);
-        const parsed = JSON.parse(saved || "{}");
-        return parsed && typeof parsed === "object" ? parsed : {};
+        const primary = JSON.parse(localStorage.getItem(CREATOR_PREFS_KEY) || "{}");
+        const legacy = JSON.parse(localStorage.getItem(LEGACY_CREATOR_PREFS_KEY) || "{}");
+        return {
+          ...(legacy && typeof legacy === "object" ? legacy : {}),
+          ...(primary && typeof primary === "object" ? primary : {})
+        };
       }catch(error){
         return {};
       }
@@ -2081,6 +2433,17 @@
 
     function isFounder(user){
       return normalize(user?.app_metadata?.role) === "founder" || user?.app_metadata?.is_admin === true;
+    }
+
+    function isAdminAccount(user){
+      return Boolean(
+        normalize(user?.app_metadata?.role) === "admin" ||
+        normalize(user?.app_metadata?.role) === "founder" ||
+        user?.app_metadata?.is_admin === true ||
+        currentCreatorProfile?.site_admin === true ||
+        currentCreatorProfile?.super_admin === true ||
+        ["admin", "founder"].includes(normalize(currentCreatorProfile?.role))
+      );
     }
 
     function isVerified(user){
@@ -2390,6 +2753,110 @@
 
     function getMyFavourites(){
       return allPhotos.filter(photo => getPhotoReactionState(getPhotoId(photo)).favourited);
+    }
+
+    function getMyLikes(){
+      return allPhotos.filter(photo => getPhotoReactionState(getPhotoId(photo)).liked);
+    }
+
+    function getCreatorKeyFromPhoto(photo){
+      return String(
+        photo.creator_id ||
+        photo.profile_id ||
+        photo.user_id ||
+        photo.owner_id ||
+        photo.auth_user_id ||
+        getCreatorName(photo)
+      ).trim().toLowerCase();
+    }
+
+    function getSavedCreators(){
+      const creatorPhotoMap = new Map();
+      allPhotos.forEach(photo => {
+        const key = getCreatorKeyFromPhoto(photo);
+        if(key && !creatorPhotoMap.has(key)){
+          creatorPhotoMap.set(key, photo);
+        }
+      });
+
+      return Object.entries(creatorPrefs)
+        .filter(([, value]) => value && value.favourited)
+        .map(([key, value]) => {
+          const sample = creatorPhotoMap.get(String(key).trim().toLowerCase()) || null;
+          const creatorName = sample ? getCreatorName(sample) : String(key || "Unknown Creator");
+          const avatar = sample ? String(sample.creator_photo || sample.avatar_url || "").trim() : "";
+          const cover = sample ? String(sample.creator_cover || sample.cover_url || sample.image_url || DEFAULT_COVER).trim() : DEFAULT_COVER;
+          const href = sample
+            ? `profile.html?creator=${encodeURIComponent(sample.creator_id || sample.profile_id || sample.user_id || sample.owner_id || sample.auth_user_id || key)}&name=${encodeURIComponent(creatorName)}`
+            : `profile.html?creator=${encodeURIComponent(key)}&name=${encodeURIComponent(creatorName)}`;
+          const posts = sample ? allPhotos.filter(photo => getCreatorKeyFromPhoto(photo) === String(key).trim().toLowerCase()).length : 0;
+          return {
+            key,
+            creatorName,
+            avatar,
+            cover,
+            href,
+            posts,
+            followed:Boolean(value.followed),
+            saved:true
+          };
+        });
+    }
+
+    function buildSavedCreatorCard(entry){
+      const initial = (entry.creatorName.charAt(0) || "P").toUpperCase();
+      const avatarHtml = entry.avatar
+        ? `<img src="${escapeHtml(entry.avatar)}" alt="${escapeHtml(entry.creatorName)}">`
+        : `<span>${escapeHtml(initial)}</span>`;
+      return `
+        <article class="saved-creator-card">
+          <div class="saved-creator-cover" style="background-image:url('${escapeHtml(entry.cover || DEFAULT_COVER)}')"></div>
+          <div class="saved-creator-body">
+            <div class="saved-creator-head">
+              <div class="saved-creator-avatar">${avatarHtml}</div>
+              <div class="saved-creator-meta">
+                <strong>${escapeHtml(entry.creatorName)}</strong>
+                <span>${entry.followed ? 'Following creator' : 'Saved creator'}</span>
+              </div>
+            </div>
+            <div class="saved-creator-stats">
+              <div class="saved-creator-stat"><strong>${escapeHtml(compactNumber(entry.posts || 0))}</strong><span>Posts</span></div>
+              <div class="saved-creator-stat"><strong>${entry.followed ? 'Yes' : 'No'}</strong><span>Following</span></div>
+            </div>
+            <div class="saved-creator-actions">
+              <a href="${escapeHtml(entry.href)}" class="saved-creator-link"><i class="fa-solid fa-user"></i>View Profile</a>
+              <button type="button" class="saved-creator-remove" data-remove-creator="${escapeHtml(entry.key)}"><i class="fa-solid fa-star-half-stroke"></i>Remove</button>
+            </div>
+          </div>
+        </article>
+      `;
+    }
+
+    function renderSavedCreatorsSection(rows){
+      savedCreatorsCountChip.textContent = `${rows.length} creators`;
+      if(!rows.length){
+        savedCreatorsGrid.innerHTML = `
+          <div class="empty-box">
+            <h3>No saved creators yet</h3>
+            <p>Creators you add to favourites will show here.</p>
+          </div>
+        `;
+        return;
+      }
+      savedCreatorsGrid.innerHTML = rows.map(buildSavedCreatorCard).join("");
+      savedCreatorsGrid.querySelectorAll('[data-remove-creator]').forEach(button => {
+        button.addEventListener('click', () => {
+          const key = String(button.dataset.removeCreator || '').trim();
+          if(!key || !creatorPrefs[key]) return;
+          creatorPrefs[key] = { ...(creatorPrefs[key] || {}), favourited:false };
+          if(!creatorPrefs[key].followed && !creatorPrefs[key].favourited){
+            delete creatorPrefs[key];
+          }
+          saveCreatorPrefs();
+          refreshAccountPage();
+          showNotice('Creator removed from saved list.');
+        });
+      });
     }
 
     function isPremiumPhoto(photo){
@@ -3229,8 +3696,8 @@
 
     async function initCurrentUser(){
       try{
-        const { data } = await supabaseClient.auth.getUser();
-        currentUser = data?.user || null;
+        const { data } = await supabaseClient.auth.getSession();
+        currentUser = data?.session?.user || null;
       }catch(error){
         currentUser = null;
       }
@@ -3272,6 +3739,79 @@
       }
     }
 
+    function updateDeleteAccountVisibility(){
+      const canShowDelete = Boolean(currentUser) && !isAdminAccount(currentUser);
+
+      if(deleteAccountSection){
+        deleteAccountSection.classList.toggle("hidden", !canShowDelete);
+      }
+
+      if(deleteAccountMenuBtn){
+        deleteAccountMenuBtn.classList.toggle("hidden", !canShowDelete);
+      }
+
+      if(deleteAccountNote){
+        deleteAccountNote.textContent = canShowDelete
+          ? "Only you can delete your own account here. Your reason is optional and used only to improve PixNest."
+          : "Admin and founder accounts cannot be deleted from this form.";
+      }
+    }
+
+    async function handleDeleteAccount(e){
+      e.preventDefault();
+
+      if(!currentUser){
+        showNotice("Log in first.");
+        return;
+      }
+
+      if(isAdminAccount(currentUser)){
+        showNotice("Admin accounts cannot be deleted from this form.");
+        return;
+      }
+
+      if(!deleteConfirmCheck.checked){
+        showNotice("Tick the confirmation box before deleting your account.");
+        return;
+      }
+
+      const confirmDelete = window.confirm("Delete your PixNest account permanently? This cannot be undone.");
+      if(!confirmDelete){
+        return;
+      }
+
+      const originalHtml = deleteAccountBtn.innerHTML;
+      deleteAccountBtn.disabled = true;
+      deleteAccountBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Deleting...';
+
+      try{
+        const { data, error } = await supabaseClient.rpc("request_self_account_deletion", {
+          reason_text: deleteReasonInput.value.trim() || null
+        });
+
+        if(error){
+          throw error;
+        }
+
+        showNotice(data?.message || "Your account has been deleted.");
+
+        try{
+          await supabaseClient.auth.signOut();
+        }catch(signOutError){
+          console.warn("Sign out after delete failed", signOutError);
+        }
+
+        setTimeout(() => {
+          window.location.href = "index.html";
+        }, 900);
+      }catch(error){
+        alert(error?.message || "Could not delete your account.");
+      }finally{
+        deleteAccountBtn.disabled = false;
+        deleteAccountBtn.innerHTML = originalHtml;
+      }
+    }
+
     async function handleLogout(){
       try{
         await supabaseClient.auth.signOut();
@@ -3289,12 +3829,23 @@
     function renderLoggedOutState(){
       loggedInArea.classList.add("hidden");
       loginRequiredBox.classList.remove("hidden");
+      if(deleteReasonInput){
+        deleteReasonInput.value = "";
+      }
+      if(deleteConfirmCheck){
+        deleteConfirmCheck.checked = false;
+      }
+      updateDeleteAccountVisibility();
       postsGrid.innerHTML = "";
       repostsGrid.innerHTML = "";
+      savedCreatorsGrid.innerHTML = "";
+      likesGrid.innerHTML = "";
       favouritesGrid.innerHTML = "";
       postsCountChip.textContent = "0 posts";
       repostsCountChip.textContent = "0 reposts";
-      favouritesCountChip.textContent = "0 favourites";
+      savedCreatorsCountChip.textContent = "0 creators";
+      likesCountChip.textContent = "0 likes";
+      favouritesCountChip.textContent = "0 favourited";
     }
 
     function renderHeader(){
@@ -3343,6 +3894,8 @@
         </div>
       `;
 
+      updateDeleteAccountVisibility();
+
       if(canOpenProDashboard){
         proBoardText.textContent = `Professional dashboard unlocked. Followers: ${compactNumber(followerCount)}. Total views: ${compactNumber(totalViews)}.`;
         professionalDashboardBtn.disabled = false;
@@ -3359,6 +3912,8 @@
 
       const myPosts = getMyPosts();
       const myReposts = getMyReposts();
+      const mySavedCreators = getSavedCreators();
+      const myLikes = getMyLikes();
       const myFavourites = getMyFavourites();
 
       renderGridSection(
@@ -3379,13 +3934,24 @@
         "reposts"
       );
 
+      renderSavedCreatorsSection(mySavedCreators);
+
+      renderGridSection(
+        myLikes,
+        likesGrid,
+        "No liked photos yet",
+        "Photos you like will show here.",
+        likesCountChip,
+        "likes"
+      );
+
       renderGridSection(
         myFavourites,
         favouritesGrid,
-        "No favourites yet",
-        "Posts you favourite will show here.",
+        "No favourited photos yet",
+        "Photos you favourite will show here.",
         favouritesCountChip,
-        "favourites"
+        "favourited"
       );
     }
 
@@ -3520,6 +4086,19 @@
       avatarFileInput.value = "";
     });
 
+    deleteAccountMenuBtn?.addEventListener("click", () => {
+      accountDropdown.classList.remove("show");
+      if(!currentUser){
+        showNotice("Log in first.");
+        return;
+      }
+      if(isAdminAccount(currentUser)){
+        showNotice("Admin accounts cannot be deleted from this form.");
+        return;
+      }
+      deleteAccountSection?.scrollIntoView({ behavior:"smooth", block:"start" });
+    });
+
     coverFileInput.addEventListener("change", async () => {
       const file = coverFileInput.files?.[0];
       if(file){
@@ -3542,6 +4121,7 @@
 
     settingsForm.addEventListener("submit", saveSettings);
     resetSettingsBtn.addEventListener("click", resetSettings);
+    deleteAccountForm?.addEventListener("submit", handleDeleteAccount);
 
     lightboxClose.addEventListener("click", closeLightbox);
     lightbox.addEventListener("click", (e) => {

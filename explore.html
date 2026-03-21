@@ -1804,8 +1804,8 @@ let activeSessionUser = null;
 
 async function initActiveSessionUser(){
   try{
-    const { data } = await supabaseClient.auth.getUser();
-    activeSessionUser = data?.user || null;
+    const { data } = await supabaseClient.auth.getSession();
+    activeSessionUser = data?.session?.user || null;
   }catch(error){
     activeSessionUser = null;
   }

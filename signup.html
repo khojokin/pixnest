@@ -187,6 +187,49 @@
       display:block;
     }
 
+
+    .nav-auth-actions{
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+
+    .nav-auth-link{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-height:42px;
+      padding:10px 16px;
+      border-radius:12px;
+      font-size:14px;
+      font-weight:700;
+      text-decoration:none;
+      border:1px solid rgba(255,255,255,.14);
+    }
+
+    .nav-auth-link.secondary{
+      color:#e5e7eb;
+      background:transparent;
+    }
+
+    .nav-auth-link.secondary:hover,
+    .nav-auth-link.secondary.active-auth{
+      color:var(--accent);
+      border-color:rgba(250,204,21,.32);
+      background:rgba(250,204,21,.10);
+    }
+
+    .nav-auth-link.primary{
+      color:#111827;
+      background:var(--accent);
+      border:none;
+    }
+
+    .nav-auth-link.primary:hover{
+      transform:translateY(-2px);
+      box-shadow:0 12px 24px rgba(250,204,21,.16);
+    }
+
     .auth-wrap{
       min-height:calc(100vh - 86px);
       display:grid;
@@ -478,7 +521,50 @@
     }
 
     @media(max-width:900px){
-      .auth-wrap{
+  
+    .nav-auth-actions{
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+
+    .nav-auth-link{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-height:42px;
+      padding:10px 16px;
+      border-radius:12px;
+      font-size:14px;
+      font-weight:700;
+      text-decoration:none;
+      border:1px solid rgba(255,255,255,.14);
+    }
+
+    .nav-auth-link.secondary{
+      color:#e5e7eb;
+      background:transparent;
+    }
+
+    .nav-auth-link.secondary:hover,
+    .nav-auth-link.secondary.active-auth{
+      color:var(--accent);
+      border-color:rgba(250,204,21,.32);
+      background:rgba(250,204,21,.10);
+    }
+
+    .nav-auth-link.primary{
+      color:#111827;
+      background:var(--accent);
+      border:none;
+    }
+
+    .nav-auth-link.primary:hover{
+      transform:translateY(-2px);
+      box-shadow:0 12px 24px rgba(250,204,21,.16);
+    }
+
+    .auth-wrap{
         grid-template-columns:1fr;
       }
 
@@ -601,13 +687,17 @@
         <span></span>
       </button>
 
-      <nav class="nav-links" id="navLinks">
+            <nav class="nav-links" id="navLinks">
         <a href="index.html">Home</a>
         <a href="explore.html">Explore</a>
         <a href="category.html">Categories</a>
+        <a href="features.html">Featured</a>
         <a href="premium.html">Premium</a>
-        <a href="login.html">Log In</a>
-        <a href="signup.html" class="active">Sign Up</a>
+        <a href="contact.html">Contact</a>
+        <div class="nav-auth-actions">
+          <a href="login.html" class="nav-auth-link secondary ">Log In</a>
+          <a href="signup.html" class="nav-auth-link secondary active-auth">Sign Up</a>
+        </div>
       </nav>
     </div>
   </header>

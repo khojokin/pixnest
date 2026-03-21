@@ -1402,8 +1402,8 @@
 
     async function updateAuthMenu(){
       try{
-        const { data } = await supabaseClient.auth.getUser();
-        currentUser = data?.user || null;
+        const { data } = await supabaseClient.auth.getSession();
+        currentUser = data?.session?.user || null;
       }catch(error){
         currentUser = null;
       }
