@@ -134,14 +134,14 @@
       <div class="section-head">
         <div>
           <h2>Browse Featured Photos</h2>
-          <p>Filter by category or search titles, tags, creators, and descriptions.</p>
+          <p>Filter by category or search titles, hashtags, tags, creators, and descriptions.</p>
         </div>
       </div>
 
       <div class="toolbar">
         <div class="input-wrap">
           <i class="fa-solid fa-magnifying-glass"></i>
-          <input type="text" id="searchInput" class="search-input" placeholder="Search featured photos" />
+          <input type="text" id="searchInput" class="search-input" placeholder="Search featured photos or #hashtags" />
         </div>
 
         <div class="select-wrap">
@@ -209,6 +209,60 @@
       });
     }
 
+    const REACTION_KEY = 'pixnest_photo_reactions_v1';
+
+    function loadReactionState(){
+      try{
+        const saved = localStorage.getItem(REACTION_KEY);
+        return saved ? JSON.parse(saved) : {};
+      }catch(error){
+        return {};
+      }
+    }
+
+    function normalizeHashToken(value = ''){
+      return String(value || '')
+        .trim()
+        .toLowerCase()
+        .replace(/^#+/, '')
+        .replace(/\s+/g, '-')
+        .replace(/[^a-z0-9_-]+/g, '')
+        .trim();
+    }
+
+    function getPhotoTags(photo){
+      if(typeof pixNestGetPhotoTags === 'function'){
+        return pixNestGetPhotoTags(photo);
+      }
+      const explicitTags = String(photo && photo.tags ? photo.tags : '')
+        .split(/[,|]/)
+        .map(tag => String(tag).trim())
+        .filter(Boolean)
+        .map(tag => tag.replace(/^#+/, '').trim())
+        .filter(Boolean);
+      return [...new Set(explicitTags)];
+    }
+
+    function buildSearchBlob(photo, categoryName){
+      const tags = getPhotoTags(photo);
+      const hashtags = tags.map(tag => `#${normalizeHashToken(tag)}`).filter(Boolean);
+      return [
+        photo.title,
+        photo.description,
+        photo.credit,
+        photo.tags,
+        categoryName,
+        ...tags,
+        ...hashtags
+      ].filter(Boolean).join(' ').toLowerCase();
+    }
+
+    function addWeight(bucket, key, amount){
+      const safeKey = normalizeHashToken(key);
+      if(!safeKey || !amount) return;
+      bucket[safeKey] = (bucket[safeKey] || 0) + amount;
+    }
+
     function loadFeaturedCategories(){
       const data = typeof pixNestLoadData === 'function' ? pixNestLoadData() : { categories: [] };
       const categories = Array.isArray(data.categories) ? data.categories : [];
@@ -229,7 +283,53 @@
         .filter(category => category.photos.length > 0);
     }
 
+    function buildPreferenceProfile(categories = []){
+      const reactionState = loadReactionState();
+      const profile = {
+        tagWeights: {},
+        categoryWeights: {},
+        creatorWeights: {},
+        hasSignals: false
+      };
+
+      const photoMap = new Map();
+      categories.forEach(category => {
+        (category.photos || []).forEach(photo => {
+          photoMap.set(String(photo.id || ''), { ...photo, categoryName: category.name || '' });
+        });
+      });
+
+      Object.entries(reactionState || {}).forEach(([photoId, state]) => {
+        const photo = photoMap.get(String(photoId));
+        if(!photo) return;
+
+        let weight = 0;
+        if(state && state.liked) weight += 2;
+        if(state && state.favourited) weight += 4;
+        if(!weight) return;
+
+        profile.hasSignals = true;
+        getPhotoTags(photo).forEach(tag => addWeight(profile.tagWeights, tag, weight));
+        addWeight(profile.categoryWeights, photo.categoryName || '', weight + 1);
+        addWeight(profile.creatorWeights, photo.credit || '', Math.max(1, weight - 1));
+      });
+
+      return profile;
+    }
+
+    function getPreferenceScore(photo, categoryName, profile){
+      if(!profile || !profile.hasSignals || !photo) return 0;
+      let score = 0;
+      getPhotoTags(photo).forEach(tag => {
+        score += profile.tagWeights[normalizeHashToken(tag)] || 0;
+      });
+      score += (profile.categoryWeights[normalizeHashToken(categoryName)] || 0) * 2;
+      score += profile.creatorWeights[normalizeHashToken(photo.credit || '')] || 0;
+      return score;
+    }
+
     let featuredCategories = loadFeaturedCategories();
+    let featuredPreferenceProfile = buildPreferenceProfile(featuredCategories);
 
     function fillCategoryFilter(){
       categoryFilter.innerHTML = '<option value="all">All Featured Categories</option>';
@@ -243,14 +343,7 @@
 
     function matchesSearch(photo, categoryName, term){
       if(!term) return true;
-      const haystack = [
-        photo.title,
-        photo.description,
-        photo.credit,
-        photo.tags,
-        categoryName
-      ].join(' ').toLowerCase();
-      return haystack.includes(term);
+      return buildSearchBlob(photo, categoryName).includes(term);
     }
 
     function renderFeatured(){
@@ -260,12 +353,24 @@
       const filteredCategories = featuredCategories
         .map(category => ({
           ...category,
-          photos: category.photos.filter(photo => {
-            const categoryMatch = selectedCategory === 'all' || category.name === selectedCategory;
-            return categoryMatch && matchesSearch(photo, category.name, searchTerm);
-          })
+          photos: category.photos
+            .filter(photo => {
+              const categoryMatch = selectedCategory === 'all' || category.name === selectedCategory;
+              return categoryMatch && matchesSearch(photo, category.name, searchTerm);
+            })
+            .sort((a, b) => {
+              const preferenceDiff = getPreferenceScore(b, category.name, featuredPreferenceProfile) - getPreferenceScore(a, category.name, featuredPreferenceProfile);
+              if(preferenceDiff !== 0) return preferenceDiff;
+              return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
+            })
         }))
-        .filter(category => category.photos.length > 0);
+        .filter(category => category.photos.length > 0)
+        .sort((a, b) => {
+          const aScore = Math.max(...a.photos.map(photo => getPreferenceScore(photo, a.name, featuredPreferenceProfile)), 0);
+          const bScore = Math.max(...b.photos.map(photo => getPreferenceScore(photo, b.name, featuredPreferenceProfile)), 0);
+          if(bScore !== aScore) return bScore - aScore;
+          return b.photos.length - a.photos.length;
+        });
 
       if(!filteredCategories.length){
         featuredSections.innerHTML = '<div class="empty-box">No featured photos matched your search yet. Try another category or clear the filters.</div>';
@@ -278,7 +383,7 @@
           const formattedDate = createdAt && !Number.isNaN(createdAt.getTime())
             ? createdAt.toLocaleDateString(undefined, { year:'numeric', month:'short', day:'numeric' })
             : 'Recently added';
-          const tags = String(photo.tags || '').split(/[,|]/).map(tag => tag.trim()).filter(Boolean).slice(0, 2);
+          const tags = getPhotoTags(photo).slice(0, 3);
           const image = photo.image || FALLBACK_IMAGE;
           const categoryLink = `category.html?category=${encodeURIComponent(category.name)}`;
 
@@ -334,6 +439,13 @@
       categoryFilter.value = 'all';
       renderFeatured();
     });
+
+    if(featuredPreferenceProfile.hasSignals){
+      const heroText = document.querySelector('.hero-content p');
+      if(heroText){
+        heroText.textContent = 'Discover standout photos selected across the PixNest collection, with featured results weighted toward the hashtags, creators, and categories you like most.';
+      }
+    }
 
     fillCategoryFilter();
     renderFeatured();

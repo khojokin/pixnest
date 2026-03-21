@@ -1436,14 +1436,14 @@
       <div class="section-head">
         <div>
           <h2 id="exploreHeading">Explore Photos</h2>
-          <p id="exploreText">Search across categories, creators, descriptions, and trending photo collections.</p>
+          <p id="exploreText">Search across categories, creators, descriptions, hashtags, and trending photo collections.</p>
         </div>
       </div>
 
       <div class="search-bar">
         <div class="search-input-wrap">
           <i class="fa-solid fa-magnifying-glass"></i>
-          <input type="text" id="searchInput" placeholder="Search photos, creators, tags or categories">
+          <input type="text" id="searchInput" placeholder="Search photos, creators, tags, categories, or #hashtags">
         </div>
 
         <select id="categoryFilter" class="search-select">
@@ -1901,14 +1901,58 @@ function getSafePhotoTitle(photo){
       return "Photo on PixNest";
     }
 
-    
-function getPhotoTags(photo){
-  return (photo.tags || "")
-    .split(/[,|]/)
-    .map(tag => tag.trim())
-    .filter(Boolean)
-    .filter(tag => !isLikelyFileName(tag));
-}
+    function normalizeHashToken(value){
+      return String(value || "")
+        .trim()
+        .toLowerCase()
+        .replace(/^#+/, "")
+        .replace(/\s+/g, "-")
+        .replace(/[^a-z0-9_-]+/g, "")
+        .trim();
+    }
+
+    function extractHashtagsFromText(value){
+      const matches = String(value || "").match(/#[a-z0-9_-]+/gi) || [];
+      return [...new Set(matches.map(tag => normalizeHashToken(tag)).filter(Boolean))];
+    }
+
+    function getPhotoTags(photo){
+      const explicitTags = String(photo.tags || "")
+        .split(/[,|]/)
+        .map(tag => String(tag).trim())
+        .filter(Boolean)
+        .map(tag => tag.replace(/^#+/, "").trim())
+        .filter(Boolean)
+        .filter(tag => !isLikelyFileName(tag));
+
+      const hashtagTags = [
+        photo.tags,
+        getSafePhotoTitle(photo),
+        getDescription(photo),
+        photo.category,
+        getCreatorName(photo)
+      ].flatMap(extractHashtagsFromText);
+
+      return [...new Set([...explicitTags, ...hashtagTags])];
+    }
+
+    function buildPhotoSearchBlob(photo){
+      const tags = getPhotoTags(photo);
+      const hashtags = tags
+        .map(tag => normalizeHashToken(tag))
+        .filter(Boolean)
+        .map(tag => `#${tag}`);
+
+      return [
+        getSafePhotoTitle(photo),
+        getDescription(photo),
+        photo.tags,
+        getCreatorName(photo),
+        photo.category,
+        ...tags,
+        ...hashtags
+      ].join(" ").toLowerCase();
+    }
 
     function getNumberValue(photo, keys = []){
       for(const key of keys){
@@ -1997,6 +2041,58 @@ function getPhotoTags(photo){
 
       saveReactionState();
       refreshPhotoDisplays();
+    }
+
+
+    function addWeight(bucket, key, amount){
+      const safeKey = normalizeHashToken(key);
+      if(!safeKey || !amount) return;
+      bucket[safeKey] = (bucket[safeKey] || 0) + amount;
+    }
+
+    function buildPreferenceProfile(rows = allPhotos){
+      const profile = {
+        tagWeights: {},
+        categoryWeights: {},
+        creatorWeights: {},
+        hasSignals: false
+      };
+
+      const photoMap = new Map((rows || []).map(photo => [String(getPhotoId(photo)), photo]));
+
+      Object.entries(reactionState || {}).forEach(([photoId, state]) => {
+        const photo = photoMap.get(String(photoId));
+        if(!photo) return;
+
+        let weight = 0;
+        if(state && state.liked) weight += 2;
+        if(state && state.favourited) weight += 4;
+        if(!weight) return;
+
+        profile.hasSignals = true;
+        getPhotoTags(photo).forEach(tag => addWeight(profile.tagWeights, tag, weight));
+        addWeight(profile.categoryWeights, photo.category || '', weight + 1);
+        addWeight(profile.creatorWeights, getCreatorName(photo), Math.max(1, weight - 1));
+      });
+
+      return profile;
+    }
+
+    function getPreferenceScore(photo, profile){
+      if(!profile || !profile.hasSignals || !photo) return 0;
+
+      let score = 0;
+      getPhotoTags(photo).forEach(tag => {
+        score += profile.tagWeights[normalizeHashToken(tag)] || 0;
+      });
+      score += (profile.categoryWeights[normalizeHashToken(photo.category || '')] || 0) * 2;
+      score += profile.creatorWeights[normalizeHashToken(getCreatorName(photo))] || 0;
+
+      const state = getPhotoReactionState(getPhotoId(photo));
+      if(state.liked) score += 18;
+      if(state.favourited) score += 24;
+
+      return score;
     }
 
     function applyFooterText(){
@@ -3119,15 +3215,8 @@ async function openLightbox(photo){
       const trendingIds = getTrendingIds(allPhotos);
 
       let rows = allPhotos.filter(photo => {
-        const text = [
-          getSafePhotoTitle(photo),
-          photo.description,
-          photo.tags,
-          getCreatorName(photo),
-          photo.category
-        ].join(" ").toLowerCase();
-
-        const matchesText = !searchValue || text.includes(searchValue);
+        const searchBlob = buildPhotoSearchBlob(photo);
+        const matchesText = !searchValue || searchBlob.includes(searchValue);
         const matchesCategory = selectedCategory === "all" || String(photo.category || "") === selectedCategory;
 
         let matchesFilter = true;
@@ -3142,13 +3231,24 @@ async function openLightbox(photo){
         return matchesText && matchesCategory && matchesFilter;
       });
 
-      if(filterValue === "recent"){
-        rows = [...rows].sort((a, b) => {
+      const preferenceProfile = buildPreferenceProfile(allPhotos);
+
+      rows = [...rows].sort((a, b) => {
+        if(filterValue === "recent"){
           const aDate = new Date(getPostDateValue(a) || 0).getTime();
           const bDate = new Date(getPostDateValue(b) || 0).getTime();
-          return bDate - aDate;
-        });
-      }
+          if(bDate !== aDate) return bDate - aDate;
+        }
+
+        const preferenceDiff = getPreferenceScore(b, preferenceProfile) - getPreferenceScore(a, preferenceProfile);
+        if(preferenceDiff !== 0) return preferenceDiff;
+
+        const am = getPhotoMetrics(a);
+        const bm = getPhotoMetrics(b);
+        const as = (am.views * 2) + (am.likes * 3) + (am.favourites * 3) + (a.featured ? 10 : 0);
+        const bs = (bm.views * 2) + (bm.likes * 3) + (bm.favourites * 3) + (b.featured ? 10 : 0);
+        return bs - as;
+      });
 
       return rows;
     }
@@ -3173,7 +3273,7 @@ async function openLightbox(photo){
         heroTitle.textContent = homepage.exploreTitle || "Explore Photos";
         heroDescription.textContent = homepage.exploreText || "Browse powerful visuals, trending uploads, featured collections, and premium photography from creators on PixNest.";
         exploreHeading.textContent = homepage.exploreTitle || "Explore Photos";
-        exploreText.textContent = homepage.exploreText || "Search across categories, creators, descriptions, and trending photo collections.";
+        exploreText.textContent = homepage.exploreText || "Search across categories, creators, descriptions, hashtags, and trending photo collections.";
         document.title = "PixNest | Explore";
       }
 

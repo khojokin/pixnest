@@ -154,11 +154,59 @@ function pixNestSetPhone(id, phone) {
   el.href = `tel:${phone || ""}`;
 }
 
+function pixNestNormalizeTagToken(value = "") {
+  return String(value)
+    .trim()
+    .toLowerCase()
+    .replace(/^#+/, "")
+    .replace(/\s+/g, "-")
+    .replace(/[^a-z0-9_-]+/g, "")
+    .trim();
+}
+
+function pixNestExtractHashtagsFromText(value = "") {
+  const matches = String(value || "").match(/#[a-z0-9_-]+/gi) || [];
+  return [...new Set(matches.map((tag) => pixNestNormalizeTagToken(tag)).filter(Boolean))];
+}
+
 function pixNestGetPhotoTags(photo) {
-  return (photo.tags || "")
+  const explicitTags = String(photo && photo.tags ? photo.tags : "")
     .split(/[,|]/)
-    .map((tag) => tag.trim())
+    .map((tag) => String(tag).trim())
+    .filter(Boolean)
+    .map((tag) => tag.replace(/^#+/, "").trim())
     .filter(Boolean);
+
+  const hashtags = [
+    photo && photo.tags,
+    photo && photo.title,
+    photo && photo.description,
+    photo && photo.categoryName,
+    photo && photo.category,
+    photo && photo.credit
+  ].flatMap((value) => pixNestExtractHashtagsFromText(value));
+
+  return [...new Set([...explicitTags, ...hashtags])];
+}
+
+function pixNestBuildPhotoSearchBlob(photo, extraParts = []) {
+  const tags = pixNestGetPhotoTags(photo);
+  const hashtags = tags.map((tag) => `#${pixNestNormalizeTagToken(tag)}`).filter(Boolean);
+
+  return [
+    photo && photo.title,
+    photo && photo.description,
+    photo && photo.credit,
+    photo && photo.tags,
+    photo && photo.categoryName,
+    photo && photo.category,
+    ...tags,
+    ...hashtags,
+    ...extraParts
+  ]
+    .filter(Boolean)
+    .join(" ")
+    .toLowerCase();
 }
 
 function pixNestFlattenPhotos(categories = []) {
