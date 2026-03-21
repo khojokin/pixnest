@@ -4,7 +4,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>PixNest | Discover Photos</title>
-    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png" />
+
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png" />
   <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png" />
   <link rel="shortcut icon" href="favicon.ico" />
   <link rel="apple-touch-icon" href="apple-touch-icon.png" />
@@ -1902,8 +1905,10 @@
           window.pixnestPromptAuthRequired(actionText);
         }else{
           const next = encodeURIComponent(window.location.href);
-          const goLogin = window.confirm(`Please log in or sign up to ${actionText}.\n\nPress OK for Login or Cancel for Sign Up.`);
-          window.location.href = goLogin ? `login.html?next=${next}` : `signup.html?next=${next}`;
+          const shouldRedirect = window.confirm(`Please log in or sign up to ${actionText}.\n\nPress OK to continue to Login or Sign Up, or Cancel to stay on this page.`);
+          if(shouldRedirect){
+            window.location.href = `login.html?next=${next}`;
+          }
         }
       }, 180);
       return false;
@@ -3062,7 +3067,22 @@
 
     function renderStats(){
       const visiblePhotos = getVisiblePhotos();
-      const categoryCount = new Set(visiblePhotos.map(photo => (photo.category || "").trim()).filter(Boolean)).size;
+      const categoryNames = new Set();
+
+      getSavedCategories().forEach(category => {
+        if(category && category.name){
+          categoryNames.add(String(category.name).trim().toLowerCase());
+        }
+      });
+
+      visiblePhotos.forEach(photo => {
+        const categoryName = String(photo.category || "").trim().toLowerCase();
+        if(categoryName){
+          categoryNames.add(categoryName);
+        }
+      });
+
+      const categoryCount = categoryNames.size;
       const creatorCount = new Set(visiblePhotos.map(photo => getCreatorName(photo)).filter(Boolean)).size;
       const featuredCount = visiblePhotos.filter(photo => photo.featured).length;
 
@@ -3302,8 +3322,8 @@
       creatorAvatar.innerHTML = buildCreatorAvatar(photo);
       lightboxCreatorTop.textContent = creatorName;
       creatorPostedDate.textContent = formatPostDate(photo);
-      creatorFollowingCount.textContent = signedIn ? compactNumber(following) : "Login";
-      creatorFollowersCount.textContent = signedIn ? compactNumber(followers) : "Login";
+      creatorFollowingCount.textContent = compactNumber(following);
+      creatorFollowersCount.textContent = compactNumber(followers);
       creatorPostsCount.textContent = compactNumber(posts);
 
       if(creatorFollowingCount.parentElement){

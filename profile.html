@@ -5,7 +5,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>PixNest | Profile</title>
-    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png" />
+
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png" />
   <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png" />
   <link rel="shortcut icon" href="favicon.ico" />
   <link rel="apple-touch-icon" href="apple-touch-icon.png" />
@@ -1839,8 +1842,10 @@ const LOCKED_SVG =
           window.pixnestPromptAuthRequired(actionText);
         }else{
           const next = encodeURIComponent(window.location.href);
-          const goLogin = window.confirm(`Please log in or sign up to ${actionText}.\n\nPress OK for Login or Cancel for Sign Up.`);
-          window.location.href = goLogin ? `login.html?next=${next}` : `signup.html?next=${next}`;
+          const shouldRedirect = window.confirm(`Please log in or sign up to ${actionText}.\n\nPress OK to continue to Login or Sign Up, or Cancel to stay on this page.`);
+          if(shouldRedirect){
+            window.location.href = `login.html?next=${next}`;
+          }
         }
       }, 180);
       return false;
@@ -2903,15 +2908,15 @@ async function handleDownloadButtonClick(button){
 
     function buildProfileStats(profile){
       const signedIn = !!getActiveUser();
-      const showSocialCounts = profile.viewingOwn || signedIn;
+      const lockMemberLists = !profile.viewingOwn && !signedIn;
       profileStats.innerHTML = `
-        <div class="stat-card ${showSocialCounts ? '' : 'needs-auth'}" data-auth-action="view who creators follow">
-          <strong>${escapeHtml(showSocialCounts ? compactNumber(profile.following) : 'Login')}</strong>
+        <div class="stat-card ${lockMemberLists ? 'needs-auth' : ''}" data-auth-action="view who creators follow">
+          <strong>${escapeHtml(compactNumber(profile.following))}</strong>
           <span>Following</span>
         </div>
 
-        <div class="stat-card ${showSocialCounts ? '' : 'needs-auth'}" data-auth-action="view creator followers">
-          <strong>${escapeHtml(showSocialCounts ? compactNumber(profile.followers) : 'Login')}</strong>
+        <div class="stat-card ${lockMemberLists ? 'needs-auth' : ''}" data-auth-action="view creator followers">
+          <strong>${escapeHtml(compactNumber(profile.followers))}</strong>
           <span>Followers</span>
         </div>
 

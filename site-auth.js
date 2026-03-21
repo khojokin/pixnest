@@ -65,7 +65,25 @@
       .site-account-dropdown button:hover{ background:rgba(250,204,21,.10); color:#facc15; }
       .site-account-dropdown button.site-danger{ color:#fecaca; }
       .site-account-dropdown button.site-danger:hover{ background:rgba(239,68,68,.10); color:#fecaca; }
+      .site-auth-modal-backdrop{ position:fixed; inset:0; background:rgba(2,6,23,.72); display:none; align-items:center; justify-content:center; padding:18px; z-index:2500; }
+      .site-auth-modal-backdrop.show{ display:flex; }
+      .site-auth-modal{ width:min(460px,100%); background:linear-gradient(180deg, rgba(17,24,39,.98), rgba(15,23,42,.98)); border:1px solid rgba(250,204,21,.22); border-radius:22px; box-shadow:0 24px 60px rgba(0,0,0,.38); padding:22px; color:#e5e7eb; }
+      .site-auth-modal h3{ margin:0 0 10px; font-size:24px; line-height:1.2; color:#facc15; }
+      .site-auth-modal p{ margin:0; color:#cbd5e1; line-height:1.6; }
+      .site-auth-modal-actions{ display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; margin-top:18px; }
+      .site-auth-modal-actions button,
+      .site-auth-modal-actions a{ min-height:46px; border-radius:14px; font-size:14px; font-weight:700; border:1px solid rgba(255,255,255,.1); cursor:pointer; text-decoration:none; display:flex; align-items:center; justify-content:center; gap:8px; padding:0 14px; }
+      .site-auth-modal-actions .site-auth-login{ background:#facc15; color:#111827; border:none; }
+      .site-auth-modal-actions .site-auth-signup{ background:rgba(250,204,21,.12); color:#facc15; }
+      .site-auth-modal-actions .site-auth-cancel{ background:transparent; color:#e5e7eb; }
+      .site-auth-modal-actions .site-auth-login:hover,
+      .site-auth-modal-actions .site-auth-signup:hover,
+      .site-auth-modal-actions .site-auth-cancel:hover{ transform:translateY(-1px); }
       @media (max-width:860px){
+        .site-auth-modal-actions{ grid-template-columns:1fr; }
+        .site-auth-links{ width:100%; flex-direction:column; align-items:stretch; padding-top:10px; }
+        .site-auth-links .nav-auth-btn,
+        .site-auth-links a,
         .site-auth-links{ width:100%; flex-direction:column; align-items:stretch; padding-top:10px; }
         .site-auth-links .nav-auth-btn,
         .site-auth-links a,
@@ -89,6 +107,66 @@
     script.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
     script.onload = callback;
     document.head.appendChild(script);
+  }
+
+  function ensureAuthPromptShell(){
+    if(document.getElementById('siteAuthPromptBackdrop')) return;
+
+    const backdrop = document.createElement('div');
+    backdrop.className = 'site-auth-modal-backdrop';
+    backdrop.id = 'siteAuthPromptBackdrop';
+    backdrop.innerHTML = `
+      <div class="site-auth-modal" role="dialog" aria-modal="true" aria-labelledby="siteAuthPromptTitle">
+        <h3 id="siteAuthPromptTitle">Sign in required</h3>
+        <p id="siteAuthPromptMessage">Please log in or sign up to continue.</p>
+        <div class="site-auth-modal-actions">
+          <button type="button" class="site-auth-login" id="siteAuthPromptLogin">Login</button>
+          <button type="button" class="site-auth-signup" id="siteAuthPromptSignup">Sign Up</button>
+          <button type="button" class="site-auth-cancel" id="siteAuthPromptCancel">Stay Here</button>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(backdrop);
+
+    const closePrompt = () => backdrop.classList.remove('show');
+
+    backdrop.addEventListener('click', (event) => {
+      if(event.target === backdrop) closePrompt();
+    });
+
+    document.getElementById('siteAuthPromptCancel').addEventListener('click', closePrompt);
+
+    document.getElementById('siteAuthPromptLogin').addEventListener('click', () => {
+      const next = encodeURIComponent(window.location.href);
+      closePrompt();
+      window.location.href = `login.html?next=${next}`;
+    });
+
+    document.getElementById('siteAuthPromptSignup').addEventListener('click', () => {
+      const next = encodeURIComponent(window.location.href);
+      closePrompt();
+      window.location.href = `signup.html?next=${next}`;
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if(event.key === 'Escape' && backdrop.classList.contains('show')){
+        closePrompt();
+      }
+    });
+  }
+
+  function openAuthPrompt(actionText){
+    ensureAuthPromptShell();
+    const backdrop = document.getElementById('siteAuthPromptBackdrop');
+    const message = document.getElementById('siteAuthPromptMessage');
+    const action = String(actionText || 'continue').trim();
+    if(message){
+      message.textContent = `Please log in or sign up to ${action}. Choose where to go, or stay on this page.`;
+    }
+    if(backdrop){
+      backdrop.classList.add('show');
+    }
   }
 
   function removeExistingAuthBits(){
@@ -269,6 +347,7 @@
     standardizeNav();
     removeHelpTeamSection();
     showIdleNoticeIfNeeded();
+    ensureAuthPromptShell();
 
     ensureSupabase(async function(){
       try{
@@ -278,10 +357,7 @@
         const updateUi = async (sessionUser) => {
           window.pixnestAuthUser = sessionUser || null;
           window.pixnestPromptAuthRequired = function(actionText){
-            const action = String(actionText || 'continue').trim();
-            const next = encodeURIComponent(window.location.href);
-            const goLogin = window.confirm(`Please log in or sign up to ${action}.\n\nPress OK for Login or Cancel for Sign Up.`);
-            window.location.href = goLogin ? `login.html?next=${next}` : `signup.html?next=${next}`;
+            openAuthPrompt(actionText);
           };
           const isPremium = await getPremiumState(sessionUser, client);
           window.pixnestUserIsPremium = isPremium;
