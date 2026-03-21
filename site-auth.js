@@ -71,9 +71,20 @@
     style.textContent = `
       html, body { min-height:100%; }
       body.site-flex-page { min-height:100vh !important; display:flex !important; flex-direction:column !important; }
+      header{ padding:16px 0 !important; border-bottom:1px solid rgba(255,255,255,.08) !important; background:#0f172a !important; position:sticky !important; top:0 !important; z-index:1000 !important; }
+      header .container.nav{ width:min(1200px,92%) !important; margin:auto !important; display:flex !important; align-items:center !important; justify-content:space-between !important; gap:24px !important; }
+      .logo-wrap{ display:flex !important; align-items:center !important; gap:14px !important; text-decoration:none !important; }
+      .logo-mark{ width:54px !important; height:54px !important; min-width:54px !important; min-height:54px !important; border-radius:18px !important; display:inline-flex !important; align-items:center !important; justify-content:center !important; font-size:30px !important; font-weight:900 !important; }
+      .logo-title{ font-size:24px !important; line-height:1 !important; font-weight:800 !important; color:#facc15 !important; }
+      .logo-sub{ display:block !important; font-size:12px !important; letter-spacing:.12em !important; text-transform:uppercase !important; color:#e5e7eb !important; opacity:.92 !important; margin-top:4px !important; }
+      .nav-right{ display:flex !important; align-items:center !important; gap:14px !important; margin-left:auto !important; }
       body.site-flex-page > footer { margin-top:auto !important; }
       .site-auth-links{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-left:auto; }
       .nav{ align-items:center !important; }
+      .nav-links{ display:flex !important; align-items:center !important; gap:20px !important; }
+      .nav-links a{ display:inline-flex !important; align-items:center !important; min-height:44px !important; padding:10px 0 !important; font-size:15px !important; font-weight:700 !important; }
+      .menu-toggle, .nav-toggle{ width:56px !important; height:56px !important; min-width:56px !important; min-height:56px !important; padding:0 !important; border-radius:18px !important; display:flex !important; flex-direction:column !important; align-items:center !important; justify-content:center !important; gap:5px !important; border:1px solid rgba(250,204,21,.22) !important; background:transparent !important; }
+      .menu-toggle span, .nav-toggle span{ display:block !important; width:20px !important; height:2px !important; border-radius:999px !important; background:#facc15 !important; }
       .nav-links{ margin-left:auto !important; justify-content:flex-end !important; }
       .menu-toggle{ flex-shrink:0 !important; }
       .site-auth-links .nav-auth-btn,
@@ -113,10 +124,10 @@
 
       .pixnest-extra-actions{ display:flex; gap:8px; flex-wrap:wrap; margin-left:0 !important; }
       .pixnest-extra-actions .pixnest-repost-btn{
-        width:48px !important;
-        height:48px !important;
-        min-width:48px !important;
-        min-height:48px !important;
+        width:42px !important;
+        height:42px !important;
+        min-width:42px !important;
+        min-height:42px !important;
         padding:0 !important;
         border-radius:999px !important;
         position:relative;
@@ -148,15 +159,17 @@
         line-height:1;
         box-shadow:0 6px 16px rgba(0,0,0,.22);
       }
-      #viewCreatorProfileBtn{ display:none !important; }
-      .photo-stats{ gap:10px !important; align-items:center !important; flex-wrap:wrap !important; }
+      #viewCreatorProfileBtn{ display:inline-flex !important; }
+      .photo-stats{ gap:8px !important; align-items:center !important; flex-wrap:wrap !important; }
+      .lightbox .creator-actions-line{ display:grid !important; grid-template-columns:repeat(3,minmax(0,1fr)) !important; gap:10px !important; }
+      .lightbox .creator-line-btn{ min-height:42px !important; padding:10px 12px !important; font-size:13px !important; border-radius:14px !important; }
       .visual-card .photo-stat,
       .card-bottom-right .photo-stat,
       .pixnest-compact-stats .photo-stat{
-        width:56px !important;
-        height:56px !important;
-        min-width:56px !important;
-        min-height:56px !important;
+        width:50px !important;
+        height:50px !important;
+        min-width:50px !important;
+        min-height:50px !important;
         padding:0 !important;
         border-radius:999px !important;
         display:inline-flex !important;
@@ -171,10 +184,10 @@
       }
       .visual-card .photo-stat i,
       .card-bottom-right .photo-stat i,
-      .pixnest-compact-stats .photo-stat i{ font-size:14px !important; color:#facc15 !important; }
+      .pixnest-compact-stats .photo-stat i{ font-size:13px !important; color:#facc15 !important; }
       .visual-card .photo-stat > span,
       .card-bottom-right .photo-stat > span,
-      .pixnest-compact-stats .photo-stat > span{ font-size:12px !important; font-weight:800 !important; color:#f8fafc !important; }
+      .pixnest-compact-stats .photo-stat > span{ font-size:11px !important; font-weight:800 !important; color:#f8fafc !important; }
       .visual-card .photo-stat::after,
       .card-bottom-right .photo-stat::after,
       .pixnest-compact-stats .photo-stat::after{ display:none !important; content:none !important; }
@@ -186,10 +199,10 @@
       }
       .lightbox .photo-stats{ gap:12px !important; align-items:center !important; }
       .lightbox .photo-stat{
-        width:66px !important;
-        height:66px !important;
-        min-width:66px !important;
-        min-height:66px !important;
+        width:58px !important;
+        height:58px !important;
+        min-width:58px !important;
+        min-height:58px !important;
         padding:0 !important;
         border-radius:999px !important;
         display:inline-flex !important;
@@ -201,8 +214,8 @@
         border:1px solid rgba(255,255,255,.18) !important;
         box-shadow:0 10px 24px rgba(0,0,0,.18) !important;
       }
-      .lightbox .photo-stat i{ font-size:16px !important; color:#facc15 !important; }
-      .lightbox .photo-stat > span{ font-size:13px !important; font-weight:800 !important; color:#fff !important; }
+      .lightbox .photo-stat i{ font-size:14px !important; color:#facc15 !important; }
+      .lightbox .photo-stat > span{ font-size:11px !important; font-weight:800 !important; color:#fff !important; }
       .lightbox .photo-stat::after{ display:none !important; content:none !important; }
       .lightbox .photo-stat.react-btn.active{ background:rgba(250,204,21,.18) !important; border-color:rgba(250,204,21,.34) !important; }
 
@@ -212,7 +225,8 @@
       .lightbox .creator-count strong{ font-size:15px !important; }
       .lightbox .creator-count span{ font-size:11px !important; }
       .lightbox .lightbox-actions{ gap:12px !important; }
-      .lightbox .lightbox-social{ background:#0f172a !important; border-color:rgba(255,255,255,.14) !important; }
+      .lightbox .lightbox-social{ background:#0f172a !important; border-color:rgba(255,255,255,.14) !important; width:44px !important; height:44px !important; min-width:44px !important; min-height:44px !important; border-radius:999px !important; }
+      .action-icon{ width:42px !important; height:42px !important; min-width:42px !important; min-height:42px !important; border-radius:999px !important; }
 
       .account-menu-wrap,
       .account-menu-toggle,
@@ -244,6 +258,7 @@
       }
       @media (max-width:860px){
         .nav-links a.active::after{ display:block !important; bottom:-4px !important; }
+        .menu-toggle, .nav-toggle{ width:52px !important; height:52px !important; min-width:52px !important; min-height:52px !important; }
       }
 
       @media (max-width:860px){
@@ -273,7 +288,7 @@
         .lightbox .creator-social-proof{ grid-template-columns:repeat(3,minmax(0,1fr)) !important; gap:8px !important; }
         .lightbox .creator-count{ padding:8px 6px !important; border-radius:14px !important; }
         .lightbox .photo-stats{ display:grid !important; grid-template-columns:repeat(3,minmax(0,1fr)) !important; }
-        .lightbox .photo-stat[data-label]{ min-width:0 !important; min-height:76px !important; padding:10px 8px !important; border-radius:18px !important; }
+        .lightbox .photo-stat[data-label]{ min-width:0 !important; min-height:64px !important; padding:8px 6px !important; border-radius:16px !important; }
         .lightbox .lightbox-actions{ display:grid !important; grid-template-columns:repeat(4,minmax(0,1fr)) !important; }
         .lightbox .lightbox-social{ margin:0 auto !important; }
         .lightbox .creator-menu-actions{ flex-direction:column !important; }

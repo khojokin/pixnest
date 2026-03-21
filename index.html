@@ -2914,37 +2914,7 @@
         `;
       }
 
-      const shareText = getShareTitle(photo);
-      const imageUrl = photo._resolvedImageUrl || photo.image_url || "";
-      const downloadName = getDownloadFileName(photo, imageUrl);
-
-      return `
-        <div class="card-bottom-left">
-          <button
-            type="button"
-            class="action-icon share-btn"
-            aria-label="Share"
-            title="Share"
-            data-share-url="${escapeHtml(imageUrl || window.location.href)}"
-            data-share-title="${escapeHtml(shareText)}"
-            data-stop-card
-          >
-            <i class="fa-solid fa-share-nodes"></i>
-          </button>
-
-          <button
-            type="button"
-            class="action-icon download-btn"
-            data-download-url="${escapeHtml(imageUrl)}"
-            data-download-name="${escapeHtml(downloadName)}"
-            aria-label="Download image"
-            title="Download image"
-            data-stop-card
-          >
-            <i class="fa-solid fa-download"></i>
-          </button>
-        </div>
-      `;
+      return ``;
     }
 
     function buildPhotoCard(photo, trendingSet = new Set()){
