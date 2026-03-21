@@ -2669,13 +2669,14 @@ function getPhotoTags(photo){
             data-reaction="like"
             aria-label="Like photo"
             title="Like photo"
+            data-label="Likes"
             ${stopCardAttr}
           >
             <i class="fa-solid fa-heart"></i>
             <span>${escapeHtml(compactNumber(metrics.likes))}</span>
           </button>
 
-          <span class="photo-stat" aria-label="Views">
+          <span class="photo-stat" aria-label="Views" data-label="Views">
             <i class="fa-solid fa-eye"></i>
             <span>${escapeHtml(compactNumber(metrics.views))}</span>
           </span>
@@ -2687,6 +2688,7 @@ function getPhotoTags(photo){
             data-reaction="favourite"
             aria-label="Favourite photo"
             title="Favourite photo"
+            data-label="Favourites"
             ${stopCardAttr}
           >
             <i class="fa-solid fa-star"></i>

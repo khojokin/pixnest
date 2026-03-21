@@ -1113,7 +1113,7 @@
 
     function getMissingColumnFromError(error){
       const message = String(error?.message || error?.error_description || error || "");
-      const match = message.match(/Could not find the '([^']+)' column/i);
+      const match = message.match(/Could not find the '([^']+)' column/i) || message.match(/column \"?([^\"']+)\"? of .* does not exist/i);
       return match ? match[1] : "";
     }
 

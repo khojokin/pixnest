@@ -104,6 +104,16 @@
       .pixnest-extra-actions{ display:flex; gap:8px; flex-wrap:wrap; margin-left:6px; }
       .pixnest-extra-actions .photo-stat{ border:1px solid rgba(255,255,255,.08); background:rgba(15,23,42,.82); color:#e5e7eb; }
       .pixnest-extra-actions .photo-stat.active{ color:#facc15; border-color:rgba(250,204,21,.28); }
+      #viewCreatorProfileBtn{ display:none !important; }
+      .photo-stats{ gap:10px !important; align-items:stretch !important; flex-wrap:wrap !important; }
+      .photo-stat[data-label]{ display:flex !important; flex-direction:column !important; align-items:center !important; justify-content:center !important; gap:6px !important; min-width:82px !important; min-height:76px !important; padding:10px 12px !important; border-radius:18px !important; background:rgba(255,255,255,.08) !important; border:1px solid rgba(255,255,255,.12) !important; line-height:1.1 !important; }
+      .photo-stat[data-label] > span{ font-size:14px !important; font-weight:800 !important; color:#f8fafc !important; }
+      .photo-stat[data-label] i{ font-size:15px !important; color:#facc15 !important; }
+      .photo-stat[data-label]::after{ content:attr(data-label); font-size:11px; font-weight:600; color:#cbd5e1; }
+      .pixnest-extra-actions{ margin-left:0 !important; }
+      @media (max-width:860px){
+        .nav-links a.active::after{ display:block !important; bottom:-4px !important; }
+      }
 
       @media (max-width:860px){
         .site-auth-modal-actions{ grid-template-columns:1fr; }
@@ -315,7 +325,7 @@
     menuWrap.innerHTML = `
       <button class="site-account-menu-toggle" id="siteAccountMenuToggle" aria-label="Open account menu"><i class="fa-solid fa-bars"></i></button>
       <div class="site-account-dropdown" id="siteAccountDropdown">
-        <a href="profile.html"><i class="fa-solid fa-user"></i>Profile</a>
+        <a href="account.html"><i class="fa-solid fa-user"></i>My Account</a>
         <a href="account.html"><i class="fa-solid fa-sliders"></i>Profile Settings</a>
         <a href="upload.html"><i class="fa-solid fa-upload"></i>Upload</a>
         <a href="professional-dashboard.html"><i class="fa-solid fa-chart-line"></i>Creator Dashboard</a>
@@ -522,13 +532,13 @@
     const holder = document.createElement('div');
     holder.className = 'pixnest-extra-actions';
     holder.innerHTML = `
-      <button type="button" class="photo-stat pixnest-repost-btn ${info.active ? 'active' : ''}" data-photo-id="${photoId}" data-stop-card title="Repost photo" aria-label="Repost photo">
+      <button type="button" class="photo-stat pixnest-repost-btn ${info.active ? 'active' : ''}" data-photo-id="${photoId}" data-stop-card title="Repost photo" aria-label="Repost photo" data-label="Reposts">
         <i class="fa-solid fa-retweet"></i>
         <span>${info.count}</span>
       </button>
-      <button type="button" class="photo-stat pixnest-report-btn" data-photo-id="${photoId}" data-stop-card title="Report photo" aria-label="Report photo">
+      <button type="button" class="photo-stat pixnest-report-btn" data-photo-id="${photoId}" data-stop-card title="Report photo" aria-label="Report photo" data-label="Report">
         <i class="fa-solid fa-flag"></i>
-        <span>Report</span>
+        <span>1</span>
       </button>
     `;
     statsWrap.appendChild(holder);
