@@ -1,0 +1,22 @@
+PixNest auth next steps that still need backend/dashboard setup
+
+1. Google sign-in
+- Enable Google provider in Supabase Auth > Providers.
+- Add your live site URL and callback URL in Google Cloud and Supabase.
+
+2. Apple / iCloud sign-in
+- Enable Apple provider in Supabase Auth > Providers.
+- Apple sign-in also covers people using Apple / iCloud accounts.
+- You must add Apple service IDs, keys, and redirect URLs in both Apple Developer and Supabase.
+
+3. Login alert emails
+- This needs a backend hook or edge function after successful login.
+- Frontend pages alone cannot reliably send trusted login alert emails.
+
+4. Phone-based 2FA / SMS challenges
+- This needs Supabase MFA plus an SMS provider configured in your auth backend.
+- Truly random “sometimes ask for code” logic must be handled on the auth backend, not only in page JavaScript.
+
+5. Post reports table (optional but recommended)
+- The website now tries to save reports to a post_reports table if it exists.
+- If it does not exist, reports fall back to local browser storage.

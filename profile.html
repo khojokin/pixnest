@@ -1798,6 +1798,12 @@ const LOCKED_SVG =
       }
     });
 
+    window.addEventListener('pixnest-repost-change', () => {
+      if(targetProfile && targetProfile.viewingOwn){
+        renderProfilePage(buildTargetProfile(allPhotos.filter(matchesTargetProfile)));
+      }
+    });
+
     window.addEventListener("resize", () => {
       if(window.innerWidth > 768){
         navLinks.classList.remove("show");
@@ -1940,6 +1946,31 @@ const LOCKED_SVG =
       sessionStorage.setItem(VIEWED_SESSION_KEY, JSON.stringify(viewedSession));
     }
 
+
+
+    function loadRepostState(){
+      try{
+        const saved = localStorage.getItem('pixnest_photo_reposts_v1');
+        const parsed = JSON.parse(saved || '{}');
+        return parsed && typeof parsed === 'object' ? parsed : {};
+      }catch(error){
+        return {};
+      }
+    }
+
+    function getLocalRepostedPhotos(rowsPool){
+      const currentUser = getActiveUser ? getActiveUser() : null;
+      if(!currentUser) return [];
+      const keyOptions = [String(currentUser.id || '').trim(), String(currentUser.email || '').trim().toLowerCase()].filter(Boolean);
+      if(!keyOptions.length) return [];
+      const repostState = loadRepostState();
+      const pool = Array.isArray(rowsPool) ? rowsPool : allPhotos;
+      return pool.filter(photo => {
+        const entry = repostState[String(getPhotoId(photo))];
+        if(!entry || !entry.by) return false;
+        return keyOptions.some(key => entry.by[key]);
+      });
+    }
 
 let activeSessionUser = null;
 
@@ -2788,8 +2819,12 @@ async function handleDownloadButtonClick(button){
       const profileKey = derivedKey || normalize(derivedName);
       const isFollowed = rows[0] ? isCreatorFollowed(rows[0]) : false;
 
-      const repostRows = rows.filter(isRepostPhoto);
-      const postRows = rows.filter(row => !isRepostPhoto(row));
+      const localRepostRows = viewingOwn ? getLocalRepostedPhotos(allPhotos) : [];
+      const repostRows = viewingOwn
+        ? localRepostRows
+        : rows.filter(isRepostPhoto);
+      const repostIds = new Set(repostRows.map(row => String(getPhotoId(row))));
+      const postRows = rows.filter(row => !isRepostPhoto(row) && !repostIds.has(String(getPhotoId(row))));
       const favouriteRows = viewingOwn
         ? allPhotos.filter(photo => getPhotoReactionState(getPhotoId(photo)).favourited)
         : [];

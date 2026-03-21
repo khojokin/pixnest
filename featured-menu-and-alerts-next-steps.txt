@@ -1,0 +1,14 @@
+What was updated:
+- featured.html and features.html mobile hamburger navigation was strengthened.
+- Featured links now point to featured.html across the site pages patched in this zip.
+- Added SQL file: report_reason_admin_alerts_policy_setup.sql
+- Added SQL file: report_review_examples.sql
+
+What still needs Supabase action:
+1) Run post_reports_setup.sql first if you have not already.
+2) Run helpers/admin SQL that creates public.is_admin(uuid) before running the new admin alerts SQL.
+3) Then run report_reason_admin_alerts_policy_setup.sql.
+
+Notes:
+- The website can submit reports from the front end, but admin flags/alerts only work after the SQL is run in Supabase.
+- If you want an admin alerts bell on the dashboard, that still needs a dashboard UI patch.

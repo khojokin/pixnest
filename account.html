@@ -2748,7 +2748,9 @@
     }
 
     function getMyReposts(){
-      return allPhotos.filter(photo => currentUserMatchesRepost(photo) || (currentUserMatchesPhoto(photo) && isRepostRecord(photo)));
+      const localRows = getLocalRepostedPhotos(allPhotos);
+      const localIds = new Set(localRows.map(photo => String(getPhotoId(photo))));
+      return allPhotos.filter(photo => localIds.has(String(getPhotoId(photo))) || currentUserMatchesRepost(photo) || (currentUserMatchesPhoto(photo) && isRepostRecord(photo)));
     }
 
     function getMyFavourites(){

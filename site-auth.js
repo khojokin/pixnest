@@ -9,7 +9,7 @@
     { href:'index.html', label:'Home', keys:['index.html',''] },
     { href:'explore.html', label:'Explore', keys:['explore.html'] },
     { href:'category.html', label:'Categories', keys:['category.html'] },
-    { href:'features.html', label:'Featured', keys:['features.html','featured.html','premiumplans.html'] },
+    { href:'featured.html', label:'Featured', keys:['featured.html','features.html','premiumplans.html'] },
     { href:'premium.html', label:'Premium', keys:['premium.html','checkout.html','payment.html'] },
     { href:'contact.html', label:'Contact', keys:['contact.html','help.html'] }
   ];
@@ -37,7 +37,7 @@
 
   function isPublicAuthPage(){
     const page = currentPage();
-    return page === 'login.html' || page === 'signup.html';
+    return page === 'login.html' || page === 'signup.html' || page === 'reset-password.html';
   }
 
   function isCustomMenuPage(){
@@ -89,6 +89,22 @@
       .site-auth-modal-actions .site-auth-login:hover,
       .site-auth-modal-actions .site-auth-signup:hover,
       .site-auth-modal-actions .site-auth-cancel:hover{ transform:translateY(-1px); }
+
+      .nav-links a{ position:relative; }
+      .nav-links a.active{ color:#facc15 !important; font-weight:700 !important; }
+      .nav-links a.active::after{ content:''; position:absolute; left:0; right:0; bottom:-8px; height:2px; border-radius:999px; background:#facc15; box-shadow:0 0 12px rgba(250,204,21,.35); }
+      .creator-badge.premium,
+      .member-badge.premium,
+      .status-badge.premium,
+      .pill.premium,
+      .auth-pill.premium,
+      .nav-chip.premium{ background:rgba(250,204,21,.12) !important; color:#facc15 !important; border-color:rgba(250,204,21,.28) !important; }
+      .pixnest-site-toast{ position:fixed; left:50%; bottom:22px; transform:translateX(-50%) translateY(20px); min-width:min(92vw,420px); background:rgba(15,23,42,.96); color:#e5e7eb; border:1px solid rgba(250,204,21,.22); border-radius:14px; box-shadow:0 18px 40px rgba(0,0,0,.3); padding:12px 16px; font-size:14px; line-height:1.45; z-index:2800; opacity:0; pointer-events:none; transition:.25s; }
+      .pixnest-site-toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
+      .pixnest-extra-actions{ display:flex; gap:8px; flex-wrap:wrap; margin-left:6px; }
+      .pixnest-extra-actions .photo-stat{ border:1px solid rgba(255,255,255,.08); background:rgba(15,23,42,.82); color:#e5e7eb; }
+      .pixnest-extra-actions .photo-stat.active{ color:#facc15; border-color:rgba(250,204,21,.28); }
+
       @media (max-width:860px){
         .site-auth-modal-actions{ grid-template-columns:1fr; }
         .site-auth-links{ width:100%; flex-direction:column; align-items:stretch; padding-top:10px; }
@@ -221,10 +237,10 @@
     preserved.forEach(node => navLinks.appendChild(node));
   }
 
-  function standardizeFooter(isPremium){
+  function standardizeFooter(isPremium, hasAccount){
     const footerLinks = document.querySelector('.footer-links');
     if(!footerLinks) return;
-    const items = isPremium ? PREMIUM_FOOTER_ITEMS : NON_PREMIUM_FOOTER_ITEMS;
+    const items = (isPremium || hasAccount) ? PREMIUM_FOOTER_ITEMS : NON_PREMIUM_FOOTER_ITEMS;
     footerLinks.innerHTML = items.map(item => `<a href="${item.href}">${item.label}</a>`).join('');
   }
 
@@ -351,6 +367,213 @@
     }
   }
 
+
+
+  const REPOST_KEY = 'pixnest_photo_reposts_v1';
+  const REPORT_KEY = 'pixnest_post_reports_v1';
+
+  function showSiteToast(message){
+    let toast = document.getElementById('pixnestSiteToast');
+    if(!toast){
+      toast = document.createElement('div');
+      toast.id = 'pixnestSiteToast';
+      toast.className = 'pixnest-site-toast';
+      document.body.appendChild(toast);
+    }
+    toast.textContent = message;
+    toast.classList.add('show');
+    clearTimeout(showSiteToast._timer);
+    showSiteToast._timer = setTimeout(() => toast.classList.remove('show'), 2400);
+  }
+
+  function loadJsonStorage(key){
+    try{
+      const parsed = JSON.parse(localStorage.getItem(key) || '{}');
+      return parsed && typeof parsed === 'object' ? parsed : {};
+    }catch(_error){
+      return {};
+    }
+  }
+
+  function saveJsonStorage(key, value){
+    localStorage.setItem(key, JSON.stringify(value));
+  }
+
+  function getRepostState(){
+    return loadJsonStorage(REPOST_KEY);
+  }
+
+  function setRepostState(next){
+    saveJsonStorage(REPOST_KEY, next);
+  }
+
+  function getReportState(){
+    return loadJsonStorage(REPORT_KEY);
+  }
+
+  function currentSignedUser(){
+    return window.pixnestAuthUser || null;
+  }
+
+  function getCurrentUserIdentity(){
+    const user = currentSignedUser();
+    if(!user) return null;
+    return {
+      id: String(user.id || '').trim(),
+      email: String(user.email || '').trim().toLowerCase()
+    };
+  }
+
+  function getPhotoIdFromCard(card){
+    return String(card?.getAttribute('data-photo-id') || '').trim();
+  }
+
+  function getRepostInfo(photoId){
+    const state = getRepostState();
+    const entry = state[String(photoId)] || { count:0, by:{} };
+    const identity = getCurrentUserIdentity();
+    const key = identity?.id || identity?.email || '';
+    const active = Boolean(key && entry.by && entry.by[key]);
+    return {
+      count: Number(entry.count || 0),
+      active
+    };
+  }
+
+  function toggleRepost(photoId){
+    const identity = getCurrentUserIdentity();
+    if(!identity){
+      if(typeof window.pixnestPromptAuthRequired === 'function') window.pixnestPromptAuthRequired('repost photos');
+      return;
+    }
+
+    const state = getRepostState();
+    const key = identity.id || identity.email;
+    const entry = state[String(photoId)] || { count:0, by:{} };
+    entry.by = entry.by || {};
+
+    if(entry.by[key]){
+      delete entry.by[key];
+      entry.count = Math.max(0, Number(entry.count || 0) - 1);
+      showSiteToast('Repost removed.');
+    }else{
+      entry.by[key] = {
+        user_id: identity.id,
+        email: identity.email,
+        created_at: new Date().toISOString()
+      };
+      entry.count = Number(entry.count || 0) + 1;
+      showSiteToast('Photo reposted to your profile.');
+    }
+
+    state[String(photoId)] = entry;
+    setRepostState(state);
+    refreshExtraPhotoActions();
+    window.dispatchEvent(new CustomEvent('pixnest-repost-change', { detail:{ photoId } }));
+  }
+
+  async function submitPostReport(client, photoId, reason){
+    const identity = getCurrentUserIdentity();
+    if(!identity){
+      if(typeof window.pixnestPromptAuthRequired === 'function') window.pixnestPromptAuthRequired('report posts');
+      return;
+    }
+
+    const trimmed = String(reason || '').trim();
+    if(!trimmed) return;
+
+    let savedToDb = false;
+    if(client){
+      try{
+        const { error } = await client.from('post_reports').insert({
+          photo_id: String(photoId),
+          reporter_user_id: identity.id || null,
+          reporter_email: identity.email || null,
+          reason: trimmed,
+          status: 'submitted'
+        });
+        if(!error) savedToDb = true;
+      }catch(_error){}
+    }
+
+    if(!savedToDb){
+      const reports = getReportState();
+      const bucket = reports[String(photoId)] || [];
+      bucket.push({
+        reporter_user_id: identity.id || null,
+        reporter_email: identity.email || null,
+        reason: trimmed,
+        created_at: new Date().toISOString()
+      });
+      reports[String(photoId)] = bucket;
+      saveJsonStorage(REPORT_KEY, reports);
+    }
+
+    showSiteToast('Report sent. Thanks for letting us know.');
+  }
+
+  function addExtraActionsToStats(statsWrap){
+    if(!statsWrap || statsWrap.querySelector('.pixnest-extra-actions')) return;
+    const card = statsWrap.closest('.visual-card');
+    const photoId = getPhotoIdFromCard(card);
+    if(!photoId) return;
+
+    const info = getRepostInfo(photoId);
+    const holder = document.createElement('div');
+    holder.className = 'pixnest-extra-actions';
+    holder.innerHTML = `
+      <button type="button" class="photo-stat pixnest-repost-btn ${info.active ? 'active' : ''}" data-photo-id="${photoId}" data-stop-card title="Repost photo" aria-label="Repost photo">
+        <i class="fa-solid fa-retweet"></i>
+        <span>${info.count}</span>
+      </button>
+      <button type="button" class="photo-stat pixnest-report-btn" data-photo-id="${photoId}" data-stop-card title="Report photo" aria-label="Report photo">
+        <i class="fa-solid fa-flag"></i>
+        <span>Report</span>
+      </button>
+    `;
+    statsWrap.appendChild(holder);
+  }
+
+  function refreshExtraPhotoActions(){
+    document.querySelectorAll('.photo-stats').forEach(addExtraActionsToStats);
+    document.querySelectorAll('.pixnest-repost-btn').forEach(button => {
+      const photoId = String(button.getAttribute('data-photo-id') || '');
+      const info = getRepostInfo(photoId);
+      button.classList.toggle('active', info.active);
+      const countSpan = button.querySelector('span');
+      if(countSpan) countSpan.textContent = String(info.count);
+    });
+    document.querySelectorAll('.creator-badge.premium i, .member-badge.premium i, .status-badge.premium i, .pill.premium i, .auth-pill.premium i, .nav-chip.premium i').forEach(icon => {
+      icon.className = 'fa-solid fa-circle-check';
+    });
+  }
+
+  function bindGlobalExtraActions(client){
+    document.addEventListener('click', async (event) => {
+      const repostBtn = event.target.closest('.pixnest-repost-btn');
+      if(repostBtn){
+        event.preventDefault();
+        event.stopPropagation();
+        toggleRepost(repostBtn.getAttribute('data-photo-id'));
+        return;
+      }
+
+      const reportBtn = event.target.closest('.pixnest-report-btn');
+      if(reportBtn){
+        event.preventDefault();
+        event.stopPropagation();
+        const reason = window.prompt('Why are you reporting this post?', '');
+        if(reason === null) return;
+        await submitPostReport(client, reportBtn.getAttribute('data-photo-id'), reason);
+      }
+    });
+
+    const observer = new MutationObserver(() => refreshExtraPhotoActions());
+    observer.observe(document.body, { childList:true, subtree:true });
+    refreshExtraPhotoActions();
+    window.addEventListener('pixnest-repost-change', refreshExtraPhotoActions);
+  }
+
   function init(){
     ensureGlobalStyles();
     ensureFooterFlex();
@@ -364,6 +587,8 @@
         const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         setupIdleLogout(client);
 
+        bindGlobalExtraActions(client);
+
         const updateUi = async (sessionUser) => {
           window.pixnestAuthUser = sessionUser || null;
           window.pixnestPromptAuthRequired = function(actionText){
@@ -371,8 +596,9 @@
           };
           const isPremium = await getPremiumState(sessionUser, client);
           window.pixnestUserIsPremium = isPremium;
-          standardizeFooter(isPremium);
+          standardizeFooter(isPremium, Boolean(sessionUser));
           buildAuthUI(sessionUser, client);
+          refreshExtraPhotoActions();
         };
 
         const { data } = await client.auth.getSession();
