@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PixNest | Verification Submission</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png" />
+  <link rel="shortcut icon" href="favicon.ico" />
+  <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;font-family:Arial, Helvetica, sans-serif;}
+
+    :root{
+      --bg:#0f172a;
+      --panel:#111827;
+      --panel2:#1e293b;
+      --text:#e5e7eb;
+      --muted:#94a3b8;
+      --accent:#facc15;
+      --line:rgba(255,255,255,0.08);
+      --success:#22c55e;
+      --danger:#ef4444;
+    }
+
+    html{scroll-behavior:smooth;min-height:100%;background:var(--bg);}
+    body{min-height:100%;background:var(--bg);color:var(--text);line-height:1.6;overflow-x:hidden;}
+    img{max-width:100%;display:block;}
+    a{text-decoration:none;color:inherit;transition:.3s;}
+    button,input,textarea,select{font-family:Arial, Helvetica, sans-serif;transition:.3s;}
+    .container{width:min(1200px,92%);margin:auto;}
+    .hidden{display:none !important;}
+
+    header{
+      position:sticky;top:0;z-index:1100;
+      background:rgba(15,23,42,0.95);
+      border-bottom:1px solid var(--line);
+      backdrop-filter:blur(8px);
+    }
+
+    .nav{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:16px 0;position:relative;}
+    .logo-wrap{display:flex;align-items:center;gap:12px;flex-shrink:0;min-width:0;}
+    .logo-mark{
+      width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,#facc15,#fb7185);
+      display:flex;align-items:center;justify-content:center;color:#111827;font-size:24px;font-weight:800;
+      box-shadow:0 0 16px rgba(250,204,21,0.28);flex-shrink:0;
+    }
+    .logo-text{display:flex;flex-direction:column;line-height:1;min-width:0;}
+    .logo-title{font-size:27px;font-weight:800;color:var(--accent);letter-spacing:.4px;white-space:nowrap;}
+    .logo-sub{font-size:11px;color:#cbd5e1;letter-spacing:1.7px;text-transform:uppercase;margin-top:4px;white-space:nowrap;}
+
+    .nav-links{display:flex;align-items:center;gap:20px;flex-wrap:wrap;}
+    .nav-links a{color:#cbd5e1;font-size:15px;position:relative;padding-bottom:4px;}
+    .nav-links a:hover,.nav-links a.active{color:var(--accent);}
+    .nav-links a.active::after{content:"";position:absolute;left:0;bottom:-4px;width:100%;height:2px;background:var(--accent);border-radius:999px;}
+
+    .menu-toggle{display:none;width:46px;height:46px;border-radius:12px;border:1px solid rgba(250,204,21,.35);background:#111827;color:var(--accent);align-items:center;justify-content:center;cursor:pointer;flex-direction:column;gap:5px;}
+    .menu-toggle span{width:20px;height:2px;border-radius:999px;background:var(--accent);display:block;}
+
+    .nav-auth-actions{display:flex;align-items:center;gap:10px;}
+    .nav-auth-link{display:inline-flex;align-items:center;justify-content:center;min-height:42px;padding:10px 16px;border-radius:12px;font-size:14px;font-weight:700;text-decoration:none;border:1px solid rgba(255,255,255,.14);}
+    .nav-auth-link.secondary{color:#e5e7eb;background:transparent;}
+    .nav-auth-link.secondary:hover{color:var(--accent);border-color:rgba(250,204,21,.32);background:rgba(250,204,21,.10);}
+    .nav-auth-link.primary{color:#111827;background:var(--accent);border:none;}
+    .nav-auth-link.primary:hover{transform:translateY(-2px);box-shadow:0 12px 24px rgba(250,204,21,.16);}
+
+    .hero{
+      padding:34px 0 14px;
+      background:
+        linear-gradient(rgba(15,23,42,.74), rgba(15,23,42,.94)),
+        url('aboutpageimg.avif') center/cover no-repeat;
+      border-bottom:1px solid var(--line);
+    }
+
+    .hero-grid{display:grid;grid-template-columns:1.04fr .96fr;gap:24px;align-items:stretch;}
+
+    .hero-copy,.hero-note{
+      background:rgba(17,24,39,.76);
+      border:1px solid rgba(255,255,255,.09);
+      border-radius:26px;
+      backdrop-filter:blur(10px);
+      box-shadow:0 16px 36px rgba(0,0,0,.20);
+      padding:28px;
+    }
+
+    .eyebrow{display:inline-flex;align-items:center;gap:10px;padding:10px 14px;border-radius:999px;background:rgba(250,204,21,.14);border:1px solid rgba(250,204,21,.26);color:#fde68a;font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;margin-bottom:16px;}
+    .hero-copy h1{font-size:44px;line-height:1.05;margin-bottom:14px;max-width:680px;}
+    .hero-copy p{color:#cbd5e1;font-size:16px;max-width:720px;}
+    .hero-list{display:grid;gap:12px;margin-top:22px;}
+    .hero-list-item{display:flex;gap:12px;align-items:flex-start;color:#e2e8f0;}
+    .hero-list-item i{color:var(--accent);margin-top:4px;}
+
+    .hero-note h2{font-size:24px;margin-bottom:12px;}
+    .hero-note p{color:#cbd5e1;font-size:15px;}
+    .note-pills{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px;}
+    .note-pill{padding:8px 12px;border-radius:999px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.09);color:#e2e8f0;font-size:12px;font-weight:700;}
+
+    .page{padding:28px 0 60px;}
+    .page-grid{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:24px;align-items:start;}
+
+    .form-card,.side-card{
+      background:linear-gradient(180deg,rgba(17,24,39,.96),rgba(15,23,42,.96));
+      border:1px solid rgba(255,255,255,.09);
+      border-radius:26px;
+      padding:26px;
+      box-shadow:0 18px 40px rgba(0,0,0,.22);
+    }
+
+    .section-title{font-size:30px;line-height:1.08;margin-bottom:8px;}
+    .section-text{color:#cbd5e1;margin-bottom:22px;font-size:15px;}
+
+    .message{display:none;padding:14px 16px;border-radius:16px;font-size:14px;margin-bottom:18px;border:1px solid transparent;}
+    .message.show{display:block;}
+    .message.error{background:rgba(239,68,68,.12);border-color:rgba(239,68,68,.22);color:#fecaca;}
+    .message.success{background:rgba(34,197,94,.12);border-color:rgba(34,197,94,.22);color:#bbf7d0;}
+    .message.info{background:rgba(59,130,246,.12);border-color:rgba(59,130,246,.22);color:#bfdbfe;}
+
+    .form-grid{display:grid;gap:22px;}
+    .grid-two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;}
+    .field{display:grid;gap:8px;}
+    .field label{font-size:14px;font-weight:700;color:#f8fafc;}
+    .field small{color:var(--muted);font-size:12px;line-height:1.5;}
+
+    .input-wrap{
+      display:flex;align-items:center;gap:10px;min-height:58px;padding:0 16px;border-radius:18px;
+      border:1px solid rgba(255,255,255,.09);background:#0f172a;color:#fff;
+    }
+    .input-wrap i{color:#94a3b8;flex-shrink:0;}
+    .input-wrap input,.input-wrap select,.input-wrap textarea{
+      width:100%;border:none;outline:none;background:transparent;color:#fff;font-size:16px;
+    }
+    .input-wrap textarea{min-height:150px;padding:16px 0;resize:vertical;line-height:1.6;}
+    .input-wrap input::placeholder,.input-wrap textarea::placeholder{color:#94a3b8;}
+    .input-wrap.readonly{background:rgba(255,255,255,.04);}
+    .input-wrap.readonly input{color:#cbd5e1;}
+    .input-wrap:focus-within{border-color:rgba(250,204,21,.34);box-shadow:0 0 0 3px rgba(250,204,21,.08);}
+
+    .checkbox-list{display:grid;gap:12px;}
+    .check-item{
+      display:flex;align-items:flex-start;gap:12px;padding:16px;border-radius:18px;
+      background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);
+    }
+    .check-item input{margin-top:4px;accent-color:var(--accent);transform:scale(1.12);}
+    .check-item span{color:#e2e8f0;font-size:14px;}
+    .check-item a{color:var(--accent);}
+
+    .submit-row{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;padding-top:4px;}
+    .submit-note{color:#94a3b8;font-size:13px;max-width:420px;}
+    .submit-btn{
+      min-width:240px;min-height:54px;padding:0 22px;border:none;border-radius:18px;background:var(--accent);color:#111827;
+      font-size:16px;font-weight:800;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:10px;
+    }
+    .submit-btn:hover{transform:translateY(-2px);box-shadow:0 14px 26px rgba(250,204,21,.18);}
+    .submit-btn:disabled{opacity:.7;cursor:not-allowed;transform:none;box-shadow:none;}
+
+    .side-card h3{font-size:22px;margin-bottom:14px;}
+    .side-card p{color:#cbd5e1;font-size:14px;}
+    .requirement-list{display:grid;gap:12px;margin-top:18px;}
+    .requirement-item{display:flex;gap:10px;align-items:flex-start;color:#e2e8f0;font-size:14px;}
+    .requirement-item i{color:var(--accent);margin-top:3px;}
+    .hint-box{margin-top:20px;padding:16px;border-radius:18px;background:rgba(59,130,246,.10);border:1px solid rgba(59,130,246,.18);}
+    .hint-box strong{display:block;margin-bottom:6px;color:#dbeafe;}
+    .support-box{margin-top:18px;padding:16px;border-radius:18px;background:rgba(250,204,21,.08);border:1px solid rgba(250,204,21,.16);}
+    .support-box strong{display:block;margin-bottom:6px;color:#fde68a;}
+
+    footer{padding:22px 0 34px;border-top:1px solid var(--line);background:#020617;}
+    .footer-inner{display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap;}
+    .footer-inner p{color:var(--muted);font-size:14px;}
+    .footer-links{display:flex;align-items:center;gap:18px;flex-wrap:wrap;}
+    .footer-links a{color:#cbd5e1;font-size:14px;}
+    .footer-links a:hover{color:var(--accent);}
+
+    @media (max-width:980px){
+      .hero-grid,.page-grid{grid-template-columns:1fr;}
+    }
+
+    @media (max-width:860px){
+      .menu-toggle{display:flex;}
+      .nav-links{
+        position:absolute;top:100%;right:0;left:0;background:rgba(15,23,42,.98);border-bottom:1px solid var(--line);padding:18px;
+        flex-direction:column;align-items:flex-start;display:none;
+      }
+      .nav-links.show{display:flex;}
+      .nav-auth-actions{width:100%;flex-direction:column;align-items:stretch;}
+      .nav-auth-link{width:100%;}
+      .grid-two{grid-template-columns:1fr;}
+      .hero-copy h1{font-size:34px;}
+    }
+
+    @media (max-width:560px){
+      .logo-title{font-size:21px;}
+      .logo-sub{font-size:9px;}
+      .hero-copy,.hero-note,.form-card,.side-card{padding:22px 18px;}
+      .section-title{font-size:26px;}
+      .submit-btn{width:100%;min-width:0;}
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container nav">
+      <a href="index.html" class="logo-wrap">
+        <span class="logo-mark">P</span>
+        <span class="logo-text">
+          <span class="logo-title">PixNest</span>
+          <span class="logo-sub">Photo Collection Site</span>
+        </span>
+      </a>
+
+      <button class="menu-toggle" id="menuToggle" aria-label="Open menu" aria-expanded="false">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+
+      <nav class="nav-links" id="navLinks">
+        <a href="index.html">Home</a>
+        <a href="explore.html">Explore</a>
+        <a href="category.html">Categories</a>
+        <a href="featured.html">Featured</a>
+        <a href="premium.html">Premium</a>
+        <a href="contact.html">Contact</a>
+        <div class="nav-auth-actions">
+          <a href="login.html" class="nav-auth-link secondary">Log In</a>
+          <a href="signup.html" class="nav-auth-link primary">Sign Up</a>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="container hero-grid">
+      <div class="hero-copy">
+        <div class="eyebrow"><i class="fa-solid fa-badge-check"></i> Verification Request</div>
+        <h1>Request a verified badge for your PixNest profile.</h1>
+        <p>Use this page to submit a full verification request with supporting links, identity details, and proof that your account represents a real creator, public figure, business, or notable brand.</p>
+        <div class="hero-list">
+          <div class="hero-list-item"><i class="fa-solid fa-check"></i><span>Explain why verification matters for your account and audience.</span></div>
+          <div class="hero-list-item"><i class="fa-solid fa-check"></i><span>Add official profile links, website links, media links, and secure proof links.</span></div>
+          <div class="hero-list-item"><i class="fa-solid fa-check"></i><span>Accept the terms before your request is sent for review.</span></div>
+        </div>
+      </div>
+
+      <aside class="hero-note">
+        <h2>What helps your application?</h2>
+        <p>Strong requests usually include a clear public identity, active social links, a website or portfolio, notable work, and at least one secure proof link for identity or business ownership.</p>
+        <div class="note-pills">
+          <span class="note-pill">Official website</span>
+          <span class="note-pill">Secure ID link</span>
+          <span class="note-pill">Press / notable mentions</span>
+          <span class="note-pill">Active public profiles</span>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <main class="page">
+    <div class="container page-grid">
+      <section class="form-card">
+        <h2 class="section-title">Verification submission</h2>
+        <p class="section-text">Fill out the request carefully. Use shareable review links only, such as Google Drive, Dropbox, OneDrive, iCloud, or your official site. Do not send broken or private links.</p>
+
+        <div class="message" id="formMessage"></div>
+
+        <form id="verificationForm" class="form-grid">
+          <div class="grid-two">
+            <div class="field">
+              <label for="fullName">Full name</label>
+              <div class="input-wrap readonly">
+                <i class="fa-solid fa-user"></i>
+                <input type="text" id="fullName" placeholder="Your full name" readonly />
+              </div>
+              <small>Loaded from your account when available.</small>
+            </div>
+
+            <div class="field">
+              <label for="email">Email address</label>
+              <div class="input-wrap readonly">
+                <i class="fa-solid fa-envelope"></i>
+                <input type="email" id="email" placeholder="Your account email" readonly />
+              </div>
+              <small>This should match the account you are requesting verification for.</small>
+            </div>
+          </div>
+
+          <div class="grid-two">
+            <div class="field">
+              <label for="displayName">Display name / creator name</label>
+              <div class="input-wrap">
+                <i class="fa-solid fa-at"></i>
+                <input type="text" id="displayName" placeholder="How your name appears publicly" required />
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="verificationType">Verification type</label>
+              <div class="input-wrap">
+                <i class="fa-solid fa-id-badge"></i>
+                <select id="verificationType" required>
+                  <option value="">Select an option</option>
+                  <option>Creator / Photographer</option>
+                  <option>Business / Brand</option>
+                  <option>Public figure</option>
+                  <option>Media / Press</option>
+                  <option>Artist / Designer</option>
+                  <option>Other notable account</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid-two">
+            <div class="field">
+              <label for="profileLink">PixNest profile link</label>
+              <div class="input-wrap">
+                <i class="fa-solid fa-link"></i>
+                <input type="url" id="profileLink" placeholder="https://pixnest.uk/profile.html?..." />
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="websiteLink">Official website or portfolio</label>
+              <div class="input-wrap">
+                <i class="fa-solid fa-globe"></i>
+                <input type="url" id="websiteLink" placeholder="https://yourwebsite.com" />
+              </div>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="whyVerified">Why should this account be verified?</label>
+            <div class="input-wrap">
+              <i class="fa-solid fa-pen"></i>
+              <textarea id="whyVerified" placeholder="Explain why your account should receive a verified badge, why people may confuse your identity, and what public trust the badge would support." required></textarea>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="notabilityLinks">Notability / media / supporting links</label>
+            <div class="input-wrap">
+              <i class="fa-solid fa-newspaper"></i>
+              <textarea id="notabilityLinks" placeholder="Add links to press features, interviews, official listings, published work, awards, portfolio pages, or notable mentions. One link per line is best."></textarea>
+            </div>
+            <small>Helpful if your account represents a public figure, recognized creator, company, or growing brand.</small>
+          </div>
+
+          <div class="grid-two">
+            <div class="field">
+              <label for="idType">Identity / business proof type</label>
+              <div class="input-wrap">
+                <i class="fa-solid fa-address-card"></i>
+                <select id="idType" required>
+                  <option value="">Select proof type</option>
+                  <option>Passport</option>
+                  <option>National ID card</option>
+                  <option>Driving licence</option>
+                  <option>Business registration document</option>
+                  <option>Company website ownership proof</option>
+                  <option>Other official document</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="proofOwnerName">Name on ID / proof</label>
+              <div class="input-wrap">
+                <i class="fa-solid fa-signature"></i>
+                <input type="text" id="proofOwnerName" placeholder="Exact name shown on the document" required />
+              </div>
+            </div>
+          </div>
+
+          <div class="grid-two">
+            <div class="field">
+              <label for="idFrontLink">Front ID / document link</label>
+              <div class="input-wrap">
+                <i class="fa-solid fa-folder-open"></i>
+                <input type="url" id="idFrontLink" placeholder="Shareable secure link" required />
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="idBackLink">Back ID / second document link</label>
+              <div class="input-wrap">
+                <i class="fa-solid fa-folder-open"></i>
+                <input type="url" id="idBackLink" placeholder="Optional second secure link" />
+              </div>
+            </div>
+          </div>
+
+          <div class="grid-two">
+            <div class="field">
+              <label for="selfieProofLink">Selfie with ID / proof link</label>
+              <div class="input-wrap">
+                <i class="fa-solid fa-camera"></i>
+                <input type="url" id="selfieProofLink" placeholder="Optional review link" />
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="businessProofLink">Business / management proof link</label>
+              <div class="input-wrap">
+                <i class="fa-solid fa-briefcase"></i>
+                <input type="url" id="businessProofLink" placeholder="Optional company or agency proof" />
+              </div>
+            </div>
+          </div>
+
+          <div class="grid-two">
+            <div class="field">
+              <label for="instagramLink">Instagram link</label>
+              <div class="input-wrap">
+                <i class="fa-brands fa-instagram"></i>
+                <input type="url" id="instagramLink" placeholder="https://instagram.com/..." />
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="xLink">X / Twitter link</label>
+              <div class="input-wrap">
+                <i class="fa-brands fa-x-twitter"></i>
+                <input type="url" id="xLink" placeholder="https://x.com/..." />
+              </div>
+            </div>
+          </div>
+
+          <div class="grid-two">
+            <div class="field">
+              <label for="tiktokLink">TikTok link</label>
+              <div class="input-wrap">
+                <i class="fa-brands fa-tiktok"></i>
+                <input type="url" id="tiktokLink" placeholder="https://tiktok.com/@..." />
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="youtubeLink">YouTube / channel link</label>
+              <div class="input-wrap">
+                <i class="fa-brands fa-youtube"></i>
+                <input type="url" id="youtubeLink" placeholder="https://youtube.com/..." />
+              </div>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="additionalNotes">Additional notes</label>
+            <div class="input-wrap">
+              <i class="fa-solid fa-comment-dots"></i>
+              <textarea id="additionalNotes" placeholder="Anything else that would help the review team verify this request."></textarea>
+            </div>
+          </div>
+
+          <div class="checkbox-list">
+            <label class="check-item">
+              <input type="checkbox" id="accuracyCheck" required />
+              <span>I confirm that the information in this request is accurate and that all proof links belong to me or to the business / public identity I represent.</span>
+            </label>
+
+            <label class="check-item">
+              <input type="checkbox" id="termsCheck" required />
+              <span>I agree to the <a href="terms.html" target="_blank" rel="noopener">Terms</a> and <a href="privacy.html" target="_blank" rel="noopener">Privacy Policy</a>, and I understand that submitting a request does not guarantee verification.</span>
+            </label>
+          </div>
+
+          <div class="submit-row">
+            <p class="submit-note">Once submitted, your request is marked for review. Please make sure every important proof link is accessible before you send it.</p>
+            <button type="submit" class="submit-btn" id="submitBtn"><i class="fa-solid fa-paper-plane"></i> Submit verification request</button>
+          </div>
+        </form>
+      </section>
+
+      <aside class="side-card">
+        <h3>Review checklist</h3>
+        <p>Before you submit, make sure your account already looks real, complete, and public-facing.</p>
+
+        <div class="requirement-list">
+          <div class="requirement-item"><i class="fa-solid fa-check"></i><span>Use your real display name or official business name.</span></div>
+          <div class="requirement-item"><i class="fa-solid fa-check"></i><span>Have a clear avatar, bio, and public-facing profile information.</span></div>
+          <div class="requirement-item"><i class="fa-solid fa-check"></i><span>Add at least one active social profile or website if available.</span></div>
+          <div class="requirement-item"><i class="fa-solid fa-check"></i><span>Use secure links for ID or proof documents that the review team can open.</span></div>
+          <div class="requirement-item"><i class="fa-solid fa-check"></i><span>Explain why people should trust that the account is authentic and notable.</span></div>
+        </div>
+
+        <div class="hint-box">
+          <strong>Good proof links</strong>
+          <p>Google Drive, Dropbox, OneDrive, iCloud share links, official portfolio links, official website pages, public press links, or business registry pages.</p>
+        </div>
+
+        <div class="support-box">
+          <strong>Already requested verification?</strong>
+          <p>This page blocks duplicate pending requests so the review queue stays clean. Wait for the current review to finish before submitting another request.</p>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <footer>
+    <div class="container footer-inner">
+      <p>©️ 2026 PixNest. Discover and share powerful visual collections.</p>
+      <div class="footer-links">
+        <a href="about.html">About</a>
+        <a href="license.html">License</a>
+        <a href="privacy.html">Privacy</a>
+        <a href="terms.html">Terms</a>
+        <a href="contact.html">Contact</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const SUPABASE_URL = "https://vigczssznfvujttdapbv.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_UmF-mmVS42XeF6PqsNnCSw_wpA35wg2";
+
+    const { createClient } = supabase;
+    const supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    const menuToggle = document.getElementById("menuToggle");
+    const navLinks = document.getElementById("navLinks");
+    const verificationForm = document.getElementById("verificationForm");
+    const formMessage = document.getElementById("formMessage");
+    const submitBtn = document.getElementById("submitBtn");
+
+    const fullNameInput = document.getElementById("fullName");
+    const emailInput = document.getElementById("email");
+    const displayNameInput = document.getElementById("displayName");
+    const profileLinkInput = document.getElementById("profileLink");
+
+    menuToggle?.addEventListener("click", () => {
+      navLinks.classList.toggle("show");
+      const expanded = menuToggle.getAttribute("aria-expanded") === "true";
+      menuToggle.setAttribute("aria-expanded", String(!expanded));
+    });
+
+    document.querySelectorAll(".nav-links a").forEach(link => {
+      link.addEventListener("click", () => {
+        if(window.innerWidth <= 860){
+          navLinks.classList.remove("show");
+          menuToggle?.setAttribute("aria-expanded", "false");
+        }
+      });
+    });
+
+    window.addEventListener("resize", () => {
+      if(window.innerWidth > 860){
+        navLinks.classList.remove("show");
+        menuToggle?.setAttribute("aria-expanded", "false");
+      }
+    });
+
+    function showMessage(text, type = "error"){
+      formMessage.className = `message show ${type}`;
+      formMessage.textContent = text;
+    }
+
+    function clearMessage(){
+      formMessage.className = "message";
+      formMessage.textContent = "";
+    }
+
+    function setLoading(isLoading){
+      submitBtn.disabled = isLoading;
+      submitBtn.innerHTML = isLoading
+        ? '<i class="fa-solid fa-spinner fa-spin"></i> Sending request...'
+        : '<i class="fa-solid fa-paper-plane"></i> Submit verification request';
+    }
+
+    function normalizeMultiLine(value){
+      return String(value || "")
+        .split("\n")
+        .map(item => item.trim())
+        .filter(Boolean)
+        .join("\n");
+    }
+
+    function safeValue(id){
+      return document.getElementById(id)?.value?.trim() || "";
+    }
+
+    async function loadUser(){
+      const { data, error } = await supabaseClient.auth.getUser();
+      if(error || !data?.user){
+        showMessage("Please log in first to submit a verification request.", "info");
+        submitBtn.disabled = true;
+        setTimeout(() => {
+          window.location.href = "login.html?next=" + encodeURIComponent(window.location.href);
+        }, 1300);
+        return null;
+      }
+
+      const user = data.user;
+      emailInput.value = user.email || "";
+
+      let profileData = null;
+      let creatorData = null;
+
+      try{
+        const [profileRes, creatorRes] = await Promise.all([
+          supabaseClient.from("profiles").select("display_name,full_name,email").eq("id", user.id).maybeSingle(),
+          supabaseClient.from("creator_profiles").select("display_name,username").eq("user_id", user.id).maybeSingle()
+        ]);
+        profileData = profileRes.data || null;
+        creatorData = creatorRes.data || null;
+      }catch(_error){
+        profileData = null;
+        creatorData = null;
+      }
+
+      const fullName = profileData?.full_name || user.user_metadata?.full_name || user.user_metadata?.name || "";
+      const displayName = creatorData?.display_name || profileData?.display_name || user.user_metadata?.display_name || fullName || user.email?.split("@")[0] || "";
+
+      fullNameInput.value = fullName;
+      displayNameInput.value = displayName;
+      profileLinkInput.value = `${window.location.origin}/profile.html?creator=${encodeURIComponent(user.id)}&name=${encodeURIComponent(displayName)}`;
+
+      return user;
+    }
+
+    verificationForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      clearMessage();
+      setLoading(true);
+
+      try{
+        const { data: authData, error: authError } = await supabaseClient.auth.getUser();
+        if(authError || !authData?.user) throw new Error("Please log in to continue.");
+
+        const user = authData.user;
+
+        const pendingCheck = await supabaseClient
+          .from("verification_requests")
+          .select("id,status")
+          .eq("user_id", user.id)
+          .eq("status", "pending")
+          .limit(1)
+          .maybeSingle();
+
+        if(pendingCheck?.data?.id){
+          throw new Error("You already have a pending verification request. Please wait for review before submitting another one.");
+        }
+
+        const reason = [
+          `Full name: ${safeValue("fullName")}`,
+          `Email: ${safeValue("email")}`,
+          `Display name: ${safeValue("displayName")}`,
+          `Verification type: ${safeValue("verificationType")}`,
+          `PixNest profile link: ${safeValue("profileLink")}`,
+          `Official website: ${safeValue("websiteLink")}`,
+          `Why verification is requested: ${safeValue("whyVerified")}`,
+          `Notability and supporting links:\n${normalizeMultiLine(safeValue("notabilityLinks")) || "None provided"}`,
+          `ID type: ${safeValue("idType")}`,
+          `Name on proof: ${safeValue("proofOwnerName")}`,
+          `ID front link: ${safeValue("idFrontLink")}`,
+          `ID back link: ${safeValue("idBackLink") || "Not provided"}`,
+          `Selfie with ID link: ${safeValue("selfieProofLink") || "Not provided"}`,
+          `Business / management proof link: ${safeValue("businessProofLink") || "Not provided"}`,
+          `Instagram link: ${safeValue("instagramLink") || "Not provided"}`,
+          `X / Twitter link: ${safeValue("xLink") || "Not provided"}`,
+          `TikTok link: ${safeValue("tiktokLink") || "Not provided"}`,
+          `YouTube link: ${safeValue("youtubeLink") || "Not provided"}`,
+          `Additional notes: ${safeValue("additionalNotes") || "None provided"}`,
+          `Accuracy confirmed: ${document.getElementById("accuracyCheck").checked ? "Yes" : "No"}`,
+          `Terms accepted: ${document.getElementById("termsCheck").checked ? "Yes" : "No"}`
+        ].join("\n\n");
+
+        const { error } = await supabaseClient
+          .from("verification_requests")
+          .insert({
+            user_id: user.id,
+            reason,
+            status: "pending"
+          });
+
+        if(error) throw error;
+
+        verificationForm.reset();
+        await loadUser();
+        showMessage("Your verification request has been submitted successfully. The review team will check it soon.", "success");
+      }catch(error){
+        showMessage(error.message || "Could not submit your verification request right now.", "error");
+      }finally{
+        setLoading(false);
+      }
+    });
+
+    loadUser();
+  </script>
+  <script src="site-auth.js"></script>
+</body>
+</html>
