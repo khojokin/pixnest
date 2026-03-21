@@ -72,24 +72,15 @@
       html, body { min-height:100%; }
       body.site-flex-page { min-height:100vh !important; display:flex !important; flex-direction:column !important; }
       body.site-flex-page > footer { margin-top:auto !important; }
-      .site-auth-links{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+      .site-auth-links{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-left:auto; }
       .site-auth-links .nav-auth-btn,
       .site-auth-links a{ display:inline-flex; align-items:center; justify-content:center; gap:8px; min-height:42px; padding:10px 14px; border-radius:12px; font-size:14px; font-weight:700; text-decoration:none; }
       .site-auth-links .secondary{ background:transparent; color:#fff; border:1px solid rgba(255,255,255,.15); }
       .site-auth-links .secondary:hover{ background:rgba(255,255,255,.06); color:#facc15; border-color:rgba(250,204,21,.28); }
       .site-auth-links .primary{ background:#facc15; color:#111827; border:none; }
       .site-auth-links .primary:hover{ transform:translateY(-2px); box-shadow:0 10px 24px rgba(250,204,21,.18); }
-      .site-account-menu-wrap{ position:relative; display:inline-flex; align-items:center; }
-      .site-account-menu-toggle{ width:46px; height:46px; border-radius:12px; border:1px solid rgba(250,204,21,.35); background:#111827; color:#facc15; display:flex; align-items:center; justify-content:center; cursor:pointer; flex-shrink:0; font-size:17px; }
-      .site-account-menu-toggle:hover{ transform:translateY(-2px); border-color:rgba(250,204,21,.45); }
-      .site-account-dropdown{ position:absolute; top:calc(100% + 10px); right:0; width:min(320px,90vw); background:#111827; border:1px solid rgba(255,255,255,.08); border-radius:18px; padding:10px; box-shadow:0 18px 36px rgba(0,0,0,.28); display:none; z-index:1500; }
-      .site-account-dropdown.show{ display:block; }
-      .site-account-dropdown a,
-      .site-account-dropdown button{ width:100%; display:flex; align-items:center; gap:10px; padding:12px 12px; border:none; background:transparent; color:#e5e7eb; border-radius:12px; font-size:14px; cursor:pointer; text-align:left; text-decoration:none; }
-      .site-account-dropdown a:hover,
-      .site-account-dropdown button:hover{ background:rgba(250,204,21,.10); color:#facc15; }
-      .site-account-dropdown button.site-danger{ color:#fecaca; }
-      .site-account-dropdown button.site-danger:hover{ background:rgba(239,68,68,.10); color:#fecaca; }
+      .site-auth-links .site-danger{ background:transparent; color:#fecaca; border:1px solid rgba(239,68,68,.25); }
+      .site-auth-links .site-danger:hover{ background:rgba(239,68,68,.10); color:#fecaca; }
       .site-auth-modal-backdrop{ position:fixed; inset:0; background:rgba(2,6,23,.72); display:none; align-items:center; justify-content:center; padding:18px; z-index:2500; }
       .site-auth-modal-backdrop.show{ display:flex; }
       .site-auth-modal{ width:min(460px,100%); background:linear-gradient(180deg, rgba(17,24,39,.98), rgba(15,23,42,.98)); border:1px solid rgba(250,204,21,.22); border-radius:22px; box-shadow:0 24px 60px rgba(0,0,0,.38); padding:22px; color:#e5e7eb; }
@@ -138,9 +129,9 @@
         .site-auth-links{ width:100%; flex-direction:column; align-items:stretch; padding-top:10px; }
         .site-auth-links .nav-auth-btn,
         .site-auth-links a,
-        .site-account-menu-wrap,
-        .site-account-menu-toggle{ width:100%; }
-        .site-account-menu-toggle{ min-height:42px; border-radius:12px; }
+        .site-auth-links{ width:100%; }
+        .site-auth-links .nav-auth-btn,
+        .site-auth-links a{ width:100%; }
       }
     `;
     document.head.appendChild(style);
@@ -240,7 +231,6 @@
     Array.from(navLinks.children).forEach(child => {
       if(
         child.classList?.contains('site-auth-links') ||
-        child.classList?.contains('site-account-menu-wrap') ||
         child.classList?.contains('nav-auth') ||
         child.id === 'authNavLinks'
       ){
@@ -335,36 +325,16 @@
       return;
     }
 
-    const menuWrap = document.createElement('div');
-    menuWrap.className = 'site-account-menu-wrap';
-    menuWrap.id = 'siteAccountMenuWrap';
-    menuWrap.innerHTML = `
-      <button class="site-account-menu-toggle" id="siteAccountMenuToggle" aria-label="Open account menu"><i class="fa-solid fa-bars"></i></button>
-      <div class="site-account-dropdown" id="siteAccountDropdown">
-        <a href="account.html"><i class="fa-solid fa-user"></i>Account</a>
-        <a href="account.html"><i class="fa-solid fa-sliders"></i>Account Settings</a>
-        <a href="upload.html"><i class="fa-solid fa-upload"></i>Upload</a>
-        <a href="professional-dashboard.html"><i class="fa-solid fa-chart-line"></i>Creator Dashboard</a>
-        <a href="premium.html"><i class="fa-solid fa-crown"></i>Premium</a>
-        <a href="contact.html"><i class="fa-solid fa-envelope"></i>Contact</a>
-        <button type="button" class="site-danger" id="siteLogoutBtn"><i class="fa-solid fa-right-from-bracket"></i>Logout</button>
-      </div>
+    authLinks.innerHTML = `
+      <a href="account.html" class="nav-auth-btn secondary"><i class="fa-solid fa-user"></i>Account</a>
+      <a href="upload.html" class="nav-auth-btn primary"><i class="fa-solid fa-upload"></i>Upload</a>
+      <button type="button" class="nav-auth-btn site-danger" id="siteLogoutBtn"><i class="fa-solid fa-right-from-bracket"></i>Logout</button>
     `;
-    navLinks.appendChild(menuWrap);
+    navLinks.appendChild(authLinks);
 
-    const toggle = document.getElementById('siteAccountMenuToggle');
-    const dropdown = document.getElementById('siteAccountDropdown');
-    toggle.addEventListener('click', e => {
-      e.stopPropagation();
-      dropdown.classList.toggle('show');
-    });
-    document.addEventListener('click', e => {
-      if(!dropdown.contains(e.target) && !toggle.contains(e.target)) dropdown.classList.remove('show');
-    });
     document.getElementById('siteLogoutBtn').addEventListener('click', async () => {
       try{
         await client.auth.signOut();
-        dropdown.classList.remove('show');
         window.location.href = 'index.html';
       }catch(_err){
         alert('Could not log out.');
