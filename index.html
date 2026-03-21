@@ -1895,11 +1895,6 @@
     let activeLightboxPhotoId = "";
     let activeCreatorKey = "";
     let siteData = loadAdminData();
-    const HOME_FETCH_LIMIT = 60;
-    const HOME_DISPLAY_LIMIT = 18;
-    let loadPhotosInFlight = null;
-    let lastLoadedUserKey = "__none__";
-    let homeInitComplete = false;
 
     function showNotice(text){
       noticeBar.textContent = text;
@@ -2962,7 +2957,7 @@
 
       return `
         <article class="visual-card ${locked ? "locked-card" : ""}" data-photo-id="${escapeHtml(photoId)}">
-          <img src="${escapeHtml(imageSrc)}" alt="${escapeHtml(locked ? "Premium photo" : getPhotoAlt(photo))}" loading="lazy" decoding="async">
+          <img src="${escapeHtml(imageSrc)}" alt="${escapeHtml(locked ? "Premium photo" : getPhotoAlt(photo))}">
 
           <div class="card-top-row">
             <div class="card-top-left">
@@ -3476,8 +3471,6 @@
       renderFeatured();
       renderTrending();
 
-      window.dispatchEvent(new CustomEvent("pixnest-content-rendered", { detail:{ page:"index" } }));
-
       if(activeLightboxPhotoId && lightbox.classList.contains("show")){
         const activePhoto = getPhotoById(activeLightboxPhotoId);
         if(activePhoto && creatorVisible(activePhoto)){
@@ -3488,52 +3481,29 @@
       }
     }
 
-    async function loadPhotos(force = false){
-      const userKey = currentUser ? String(currentUser.id || currentUser.email || "signed-in") : "guest";
-      if(!force && loadPhotosInFlight) return loadPhotosInFlight;
-      if(!force && homeInitComplete && lastLoadedUserKey === userKey && allPhotos.length){
-        refreshPhotoSections();
-        return allPhotos;
-      }
+    async function loadPhotos(){
+      try{
+        const { data, error } = await supabaseClient
+          .from("photos")
+          .select("*")
+          .order("created_at", { ascending:false })
+          .limit(36);
 
-      loadPhotosInFlight = (async () => {
-        try{
-          const { data, error } = await supabaseClient
-            .from("photos")
-            .select("*")
-            .order("created_at", { ascending:false })
-            .range(0, HOME_FETCH_LIMIT - 1);
-
-          if(error){
-            throw error;
-          }
-
-          const filtered = (Array.isArray(data) ? data : []).filter(isPhotoPubliclyApproved);
-          rawPhotos = filtered.slice(0, HOME_DISPLAY_LIMIT);
-
-          const prepared = [];
-          for(const photo of rawPhotos){
-            prepared.push(await preparePhotoForDisplay(photo));
-          }
-          allPhotos = prepared;
-          lastLoadedUserKey = userKey;
-          homeInitComplete = true;
-
-          applyAdminText();
-          refreshPhotoSections();
-          return allPhotos;
-        }catch(error){
-          console.error(error);
-          categoryGrid.innerHTML = `<div class="empty-box">Could not load categories from Supabase.</div>`;
-          featuredGrid.innerHTML = `<div class="empty-box">Could not load featured photos from Supabase.</div>`;
-          trendingGrid.innerHTML = `<div class="empty-box">Could not load trending photos from Supabase.</div>`;
-          return [];
-        }finally{
-          loadPhotosInFlight = null;
+        if(error){
+          throw error;
         }
-      })();
 
-      return loadPhotosInFlight;
+        rawPhotos = (Array.isArray(data) ? data : []).filter(isPhotoPubliclyApproved);
+        allPhotos = await Promise.all(rawPhotos.map(preparePhotoForDisplay));
+
+        applyAdminText();
+        refreshPhotoSections();
+      }catch(error){
+        console.error(error);
+        categoryGrid.innerHTML = `<div class="empty-box">Could not load categories from Supabase.</div>`;
+        featuredGrid.innerHTML = `<div class="empty-box">Could not load featured photos from Supabase.</div>`;
+        trendingGrid.innerHTML = `<div class="empty-box">Could not load trending photos from Supabase.</div>`;
+      }
     }
 
     homeSearchBtn.addEventListener("click", runHomeSearch);
@@ -3654,38 +3624,21 @@
     });
 
     supabaseClient.auth.onAuthStateChange(async (_event, session) => {
-      const nextUser = session?.user || null;
-      const previousUserId = currentUser?.id || "";
-      const nextUserId = nextUser?.id || "";
-      const previousPremium = isPremiumMember(currentUser);
-      const nextPremium = isPremiumMember(nextUser);
-      const identityChanged = previousUserId !== nextUserId;
-      const premiumChanged = previousPremium !== nextPremium;
-
-      currentUser = nextUser;
+      currentUser = session?.user || null;
       if(!currentUser){
         await initCurrentUser();
       }
       updateAuthUI();
-
-      if(identityChanged || premiumChanged){
-        lastLoadedUserKey = "__stale__";
-        await loadPhotos(true);
-      }
+      await loadPhotos();
     });
 
     (async function init(){
-      if(window.__PIXNEST_INDEX_BOOTED__) return;
-      window.__PIXNEST_INDEX_BOOTED__ = true;
       await initCurrentUser();
       updateAuthUI();
       applyAdminText();
-      setTimeout(() => {
-        loadPhotos();
-      }, 120);
+      await loadPhotos();
     })();
   </script>
-  <script>window.__PIXNEST_DISABLE_SITE_AUTH_OBSERVERS__ = true; window.__PIXNEST_INDEX_PAGE__ = true;</script>
   <script src="site-auth.js"></script>
 
 <script id="pixnestActiveNavSync">

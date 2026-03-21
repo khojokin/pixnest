@@ -3630,7 +3630,8 @@ async function openLightbox(photo){
         const { data, error } = await supabaseClient
           .from("photos")
           .select("*")
-          .order("created_at", { ascending:false });
+          .order("created_at", { ascending:false })
+          .limit(60);
 
         if(error){
           throw error;

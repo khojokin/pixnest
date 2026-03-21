@@ -3260,7 +3260,8 @@ async function openLightbox(photo){
         const { data, error } = await supabaseClient
           .from("photos")
           .select("*")
-          .order("created_at", { ascending:false });
+          .order("created_at", { ascending:false })
+          .limit(90);
 
         if(error){
           throw error;
@@ -3295,7 +3296,6 @@ async function openLightbox(photo){
     photoFilter.addEventListener("change", renderExplorePhotos);
 
     applyFooterText();
-    initAuthState();
     (async function initPageData(){
       await initActiveSessionUser();
       await loadPhotos();
