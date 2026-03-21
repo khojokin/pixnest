@@ -1,4 +1,6 @@
 (function(){
+  if(window.__pixnestSiteAuthBooted) return;
+  window.__pixnestSiteAuthBooted = true;
   const SUPABASE_URL = 'https://vigczssznfvujttdapbv.supabase.co';
   const SUPABASE_KEY = 'sb_publishable_UmF-mmVS42XeF6PqsNnCSw_wpA35wg2';
   const IDLE_LIMIT_MS = 30 * 60 * 1000;
@@ -75,8 +77,8 @@
       .site-account-dropdown button:hover{ background:rgba(250,204,21,.10); color:#facc15; }
       .site-account-dropdown button.site-danger{ color:#fecaca; }
       .site-account-dropdown button.site-danger:hover{ background:rgba(239,68,68,.10); color:#fecaca; }
-      .site-auth-modal-backdrop{ position:fixed; inset:0; background:rgba(2,6,23,.72); display:none; align-items:center; justify-content:center; padding:18px; z-index:2500; }
-      .site-auth-modal-backdrop.show{ display:flex; }
+      .site-auth-modal-backdrop{ position:fixed; inset:0; background:rgba(2,6,23,.72); display:none; pointer-events:none; align-items:center; justify-content:center; padding:18px; z-index:2500; }
+      .site-auth-modal-backdrop.show{ display:flex; pointer-events:auto; }
       .site-auth-modal{ width:min(460px,100%); background:linear-gradient(180deg, rgba(17,24,39,.98), rgba(15,23,42,.98)); border:1px solid rgba(250,204,21,.22); border-radius:22px; box-shadow:0 24px 60px rgba(0,0,0,.38); padding:22px; color:#e5e7eb; }
       .site-auth-modal h3{ margin:0 0 10px; font-size:24px; line-height:1.2; color:#facc15; }
       .site-auth-modal p{ margin:0; color:#cbd5e1; line-height:1.6; }

@@ -906,6 +906,7 @@
       background:rgba(2,6,23,.86);
       backdrop-filter:blur(10px);
       display:none;
+      pointer-events:none;
       align-items:center;
       justify-content:center;
       padding:12px;
@@ -914,6 +915,7 @@
 
     .lightbox.show{
       display:flex;
+      pointer-events:auto;
     }
 
     .lightbox-panel{
@@ -1870,6 +1872,11 @@
     const followCreatorBtn = document.getElementById("followCreatorBtn");
     const favouriteCreatorBtn = document.getElementById("favouriteCreatorBtn");
     const shareProfileBtn = document.getElementById("shareProfileBtn");
+    const viewProfileBtn = document.getElementById("viewProfileBtn");
+    const lightboxCategory = document.getElementById("lightboxCategory");
+    const lightboxCredit = document.getElementById("lightboxCredit");
+    const lightboxTags = document.getElementById("lightboxTags");
+    const lightboxDescription = document.getElementById("lightboxDescription");
     const creatorMenuBtn = document.getElementById("creatorMenuBtn");
     const creatorMenu = document.getElementById("creatorMenu");
     const hideCreatorBtn = document.getElementById("hideCreatorBtn");
