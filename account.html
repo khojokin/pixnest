@@ -1700,7 +1700,7 @@
 
             <button type="button" id="dashboardRequestBtn">
               <i class="fa-solid fa-chart-line"></i>
-              Submit dashboard request
+              Submit creator studio request
             </button>
 
             <a href="premium.html">
@@ -1782,7 +1782,7 @@
                 <div class="creator-badges" id="statusBadges"></div>
 
                 <div class="profile-role" id="accountRole">Creator</div>
-                <div class="profile-bio" id="accountBio">Update your profile, manage your posts, and grow your creator dashboard.</div>
+                <div class="profile-bio" id="accountBio">Update your profile, manage your posts, and grow your creator studio.</div>
               </div>
             </div>
 
@@ -1816,12 +1816,12 @@
 
           <div class="pro-board">
             <div>
-              <h3>Professional Dashboard</h3>
-              <p id="proBoardText">Available when your creator profile has professional dashboard approval.</p>
+              <h3>Creator Studio</h3>
+              <p id="proBoardText">Available when your creator profile has creator studio approval.</p>
             </div>
 
             <button type="button" class="pro-btn" id="professionalDashboardBtn" disabled>
-              Open Dashboard
+              Open Creator Studio
             </button>
           </div>
 
@@ -2423,7 +2423,7 @@
       return String(
         currentCreatorProfile?.bio ||
         user?.user_metadata?.bio ||
-        "Update your profile, manage your posts, and grow your creator dashboard."
+        "Update your profile, manage your posts, and grow your creator studio."
       ).trim();
     }
 
@@ -3581,7 +3581,7 @@
         showNotice(
           requestType === "verification"
             ? "Verification request submitted."
-            : "Professional dashboard request submitted."
+            : "Creator studio request submitted."
         );
       }catch(error){
         console.error(error);
@@ -3918,10 +3918,10 @@
       updateDeleteAccountVisibility();
 
       if(canOpenProDashboard){
-        proBoardText.textContent = `Professional dashboard unlocked. Followers: ${compactNumber(followerCount)}. Total views: ${compactNumber(totalViews)}.`;
+        proBoardText.textContent = `Creator studio unlocked. Followers: ${compactNumber(followerCount)}. Total views: ${compactNumber(totalViews)}.`;
         professionalDashboardBtn.disabled = false;
       }else{
-        proBoardText.textContent = `Professional dashboard is locked until the PixNest review team approves your creator profile for dashboard access.`;
+        proBoardText.textContent = `Creator studio is locked until the PixNest review team approves your creator profile for studio access.`;
         professionalDashboardBtn.disabled = true;
       }
     }
@@ -4030,7 +4030,7 @@
 
     professionalDashboardBtn.addEventListener("click", () => {
       if(!professionalDashboardBtn.disabled){
-        window.location.href = "professional-dashboard.html";
+        window.location.href = "creator-studio.html";
       }
     });
 

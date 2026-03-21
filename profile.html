@@ -1505,9 +1505,9 @@
                 Help
               </a>
 
-              <a class="account-link hidden" href="professional-dashboard.html" id="menuDashboardLink">
+              <a class="account-link hidden" href="creator-studio.html" id="menuDashboardLink">
                 <i class="fa-solid fa-chart-line"></i>
-                Professional Dashboard
+                Creator Studio
               </a>
 
               <button type="button" class="account-logout" id="logoutBtn">
@@ -1568,7 +1568,7 @@
               </div>
 
               <div class="panel" id="dashboardPanel">
-                <h3>Professional Dashboard</h3>
+                <h3>Creator Studio</h3>
                 <div class="dashboard-lock" id="dashboardPanelBody"></div>
               </div>
             </aside>
@@ -2978,14 +2978,14 @@ async function handleDownloadButtonClick(button){
           </a>
 
           ${profile.dashboardAllowed ? `
-            <a href="professional-dashboard.html" class="action-btn primary">
+            <a href="creator-studio.html" class="action-btn primary">
               <i class="fa-solid fa-chart-line"></i>
-              Professional Dashboard
+              Creator Studio
             </a>
           ` : `
             <a href="help.html" class="action-btn">
               <i class="fa-solid fa-circle-check"></i>
-              Request Dashboard Access
+              Request Creator Studio Access
             </a>
           `}
         `;
@@ -3049,18 +3049,18 @@ async function handleDownloadButtonClick(button){
 
         if(profile.dashboardAllowed){
           dashboardPanelBody.innerHTML = `
-            <p>Your professional dashboard is unlocked on this account.</p>
-            <a href="professional-dashboard.html" class="action-btn primary">
+            <p>Your creator studio is unlocked on this account.</p>
+            <a href="creator-studio.html" class="action-btn primary">
               <i class="fa-solid fa-chart-line"></i>
-              Open Dashboard
+              Open Creator Studio
             </a>
           `;
         }else{
           dashboardPanelBody.innerHTML = `
-            <p>Your dashboard is not visible yet. Once your creator access is approved, this section will unlock here.</p>
+            <p>Your creator studio is not visible yet. Once your creator access is approved, this section will unlock here.</p>
             <a href="help.html" class="action-btn">
               <i class="fa-solid fa-paper-plane"></i>
-              Submit Dashboard Request
+              Submit Creator Studio Request
             </a>
           `;
         }

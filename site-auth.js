@@ -47,7 +47,7 @@
 
   function isCustomAccountPage(){
     const page = currentPage();
-    return page === 'account.html' || page === 'profile.html' || page === 'professional-dashboard.html' || page === 'boss-admin.html';
+    return page === 'account.html' || page === 'profile.html' || page === 'creator-studio.html' || page === 'professional-dashboard.html' || page === 'boss-admin.html';
   }
 
   function isPublicAuthPage(){
@@ -350,6 +350,35 @@
     return window.pixnestUserIsAdmin ? 'boss-admin.html' : 'account.html';
   }
 
+  function getCreatorStudioTargetPath(){
+    return window.pixnestUserIsAdmin ? 'boss-admin.html' : 'creator-studio.html';
+  }
+
+  async function getCreatorStudioAccess(user, client){
+    if(!user) return false;
+    if(window.pixnestUserIsAdmin) return true;
+
+    try{
+      const [profileRes, creatorRes, photoRes] = await Promise.all([
+        client.from('profiles').select('followers_count,total_views,professional_dashboard_approved,creator_approved').eq('id', user.id).maybeSingle(),
+        client.from('creator_profiles').select('followers_count,total_views,professional_dashboard_approved,creator_approved').eq('user_id', user.id).maybeSingle(),
+        client.from('photos').select('views,view_count,total_views').or(`uploaded_by.eq.${user.id},user_id.eq.${user.id},auth_user_id.eq.${user.id},creator_id.eq.${user.id},profile_id.eq.${user.id}`)
+      ]);
+
+      const profile = profileRes?.data || {};
+      const creator = creatorRes?.data || {};
+      const rows = Array.isArray(photoRes?.data) ? photoRes.data : [];
+      const followers = Number(creator.followers_count ?? profile.followers_count ?? 0);
+      const storedViews = Number(creator.total_views ?? profile.total_views ?? 0);
+      const countedViews = rows.reduce((sum, row) => sum + Number(row?.views ?? row?.view_count ?? row?.total_views ?? 0), 0);
+      const totalViews = Math.max(storedViews, countedViews);
+      const approved = Boolean(creator.professional_dashboard_approved || creator.creator_approved || profile.professional_dashboard_approved || profile.creator_approved || user?.user_metadata?.professional_dashboard_approved || user?.user_metadata?.creator_approved);
+      return approved || (followers >= 10000 && totalViews >= 100000);
+    }catch(_error){
+      return Boolean(user?.user_metadata?.professional_dashboard_approved || user?.user_metadata?.creator_approved);
+    }
+  }
+
   function setupIdleLogout(client){
     const markActive = () => localStorage.setItem(LAST_ACTIVE_KEY, String(Date.now()));
     ['mousemove','mousedown','keydown','scroll','touchstart','click'].forEach(eventName => {
@@ -467,9 +496,9 @@
         ${buildUnifiedActionLink('account.html#change-profile-picture','Change profile picture','fa-solid fa-camera','change-profile-picture')}
         ${buildUnifiedActionLink('account.html#change-cover-photo','Change cover photo','fa-solid fa-image','change-cover-photo')}
         ${buildUnifiedActionLink('account.html#verification-request','Submit verification request','fa-solid fa-badge-check','verification-request')}
-        ${buildUnifiedActionLink('account.html#dashboard-request','Submit dashboard request','fa-solid fa-chart-line','dashboard-request')}
+        ${buildUnifiedActionLink('account.html#dashboard-request','Submit creator studio request','fa-solid fa-chart-line','dashboard-request')}
         ${buildUnifiedActionLink('upload.html','Upload','fa-solid fa-cloud-arrow-up')}
-        ${buildUnifiedActionLink('professional-dashboard.html','Creator Dashboard','fa-solid fa-chart-pie')}
+        ${window.pixnestUserHasStudioAccess ? buildUnifiedActionLink(getCreatorStudioTargetPath(),'Creator Studio','fa-solid fa-chart-pie') : ''}
         ${buildUnifiedActionLink('premium.html','Buy premium membership','fa-solid fa-crown')}
         ${buildUnifiedActionLink('account.html#muted-accounts','Muted accounts','fa-solid fa-volume-xmark')}
         ${buildUnifiedActionLink('account.html#content-preferences','Content preferences','fa-solid fa-sliders')}
@@ -891,6 +920,7 @@
           const isAdmin = await getAdminState(sessionUser, client);
           window.pixnestUserIsPremium = isPremium;
           window.pixnestUserIsAdmin = isAdmin;
+          window.pixnestUserHasStudioAccess = isAdmin ? true : await getCreatorStudioAccess(sessionUser, client);
           standardizeFooter(isPremium, Boolean(sessionUser));
           buildAuthUI(sessionUser, client);
           setupUnifiedPageMenu(sessionUser, client);
