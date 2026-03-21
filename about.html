@@ -1198,7 +1198,8 @@
     }
 
     function updateAuthUI(){
-      authNavLinks.innerHTML = "";
+      const managedAuthNav = Boolean(window.__pixnestManagedAuthNav);
+      if(!managedAuthNav) authNavLinks.innerHTML = "";
 
       if(currentUser){
         const displayName = getDisplayName(currentUser);
@@ -1230,7 +1231,7 @@
           </button>
         `);
 
-        authNavLinks.innerHTML = items.join("");
+        if(!managedAuthNav) authNavLinks.innerHTML = items.join("");
 
         heroActions.innerHTML = `
           <a href="account.html" class="btn btn-primary">
@@ -1259,7 +1260,7 @@
           logoutBtnNav.addEventListener("click", handleLogout);
         }
       }else{
-        authNavLinks.innerHTML = `
+        if(!managedAuthNav) authNavLinks.innerHTML = `
           <a href="login.html" class="nav-auth-btn secondary">
             <i class="fa-solid fa-right-to-bracket"></i>
             Login

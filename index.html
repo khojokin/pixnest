@@ -2747,13 +2747,14 @@
     }
 
     function updateAuthUI(){
+      const managedAuthNav = Boolean(window.__pixnestManagedAuthNav);
       const founder = isFounder(currentUser);
       const premium = isPremiumMember(currentUser);
       const verified = isVerifiedUser(currentUser);
       const displayName = currentUser ? getDisplayName(currentUser) : "";
 
       authStatus.innerHTML = "";
-      authNavLinks.innerHTML = "";
+      if(!managedAuthNav) authNavLinks.innerHTML = "";
 
       if(currentUser){
         const authPills = [];
@@ -2820,7 +2821,7 @@
           </button>
         `);
 
-        authNavLinks.innerHTML = navBits.join("");
+        if(!managedAuthNav) authNavLinks.innerHTML = navBits.join("");
 
         heroActions.innerHTML = `
           <a href="explore.html" class="btn btn-primary">
@@ -2856,7 +2857,7 @@
           </span>
         `;
 
-        authNavLinks.innerHTML = `
+        if(!managedAuthNav) authNavLinks.innerHTML = `
           <a href="login.html" class="nav-auth-btn secondary">
             <i class="fa-solid fa-right-to-bracket"></i>
             Login

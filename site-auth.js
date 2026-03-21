@@ -60,6 +60,8 @@
       body.site-flex-page { min-height:100vh !important; display:flex !important; flex-direction:column !important; }
       body.site-flex-page > footer { margin-top:auto !important; }
       .site-auth-links{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+      #authNavLinks[data-auth-pending="true"]{ visibility:hidden; opacity:0; pointer-events:none; }
+      #authNavLinks[data-auth-ready="true"]{ visibility:visible; opacity:1; pointer-events:auto; }
       .site-auth-links .nav-auth-btn,
       .site-auth-links a{ display:inline-flex; align-items:center; justify-content:center; gap:8px; min-height:42px; padding:10px 14px; border-radius:12px; font-size:14px; font-weight:700; text-decoration:none; }
       .site-auth-links .secondary{ background:transparent; color:#fff; border:1px solid rgba(255,255,255,.15); }
@@ -259,6 +261,7 @@
 
   function openAuthPrompt(actionText){
     ensureAuthPromptShell();
+    markAuthNavPending();
     const backdrop = document.getElementById('siteAuthPromptBackdrop');
     const message = document.getElementById('siteAuthPromptMessage');
     const action = String(actionText || 'continue').trim();
@@ -318,6 +321,23 @@
     const items = isPremium ? PREMIUM_FOOTER_ITEMS : NON_PREMIUM_FOOTER_ITEMS;
     footerLinks.innerHTML = items.map(item => `<a href="${item.href}">${item.label}</a>`).join('');
   }
+
+  function markAuthNavPending(){
+    const authNav = document.getElementById('authNavLinks');
+    if(authNav){
+      authNav.setAttribute('data-auth-pending','true');
+      authNav.removeAttribute('data-auth-ready');
+    }
+  }
+
+  function markAuthNavReady(){
+    const authNav = document.getElementById('authNavLinks');
+    if(authNav){
+      authNav.removeAttribute('data-auth-pending');
+      authNav.setAttribute('data-auth-ready','true');
+    }
+  }
+
 
   async function getPremiumState(user, client){
     if(!user) return false;
@@ -381,44 +401,32 @@
         <a href="signup.html" class="nav-auth-btn primary"><i class="fa-solid fa-user-plus"></i>Sign Up</a>
       `;
       navLinks.appendChild(authLinks);
+      markAuthNavReady();
+      window.__pixnestManagedAuthNav = true;
       return;
     }
 
-    const menuWrap = document.createElement('div');
-    menuWrap.className = 'site-account-menu-wrap';
-    menuWrap.id = 'siteAccountMenuWrap';
-    menuWrap.innerHTML = `
-      <button class="site-account-menu-toggle" id="siteAccountMenuToggle" aria-label="Open account menu"><i class="fa-solid fa-bars"></i></button>
-      <div class="site-account-dropdown" id="siteAccountDropdown">
-        <a href="profile.html"><i class="fa-solid fa-user"></i>Profile</a>
-        <a href="account.html"><i class="fa-solid fa-sliders"></i>Profile Settings</a>
-        <a href="upload.html"><i class="fa-solid fa-upload"></i>Upload</a>
-        <a href="professional-dashboard.html"><i class="fa-solid fa-chart-line"></i>Creator Dashboard</a>
-        <a href="premium.html"><i class="fa-solid fa-crown"></i>Premium</a>
-        <a href="contact.html"><i class="fa-solid fa-envelope"></i>Contact</a>
-        <button type="button" class="site-danger" id="siteLogoutBtn"><i class="fa-solid fa-right-from-bracket"></i>Logout</button>
-      </div>
+    authLinks.innerHTML = `
+      <a href="account.html" class="nav-auth-btn secondary"><i class="fa-solid fa-user"></i>Account</a>
+      <a href="upload.html" class="nav-auth-btn primary"><i class="fa-solid fa-upload"></i>Upload</a>
+      <button type="button" class="nav-auth-btn secondary" id="siteLogoutBtn"><i class="fa-solid fa-right-from-bracket"></i>Logout</button>
     `;
-    navLinks.appendChild(menuWrap);
 
-    const toggle = document.getElementById('siteAccountMenuToggle');
-    const dropdown = document.getElementById('siteAccountDropdown');
-    toggle.addEventListener('click', e => {
-      e.stopPropagation();
-      dropdown.classList.toggle('show');
-    });
-    document.addEventListener('click', e => {
-      if(!dropdown.contains(e.target) && !toggle.contains(e.target)) dropdown.classList.remove('show');
-    });
-    document.getElementById('siteLogoutBtn').addEventListener('click', async () => {
-      try{
-        await client.auth.signOut();
-        dropdown.classList.remove('show');
-        window.location.href = 'index.html';
-      }catch(_err){
-        alert('Could not log out.');
-      }
-    });
+    navLinks.appendChild(authLinks);
+    markAuthNavReady();
+    window.__pixnestManagedAuthNav = true;
+
+    const logoutBtn = document.getElementById('siteLogoutBtn');
+    if(logoutBtn){
+      logoutBtn.addEventListener('click', async () => {
+        try{
+          await client.auth.signOut();
+          window.location.href = 'index.html';
+        }catch(_err){
+          alert('Could not log out.');
+        }
+      });
+    }
   }
 
   function removeHelpTeamSection(){
@@ -449,6 +457,7 @@
     removeHelpTeamSection();
     showIdleNoticeIfNeeded();
     ensureAuthPromptShell();
+    markAuthNavPending();
 
     ensureSupabase(async function(){
       try{

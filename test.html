@@ -1170,10 +1170,11 @@ using (auth.uid() = user_id);
     }
 
     function updateAuthUI(){
-      authNavLinks.innerHTML = "";
+      const managedAuthNav = Boolean(window.__pixnestManagedAuthNav);
+      if(!managedAuthNav) authNavLinks.innerHTML = "";
 
       if(currentUser){
-        authNavLinks.innerHTML = `
+        if(!managedAuthNav) authNavLinks.innerHTML = `
           <a href="account.html" class="nav-auth-btn secondary">
             <i class="fa-solid fa-user"></i>
             ${getDisplayName(currentUser)}
@@ -1189,7 +1190,7 @@ using (auth.uid() = user_id);
           logoutBtn.addEventListener("click", handleLogout);
         }
       }else{
-        authNavLinks.innerHTML = `
+        if(!managedAuthNav) authNavLinks.innerHTML = `
           <a href="login.html" class="nav-auth-btn secondary">
             <i class="fa-solid fa-right-to-bracket"></i>
             Login
