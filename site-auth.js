@@ -327,6 +327,7 @@
     });
 
     preserved.forEach(node => navLinks.appendChild(node));
+    document.dispatchEvent(new Event('pixnest:nav-updated'));
   }
 
   function standardizeFooter(isPremium){
@@ -419,6 +420,7 @@
       navLinks.appendChild(authLinks);
       markAuthNavReady();
       window.__pixnestManagedAuthNav = true;
+      document.dispatchEvent(new Event('pixnest:auth-ui-updated'));
       return;
     }
 
@@ -431,6 +433,7 @@
     navLinks.appendChild(authLinks);
     markAuthNavReady();
     window.__pixnestManagedAuthNav = true;
+    document.dispatchEvent(new Event('pixnest:auth-ui-updated'));
 
     const logoutBtn = document.getElementById('siteLogoutBtn');
     if(logoutBtn){
