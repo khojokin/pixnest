@@ -1895,6 +1895,11 @@
     let activeLightboxPhotoId = "";
     let activeCreatorKey = "";
     let siteData = loadAdminData();
+    const HOME_FETCH_LIMIT = 60;
+    const HOME_DISPLAY_LIMIT = 18;
+    let loadPhotosInFlight = null;
+    let lastLoadedUserKey = "__none__";
+    let homeInitComplete = false;
 
     function showNotice(text){
       noticeBar.textContent = text;
@@ -2757,7 +2762,7 @@
           </button>
         `);
 
-        authNavLinks.innerHTML = "";
+        authNavLinks.innerHTML = navBits.join("");
 
         heroActions.innerHTML = `
           <a href="explore.html" class="btn btn-primary">
@@ -2793,7 +2798,16 @@
           </span>
         `;
 
-        authNavLinks.innerHTML = "";
+        authNavLinks.innerHTML = `
+          <a href="login.html" class="nav-auth-btn secondary">
+            <i class="fa-solid fa-right-to-bracket"></i>
+            Login
+          </a>
+          <a href="signup.html" class="nav-auth-btn primary">
+            <i class="fa-solid fa-user-plus"></i>
+            Sign Up
+          </a>
+        `;
 
         heroActions.innerHTML = `
           <a href="explore.html" class="btn btn-primary">
@@ -2948,7 +2962,7 @@
 
       return `
         <article class="visual-card ${locked ? "locked-card" : ""}" data-photo-id="${escapeHtml(photoId)}">
-          <img src="${escapeHtml(imageSrc)}" alt="${escapeHtml(locked ? "Premium photo" : getPhotoAlt(photo))}">
+          <img src="${escapeHtml(imageSrc)}" alt="${escapeHtml(locked ? "Premium photo" : getPhotoAlt(photo))}" loading="lazy" decoding="async">
 
           <div class="card-top-row">
             <div class="card-top-left">
@@ -3462,6 +3476,8 @@
       renderFeatured();
       renderTrending();
 
+      window.dispatchEvent(new CustomEvent("pixnest-content-rendered", { detail:{ page:"index" } }));
+
       if(activeLightboxPhotoId && lightbox.classList.contains("show")){
         const activePhoto = getPhotoById(activeLightboxPhotoId);
         if(activePhoto && creatorVisible(activePhoto)){
@@ -3473,33 +3489,35 @@
     }
 
     async function loadPhotos(force = false){
-      if(loadPhotosPromise && !force){
-        return loadPhotosPromise;
-      }
-
-      if(hasLoadedPhotosOnce && !force){
+      const userKey = currentUser ? String(currentUser.id || currentUser.email || "signed-in") : "guest";
+      if(!force && loadPhotosInFlight) return loadPhotosInFlight;
+      if(!force && homeInitComplete && lastLoadedUserKey === userKey && allPhotos.length){
+        refreshPhotoSections();
         return allPhotos;
       }
 
-      loadPhotosPromise = (async () => {
+      loadPhotosInFlight = (async () => {
         try{
           const { data, error } = await supabaseClient
             .from("photos")
             .select("*")
             .order("created_at", { ascending:false })
-            .limit(12);
+            .range(0, HOME_FETCH_LIMIT - 1);
 
           if(error){
             throw error;
           }
 
-          rawPhotos = (Array.isArray(data) ? data : []).filter(isPhotoPubliclyApproved);
+          const filtered = (Array.isArray(data) ? data : []).filter(isPhotoPubliclyApproved);
+          rawPhotos = filtered.slice(0, HOME_DISPLAY_LIMIT);
+
           const prepared = [];
-          for(const item of rawPhotos){
-            prepared.push(await preparePhotoForDisplay(item));
+          for(const photo of rawPhotos){
+            prepared.push(await preparePhotoForDisplay(photo));
           }
           allPhotos = prepared;
-          hasLoadedPhotosOnce = true;
+          lastLoadedUserKey = userKey;
+          homeInitComplete = true;
 
           applyAdminText();
           refreshPhotoSections();
@@ -3511,11 +3529,11 @@
           trendingGrid.innerHTML = `<div class="empty-box">Could not load trending photos from Supabase.</div>`;
           return [];
         }finally{
-          loadPhotosPromise = null;
+          loadPhotosInFlight = null;
         }
       })();
 
-      return loadPhotosPromise;
+      return loadPhotosInFlight;
     }
 
     homeSearchBtn.addEventListener("click", runHomeSearch);
@@ -3635,26 +3653,40 @@
       }
     });
 
-    let homeAuthBootUserId = null;
-
     supabaseClient.auth.onAuthStateChange(async (_event, session) => {
       const nextUser = session?.user || null;
-      const nextId = nextUser?.id || null;
-      if(nextId === homeAuthBootUserId) return;
-      homeAuthBootUserId = nextId;
+      const previousUserId = currentUser?.id || "";
+      const nextUserId = nextUser?.id || "";
+      const previousPremium = isPremiumMember(currentUser);
+      const nextPremium = isPremiumMember(nextUser);
+      const identityChanged = previousUserId !== nextUserId;
+      const premiumChanged = previousPremium !== nextPremium;
+
       currentUser = nextUser;
+      if(!currentUser){
+        await initCurrentUser();
+      }
       updateAuthUI();
+
+      if(identityChanged || premiumChanged){
+        lastLoadedUserKey = "__stale__";
+        await loadPhotos(true);
+      }
     });
 
     (async function init(){
+      if(window.__PIXNEST_INDEX_BOOTED__) return;
+      window.__PIXNEST_INDEX_BOOTED__ = true;
       await initCurrentUser();
-      homeAuthBootUserId = currentUser?.id || null;
       updateAuthUI();
       applyAdminText();
-      window.setTimeout(() => { loadPhotos(); }, 80);
+      setTimeout(() => {
+        loadPhotos();
+      }, 120);
     })();
   </script>
-  <!-- site-auth.js removed on home page to prevent duplicate auth/menu boot loops -->
+  <script>window.__PIXNEST_DISABLE_SITE_AUTH_OBSERVERS__ = true; window.__PIXNEST_INDEX_PAGE__ = true;</script>
+  <script src="site-auth.js"></script>
 
 <script id="pixnestActiveNavSync">
 (function(){

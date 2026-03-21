@@ -1,4 +1,6 @@
 (function(){
+  if(window.__PIXNEST_SITE_AUTH_INIT__) return;
+  window.__PIXNEST_SITE_AUTH_INIT__ = true;
   const SUPABASE_URL = 'https://vigczssznfvujttdapbv.supabase.co';
   const SUPABASE_KEY = 'sb_publishable_UmF-mmVS42XeF6PqsNnCSw_wpA35wg2';
   const IDLE_LIMIT_MS = 30 * 60 * 1000;
@@ -502,32 +504,28 @@
   }
 
   function setupIdleLogout(client){
-    if(window.__pixnestIdleLogoutBound) return;
-    window.__pixnestIdleLogoutBound = true;
+    if(window.__PIXNEST_IDLE_LOGOUT_BOUND__) return;
+    window.__PIXNEST_IDLE_LOGOUT_BOUND__ = true;
     const markActive = () => localStorage.setItem(LAST_ACTIVE_KEY, String(Date.now()));
     ['mousemove','mousedown','keydown','scroll','touchstart','click'].forEach(eventName => {
       window.addEventListener(eventName, markActive, { passive:true });
     });
     markActive();
 
-    const checkIdle = async () => {
+    setInterval(async () => {
       try{
         const { data } = await client.auth.getSession();
         const session = data?.session || null;
-        if(session){
-          const last = Number(localStorage.getItem(LAST_ACTIVE_KEY) || 0);
-          if(last && (Date.now() - last) > IDLE_LIMIT_MS){
-            await client.auth.signOut();
-            localStorage.removeItem(LAST_ACTIVE_KEY);
-            sessionStorage.setItem(LOGOUT_NOTICE_KEY, 'true');
-            window.location.href = 'login.html?reason=inactive';
-            return;
-          }
+        if(!session) return;
+        const last = Number(localStorage.getItem(LAST_ACTIVE_KEY) || 0);
+        if(last && (Date.now() - last) > IDLE_LIMIT_MS){
+          await client.auth.signOut();
+          localStorage.removeItem(LAST_ACTIVE_KEY);
+          sessionStorage.setItem(LOGOUT_NOTICE_KEY, 'true');
+          window.location.href = 'login.html?reason=inactive';
         }
       }catch(_error){}
-      window.setTimeout(checkIdle, 60000);
-    };
-    window.setTimeout(checkIdle, 60000);
+    }, 60000);
   }
 
   function buildAuthUI(user, client){
@@ -1042,18 +1040,21 @@ showSiteToast('Report sent. Thanks for letting us know.');
   }
 
   function bindGlobalExtraActions(client){
-    if(!document.body.dataset.pixnestExtraActionClickBound){
-      document.body.dataset.pixnestExtraActionClickBound = 'true';
-      document.addEventListener('click', async (event) => {
-        const repostBtn = event.target.closest('.pixnest-repost-btn');
-        if(repostBtn){
-          event.preventDefault();
-          event.stopPropagation();
-          toggleRepost(repostBtn.getAttribute('data-photo-id'));
-          return;
-        }
-      });
+    if(window.__PIXNEST_EXTRA_ACTIONS_BOUND__) {
+      if(typeof window.pixnestRefreshExtraPhotoActions === 'function') window.pixnestRefreshExtraPhotoActions();
+      return;
     }
+    window.__PIXNEST_EXTRA_ACTIONS_BOUND__ = true;
+
+    document.addEventListener('click', async (event) => {
+      const repostBtn = event.target.closest('.pixnest-repost-btn');
+      if(repostBtn){
+        event.preventDefault();
+        event.stopPropagation();
+        toggleRepost(repostBtn.getAttribute('data-photo-id'));
+        return;
+      }
+    });
 
     let refreshQueued = false;
     const queueRefresh = () => {
@@ -1065,18 +1066,16 @@ showSiteToast('Report sent. Thanks for letting us know.');
       });
     };
 
-    refreshExtraPhotoActions();
-    [120, 500, 1200, 2500].forEach(delay => window.setTimeout(queueRefresh, delay));
+    window.pixnestRefreshExtraPhotoActions = queueRefresh;
+    queueRefresh();
     window.addEventListener('load', queueRefresh, { once:true });
+    window.addEventListener('resize', queueRefresh, { passive:true });
     window.addEventListener('pixnest-repost-change', queueRefresh);
-    document.addEventListener('visibilitychange', () => {
-      if(document.visibilityState === 'visible') queueRefresh();
-    });
+    window.addEventListener('pixnest-content-rendered', queueRefresh);
+    document.addEventListener('DOMContentLoaded', queueRefresh, { once:true });
   }
 
   function init(){
-    if(window.__pixnestSiteAuthInitDone) return;
-    window.__pixnestSiteAuthInitDone = true;
     ensureGlobalStyles();
     ensureFooterFlex();
     standardizeNav();
@@ -1086,13 +1085,6 @@ showSiteToast('Report sent. Thanks for letting us know.');
     removeLegacyMenus();
     bindAccountShortcutInterception();
     syncActiveNavLinks();
-    const navTarget = document.getElementById('navLinks') || document.querySelector('.nav-links');
-    if(navTarget){
-      const navSync = () => syncActiveNavLinks(navTarget);
-      navSync();
-      window.addEventListener('popstate', navSync, { passive:true });
-      window.addEventListener('hashchange', navSync, { passive:true });
-    }
 
     ensureSupabase(async function(){
       try{
