@@ -171,6 +171,20 @@
         height:34px !important;
         font-size:13px !important;
       }
+      .lightbox:not(.show),
+      .photo-lightbox:not(.show),
+      .profile-overlay:not(.show),
+      .site-auth-modal-backdrop:not(.show){
+        pointer-events:none !important;
+        visibility:hidden;
+      }
+      .lightbox.show,
+      .photo-lightbox.show,
+      .profile-overlay.show,
+      .site-auth-modal-backdrop.show{
+        pointer-events:auto !important;
+        visibility:visible;
+      }
       @media (max-width:860px){
         .site-auth-modal-actions{ grid-template-columns:1fr; }
         .site-auth-links{ width:100%; flex-direction:column; align-items:stretch; padding-top:10px; }
@@ -357,6 +371,8 @@
   }
 
   function setupIdleLogout(client){
+    if(window.__pixnestIdleLogoutBound) return;
+    window.__pixnestIdleLogoutBound = true;
     const markActive = () => localStorage.setItem(LAST_ACTIVE_KEY, String(Date.now()));
     ['mousemove','mousedown','keydown','scroll','touchstart','click'].forEach(eventName => {
       window.addEventListener(eventName, markActive, { passive:true });

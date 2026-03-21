@@ -1434,6 +1434,52 @@
         width:min(320px,92vw);
       }
     }
+  
+    .verified-name-inline{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      flex-wrap:wrap;
+      min-width:0;
+      vertical-align:middle;
+    }
+
+    .verified-name-inline .name-text{
+      min-width:0;
+      word-break:break-word;
+    }
+
+    .verified-name-badge{
+      width:20px;
+      height:20px;
+      border-radius:50%;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      background:rgba(59,130,246,.18);
+      color:#93c5fd;
+      border:1px solid rgba(96,165,250,.34);
+      box-shadow:0 6px 14px rgba(2,6,23,.18);
+      font-size:10px;
+      line-height:1;
+      flex-shrink:0;
+    }
+
+  
+    .lightbox:not(.show),
+    .photo-lightbox:not(.show),
+    .profile-overlay:not(.show),
+    .site-auth-modal-backdrop:not(.show){
+      pointer-events:none !important;
+      visibility:hidden;
+    }
+    .lightbox.show,
+    .photo-lightbox.show,
+    .profile-overlay.show,
+    .site-auth-modal-backdrop.show{
+      pointer-events:auto !important;
+      visibility:visible;
+    }
   </style>
 </head>
 <body>
@@ -1859,6 +1905,18 @@ const LOCKED_SVG =
         .replace(/"/g, "&quot;")
         .replace(/'/g, "&#39;");
     }
+
+
+    function buildInlineVerifiedName(name, verified){
+      const safeName = escapeHtml(String(name || "Unknown").trim() || "Unknown");
+      return `
+        <span class="verified-name-inline${verified ? " is-verified" : ""}">
+          <span class="name-text">${safeName}</span>
+          ${verified ? '<span class="verified-name-badge" title="Verified profile" aria-label="Verified profile"><i class="fa-solid fa-check"></i></span>' : ''}
+        </span>
+      `;
+    }
+
 
     function normalize(value = ""){
       return String(value || "").trim().toLowerCase();
@@ -3079,8 +3137,8 @@ async function handleDownloadButtonClick(button){
 
       profileAvatar.innerHTML = buildAvatarHtml({ avatar: profile.avatar, name: profile.name });
       profileRole.textContent = profile.viewingOwn ? "Your Profile" : "Creator Profile";
-      profileName.textContent = profile.name;
-      verifiedBadge.classList.toggle("hidden", !profile.verified);
+      profileName.innerHTML = buildInlineVerifiedName(profile.name, profile.verified);
+      verifiedBadge.classList.add("hidden");
       profileHandle.textContent = `@${profile.username || profile.name.replace(/\s+/g, "").toLowerCase()}`;
       profileBio.textContent = profile.bio || "This profile has no bio yet.";
 
@@ -3163,7 +3221,7 @@ async function handleDownloadButtonClick(button){
 
             ${description ? `<p class="overlay-desc">${escapeHtml(description)}</p>` : ""}
             <div class="credit">
-              <span>By ${escapeHtml(creatorName)}</span>
+              <span>By ${buildInlineVerifiedName(creatorName, isCreatorVerified(photo))}</span>
             </div>
 
             <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;">
@@ -3299,9 +3357,9 @@ async function handleDownloadButtonClick(button){
       lightboxImage.src = photo.image_url || DEFAULT_IMAGE;
       lightboxImage.alt = getPhotoAlt(photo);
       lightboxTitle.textContent = getSafePhotoTitle(photo) || photo.category || "Photo";
-      lightboxSub.textContent = `By ${getCreatorName(photo)} • ${formatPostDate(photo)}`;
+      lightboxSub.innerHTML = `By ${buildInlineVerifiedName(getCreatorName(photo), isCreatorVerified(photo))} <span style="opacity:.72;">• ${escapeHtml(formatPostDate(photo))}</span>`;
       document.getElementById("lightboxCategory").textContent = photo.category || "Uncategorized";
-      document.getElementById("lightboxCreator").textContent = getCreatorName(photo) || "Unknown";
+      document.getElementById("lightboxCreator").innerHTML = buildInlineVerifiedName(getCreatorName(photo) || "Unknown", isCreatorVerified(photo));
       document.getElementById("lightboxTags").textContent = getPhotoTags(photo).join(", ") || "No tags";
       document.getElementById("lightboxDescription").textContent = getDescription(photo) || "No description added.";
       document.getElementById("lightboxPosted").textContent = formatPostDate(photo);
@@ -3474,7 +3532,7 @@ async function openLightbox(photo){
       `;
       profileAvatar.innerHTML = `<span>P</span>`;
       profileRole.textContent = "Profile";
-      profileName.textContent = "PixNest Profile";
+      profileName.innerHTML = buildInlineVerifiedName("PixNest Profile", false);
       verifiedBadge.classList.add("hidden");
       profileHandle.textContent = "@pixnest";
       profileBadges.innerHTML = "";
@@ -3537,25 +3595,50 @@ async function openLightbox(photo){
       renderProfilePage(profile);
     }
 
-    async function loadPhotos(){
-      try{
-        const { data, error } = await supabaseClient
-          .from("photos")
-          .select("*")
-          .order("created_at", { ascending:false });
-
-        if(error){
-          throw error;
-        }
-
-        allPhotos = Array.isArray(data) ? data : [];
-        applyFooterText();
-        decideProfileMode();
-      }catch(error){
-        console.error(error);
-        showGuestEmptyState();
-        profileGrid.innerHTML = '<div class="empty-box"><strong>Could not load profile data</strong><div>Photos could not be loaded from Supabase.</div></div>';
+    async function loadPhotos(forceRefresh = false){
+      if(photosLoadInFlight && !forceRefresh){
+        return photosLoadInFlight;
       }
+
+      photosLoadInFlight = (async () => {
+        try{
+          const { data, error } = await supabaseClient
+            .from("photos")
+            .select("*")
+            .order("created_at", { ascending:false })
+            .limit(PHOTO_LOAD_LIMIT);
+
+          if(error){
+            throw error;
+          }
+
+          rawPhotos = Array.isArray(data) ? data : [];
+          allPhotos = await safelyPreparePhotosForDisplay(rawPhotos);
+          photosLoadedOnce = true;
+
+          applyAdminText();
+          refreshPhotoSections();
+        }catch(error){
+          console.error(error);
+          categoryGrid.innerHTML = `<div class="empty-box">Could not load categories from Supabase.</div>`;
+          if(typeof featuredGrid !== "undefined" && featuredGrid){
+            featuredGrid.innerHTML = `<div class="empty-box">Could not load featured photos from Supabase.</div>`;
+          }
+          if(typeof trendingGrid !== "undefined" && trendingGrid){
+            trendingGrid.innerHTML = `<div class="empty-box">Could not load trending photos from Supabase.</div>`;
+          }
+          if(typeof photoGrid !== "undefined" && photoGrid){
+            photoGrid.innerHTML = `<div class="empty-box">Could not load photos from Supabase.</div>`;
+          }
+          if(typeof galleryGrid !== "undefined" && galleryGrid){
+            galleryGrid.innerHTML = `<div class="empty-box">Could not load photos from Supabase.</div>`;
+          }
+        }finally{
+          photosLoadInFlight = null;
+        }
+      })();
+
+      return photosLoadInFlight;
     }
 
     profileSearchBtn.addEventListener("click", renderActiveGrid);

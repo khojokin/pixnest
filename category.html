@@ -1453,6 +1453,52 @@
         width:100%;
       }
     }
+  
+    .verified-name-inline{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      flex-wrap:wrap;
+      min-width:0;
+      vertical-align:middle;
+    }
+
+    .verified-name-inline .name-text{
+      min-width:0;
+      word-break:break-word;
+    }
+
+    .verified-name-badge{
+      width:20px;
+      height:20px;
+      border-radius:50%;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      background:rgba(59,130,246,.18);
+      color:#93c5fd;
+      border:1px solid rgba(96,165,250,.34);
+      box-shadow:0 6px 14px rgba(2,6,23,.18);
+      font-size:10px;
+      line-height:1;
+      flex-shrink:0;
+    }
+
+  
+    .lightbox:not(.show),
+    .photo-lightbox:not(.show),
+    .profile-overlay:not(.show),
+    .site-auth-modal-backdrop:not(.show){
+      pointer-events:none !important;
+      visibility:hidden;
+    }
+    .lightbox.show,
+    .photo-lightbox.show,
+    .profile-overlay.show,
+    .site-auth-modal-backdrop.show{
+      pointer-events:auto !important;
+      visibility:visible;
+    }
   </style>
 </head>
 <body>
@@ -1819,6 +1865,18 @@ const LOCKED_SVG =
         .replace(/"/g, "&quot;")
         .replace(/'/g, "&#39;");
     }
+
+
+    function buildInlineVerifiedName(name, verified){
+      const safeName = escapeHtml(String(name || "Unknown").trim() || "Unknown");
+      return `
+        <span class="verified-name-inline${verified ? " is-verified" : ""}">
+          <span class="name-text">${safeName}</span>
+          ${verified ? '<span class="verified-name-badge" title="Verified profile" aria-label="Verified profile"><i class="fa-solid fa-check"></i></span>' : ''}
+        </span>
+      `;
+    }
+
 
     function normalize(value = ""){
       return String(value || "").trim().toLowerCase();
@@ -2312,10 +2370,12 @@ function handleLockedPremiumPhoto(){
       );
     }
 
-    function buildCreatorBadges(photo){
+    function buildCreatorBadges(photo, options = {}){
+      const includeVerified = options.includeVerified !== false;
+      const includePremium = options.includePremium !== false;
       const parts = [];
 
-      if(isCreatorVerified(photo)){
+      if(includeVerified && isCreatorVerified(photo)){
         parts.push(`
           <span class="creator-badge verified" title="Verified creator" aria-label="Verified creator">
             <i class="fa-solid fa-check"></i>
@@ -2323,7 +2383,7 @@ function handleLockedPremiumPhoto(){
         `);
       }
 
-      if(isCreatorPremium(photo)){
+      if(includePremium && isCreatorPremium(photo)){
         parts.push(`
           <span class="creator-badge premium" title="Premium creator" aria-label="Premium creator">
             <i class="fa-solid fa-crown"></i>
@@ -3014,16 +3074,16 @@ async function handleDownloadButtonClick(button){
       lightboxTitle.classList.toggle("is-hidden", !safeTitle && !photo.category);
 
       document.getElementById("lightboxCategory").textContent = photo.category || "Uncategorized";
-      document.getElementById("lightboxCredit").textContent = getCreatorName(photo) || "Unknown";
+      document.getElementById("lightboxCredit").innerHTML = buildInlineVerifiedName(getCreatorName(photo) || "Unknown", isCreatorVerified(photo));
       document.getElementById("lightboxTags").textContent = getPhotoTags(photo).join(", ") || "No tags";
       document.getElementById("lightboxDescription").textContent = getDescription(photo) || "No description added.";
-      document.getElementById("lightboxCreatorTop").textContent = getCreatorName(photo) || "Unknown";
+      document.getElementById("lightboxCreatorTop").innerHTML = buildInlineVerifiedName(getCreatorName(photo) || "Unknown", isCreatorVerified(photo));
       document.getElementById("lightboxPosted").textContent = formatPostDate(photo);
       lightboxPostedMeta.textContent = `Posted ${formatPostDate(photo)}`;
 
       creatorAvatar.innerHTML = buildCreatorAvatar(photo);
       creatorCover.style.backgroundImage = `url("${getCreatorCoverImage(photo).replace(/"/g, '\\"')}")`;
-      lightboxCreatorBadges.innerHTML = buildCreatorBadges(photo);
+      lightboxCreatorBadges.innerHTML = buildCreatorBadges(photo, { includeVerified:false });
       creatorSocialProof.innerHTML = buildCreatorSocialProof(photo);
       bindLockedCreatorCounts(creatorSocialProof);
 
@@ -3121,8 +3181,8 @@ async function openLightbox(photo){
 
             ${description ? `<p class="overlay-desc">${escapeHtml(description)}</p>` : ""}
             <div class="credit">
-              <span>By ${escapeHtml(creatorName)}</span>
-              ${typeof buildCreatorBadges === "function" ? buildCreatorBadges(photo) : ""}
+              <span>By ${buildInlineVerifiedName(creatorName, isCreatorVerified(photo))}</span>
+              ${typeof buildCreatorBadges === "function" ? buildCreatorBadges(photo, { includeVerified:false }) : ""}
             </div>
 
             <div class="card-bottom">
@@ -3361,25 +3421,50 @@ async function openLightbox(photo){
       }
     }
 
-    async function loadPhotos(){
-      try{
-        const { data, error } = await supabaseClient
-          .from("photos")
-          .select("*")
-          .order("created_at", { ascending:false });
-
-        if(error){
-          throw error;
-        }
-
-        allPhotos = Array.isArray(data) ? data : [];
-        applyFooterText();
-        decideMode();
-      }catch(error){
-        console.error(error);
-        categoryGrid.innerHTML = '<div class="empty-box">Could not load categories from Supabase.</div>';
-        detailPhotoGrid.innerHTML = '<div class="empty-box">Could not load category photos from Supabase.</div>';
+    async function loadPhotos(forceRefresh = false){
+      if(photosLoadInFlight && !forceRefresh){
+        return photosLoadInFlight;
       }
+
+      photosLoadInFlight = (async () => {
+        try{
+          const { data, error } = await supabaseClient
+            .from("photos")
+            .select("*")
+            .order("created_at", { ascending:false })
+            .limit(PHOTO_LOAD_LIMIT);
+
+          if(error){
+            throw error;
+          }
+
+          rawPhotos = Array.isArray(data) ? data : [];
+          allPhotos = await safelyPreparePhotosForDisplay(rawPhotos);
+          photosLoadedOnce = true;
+
+          applyAdminText();
+          refreshPhotoSections();
+        }catch(error){
+          console.error(error);
+          categoryGrid.innerHTML = `<div class="empty-box">Could not load categories from Supabase.</div>`;
+          if(typeof featuredGrid !== "undefined" && featuredGrid){
+            featuredGrid.innerHTML = `<div class="empty-box">Could not load featured photos from Supabase.</div>`;
+          }
+          if(typeof trendingGrid !== "undefined" && trendingGrid){
+            trendingGrid.innerHTML = `<div class="empty-box">Could not load trending photos from Supabase.</div>`;
+          }
+          if(typeof photoGrid !== "undefined" && photoGrid){
+            photoGrid.innerHTML = `<div class="empty-box">Could not load photos from Supabase.</div>`;
+          }
+          if(typeof galleryGrid !== "undefined" && galleryGrid){
+            galleryGrid.innerHTML = `<div class="empty-box">Could not load photos from Supabase.</div>`;
+          }
+        }finally{
+          photosLoadInFlight = null;
+        }
+      })();
+
+      return photosLoadInFlight;
     }
 
     overviewSearchBtn.addEventListener("click", renderOverviewCategories);

@@ -1517,6 +1517,52 @@
         font-size:14px;
       }
     }
+  
+    .verified-name-inline{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      flex-wrap:wrap;
+      min-width:0;
+      vertical-align:middle;
+    }
+
+    .verified-name-inline .name-text{
+      min-width:0;
+      word-break:break-word;
+    }
+
+    .verified-name-badge{
+      width:20px;
+      height:20px;
+      border-radius:50%;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      background:rgba(59,130,246,.18);
+      color:#93c5fd;
+      border:1px solid rgba(96,165,250,.34);
+      box-shadow:0 6px 14px rgba(2,6,23,.18);
+      font-size:10px;
+      line-height:1;
+      flex-shrink:0;
+    }
+
+  
+    .lightbox:not(.show),
+    .photo-lightbox:not(.show),
+    .profile-overlay:not(.show),
+    .site-auth-modal-backdrop:not(.show){
+      pointer-events:none !important;
+      visibility:hidden;
+    }
+    .lightbox.show,
+    .photo-lightbox.show,
+    .profile-overlay.show,
+    .site-auth-modal-backdrop.show{
+      pointer-events:auto !important;
+      visibility:visible;
+    }
   </style>
 </head>
 <body>
@@ -2094,6 +2140,11 @@
     const noticeBar = document.getElementById("noticeBar");
 
     let currentUser = null;
+    const PHOTO_LOAD_LIMIT = 30;
+    let photosLoadInFlight = null;
+    let photosLoadedOnce = false;
+    let lastAuthRefreshKey = null;
+    const signedImageUrlCache = new Map();
     let currentCreatorProfile = null;
     let allPhotos = [];
     let reactionState = loadReactionState();
@@ -2118,6 +2169,18 @@
         .replace(/"/g, "&quot;")
         .replace(/'/g, "&#39;");
     }
+
+
+    function buildInlineVerifiedName(name, verified){
+      const safeName = escapeHtml(String(name || "Unknown").trim() || "Unknown");
+      return `
+        <span class="verified-name-inline${verified ? " is-verified" : ""}">
+          <span class="name-text">${safeName}</span>
+          ${verified ? '<span class="verified-name-badge" title="Verified profile" aria-label="Verified profile"><i class="fa-solid fa-check"></i></span>' : ''}
+        </span>
+      `;
+    }
+
 
     function normalize(value = ""){
       return String(value || "").trim().toLowerCase();
@@ -2976,7 +3039,7 @@
             </div>
 
             ${description ? `<p class="overlay-desc">${escapeHtml(description)}</p>` : ""}
-            <div class="credit">By ${escapeHtml(creatorName)}</div>
+            <div class="credit">By ${buildInlineVerifiedName(creatorName, isCreatorVerified(photo))}</div>
 
             <div class="card-bottom">
               <div class="card-bottom-left">
@@ -3377,7 +3440,7 @@
       lightboxTitle.textContent = getSafePhotoTitle(photo) || photo.category || "Photo";
 
       document.getElementById("lightboxCategory").textContent = photo.category || "Uncategorized";
-      document.getElementById("lightboxCredit").textContent = getCreatorName(photo) || "Unknown";
+      document.getElementById("lightboxCredit").innerHTML = buildInlineVerifiedName(getCreatorName(photo) || "Unknown", isCreatorVerified(photo));
       document.getElementById("lightboxTags").textContent = getPhotoTags(photo).join(", ") || "No tags";
       document.getElementById("lightboxDescription").textContent = getDescription(photo) || "No description added.";
       document.getElementById("lightboxPosted").textContent = formatPostDate(photo);
@@ -3451,19 +3514,50 @@
       }
     }
 
-    async function loadPhotos(){
-      try{
-        const { data, error } = await supabaseClient
-          .from("photos")
-          .select("*")
-          .order("created_at", { ascending:false });
-
-        if(error) throw error;
-        allPhotos = Array.isArray(data) ? data : [];
-      }catch(error){
-        console.error(error);
-        allPhotos = [];
+    async function loadPhotos(forceRefresh = false){
+      if(photosLoadInFlight && !forceRefresh){
+        return photosLoadInFlight;
       }
+
+      photosLoadInFlight = (async () => {
+        try{
+          const { data, error } = await supabaseClient
+            .from("photos")
+            .select("*")
+            .order("created_at", { ascending:false })
+            .limit(PHOTO_LOAD_LIMIT);
+
+          if(error){
+            throw error;
+          }
+
+          rawPhotos = Array.isArray(data) ? data : [];
+          allPhotos = await safelyPreparePhotosForDisplay(rawPhotos);
+          photosLoadedOnce = true;
+
+          applyAdminText();
+          refreshPhotoSections();
+        }catch(error){
+          console.error(error);
+          categoryGrid.innerHTML = `<div class="empty-box">Could not load categories from Supabase.</div>`;
+          if(typeof featuredGrid !== "undefined" && featuredGrid){
+            featuredGrid.innerHTML = `<div class="empty-box">Could not load featured photos from Supabase.</div>`;
+          }
+          if(typeof trendingGrid !== "undefined" && trendingGrid){
+            trendingGrid.innerHTML = `<div class="empty-box">Could not load trending photos from Supabase.</div>`;
+          }
+          if(typeof photoGrid !== "undefined" && photoGrid){
+            photoGrid.innerHTML = `<div class="empty-box">Could not load photos from Supabase.</div>`;
+          }
+          if(typeof galleryGrid !== "undefined" && galleryGrid){
+            galleryGrid.innerHTML = `<div class="empty-box">Could not load photos from Supabase.</div>`;
+          }
+        }finally{
+          photosLoadInFlight = null;
+        }
+      })();
+
+      return photosLoadInFlight;
     }
 
     function updateDeleteAccountVisibility(){
