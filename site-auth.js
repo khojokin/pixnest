@@ -9,9 +9,9 @@
     { href:'index.html', label:'Home', keys:['index.html',''] },
     { href:'explore.html', label:'Explore', keys:['explore.html'] },
     { href:'category.html', label:'Categories', keys:['category.html'] },
-    { href:'featured.html', label:'Featured', keys:['featured.html','features.html','premiumplans.html'] },
-    { href:'premium.html', label:'Premium', keys:['premium.html','checkout.html','payment.html'] },
-    { href:'contact.html', label:'Contact', keys:['contact.html','help.html'] }
+    { href:'featured.html', label:'Featured', keys:['featured.html','features.html'] },
+    { href:'premium.html', label:'Premium', keys:['premium.html','premiumplans.html','checkout.html','payment.html'] },
+    { href:'contact.html', label:'Contact', keys:['contact.html','help.html','about.html','privacy.html','terms.html','license.html'] }
   ];
 
   const PREMIUM_FOOTER_ITEMS = [
@@ -28,6 +28,21 @@
 
   function currentPage(){
     return (location.pathname.split('/').pop() || 'index.html').toLowerCase();
+  }
+
+
+  function getActiveNavHref(page = currentPage()){
+    const normalized = (page || 'index.html').toLowerCase();
+    const item = NAV_ITEMS.find(entry => entry.keys.includes(normalized));
+    return item ? item.href : '';
+  }
+
+  function syncActiveNavLinks(root = document){
+    const activeHref = getActiveNavHref();
+    root.querySelectorAll('.nav-links a[href]').forEach(link => {
+      const href = String(link.getAttribute('href') || '').toLowerCase();
+      link.classList.toggle('active', Boolean(activeHref) && href === activeHref);
+    });
   }
 
   function isCustomAccountPage(){
@@ -240,11 +255,12 @@
       const a = document.createElement('a');
       a.href = item.href;
       a.textContent = item.label;
-      if(item.keys.includes(page)) a.classList.add('active');
+      if(item.href === getActiveNavHref(page)) a.classList.add('active');
       navLinks.appendChild(a);
     });
 
     preserved.forEach(node => navLinks.appendChild(node));
+    syncActiveNavLinks();
   }
 
   function standardizeFooter(isPremium, hasAccount){
@@ -325,8 +341,8 @@
     menuWrap.innerHTML = `
       <button class="site-account-menu-toggle" id="siteAccountMenuToggle" aria-label="Open account menu"><i class="fa-solid fa-bars"></i></button>
       <div class="site-account-dropdown" id="siteAccountDropdown">
-        <a href="account.html"><i class="fa-solid fa-user"></i>My Account</a>
-        <a href="account.html"><i class="fa-solid fa-sliders"></i>Profile Settings</a>
+        <a href="account.html"><i class="fa-solid fa-user"></i>Account</a>
+        <a href="account.html"><i class="fa-solid fa-sliders"></i>Account Settings</a>
         <a href="upload.html"><i class="fa-solid fa-upload"></i>Upload</a>
         <a href="professional-dashboard.html"><i class="fa-solid fa-chart-line"></i>Creator Dashboard</a>
         <a href="premium.html"><i class="fa-solid fa-crown"></i>Premium</a>
@@ -591,6 +607,9 @@
     removeHelpTeamSection();
     showIdleNoticeIfNeeded();
     ensureAuthPromptShell();
+    syncActiveNavLinks();
+    const navObserver = new MutationObserver(() => syncActiveNavLinks());
+    navObserver.observe(document.body, { childList:true, subtree:true, attributes:true, attributeFilter:['class','href'] });
 
     ensureSupabase(async function(){
       try{

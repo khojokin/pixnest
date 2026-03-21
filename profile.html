@@ -1485,14 +1485,14 @@
             </div>
 
             <div class="account-menu-links">
-              <a class="account-link" href="profile.html">
+              <a class="account-link" href="account.html">
                 <i class="fa-solid fa-user"></i>
-                My Profile
+                Account
               </a>
 
               <a class="account-link" href="account.html">
                 <i class="fa-solid fa-id-card"></i>
-                Account
+                Account Settings
               </a>
 
               <a class="account-link" href="upload.html">
@@ -3134,7 +3134,7 @@ async function handleDownloadButtonClick(button){
         : "View this creator's public posts, reposts and visible favourites.";
 
       document.title = profile.viewingOwn
-        ? "PixNest | My Profile"
+        ? "PixNest | Account"
         : `PixNest | ${profile.name}`;
 
       renderActiveGrid();
@@ -3296,21 +3296,12 @@ async function handleDownloadButtonClick(button){
     }
 
     function renderEmptyState(){
-      const isOwn = targetProfile?.viewingOwn;
       const label = activeTab.charAt(0).toUpperCase() + activeTab.slice(1);
 
       profileGrid.innerHTML = `
         <div class="empty-box">
           <strong>No ${escapeHtml(label)} yet</strong>
-          <div>${escapeHtml(isOwn ? `You do not have any ${activeTab} to show right now.` : `This profile does not have any ${activeTab} to show right now.`)}</div>
-          ${isOwn && activeTab === "posts" ? `
-            <div class="empty-actions">
-              <a href="upload.html" class="action-btn primary">
-                <i class="fa-solid fa-cloud-arrow-up"></i>
-                Upload a Photo
-              </a>
-            </div>
-          ` : ``}
+          <div>${escapeHtml(`This profile does not have any ${activeTab} to show right now.`)}</div>
         </div>
       `;
     }
@@ -3537,6 +3528,11 @@ async function openLightbox(photo){
     }
 
     function decideProfileMode(){
+      const explicitProfileTarget = Boolean(getRequestedCreator() || getRequestedName());
+      if(!explicitProfileTarget && getSessionUser()){
+        window.location.replace("account.html");
+        return;
+      }
       const requestedCreator = getRequestedCreator();
       const requestedName = getRequestedName();
 
@@ -3619,6 +3615,34 @@ async function openLightbox(photo){
     })();
   </script>
   <script src="site-auth.js"></script>
+
+<script id="pixnestActiveNavSync">
+(function(){
+  const page = (location.pathname.split('/').pop() || 'index.html').toLowerCase();
+  const groups = {
+    'index.html':'index.html',
+    'explore.html':'explore.html',
+    'category.html':'category.html',
+    'featured.html':'featured.html',
+    'features.html':'featured.html',
+    'premium.html':'premium.html',
+    'premiumplans.html':'premium.html',
+    'checkout.html':'premium.html',
+    'payment.html':'premium.html',
+    'contact.html':'contact.html',
+    'help.html':'contact.html',
+    'about.html':'contact.html',
+    'privacy.html':'contact.html',
+    'terms.html':'contact.html',
+    'license.html':'contact.html'
+  };
+  const activeHref = groups[page] || '';
+  document.querySelectorAll('.nav-links a[href]').forEach(function(link){
+    const href = (link.getAttribute('href') || '').toLowerCase();
+    link.classList.toggle('active', !!activeHref && href === activeHref);
+  });
+})();
+</script>
 </body>
 </html>
  
