@@ -3458,8 +3458,8 @@ async function openLightbox(photo){
           <h2>Log in to view premium content</h2>
           <p>You need an account and an active premium membership before you can view this premium content page.</p>
 
-          <div class="gate-actions">
-            <a href="signup.html" class="btn primary">
+        <div class="gate-actions">
+          <a href="signup.html" class="btn primary">
               <i class="fa-solid fa-user-plus"></i>
               Sign Up
             </a>
@@ -3477,7 +3477,8 @@ async function openLightbox(photo){
         <p>Your account is logged in, but premium content is only visible to users with active premium access.</p>
 
         <div class="gate-actions">
-          <a href="payment.html?plan=premium" class="btn primary">
+          <!-- Direct premium subscribers to the new checkout page for a monthly plan -->
+          <a href="checkout.html?plan=monthly" class="btn primary">
             <i class="fa-solid fa-crown"></i>
             Join Premium
           </a>

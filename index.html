@@ -3337,7 +3337,8 @@
         const coverImage = cover && (cover._resolvedImageUrl || cover.image_url) ? (cover._resolvedImageUrl || cover.image_url) : FALLBACK_CATEGORY_IMAGE;
 
         return `
-          <a href="category.html?category=${encodeURIComponent(category.name)}" class="category-card">
+          <!-- Updated to link to explore page for categories -->
+          <a href="explore.html?category=${encodeURIComponent(category.name)}" class="category-card">
             <div class="category-image-wrap">
               <img src="${escapeHtml(coverImage)}" alt="${escapeHtml(category.name)}">
             </div>
