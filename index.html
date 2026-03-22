@@ -577,7 +577,8 @@
 
     .photo-grid{
       display:grid;
-      grid-template-columns:repeat(3,1fr);
+      /* Use auto-fit to make the grid responsive on smaller screens */
+      grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));
       gap:24px;
     }
 
@@ -2428,6 +2429,19 @@
 
     function toggleReaction(photoId, reactionType){
       if(!ensureSignedInForAction(reactionType === "like" ? "like photos" : "add photos to favourites")) return;
+      // Prevent favouriting premium photos
+      if(reactionType === "favourite"){
+        try{
+          const photo = getPhotoById(photoId);
+          if(photo && isPremiumPhoto(photo)){
+            showNotice("Premium photos cannot be added to favourites.");
+            return;
+          }
+        }catch(_e){
+          // ignore lookup errors
+        }
+      }
+
       const key = reactionType === "like" ? "liked" : "favourited";
       const current = {
         liked: !!getPhotoReactionState(photoId).liked,
@@ -2519,7 +2533,8 @@
     }
 
     function canAccessPremiumPhoto(photo){
-      return !isPremiumPhoto(photo) || isPremiumMember(currentUser) || isOwner(photo);
+      // Premium photos are viewable by all users. Always allow access.
+      return true;
     }
 
     function isLockedPhoto(photo){
@@ -2997,6 +3012,7 @@
       const id = getPhotoId(photo);
       const state = getPhotoReactionState(id);
       const metrics = getPhotoMetrics(photo);
+      const isPrem = isPremiumPhoto(photo);
 
       return `
         <div class="photo-stats">
@@ -3017,6 +3033,7 @@
             <span>${escapeHtml(compactNumber(metrics.views))}</span>
           </span>
 
+          ${isPrem ? `` : `
           <button
             type="button"
             class="photo-stat react-btn ${state.favourited ? "active" : ""}"
@@ -3028,6 +3045,7 @@
             <i class="fa-solid fa-star"></i>
             <span>${escapeHtml(compactNumber(metrics.favourites))}</span>
           </button>
+          `}
         </div>
       `;
     }
@@ -3433,6 +3451,39 @@
       const shareTitle = getShareTitle(photo);
       const imageUrl = photo._resolvedImageUrl || photo.image_url || "";
       const downloadName = getDownloadFileName(photo, imageUrl);
+      const isPrem = isPremiumPhoto(photo);
+
+      // For premium photos, disable share and download options but still allow opening creator profile
+      if(isPrem){
+        return `
+          <a
+            class="lightbox-social"
+            href="profile.html?creator=${encodeURIComponent(getCreatorKey(photo))}&name=${encodeURIComponent(getCreatorName(photo))}"
+            title="Open creator profile"
+            aria-label="Open creator profile"
+          >
+            <i class="fa-solid fa-user"></i>
+          </a>
+
+          <button
+            type="button"
+            class="lightbox-social disabled"
+            title="Share disabled for premium photo"
+            aria-label="Share disabled for premium photo"
+          >
+            <i class="fa-solid fa-share-nodes"></i>
+          </button>
+
+          <button
+            type="button"
+            class="lightbox-social disabled"
+            title="Download disabled for premium photo"
+            aria-label="Download disabled for premium photo"
+          >
+            <i class="fa-solid fa-download"></i>
+          </button>
+        `;
+      }
 
       return `
         <a

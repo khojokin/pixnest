@@ -2548,6 +2548,19 @@
     }
 
     function toggleReaction(photoId, reactionType){
+      // Prevent favouriting premium photos
+      if(reactionType === "favourite"){
+        try{
+          const photo = getPhotoById(photoId);
+          if(photo && isPremiumPhoto(photo)){
+            showNotice("Premium photos cannot be added to favourites.");
+            return;
+          }
+        }catch(_e){
+          // ignore lookup errors
+        }
+      }
+
       const key = reactionType === "like" ? "liked" : "favourited";
       const current = {
         liked: !!getPhotoReactionState(photoId).liked,
@@ -2669,9 +2682,10 @@
       return ids.includes(currentId);
     }
 
-    function canAccessPremiumPhoto(photo){
-      return !isPremiumPhoto(photo) || isPremiumMember(currentUser) || isOwner(photo);
-    }
+function canAccessPremiumPhoto(photo){
+  // Premium photos are viewable by all users. Always allow access.
+  return true;
+}
 
     function isLockedPhoto(photo){
       return isPremiumPhoto(photo) && !canAccessPremiumPhoto(photo);
@@ -2708,44 +2722,47 @@
       return new Set(scored.slice(0, 6).map(item => getPhotoId(item)));
     }
 
-    function buildPhotoStats(photo){
-      const id = getPhotoId(photo);
-      const state = getPhotoReactionState(id);
-      const metrics = getPhotoMetrics(photo);
+function buildPhotoStats(photo){
+  const id = getPhotoId(photo);
+  const state = getPhotoReactionState(id);
+  const metrics = getPhotoMetrics(photo);
+  const isPrem = isPremiumPhoto(photo);
 
-      return `
-        <div class="photo-stats">
-          <button
-            type="button"
-            class="photo-stat react-btn ${state.liked ? "active" : ""}"
-            data-photo-id="${escapeHtml(id)}"
-            data-reaction="like"
-            aria-label="Like photo"
-            title="Like photo"
-          >
-            <i class="fa-solid fa-heart"></i>
-            <span>${escapeHtml(compactNumber(metrics.likes))}</span>
-          </button>
+  return `
+    <div class="photo-stats">
+      <button
+        type="button"
+        class="photo-stat react-btn ${state.liked ? "active" : ""}"
+        data-photo-id="${escapeHtml(id)}"
+        data-reaction="like"
+        aria-label="Like photo"
+        title="Like photo"
+      >
+        <i class="fa-solid fa-heart"></i>
+        <span>${escapeHtml(compactNumber(metrics.likes))}</span>
+      </button>
 
-          <span class="photo-stat" aria-label="Views">
-            <i class="fa-solid fa-eye"></i>
-            <span>${escapeHtml(compactNumber(metrics.views))}</span>
-          </span>
+      <span class="photo-stat" aria-label="Views">
+        <i class="fa-solid fa-eye"></i>
+        <span>${escapeHtml(compactNumber(metrics.views))}</span>
+      </span>
 
-          <button
-            type="button"
-            class="photo-stat react-btn ${state.favourited ? "active" : ""}"
-            data-photo-id="${escapeHtml(id)}"
-            data-reaction="favourite"
-            aria-label="Favourite photo"
-            title="Favourite photo"
-          >
-            <i class="fa-solid fa-star"></i>
-            <span>${escapeHtml(compactNumber(metrics.favourites))}</span>
-          </button>
-        </div>
-      `;
-    }
+      ${isPrem ? `` : `
+      <button
+        type="button"
+        class="photo-stat react-btn ${state.favourited ? "active" : ""}"
+        data-photo-id="${escapeHtml(id)}"
+        data-reaction="favourite"
+        aria-label="Favourite photo"
+        title="Favourite photo"
+      >
+        <i class="fa-solid fa-star"></i>
+        <span>${escapeHtml(compactNumber(metrics.favourites))}</span>
+      </button>
+      `}
+    </div>
+  `;
+}
 
     function sanitizeFileName(value = ""){
       return String(value)
@@ -3382,6 +3399,33 @@
 
       const imageUrl = photo.image_url || "";
       const downloadName = getDownloadFileName(photo, imageUrl);
+
+      // For premium photos, disable share and download options
+      if(isPremiumPhoto(photo)){
+        return `
+          <button
+            type="button"
+            class="account-btn disabled"
+            title="Share disabled for premium photo"
+            aria-label="Share disabled for premium photo"
+            style="min-height:44px;padding:10px 14px;border-radius:12px;font-size:14px;"
+          >
+            <i class="fa-solid fa-share-nodes"></i>
+            Share
+          </button>
+
+          <button
+            type="button"
+            class="account-btn disabled"
+            title="Download disabled for premium photo"
+            aria-label="Download disabled for premium photo"
+            style="min-height:44px;padding:10px 14px;border-radius:12px;font-size:14px;"
+          >
+            <i class="fa-solid fa-download"></i>
+            Download
+          </button>
+        `;
+      }
 
       return `
         <button

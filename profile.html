@@ -2273,6 +2273,19 @@ function getPhotoTags(photo){
 
     function toggleReaction(photoId, reactionType){
       if(!ensureSignedInForAction(reactionType === "like" ? "like photos" : "add photos to favourites")) return;
+      // Prevent favouriting premium photos
+      if(reactionType === "favourite"){
+        try{
+          const photo = getPhotoById(photoId);
+          if(photo && isPremiumPhoto(photo)){
+            showNotice("Premium photos cannot be added to favourites.");
+            return;
+          }
+        }catch(_e){
+          // ignore lookup errors
+        }
+      }
+
       const key = reactionType === "like" ? "liked" : "favourited";
       const current = {
         liked: !!getPhotoReactionState(photoId).liked,
@@ -2380,7 +2393,8 @@ function isOwner(photo){
 }
 
 function canAccessPremiumPhoto(photo){
-  return !isPremiumPhoto(photo) || isPremiumMember(getActiveUser()) || isOwner(photo);
+  // Premium photos are viewable by all users. Always allow access.
+  return true;
 }
 
 function isLockedPhoto(photo){
@@ -2480,6 +2494,7 @@ function handleLockedPremiumPhoto(){
       const state = getPhotoReactionState(id);
       const metrics = getPhotoMetrics(photo);
       const stopCardAttr = stopCard ? "data-stop-card" : "";
+      const isPrem = isPremiumPhoto(photo);
 
       return `
         <div class="photo-stats ${escapeHtml(extraClass)}">
@@ -2501,6 +2516,7 @@ function handleLockedPremiumPhoto(){
             <span>${escapeHtml(compactNumber(metrics.views))}</span>
           </span>
 
+          ${isPrem ? `` : `
           <button
             type="button"
             class="photo-stat react-btn ${state.favourited ? "active" : ""}"
@@ -2513,6 +2529,7 @@ function handleLockedPremiumPhoto(){
             <i class="fa-solid fa-star"></i>
             <span>${escapeHtml(compactNumber(metrics.favourites))}</span>
           </button>
+          `}
         </div>
       `;
     }
@@ -3365,32 +3382,55 @@ async function handleDownloadButtonClick(button){
       document.getElementById("lightboxPosted").textContent = formatPostDate(photo);
 
       lightboxStatsWrap.innerHTML = isLockedPhoto(photo) ? `<div class="lock-note">Join premium to enlarge, share, or download this photo.</div>` : buildPhotoStats(photo, "lightbox-stats", false);
-      lightboxActions.innerHTML = `
-        <button
-          type="button"
-          class="lightbox-social"
-          id="lightboxShareBtn"
-          data-share-url="${escapeHtml(photo.image_url || window.location.href)}"
-          data-share-title="${escapeHtml(getShareTitle(photo))}"
-          title="Share"
-          aria-label="Share"
-        >
-          <i class="fa-solid fa-share-nodes"></i>
-        </button>
+      // Build lightbox actions depending on whether the photo is premium.
+      if(isPremiumPhoto(photo)){
+        lightboxActions.innerHTML = `
+          <button
+            type="button"
+            class="lightbox-social disabled"
+            title="Share disabled for premium photo"
+            aria-label="Share disabled for premium photo"
+          >
+            <i class="fa-solid fa-share-nodes"></i>
+          </button>
+          <button
+            type="button"
+            class="lightbox-social disabled"
+            title="Download disabled for premium photo"
+            aria-label="Download disabled for premium photo"
+          >
+            <i class="fa-solid fa-download"></i>
+          </button>
+          ${buildCreatorBadges(photo)}
+        `;
+      }else{
+        lightboxActions.innerHTML = `
+          <button
+            type="button"
+            class="lightbox-social"
+            id="lightboxShareBtn"
+            data-share-url="${escapeHtml(photo.image_url || window.location.href)}"
+            data-share-title="${escapeHtml(getShareTitle(photo))}"
+            title="Share"
+            aria-label="Share"
+          >
+            <i class="fa-solid fa-share-nodes"></i>
+          </button>
 
-        <button
-          type="button"
-          class="lightbox-social download-btn"
-          data-download-url="${escapeHtml(photo.image_url || "")}"
-          data-download-name="${escapeHtml(getDownloadFileName(photo, photo.image_url || ""))}"
-          title="Download image"
-          aria-label="Download image"
-        >
-          <i class="fa-solid fa-download"></i>
-        </button>
+          <button
+            type="button"
+            class="lightbox-social download-btn"
+            data-download-url="${escapeHtml(photo.image_url || "")}"
+            data-download-name="${escapeHtml(getDownloadFileName(photo, photo.image_url || ""))}"
+            title="Download image"
+            aria-label="Download image"
+          >
+            <i class="fa-solid fa-download"></i>
+          </button>
 
-        ${buildCreatorBadges(photo)}
-      `;
+          ${buildCreatorBadges(photo)}
+        `;
+      }
 
       const lightboxShareBtn = document.getElementById("lightboxShareBtn");
       if(lightboxShareBtn){

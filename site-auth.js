@@ -16,12 +16,8 @@
     { href:'contact.html', label:'Contact', keys:['contact.html','help.html'] }
   ];
 
-  /*
-   * Define a unified footer for all visitors (public or logged in).
-   * The footer should always display the same set of informational pages
-   * regardless of whether the user is a premium member. The order of
-   * links is: License, Terms, About, Privacy.
-   */
+  // Define a single footer item list for all users.
+  // The public requirement is to always show "License", "Terms", "About" and "Privacy" links in the footer.
   const FOOTER_ITEMS = [
     { href:'license.html', label:'License' },
     { href:'terms.html', label:'Terms' },
@@ -29,10 +25,7 @@
     { href:'privacy.html', label:'Privacy' }
   ];
 
-  // For backwards compatibility with existing code that references
-  // PREMIUM_FOOTER_ITEMS and NON_PREMIUM_FOOTER_ITEMS, alias them to
-  // FOOTER_ITEMS. This ensures both premium and non‑premium visitors see
-  // the same set of footer links.
+  // Keep legacy constants for backward compatibility but they are no longer used.
   const PREMIUM_FOOTER_ITEMS = FOOTER_ITEMS;
   const NON_PREMIUM_FOOTER_ITEMS = FOOTER_ITEMS;
 
@@ -40,19 +33,16 @@
     return (location.pathname.split('/').pop() || 'index.html').toLowerCase();
   }
 
-  /*
-   * The site previously skipped injecting authentication UI on the login,
-   * signup and reset password pages. However, to ensure that the top
-   * navigation consistently includes "Login" and "Sign Up" links when the
-   * user is not authenticated, we no longer skip injection on these pages.
-   * Instead, injection will run on all pages and handle the not‑logged‑in
-   * state by inserting login/sign‑up actions directly into the nav.
-   */
   function isPublicAuthPage(){
-    return false;
+    const page = currentPage();
+    return page === 'login.html' || page === 'signup.html' || page === 'reset-password.html';
   }
 
   function shouldSkipAuthInjection(){
+    // Always return false so that authentication UI is injected on every page, including
+    // login, signup and reset-password. This ensures that the navigation bar always
+    // shows the appropriate authentication links (Login/Sign Up) when a user is not
+    // logged in, even on the auth pages themselves.
     return false;
   }
 
@@ -352,7 +342,7 @@
   function standardizeFooter(isPremium){
     const footerLinks = document.querySelector('.footer-links');
     if(!footerLinks) return;
-    // Always use the unified FOOTER_ITEMS regardless of premium state
+    // Always use the unified FOOTER_ITEMS list regardless of membership state.
     const items = FOOTER_ITEMS;
     footerLinks.innerHTML = items.map(item => `<a href="${item.href}">${item.label}</a>`).join('');
   }
@@ -485,12 +475,12 @@
     authLinks.className = 'site-auth-links';
     authLinks.id = 'siteAuthLinks';
 
-    // When no user is logged in, display explicit Login and Sign Up buttons directly in
-    // the navigation bar instead of the hamburger account menu. These buttons are
-    // appended to the navigation links and styled using the existing utility
-    // classes (secondary for Login, primary for Sign Up). After injecting the
-    // buttons we mark the auth UI as ready and return early to avoid building
-    // the account dropdown/hamburger menu.
+    // When no user is logged in, replace the hamburger menu with explicit Login and
+    // Sign Up buttons. These buttons live inside the `.site-auth-links` container and
+    // are appended directly to the navigation bar. Each button is styled using
+    // existing utility classes (`secondary` and `primary`) defined in
+    // ensureGlobalStyles(). We then mark the auth nav as ready and dispatch the
+    // appropriate event before returning early to skip building the account menu.
     if(!user){
       const loginAnchor = document.createElement('a');
       loginAnchor.href = 'login.html';

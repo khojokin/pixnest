@@ -2083,6 +2083,16 @@ function getSafePhotoTitle(photo){
 
     function toggleReaction(photoId, reactionType){
       if(!ensureSignedInForAction(reactionType === "like" ? "like photos" : "add photos to favourites")) return;
+    // Prevent favouriting premium photos
+    try{
+      const photo = getPhotoById(photoId);
+      if(photo && reactionType === "favourite" && isPremiumPhoto(photo)){
+        showNotice("Premium photos cannot be added to favourites.");
+        return;
+      }
+    }catch(e){
+      // ignore if photo lookup fails
+    }
       const key = reactionType === "like" ? "liked" : "favourited";
       const current = {
         liked: !!getPhotoReactionState(photoId).liked,
@@ -2270,7 +2280,8 @@ function isOwner(photo){
 }
 
 function canAccessPremiumPhoto(photo){
-  return !isPremiumPhoto(photo) || isPremiumMember(getActiveUser()) || isOwner(photo);
+  // Premium photos are viewable by all users. Always allow access.
+  return true;
 }
 
 function isLockedPhoto(photo){
@@ -2515,6 +2526,7 @@ function handleLockedPremiumPhoto(){
       const state = getPhotoReactionState(id);
       const metrics = getPhotoMetrics(photo);
       const stopCardAttr = stopCard ? "data-stop-card" : "";
+  const isPrem = isPremiumPhoto(photo);
 
       return `
         <div class="photo-stats ${escapeHtml(extraClass)}">
@@ -2536,18 +2548,20 @@ function handleLockedPremiumPhoto(){
             <span>${escapeHtml(compactNumber(metrics.views))}</span>
           </span>
 
-          <button
-            type="button"
-            class="photo-stat react-btn ${state.favourited ? "active" : ""}"
-            data-photo-id="${escapeHtml(id)}"
-            data-reaction="favourite"
-            aria-label="Favourite photo"
-            title="Favourite photo"
-            ${stopCardAttr}
-          >
-            <i class="fa-solid fa-star"></i>
-            <span>${escapeHtml(compactNumber(metrics.favourites))}</span>
-          </button>
+      ${isPrem ? `` : `
+      <button
+        type="button"
+        class="photo-stat react-btn ${state.favourited ? "active" : ""}"
+        data-photo-id="${escapeHtml(id)}"
+        data-reaction="favourite"
+        aria-label="Favourite photo"
+        title="Favourite photo"
+        ${stopCardAttr}
+      >
+        <i class="fa-solid fa-star"></i>
+        <span>${escapeHtml(compactNumber(metrics.favourites))}</span>
+      </button>
+      `}
         </div>
       `;
     }
@@ -2761,7 +2775,29 @@ function handleLockedPremiumPhoto(){
       actions.push(buildSocialButton(photo.x || "", "fa-brands fa-x-twitter", "Creator X"));
       actions.push(buildSocialButton(photo.facebook || "", "fa-brands fa-facebook-f", "Creator Facebook"));
 
-      actions.push(`
+      if(isPremiumPhoto(photo)){
+        actions.push(`
+        <button
+          type="button"
+          class="lightbox-social disabled"
+          title="Share disabled for premium photo"
+          aria-label="Share disabled for premium photo"
+        >
+          <i class="fa-solid fa-share-nodes"></i>
+        </button>
+        `);
+        actions.push(`
+        <button
+          type="button"
+          class="lightbox-social disabled"
+          title="Download disabled for premium photo"
+          aria-label="Download disabled for premium photo"
+        >
+          <i class="fa-solid fa-download"></i>
+        </button>
+        `);
+      } else {
+        actions.push(`
         <button
           type="button"
           class="lightbox-social"
@@ -2773,9 +2809,8 @@ function handleLockedPremiumPhoto(){
         >
           <i class="fa-solid fa-share-nodes"></i>
         </button>
-      `);
-
-      actions.push(`
+        `);
+        actions.push(`
         <button
           type="button"
           class="lightbox-social download-btn"
@@ -2786,7 +2821,8 @@ function handleLockedPremiumPhoto(){
         >
           <i class="fa-solid fa-download"></i>
         </button>
-      `);
+        `);
+      }
 
       return actions.join("");
     }

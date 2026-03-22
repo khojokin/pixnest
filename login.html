@@ -789,7 +789,16 @@
       const email = encodeURIComponent(emailInput.value.trim());
       window.location.href = email ? `reset-password.html?email=${email}` : "reset-password.html";
     });
-    
+
+        if(error){
+          throw error;
+        }
+
+        showMessage("Password reset email sent. Check your inbox.", "success");
+      }catch(error){
+        showMessage(error.message || "Could not send password reset email.");
+      }
+    });
 
     loginForm.addEventListener("submit", async (e) => {
       e.preventDefault();
