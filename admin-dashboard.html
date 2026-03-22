@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PixNest | Admin Dashboard</title>
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png" />
+  <link rel="shortcut icon" href="favicon.ico" />
+  <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+  <!-- Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+      font-family:Arial, Helvetica, sans-serif;
+    }
+    :root{
+      --bg:#0f172a;
+      --panel:#111827;
+      --panel2:#1e293b;
+      --text:#e5e7eb;
+      --muted:#94a3b8;
+      --accent:#facc15;
+      --line:rgba(255,255,255,0.08);
+      --success:#22c55e;
+      --danger:#ef4444;
+    }
+    html{
+      scroll-behavior:smooth;
+      min-height:100%;
+      background:var(--bg);
+    }
+    body{
+      min-height:100%;
+      background:var(--bg);
+      color:var(--text);
+      line-height:1.6;
+      overflow-x:hidden;
+      display:flex;
+      flex-direction:column;
+    }
+    main{
+      flex:1;
+      padding-bottom:60px;
+    }
+    .container{
+      width:min(1300px,92%);
+      margin:auto;
+    }
+    header{
+      position:sticky;
+      top:0;
+      z-index:1000;
+      background:rgba(15,23,42,0.95);
+      border-bottom:1px solid var(--line);
+      backdrop-filter:blur(8px);
+    }
+    .nav{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:20px;
+      padding:16px 0;
+      position:relative;
+    }
+    .logo-wrap{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      flex-shrink:0;
+      min-width:0;
+    }
+    .logo-mark{
+      width:52px;
+      height:52px;
+      border-radius:14px;
+      background:linear-gradient(135deg,#facc15,#fb7185);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:#111827;
+      font-size:24px;
+      font-weight:800;
+      box-shadow:0 0 16px rgba(250,204,21,0.28);
+      flex-shrink:0;
+    }
+    .logo-text{
+      display:flex;
+      flex-direction:column;
+      line-height:1;
+      min-width:0;
+    }
+    .logo-title{
+      font-size:27px;
+      font-weight:800;
+      color:var(--accent);
+      letter-spacing:.4px;
+      white-space:nowrap;
+    }
+    .logo-sub{
+      font-size:11px;
+      color:#cbd5e1;
+      letter-spacing:1.7px;
+      text-transform:uppercase;
+      margin-top:4px;
+      white-space:nowrap;
+    }
+    .nav-right{
+      display:flex;
+      align-items:center;
+      gap:18px;
+      flex-wrap:wrap;
+    }
+    .nav-links{
+      display:flex;
+      align-items:center;
+      gap:20px;
+      flex-wrap:wrap;
+    }
+    .nav-links a{
+      color:#cbd5e1;
+      font-size:15px;
+      position:relative;
+      padding-bottom:4px;
+    }
+    .nav-links a:hover,
+    .nav-links a.active{
+      color:var(--accent);
+    }
+    .nav-links a.active::after{
+      content:"";
+      position:absolute;
+      left:0;
+      bottom:-4px;
+      width:100%;
+      height:2px;
+      background:var(--accent);
+      border-radius:999px;
+    }
+    .nav-toggle{
+      display:none;
+      width:46px;
+      height:46px;
+      border-radius:12px;
+      border:1px solid rgba(250,204,21,.35);
+      background:#111827;
+      color:var(--accent);
+      align-items:center;
+      justify-content:center;
+      cursor:pointer;
+      flex-direction:column;
+      gap:5px;
+      flex-shrink:0;
+    }
+    .nav-toggle span{
+      width:20px;
+      height:2px;
+      border-radius:999px;
+      background:var(--accent);
+      display:block;
+    }
+    @media(max-width:860px){
+      .nav-links{
+        position:absolute;
+        top:100%;
+        left:0;
+        right:0;
+        display:none;
+        flex-direction:column;
+        align-items:flex-start;
+        gap:0;
+        background:#0f172a;
+        border:1px solid var(--line);
+        border-radius:16px;
+        padding:12px;
+        box-shadow:0 16px 30px rgba(0,0,0,.28);
+      }
+      .nav-links.show{
+        display:flex;
+      }
+      .nav-links a{
+        width:100%;
+        padding:12px 10px;
+        border-radius:10px;
+      }
+      .nav-toggle{
+        display:flex;
+      }
+    }
+    /* Dashboard sections */
+    .dashboard-section{
+      margin-top:40px;
+      padding:24px;
+      background:var(--panel);
+      border:1px solid var(--line);
+      border-radius:20px;
+    }
+    .dashboard-section h2{
+      font-size:22px;
+      font-weight:700;
+      margin-bottom:14px;
+      color:var(--accent);
+    }
+    .dashboard-section p{
+      color:var(--muted);
+      margin-bottom:20px;
+    }
+    .form-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:20px;
+    }
+    .form-group{
+      display:flex;
+      flex-direction:column;
+    }
+    .form-group label{
+      margin-bottom:6px;
+      font-weight:600;
+    }
+    .form-group input,
+    .form-group textarea{
+      background:var(--panel2);
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:12px;
+      color:var(--text);
+      font-size:14px;
+      resize:vertical;
+    }
+    .form-group textarea{ min-height:120px; }
+    .dashboard-section button{
+      margin-top:20px;
+      background:var(--accent);
+      color:#111827;
+      border:none;
+      border-radius:14px;
+      padding:12px 18px;
+      font-size:15px;
+      font-weight:700;
+      cursor:pointer;
+      transition:.3s;
+    }
+    .dashboard-section button:hover{
+      background:#fde047;
+      transform:translateY(-2px);
+      box-shadow:0 10px 28px rgba(250,204,21,.26);
+    }
+    .dashboard-section button:disabled{
+      opacity:0.6;
+      cursor:not-allowed;
+    }
+    .table{
+      width:100%;
+      border-collapse:collapse;
+      margin-top:14px;
+    }
+    .table th,
+    .table td{
+      padding:12px 14px;
+      border-bottom:1px solid var(--line);
+    }
+    .table th{ text-align:left; color:var(--accent); }
+    .table td{ color:var(--text); }
+    .table tr:last-child td{ border-bottom:none; }
+    .table button{
+      background:var(--blue);
+      color:#fff;
+      border:none;
+      border-radius:10px;
+      padding:6px 10px;
+      font-size:13px;
+      cursor:pointer;
+    }
+    .table button.reject{
+      background:var(--danger);
+    }
+    @media(max-width:700px){
+      .form-grid{
+        grid-template-columns:1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container nav">
+      <a href="index.html" class="logo-wrap">
+        <span class="logo-mark">P</span>
+        <span class="logo-text">
+          <span class="logo-title">PixNest</span>
+          <span class="logo-sub">Admin Panel</span>
+        </span>
+      </a>
+      <div class="nav-right">
+        <nav class="nav-links" id="navLinks">
+          <!-- Auth links inserted by site-auth.js -->
+          <div class="auth-links" id="authNavLinks"></div>
+        </nav>
+        <button class="nav-toggle" id="navToggle" aria-label="Open navigation" aria-expanded="false">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <div class="container">
+      <h1 style="margin-top:40px; font-size:32px; font-weight:800;">Admin Dashboard</h1>
+      <p style="color:var(--muted); margin-bottom:30px;">Manage site settings, premium plans, categories, payout approvals, and page banners from one place.</p>
+
+      <!-- Site Layout Section -->
+      <section class="dashboard-section" id="siteLayoutSection">
+        <h2>Site Layout & Banners</h2>
+        <p>Customize the main page hero section and other banners. Changes apply site‑wide after saving.</p>
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="heroTitle">Hero Title</label>
+            <input type="text" id="heroTitle" placeholder="Enter hero title for home page" />
+          </div>
+          <div class="form-group">
+            <label for="heroSubtitle">Hero Subtitle</label>
+            <input type="text" id="heroSubtitle" placeholder="Enter hero subtitle" />
+          </div>
+          <div class="form-group" style="grid-column:1 / -1;">
+            <label for="heroDescription">Hero Description</label>
+            <textarea id="heroDescription" placeholder="Enter hero description" ></textarea>
+          </div>
+          <div class="form-group" style="grid-column:1 / -1;">
+            <label for="heroImage">Hero Background Image URL</label>
+            <input type="url" id="heroImage" placeholder="Enter URL of background image" />
+          </div>
+        </div>
+        <button id="saveHeroBtn">Save Hero Settings</button>
+      </section>
+
+      <!-- Premium Plan Settings -->
+      <section class="dashboard-section" id="premiumSettingsSection">
+        <h2>Premium Plan Settings</h2>
+        <p>Adjust the pricing and features of premium plans. Update values to reflect your desired tiers.</p>
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="monthlyPrice">Monthly Price (£)</label>
+            <input type="number" id="monthlyPrice" min="0" step="0.01" placeholder="9.99" />
+          </div>
+          <div class="form-group">
+            <label for="yearlyPrice">Yearly Price (£)</label>
+            <input type="number" id="yearlyPrice" min="0" step="0.01" placeholder="89.99" />
+          </div>
+        </div>
+        <button id="savePremiumBtn">Save Premium Pricing</button>
+      </section>
+
+      <!-- Category Management -->
+      <section class="dashboard-section" id="categoryManagementSection">
+        <h2>Category Management</h2>
+        <p>Create new categories and review existing ones. Categories help organize photos by topic.</p>
+        <div class="form-grid">
+          <div class="form-group" style="grid-column:1 / -1;">
+            <label for="newCategoryName">New Category Name</label>
+            <input type="text" id="newCategoryName" placeholder="Enter category name" />
+          </div>
+        </div>
+        <button id="createCategoryBtn">Create Category</button>
+        <table class="table" id="categoryTable">
+          <thead>
+            <tr><th>Category</th><th>Created</th><th>Status</th><th>Actions</th></tr>
+          </thead>
+          <tbody>
+            <!-- Categories will be listed here dynamically -->
+            <tr><td colspan="4" style="text-align:center; color:var(--muted);">No categories loaded. Connect to backend to display categories.</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- Payout Approval -->
+      <section class="dashboard-section" id="payoutApprovalSection">
+        <h2>Payout Approvals</h2>
+        <p>Review payout requests from sellers. Approve or reject payout details after verification.</p>
+        <table class="table" id="payoutTable">
+          <thead>
+            <tr>
+              <th>Seller</th><th>Bank</th><th>Account Holder</th><th>Account No.</th><th>Sort Code</th><th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Payout requests placeholder -->
+            <tr><td colspan="6" style="text-align:center; color:var(--muted);">No payout requests pending.</td></tr>
+          </tbody>
+        </table>
+      </section>
+    </div>
+  </main>
+  <footer>
+    <div class="container" style="padding:24px 0; text-align:center; border-top:1px solid var(--line);">
+      <p>©️ 2026 PixNest Admin Dashboard. Manage your platform with ease.</p>
+    </div>
+  </footer>
+
+  <script>
+    // Mobile navigation toggle
+    const navToggle = document.getElementById('navToggle');
+    const navLinks = document.getElementById('navLinks');
+    if(navToggle && navLinks){
+      navToggle.addEventListener('click', () => {
+        navLinks.classList.toggle('show');
+        const expanded = navToggle.getAttribute('aria-expanded') === 'true';
+        navToggle.setAttribute('aria-expanded', String(!expanded));
+      });
+      document.addEventListener('click', (e) => {
+        if(window.innerWidth <= 860 && navLinks.classList.contains('show')){
+          if(!navLinks.contains(e.target) && !navToggle.contains(e.target)){
+            navLinks.classList.remove('show');
+            navToggle.setAttribute('aria-expanded','false');
+          }
+        }
+      });
+    }
+    // TODO: Add JS functions to save hero settings, premium pricing, create categories, and handle payout approvals using your backend. Buttons are enabled for demonstration but should call Supabase or another API to persist changes.
+  </script>
+  <script src="site-auth.js"></script>
+  <script src="active-nav.js"></script>
+</body>
+</html>

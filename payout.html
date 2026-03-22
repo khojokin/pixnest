@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PixNest | Payout Details</title>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png" />
+  <link rel="shortcut icon" href="favicon.ico" />
+  <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+  <!-- Supabase client for future bank detail storage -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+      font-family:Arial, Helvetica, sans-serif;
+    }
+    :root{
+      --bg:#0f172a;
+      --panel:#111827;
+      --panel2:#1e293b;
+      --text:#e5e7eb;
+      --muted:#94a3b8;
+      --accent:#facc15;
+      --line:rgba(255,255,255,0.08);
+      --blue:#3b82f6;
+      --success:#22c55e;
+      --danger:#ef4444;
+    }
+    html{
+      scroll-behavior:smooth;
+      min-height:100%;
+      background:var(--bg);
+    }
+    body{
+      min-height:100%;
+      background:var(--bg);
+      color:var(--text);
+      line-height:1.6;
+      overflow-x:hidden;
+      display:flex;
+      flex-direction:column;
+    }
+    main{
+      flex:1;
+    }
+    img{
+      max-width:100%;
+      display:block;
+    }
+    a{
+      text-decoration:none;
+      color:inherit;
+      transition:.3s;
+    }
+    button,
+    input,
+    select{
+      font-family:inherit;
+      transition:.3s;
+    }
+    .container{
+      width:min(1200px,92%);
+      margin:auto;
+    }
+    /* Navigation styles (unified across the site) */
+    header{
+      position:sticky;
+      top:0;
+      z-index:1000;
+      background:rgba(15,23,42,0.95);
+      border-bottom:1px solid var(--line);
+      backdrop-filter:blur(8px);
+    }
+    .nav{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:20px;
+      padding:16px 0;
+      position:relative;
+    }
+    .logo-wrap{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      flex-shrink:0;
+      min-width:0;
+    }
+    .logo-mark{
+      width:52px;
+      height:52px;
+      border-radius:14px;
+      background:linear-gradient(135deg,#facc15,#fb7185);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:#111827;
+      font-size:24px;
+      font-weight:800;
+      box-shadow:0 0 16px rgba(250,204,21,0.28);
+      flex-shrink:0;
+    }
+    .logo-text{
+      display:flex;
+      flex-direction:column;
+      line-height:1;
+      min-width:0;
+    }
+    .logo-title{
+      font-size:27px;
+      font-weight:800;
+      color:var(--accent);
+      letter-spacing:.4px;
+      white-space:nowrap;
+    }
+    .logo-sub{
+      font-size:11px;
+      color:#cbd5e1;
+      letter-spacing:1.7px;
+      text-transform:uppercase;
+      margin-top:4px;
+      white-space:nowrap;
+    }
+    .nav-right{
+      display:flex;
+      align-items:center;
+      gap:18px;
+      flex-wrap:wrap;
+    }
+    .nav-links{
+      display:flex;
+      align-items:center;
+      gap:20px;
+      flex-wrap:wrap;
+    }
+    .nav-links a{
+      color:#cbd5e1;
+      font-size:15px;
+      position:relative;
+      padding-bottom:4px;
+    }
+    .nav-links a:hover,
+    .nav-links a.active{
+      color:var(--accent);
+    }
+    .nav-links a.active::after{
+      content:"";
+      position:absolute;
+      left:0;
+      bottom:-4px;
+      width:100%;
+      height:2px;
+      background:var(--accent);
+      border-radius:999px;
+    }
+    .nav-toggle{
+      display:none;
+      width:46px;
+      height:46px;
+      border-radius:12px;
+      border:1px solid rgba(250,204,21,.35);
+      background:#111827;
+      color:var(--accent);
+      align-items:center;
+      justify-content:center;
+      cursor:pointer;
+      flex-direction:column;
+      gap:5px;
+      flex-shrink:0;
+    }
+    .nav-toggle span{
+      width:20px;
+      height:2px;
+      border-radius:999px;
+      background:var(--accent);
+      display:block;
+    }
+    @media(max-width:860px){
+      .nav-links{
+        position:absolute;
+        top:100%;
+        left:0;
+        right:0;
+        display:none;
+        flex-direction:column;
+        align-items:flex-start;
+        gap:0;
+        background:#0f172a;
+        border:1px solid var(--line);
+        border-radius:16px;
+        padding:12px;
+        box-shadow:0 16px 30px rgba(0,0,0,.28);
+      }
+      .nav-links.show{
+        display:flex;
+      }
+      .nav-links a,
+      .nav-links .auth-links{
+        width:100%;
+      }
+      .nav-links a{
+        padding:12px 10px;
+        border-radius:10px;
+      }
+      .nav-toggle{
+        display:flex;
+      }
+    }
+    /* Form styling */
+    .payout-section{
+      padding:40px 0 80px;
+    }
+    .payout-section h1{
+      font-size:36px;
+      font-weight:800;
+      margin-bottom:12px;
+    }
+    .payout-section p{
+      color:var(--muted);
+      margin-bottom:30px;
+      max-width:680px;
+    }
+    .form-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:24px;
+      max-width:800px;
+    }
+    .form-field{
+      display:flex;
+      flex-direction:column;
+    }
+    .form-field label{
+      margin-bottom:6px;
+      font-weight:600;
+    }
+    .form-field .input-wrap{
+      position:relative;
+      display:flex;
+      align-items:center;
+      background:var(--panel);
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:12px;
+    }
+    .form-field .input-wrap i{
+      margin-right:10px;
+      color:var(--muted);
+    }
+    .form-field input{
+      flex:1;
+      background:transparent;
+      border:none;
+      outline:none;
+      color:var(--text);
+      font-size:14px;
+    }
+    .save-btn{
+      margin-top:30px;
+      background:var(--accent);
+      color:#111827;
+      border:none;
+      border-radius:14px;
+      padding:14px 20px;
+      font-size:16px;
+      font-weight:700;
+      cursor:pointer;
+      transition:.3s;
+    }
+    .save-btn:hover{
+      background:#fde047;
+      transform:translateY(-2px);
+      box-shadow:0 10px 28px rgba(250,204,21,.26);
+    }
+    .save-btn:disabled{
+      opacity:0.6;
+      cursor:not-allowed;
+    }
+    @media(max-width:700px){
+      .form-grid{
+        grid-template-columns:1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container nav">
+      <a href="index.html" class="logo-wrap">
+        <span class="logo-mark">P</span>
+        <span class="logo-text">
+          <span class="logo-title">PixNest</span>
+          <span class="logo-sub">Photo Collection Site</span>
+        </span>
+      </a>
+      <div class="nav-right">
+        <nav class="nav-links" id="navLinks">
+          <!-- Authentication links inserted by site-auth.js -->
+          <div class="auth-links" id="authNavLinks"></div>
+        </nav>
+        <button class="nav-toggle" id="navToggle" aria-label="Open navigation" aria-expanded="false">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="payout-section">
+      <div class="container">
+        <h1>Payout Details</h1>
+        <p>Provide your bank details to receive earnings from your sales. Your information will be securely stored and used when processing payouts. Only administrators will have access to manage payout processing.</p>
+        <form id="payoutForm" class="form-grid">
+          <div class="form-field">
+            <label for="bankName">Bank Name</label>
+            <div class="input-wrap">
+              <i class="fa-solid fa-building-columns"></i>
+              <input type="text" id="bankName" placeholder="Enter your bank name" required />
+            </div>
+          </div>
+          <div class="form-field">
+            <label for="accountHolder">Account Holder Name</label>
+            <div class="input-wrap">
+              <i class="fa-solid fa-user"></i>
+              <input type="text" id="accountHolder" placeholder="Enter account holder name" required />
+            </div>
+          </div>
+          <div class="form-field">
+            <label for="accountNumber">Account Number</label>
+            <div class="input-wrap">
+              <i class="fa-solid fa-hashtag"></i>
+              <input type="text" id="accountNumber" placeholder="Enter account number" required />
+            </div>
+          </div>
+          <div class="form-field">
+            <label for="sortCode">Sort Code</label>
+            <div class="input-wrap">
+              <i class="fa-solid fa-code"></i>
+              <input type="text" id="sortCode" placeholder="Enter sort code" required />
+            </div>
+          </div>
+          <div class="form-field">
+            <label for="iban">IBAN (optional)</label>
+            <div class="input-wrap">
+              <i class="fa-solid fa-globe"></i>
+              <input type="text" id="iban" placeholder="Enter IBAN" />
+            </div>
+          </div>
+          <div class="form-field">
+            <label for="swiftCode">SWIFT/BIC (optional)</label>
+            <div class="input-wrap">
+              <i class="fa-solid fa-key"></i>
+              <input type="text" id="swiftCode" placeholder="Enter SWIFT/BIC code" />
+            </div>
+          </div>
+          <div class="form-field">
+            <label for="payoutEmail">Payout Email (optional)</label>
+            <div class="input-wrap">
+              <i class="fa-solid fa-envelope"></i>
+              <input type="email" id="payoutEmail" placeholder="Enter email for payout notifications" />
+            </div>
+          </div>
+          <div class="form-field" style="grid-column:1 / -1;">
+            <button type="submit" class="save-btn" id="savePayoutBtn">Save Payout Details</button>
+          </div>
+        </form>
+        <p id="payoutMessage" style="margin-top:20px; color:var(--success);"></p>
+      </div>
+    </section>
+  </main>
+  <footer>
+    <div class="container" style="padding:24px 0; text-align:center; border-top:1px solid var(--line);">
+      <p>©️ 2026 PixNest. Secure payouts for our creators.</p>
+    </div>
+  </footer>
+
+  <script>
+    // Mobile navigation toggle
+    const navToggle = document.getElementById('navToggle');
+    const navLinks = document.getElementById('navLinks');
+    if(navToggle && navLinks){
+      navToggle.addEventListener('click', () => {
+        navLinks.classList.toggle('show');
+        const expanded = navToggle.getAttribute('aria-expanded') === 'true';
+        navToggle.setAttribute('aria-expanded', String(!expanded));
+      });
+      document.addEventListener('click', (e) => {
+        if(window.innerWidth <= 860 && navLinks.classList.contains('show')){
+          if(!navLinks.contains(e.target) && !navToggle.contains(e.target)){
+            navLinks.classList.remove('show');
+            navToggle.setAttribute('aria-expanded','false');
+          }
+        }
+      });
+    }
+
+    // Payout form submission handler
+    const payoutForm = document.getElementById('payoutForm');
+    const savePayoutBtn = document.getElementById('savePayoutBtn');
+    const payoutMessage = document.getElementById('payoutMessage');
+    payoutForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      savePayoutBtn.disabled = true;
+      payoutMessage.textContent = '';
+      // Gather form data
+      const data = {
+        bank_name: document.getElementById('bankName').value.trim(),
+        account_holder: document.getElementById('accountHolder').value.trim(),
+        account_number: document.getElementById('accountNumber').value.trim(),
+        sort_code: document.getElementById('sortCode').value.trim(),
+        iban: document.getElementById('iban').value.trim(),
+        swift: document.getElementById('swiftCode').value.trim(),
+        payout_email: document.getElementById('payoutEmail').value.trim()
+      };
+      try{
+        // TODO: integrate with Supabase or your backend to save payout details
+        // Example: await supabaseClient.from('payout_details').upsert({ ...data });
+        // For now, just display success message
+        payoutMessage.textContent = 'Your payout details have been saved. An admin will review and approve your payout method.';
+        payoutMessage.style.color = getComputedStyle(document.documentElement).getPropertyValue('--success');
+      }catch(err){
+        payoutMessage.textContent = 'There was an error saving your payout details. Please try again later.';
+        payoutMessage.style.color = getComputedStyle(document.documentElement).getPropertyValue('--danger');
+      }finally{
+        savePayoutBtn.disabled = false;
+      }
+    });
+  </script>
+  <!-- Inject authentication/nav/footer -->
+  <script src="site-auth.js"></script>
+  <script src="active-nav.js"></script>
+</body>
+</html>
