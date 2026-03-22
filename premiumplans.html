@@ -77,6 +77,140 @@
       margin:auto;
     }
 
+    /* Navigation styles borrowed from the homepage */
+    .nav{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:20px;
+      padding:16px 0;
+      position:relative;
+    }
+    .logo-wrap{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      flex-shrink:0;
+      min-width:0;
+    }
+    .logo-mark{
+      width:52px;
+      height:52px;
+      border-radius:14px;
+      background:linear-gradient(135deg,#facc15,#fb7185);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:#111827;
+      font-size:24px;
+      font-weight:800;
+      box-shadow:0 0 16px rgba(250,204,21,0.28);
+      flex-shrink:0;
+    }
+    .logo-text{
+      display:flex;
+      flex-direction:column;
+      line-height:1;
+      min-width:0;
+    }
+    .logo-title{
+      font-size:27px;
+      font-weight:800;
+      color:var(--accent);
+      letter-spacing:.4px;
+      white-space:nowrap;
+    }
+    .logo-sub{
+      font-size:11px;
+      color:#cbd5e1;
+      letter-spacing:1.7px;
+      text-transform:uppercase;
+      margin-top:4px;
+      white-space:nowrap;
+    }
+    .nav-right{
+      display:flex;
+      align-items:center;
+      gap:18px;
+      flex-wrap:wrap;
+    }
+    .nav-links{
+      display:flex;
+      align-items:center;
+      gap:20px;
+      flex-wrap:wrap;
+    }
+    .nav-links a{
+      color:#cbd5e1;
+      font-size:15px;
+      position:relative;
+      padding-bottom:4px;
+    }
+    .nav-links a:hover,
+    .nav-links a.active{
+      color:var(--accent);
+    }
+    .nav-links a.active::after{
+      content:"";
+      position:absolute;
+      left:0;
+      bottom:-4px;
+      width:100%;
+      height:2px;
+      background:var(--accent);
+      border-radius:999px;
+    }
+    .nav-toggle{
+      display:none;
+      width:46px;
+      height:46px;
+      border-radius:12px;
+      border:1px solid rgba(250,204,21,.35);
+      background:#111827;
+      color:var(--accent);
+      align-items:center;
+      justify-content:center;
+      cursor:pointer;
+      flex-direction:column;
+      gap:5px;
+      flex-shrink:0;
+    }
+    .nav-toggle span{
+      width:20px;
+      height:2px;
+      border-radius:999px;
+      background:var(--accent);
+      display:block;
+    }
+    /* Responsive navigation */
+    @media(max-width:860px){
+      .nav-links{
+        display:none;
+        flex-direction:column;
+        align-items:flex-start;
+        gap:0;
+        background:#0f172a;
+        border:1px solid var(--line);
+        border-radius:16px;
+        padding:12px;
+        box-shadow:0 16px 30px rgba(0,0,0,.28);
+      }
+      .nav-links.show{
+        display:flex;
+      }
+      .nav-links a,
+      .nav-links .auth-links{
+        width:100%;
+      }
+      .nav-links a{
+        padding:12px 10px;
+        border-radius:10px;
+      }
+      .nav-toggle{
+        display:flex;
+      }
+    }
+
     /* Hero section */
     .hero{
       background:
@@ -215,7 +349,32 @@
 </head>
 <body class="site-flex-page">
   <!-- Navigation will be injected by site-auth.js -->
-  <header></header>
+  <!-- Added nav skeleton so site-auth can inject nav and auth links -->
+  <header>
+    <div class="container nav">
+      <!-- Logo -->
+      <a href="index.html" class="logo-wrap">
+        <span class="logo-mark">P</span>
+        <span class="logo-text">
+          <span class="logo-title">PixNest</span>
+          <span class="logo-sub">Photo Collection Site</span>
+        </span>
+      </a>
+      <div class="nav-right">
+        <!-- Navigation links will be standardized by site-auth.js -->
+        <nav class="nav-links" id="navLinks">
+          <!-- Auth links placeholder; populated by site-auth.js -->
+          <div class="auth-links" id="authNavLinks"></div>
+        </nav>
+        <!-- Mobile menu toggle -->
+        <button class="nav-toggle" id="navToggle" aria-label="Open navigation" aria-expanded="false">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </div>
+    </div>
+  </header>
 
   <main>
     <!-- Hero Section -->
@@ -232,6 +391,21 @@
     <!-- Plans Section -->
     <section class="plans-section">
       <div class="container plans-grid">
+        <!-- Free Plan Card -->
+        <div class="plan-card">
+          <h3>Free Plan</h3>
+          <p class="price">£0<span class="interval">/month</span></p>
+          <ul class="features">
+            <li class="available"><i class="fa-solid fa-check"></i> Access to free photo collections</li>
+            <li class="available"><i class="fa-solid fa-check"></i> Standard‑resolution downloads</li>
+            <li class="available"><i class="fa-solid fa-check"></i> Limited favourites & collections</li>
+            <li class="unavailable"><i class="fa-solid fa-xmark"></i> Ad‑free browsing</li>
+            <li class="unavailable"><i class="fa-solid fa-xmark"></i> High‑resolution downloads</li>
+            <li class="unavailable"><i class="fa-solid fa-xmark"></i> Cancel any time</li>
+          </ul>
+          <button class="select-btn" data-plan="free">Select Free Plan</button>
+        </div>
+
         <!-- Monthly Plan Card -->
         <div class="plan-card">
           <h3>Premium Monthly</h3>
@@ -246,6 +420,7 @@
           </ul>
           <button class="select-btn" data-plan="monthly">Select Monthly Plan</button>
         </div>
+
         <!-- Yearly Plan Card -->
         <div class="plan-card">
           <h3>Premium Yearly</h3>
@@ -275,6 +450,25 @@
         window.location.href = `checkout.html?plan=${plan}`;
       });
     });
+
+    // Mobile navigation toggle for this page
+    const navToggle = document.getElementById('navToggle');
+    const navLinks = document.getElementById('navLinks');
+    if(navToggle && navLinks){
+      navToggle.addEventListener('click', () => {
+        navLinks.classList.toggle('show');
+        const expanded = navToggle.getAttribute('aria-expanded') === 'true';
+        navToggle.setAttribute('aria-expanded', String(!expanded));
+      });
+      document.addEventListener('click', (e) => {
+        if(window.innerWidth <= 860 && navLinks.classList.contains('show')){
+          if(!navLinks.contains(e.target) && !navToggle.contains(e.target)){
+            navLinks.classList.remove('show');
+            navToggle.setAttribute('aria-expanded','false');
+          }
+        }
+      });
+    }
   </script>
 
   <!-- Inject authentication/nav/footer -->
