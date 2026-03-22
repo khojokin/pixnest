@@ -13,7 +13,8 @@
     { href:'category.html', label:'Categories', keys:['category.html'] },
     { href:'featured.html', label:'Featured', keys:['featured.html','features.html'] },
     // The Premium nav entry includes checkout pages for premium plans.
-    { href:'premium.html', label:'Premium', keys:['premium.html','checkout.html'] },
+    // Include the premium plan selection page in the keys so the Premium nav highlights on it
+    { href:'premium.html', label:'Premium', keys:['premium.html','checkout.html','premiumplans.html'] },
     { href:'contact.html', label:'Contact', keys:['contact.html','help.html'] }
   ];
 

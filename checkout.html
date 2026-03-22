@@ -479,6 +479,20 @@
       color:#bbf7d0;
     }
 
+    /* Link to change plan */
+    .switch-plan{
+      margin:12px 0 16px;
+      font-size:14px;
+      text-align:right;
+    }
+    .switch-plan a{
+      color:var(--accent);
+      text-decoration:underline;
+    }
+    .switch-plan a:hover{
+      color:#fde047;
+    }
+
     .message.error{
       background:rgba(239,68,68,.12);
       border:1px solid rgba(239,68,68,.18);
@@ -627,6 +641,8 @@
             <span class="price-big" id="planPrice">£9.99</span>
           </div>
         </div>
+        <!-- Link to switch plans -->
+        <p class="switch-plan"><a href="premiumplans.html">Choose a different plan</a></p>
 
         <div class="accepted-methods">
           <div class="method-chip">
@@ -851,7 +867,8 @@
     checkoutBtn.addEventListener("click", startCheckout);
 
     backBtn.addEventListener("click", () => {
-      window.location.href = "premium.html";
+      // Navigate back to the plan selection page instead of the premium content gate
+      window.location.href = "premiumplans.html";
     });
 
     setPlanSummary();
