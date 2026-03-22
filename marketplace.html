@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PixNest | Marketplace</title>
+  <!-- Icons and base styles -->
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png" />
+  <link rel="shortcut icon" href="favicon.ico" />
+  <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+  <!-- Base dark theme styles copied from the main site -->
+  <style>
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+      font-family:Arial, Helvetica, sans-serif;
+    }
+
+    :root{
+      --bg:#0f172a;
+      --panel:#111827;
+      --panel2:#1e293b;
+      --text:#e5e7eb;
+      --muted:#94a3b8;
+      --accent:#facc15;
+      --line:rgba(255,255,255,0.08);
+      --blue:#3b82f6;
+      --success:#22c55e;
+      --danger:#ef4444;
+    }
+
+    html{
+      scroll-behavior:smooth;
+      min-height:100%;
+      background:var(--bg);
+    }
+
+    body{
+      min-height:100%;
+      background:var(--bg);
+      color:var(--text);
+      line-height:1.6;
+      overflow-x:hidden;
+    }
+
+    a{
+      text-decoration:none;
+      color:inherit;
+      transition:.3s;
+    }
+
+    .container{
+      width:min(1240px,92%);
+      margin:auto;
+      padding-top:2rem;
+    }
+
+    header{
+      position:sticky;
+      top:0;
+      z-index:1000;
+      background:rgba(15,23,42,0.95);
+      border-bottom:1px solid var(--line);
+      backdrop-filter:blur(8px);
+    }
+
+    .nav{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:20px;
+      padding:16px 0;
+      position:relative;
+    }
+
+    .logo-wrap{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      flex-shrink:0;
+      min-width:0;
+    }
+
+    .logo-mark{
+      width:52px;
+      height:52px;
+      border-radius:14px;
+      background:linear-gradient(135deg,#facc15,#fb7185);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:#111827;
+      font-size:24px;
+      font-weight:800;
+      box-shadow:0 0 16px rgba(250,204,21,0.28);
+      flex-shrink:0;
+    }
+
+    .logo-text{
+      display:flex;
+      flex-direction:column;
+      line-height:1;
+      min-width:0;
+    }
+
+    .logo-title{
+      font-size:27px;
+      font-weight:800;
+      color:var(--accent);
+      letter-spacing:.4px;
+      white-space:nowrap;
+    }
+
+    .logo-sub{
+      font-size:11px;
+      color:#cbd5e1;
+      letter-spacing:1.7px;
+      text-transform:uppercase;
+      margin-top:4px;
+      white-space:nowrap;
+    }
+
+    .nav-right{
+      display:flex;
+      align-items:center;
+      gap:14px;
+      min-width:0;
+    }
+
+    .nav-links{
+      display:flex;
+      align-items:center;
+      gap:20px;
+      flex-wrap:wrap;
+    }
+
+    .nav-links a{
+      color:#cbd5e1;
+      font-size:15px;
+      position:relative;
+      padding-bottom:4px;
+    }
+
+    .nav-links a:hover{
+      color:var(--accent);
+    }
+
+    .nav-links a.active{
+      color:var(--accent);
+    }
+
+    .nav-links a.active::after{
+      content:"";
+      position:absolute;
+      left:0;
+      bottom:-4px;
+      width:100%;
+      height:2px;
+      background:var(--accent);
+      border-radius:999px;
+    }
+
+    .nav-toggle{
+      display:none;
+      flex-direction:column;
+      gap:5px;
+      width:30px;
+      height:24px;
+      cursor:pointer;
+    }
+    .nav-toggle span{
+      display:block;
+      height:3px;
+      background:var(--text);
+      border-radius:3px;
+      transition:.3s;
+    }
+    @media (max-width: 860px){
+      .nav-links{
+        position:absolute;
+        top:100%;
+        left:0;
+        right:0;
+        background:var(--panel);
+        flex-direction:column;
+        gap:12px;
+        padding:12px 0;
+        border-bottom:1px solid var(--line);
+        display:none;
+      }
+      .nav-links.show{
+        display:flex;
+      }
+      .nav-toggle{
+        display:flex;
+      }
+    }
+
+    /* Marketplace specific styles */
+    .market-container{
+      margin-top:3rem;
+    }
+    .market-container h2{
+      font-size:32px;
+      margin-bottom:0.5rem;
+    }
+    .market-container p{
+      color:var(--muted);
+      margin-bottom:1.5rem;
+    }
+    .products-grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fit, minmax(260px, 1fr));
+      gap:24px;
+    }
+    .product-card{
+      background:var(--panel2);
+      border:1px solid var(--line);
+      border-radius:12px;
+      padding:1rem;
+      text-align:center;
+      display:flex;
+      flex-direction:column;
+    }
+    .product-card img{
+      width:100%;
+      border-radius:8px;
+      margin-bottom:0.8rem;
+    }
+    .product-card h3{
+      font-size:20px;
+      margin-bottom:0.4rem;
+    }
+    .product-card p{
+      font-size:14px;
+      color:var(--muted);
+      margin-bottom:0.6rem;
+    }
+    .product-card .price{
+      font-size:18px;
+      font-weight:700;
+      color:var(--accent);
+      margin-bottom:0.8rem;
+    }
+    .product-card button{
+      margin-top:auto;
+      padding:0.6rem 1rem;
+      background:var(--accent);
+      color:var(--panel);
+      border:none;
+      border-radius:8px;
+      font-weight:700;
+      cursor:not-allowed;
+      opacity:0.6;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container nav">
+      <a href="index.html" class="logo-wrap">
+        <span class="logo-mark">P</span>
+        <span class="logo-text">
+          <span class="logo-title">PixNest</span>
+          <span class="logo-sub">Photo Collection Site</span>
+        </span>
+      </a>
+      <div class="nav-right">
+        <nav class="nav-links" id="navLinks">
+          <a href="index.html">Home</a>
+          <a href="explore.html">Explore</a>
+          <a href="category.html">Categories</a>
+          <a href="premium.html">Premium</a>
+          <a href="about.html">About</a>
+          <a href="contact.html">Contact</a>
+          <a href="seller-account.html">Seller</a>
+          <!-- Marketplace link highlighted on this page -->
+          <a href="marketplace.html" class="active">Marketplace</a>
+          <div class="auth-links" id="authNavLinks"></div>
+        </nav>
+        <button class="nav-toggle" id="navToggle" aria-label="Open navigation" aria-expanded="false">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </div>
+    </div>
+  </header>
+  <main>
+    <section class="container market-container">
+      <h2>Marketplace</h2>
+      <p>Browse items currently available for sale. Only approved users can complete purchases. Please <a href="login.html" style="color:var(--accent); text-decoration:underline;">log in</a> to proceed.</p>
+      <div class="products-grid">
+        <!-- Example product cards. In a real application these would be dynamically generated -->
+        <div class="product-card">
+          <!-- Wrap the product image and title in a link to the product detail page -->
+          <a href="product.html" style="text-decoration: none; color: inherit;">
+            <img src="bugatt.jpg" alt="Bugatti Car" />
+            <h3>Bugatti Car</h3>
+          </a>
+          <p>Supercar with unmatched performance and style.</p>
+          <span class="price">$2,500,000</span>
+          <!-- Disabled buy button replaced with a View Details link -->
+          <a href="product.html" class="btn-details" style="margin-top:auto; padding:0.6rem 1rem; background:var(--accent); color:var(--panel); border-radius:8px; font-weight:700; display:inline-block; text-align:center;">View Details</a>
+        </div>
+        <div class="product-card">
+          <a href="product.html" style="text-decoration: none; color: inherit;">
+            <img src="decor1.jpg" alt="Decor Item" />
+            <h3>Decorative Vase</h3>
+          </a>
+          <p>Elegant hand-crafted vase to elevate your space.</p>
+          <span class="price">$120</span>
+          <a href="product.html" class="btn-details" style="margin-top:auto; padding:0.6rem 1rem; background:var(--accent); color:var(--panel); border-radius:8px; font-weight:700; display:inline-block; text-align:center;">View Details</a>
+        </div>
+        <div class="product-card">
+          <a href="product.html" style="text-decoration: none; color: inherit;">
+            <img src="flower.jpg" alt="Flower Bouquet" />
+            <h3>Fresh Flower Bouquet</h3>
+          </a>
+          <p>A beautiful bouquet of fresh flowers for any occasion.</p>
+          <span class="price">$45</span>
+          <a href="product.html" class="btn-details" style="margin-top:auto; padding:0.6rem 1rem; background:var(--accent); color:var(--panel); border-radius:8px; font-weight:700; display:inline-block; text-align:center;">View Details</a>
+        </div>
+      </div>
+    </section>
+  </main>
+  <!-- Simple navigation toggle script -->
+  <script>
+    const navToggle = document.getElementById("navToggle");
+    const navLinks = document.getElementById("navLinks");
+    navToggle.addEventListener("click", () => {
+      navLinks.classList.toggle("show");
+      const expanded = navToggle.getAttribute("aria-expanded") === "true";
+      navToggle.setAttribute("aria-expanded", String(!expanded));
+    });
+    document.addEventListener("click", (e) => {
+      if(window.innerWidth <= 860 && navLinks.classList.contains("show")){
+        if(!navLinks.contains(e.target) && !navToggle.contains(e.target)){
+          navLinks.classList.remove("show");
+          navToggle.setAttribute("aria-expanded", "false");
+        }
+      }
+    });
+  </script>
+  <!-- Load site-auth script to persist authentication across pages -->
+  <script src="site-auth.js"></script>
+</body>
+</html>

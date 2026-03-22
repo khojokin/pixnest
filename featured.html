@@ -227,6 +227,127 @@
       line-height:1.4;
     }
 
+  /* Creator card styles replicated from the home page for the lightbox profile card */
+  .creator-card{
+    background:#0f172a;
+    border:1px solid var(--line);
+    border-radius:24px;
+    overflow:hidden;
+    margin-bottom:16px;
+  }
+  .creator-cover{
+    height:88px;
+    background:
+      linear-gradient(rgba(15,23,42,.26), rgba(15,23,42,.78)),
+      url('https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&w=1200&q=80') center/cover no-repeat;
+  }
+  .creator-card-body{
+    padding:0 14px 14px;
+    margin-top:-18px;
+  }
+  .creator-head{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:10px;
+    margin-bottom:8px;
+  }
+  .creator-main{
+    display:flex;
+    gap:12px;
+    align-items:flex-start;
+    min-width:0;
+    flex:1;
+  }
+  .creator-avatar{
+    width:48px;
+    height:48px;
+    border-radius:50%;
+    overflow:hidden;
+    background:linear-gradient(135deg,#facc15,#fb7185);
+    color:#111827;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:18px;
+    font-weight:800;
+    flex-shrink:0;
+    border:3px solid rgba(255,255,255,.14);
+  }
+  .creator-avatar img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+  }
+  .creator-name-row{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    flex-wrap:wrap;
+    line-height:1.2;
+  }
+  .creator-name{
+    color:#fff;
+    font-size:18px;
+    font-weight:800;
+    word-break:break-word;
+  }
+  .blue-check{
+    color:#60a5fa;
+    font-size:15px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .creator-date{
+    color:#cbd5e1;
+    font-size:13px;
+    line-height:1.3;
+    margin-top:2px;
+  }
+  .creator-stats-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:8px;
+    margin-bottom:8px;
+  }
+  .creator-stat-box{
+    background:#111827;
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:10px 8px;
+    text-align:center;
+  }
+  .creator-stat-box strong{
+    display:block;
+    color:#fff;
+    font-size:18px;
+    line-height:1;
+    margin-bottom:4px;
+  }
+  .creator-stat-box span{
+    color:#cbd5e1;
+    font-size:12px;
+    line-height:1.2;
+  }
+  .creator-actions-line{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:8px;
+    margin-bottom:10px;
+  }
+  .creator-line-btn{
+    min-height:38px;
+    border:none;
+    border-radius:14px;
+    background:#111827;
+    border:1px solid var(--line);
+    color:#fff;
+    font-size:12px;
+    font-weight:700;
+    cursor:pointer;
+  }
+
   </style>
 </head>
 <body>
@@ -324,6 +445,55 @@
       </div>
       <div class="lightbox-info">
         <button type="button" class="lightbox-close" id="lightboxClose" aria-label="Close">×</button>
+
+        <!-- Creator profile card (replicated from home page) -->
+        <div class="creator-card">
+          <div class="creator-cover" id="fbCreatorCover"></div>
+          <div class="creator-card-body">
+            <div class="creator-head">
+              <div class="creator-main">
+                <div class="creator-avatar" id="fbCreatorAvatar"></div>
+                <div style="min-width:0;">
+                  <small>Creator</small>
+                  <div class="creator-name-row">
+                    <span class="creator-name" id="fbCreatorName">Unknown</span>
+                    <span class="blue-check hidden" id="fbCreatorBlueCheck"><i class="fa-solid fa-circle-check"></i></span>
+                  </div>
+                  <div class="creator-date" id="fbCreatorPostedDate">Posted —</div>
+                </div>
+              </div>
+            </div>
+            <!-- Follow button disabled by default -->
+            <button type="button" class="follow-btn" disabled>
+              <i class="fa-solid fa-user-plus"></i>
+              Follow
+            </button>
+            <div class="creator-stats-grid">
+              <div class="creator-stat-box">
+                <strong id="fbCreatorFollowingCount">0</strong>
+                <span>Following</span>
+              </div>
+              <div class="creator-stat-box">
+                <strong id="fbCreatorFollowersCount">0</strong>
+                <span>Followers</span>
+              </div>
+              <div class="creator-stat-box">
+                <strong id="fbCreatorPostsCount">0</strong>
+                <span>Posts</span>
+              </div>
+            </div>
+            <div class="creator-actions-line">
+              <button type="button" class="creator-line-btn" disabled>
+                <i class="fa-solid fa-star"></i>
+                Add to Favourites
+              </button>
+              <button type="button" class="creator-line-btn" disabled>
+                <i class="fa-solid fa-user"></i>
+                View Profile
+              </button>
+            </div>
+          </div>
+        </div>
         <div class="lightbox-header">
           <h3 id="lightboxPhotoTitle">Untitled</h3>
           <span id="lightboxPremiumTag" class="pill premium hidden">Premium</span>
@@ -855,6 +1025,29 @@
         lightboxPremiumTagElm.classList.remove('hidden');
       }else{
         lightboxPremiumTagElm.classList.add('hidden');
+      }
+
+      // Update creator profile card fields in the lightbox
+      const fbCreatorName = document.getElementById('fbCreatorName');
+      if(fbCreatorName) fbCreatorName.textContent = photo.creator_name || 'Unknown';
+      const fbAvatar = document.getElementById('fbCreatorAvatar');
+      if(fbAvatar){
+        const initial = (photo.creator_name || 'U').toString().trim().charAt(0).toUpperCase();
+        fbAvatar.textContent = initial;
+      }
+      const fbDate = document.getElementById('fbCreatorPostedDate');
+      if(fbDate){
+        // Attempt to format created_at date if available; otherwise show default
+        try{
+          if(photo.created_at){
+            const d = new Date(photo.created_at);
+            fbDate.textContent = 'Posted ' + d.toLocaleDateString();
+          }else{
+            fbDate.textContent = 'Posted —';
+          }
+        }catch(_err){
+          fbDate.textContent = 'Posted —';
+        }
       }
     }
 

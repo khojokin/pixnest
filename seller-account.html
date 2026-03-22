@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PixNest | Seller Dashboard</title>
+  <!-- Icons and base styles -->
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png" />
+  <link rel="shortcut icon" href="favicon.ico" />
+  <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+  <!-- Base dark theme styles copied from the main site -->
+  <style>
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+      font-family:Arial, Helvetica, sans-serif;
+    }
+
+    :root{
+      --bg:#0f172a;
+      --panel:#111827;
+      --panel2:#1e293b;
+      --text:#e5e7eb;
+      --muted:#94a3b8;
+      --accent:#facc15;
+      --line:rgba(255,255,255,0.08);
+      --blue:#3b82f6;
+      --success:#22c55e;
+      --danger:#ef4444;
+    }
+
+    html{
+      scroll-behavior:smooth;
+      min-height:100%;
+      background:var(--bg);
+    }
+
+    body{
+      min-height:100%;
+      background:var(--bg);
+      color:var(--text);
+      line-height:1.6;
+      overflow-x:hidden;
+    }
+
+    a{
+      text-decoration:none;
+      color:inherit;
+      transition:.3s;
+    }
+
+    .container{
+      width:min(1240px,92%);
+      margin:auto;
+      padding-top:2rem;
+    }
+
+    header{
+      position:sticky;
+      top:0;
+      z-index:1000;
+      background:rgba(15,23,42,0.95);
+      border-bottom:1px solid var(--line);
+      backdrop-filter:blur(8px);
+    }
+
+    .nav{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:20px;
+      padding:16px 0;
+      position:relative;
+    }
+
+    .logo-wrap{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      flex-shrink:0;
+      min-width:0;
+    }
+
+    .logo-mark{
+      width:52px;
+      height:52px;
+      border-radius:14px;
+      background:linear-gradient(135deg,#facc15,#fb7185);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:#111827;
+      font-size:24px;
+      font-weight:800;
+      box-shadow:0 0 16px rgba(250,204,21,0.28);
+      flex-shrink:0;
+    }
+
+    .logo-text{
+      display:flex;
+      flex-direction:column;
+      line-height:1;
+      min-width:0;
+    }
+
+    .logo-title{
+      font-size:27px;
+      font-weight:800;
+      color:var(--accent);
+      letter-spacing:.4px;
+      white-space:nowrap;
+    }
+
+    .logo-sub{
+      font-size:11px;
+      color:#cbd5e1;
+      letter-spacing:1.7px;
+      text-transform:uppercase;
+      margin-top:4px;
+      white-space:nowrap;
+    }
+
+    .nav-right{
+      display:flex;
+      align-items:center;
+      gap:14px;
+      min-width:0;
+    }
+
+    .nav-links{
+      display:flex;
+      align-items:center;
+      gap:20px;
+      flex-wrap:wrap;
+    }
+
+    .nav-links a{
+      color:#cbd5e1;
+      font-size:15px;
+      position:relative;
+      padding-bottom:4px;
+    }
+
+    .nav-links a:hover{
+      color:var(--accent);
+    }
+
+    .nav-links a.active{
+      color:var(--accent);
+    }
+
+    .nav-links a.active::after{
+      content:"";
+      position:absolute;
+      left:0;
+      bottom:-4px;
+      width:100%;
+      height:2px;
+      background:var(--accent);
+      border-radius:999px;
+    }
+
+    .nav-toggle{
+      display:none;
+      flex-direction:column;
+      gap:5px;
+      width:30px;
+      height:24px;
+      cursor:pointer;
+    }
+    .nav-toggle span{
+      display:block;
+      height:3px;
+      background:var(--text);
+      border-radius:3px;
+      transition:.3s;
+    }
+    @media (max-width: 860px){
+      .nav-links{
+        position:absolute;
+        top:100%;
+        left:0;
+        right:0;
+        background:var(--panel);
+        flex-direction:column;
+        gap:12px;
+        padding:12px 0;
+        border-bottom:1px solid var(--line);
+        display:none;
+      }
+      .nav-links.show{
+        display:flex;
+      }
+      .nav-toggle{
+        display:flex;
+      }
+    }
+
+    /* Seller page specific styles */
+    .seller-container{
+      margin-top:3rem;
+    }
+    .seller-container h2{
+      font-size:32px;
+      margin-bottom:0.5rem;
+    }
+    .seller-container p{
+      color:var(--muted);
+      margin-bottom:1.5rem;
+    }
+    .product-form{
+      background:var(--panel2);
+      border:1px solid var(--line);
+      border-radius:12px;
+      padding:1.5rem;
+      display:flex;
+      flex-direction:column;
+      gap:1rem;
+      max-width:600px;
+    }
+    .product-form label{
+      display:flex;
+      flex-direction:column;
+      gap:0.4rem;
+      font-size:14px;
+      color:var(--muted);
+    }
+    .product-form input,
+    .product-form textarea{
+      padding:0.6rem 0.8rem;
+      border:1px solid var(--line);
+      border-radius:8px;
+      background:var(--panel);
+      color:var(--text);
+    }
+    .product-form button{
+      align-self:flex-start;
+      padding:0.7rem 1.2rem;
+      background:var(--accent);
+      color:var(--panel);
+      border:none;
+      border-radius:8px;
+      font-weight:700;
+      cursor:not-allowed;
+      opacity:0.6;
+    }
+    .product-form .note{
+      font-size:12px;
+      color:var(--muted);
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container nav">
+      <a href="index.html" class="logo-wrap">
+        <span class="logo-mark">P</span>
+        <span class="logo-text">
+          <span class="logo-title">PixNest</span>
+          <span class="logo-sub">Photo Collection Site</span>
+        </span>
+      </a>
+      <div class="nav-right">
+        <nav class="nav-links" id="navLinks">
+          <a href="index.html">Home</a>
+          <a href="explore.html">Explore</a>
+          <a href="category.html">Categories</a>
+          <a href="premium.html">Premium</a>
+          <a href="about.html">About</a>
+          <a href="contact.html">Contact</a>
+          <!-- Seller link highlighted on this page -->
+          <a href="seller-account.html" class="active">Seller</a>
+          <a href="marketplace.html">Marketplace</a>
+          <div class="auth-links" id="authNavLinks"></div>
+        </nav>
+        <button class="nav-toggle" id="navToggle" aria-label="Open navigation" aria-expanded="false">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </div>
+    </div>
+  </header>
+  <main>
+    <section class="container seller-container">
+      <h2>Seller Dashboard</h2>
+      <p>Only admin-approved sellers can list products on PixNest. If you are not yet approved, please contact the administrator.</p>
+      <form class="product-form">
+        <label>
+          Product Name
+          <input type="text" name="product-name" placeholder="Enter product name" disabled />
+        </label>
+        <label>
+          Description
+          <textarea name="description" rows="4" placeholder="Enter product description" disabled></textarea>
+        </label>
+        <label>
+          Price (USD)
+          <input type="number" name="price" placeholder="0.00" disabled />
+        </label>
+        <label>
+          Image
+          <input type="file" name="image" accept="image/*" disabled />
+        </label>
+        <button type="button" disabled>List Item</button>
+        <p class="note">This form is a demonstration only. Listing items requires backend integration and admin approval.</p>
+      </form>
+    </section>
+  </main>
+  <!-- Simple navigation toggle script -->
+  <script>
+    const navToggle = document.getElementById("navToggle");
+    const navLinks = document.getElementById("navLinks");
+    navToggle.addEventListener("click", () => {
+      navLinks.classList.toggle("show");
+      const expanded = navToggle.getAttribute("aria-expanded") === "true";
+      navToggle.setAttribute("aria-expanded", String(!expanded));
+    });
+    document.addEventListener("click", (e) => {
+      if(window.innerWidth <= 860 && navLinks.classList.contains("show")){
+        if(!navLinks.contains(e.target) && !navToggle.contains(e.target)){
+          navLinks.classList.remove("show");
+          navToggle.setAttribute("aria-expanded", "false");
+        }
+      }
+    });
+  </script>
+  <!-- Load site-auth script to persist authentication across pages -->
+  <script src="site-auth.js"></script>
+</body>
+</html>
