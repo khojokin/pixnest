@@ -72,7 +72,8 @@
     .pill{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;font-size:12px;font-weight:700;}
     .pill.trending{background:rgba(56,189,248,.15);border:1px solid rgba(56,189,248,.25);color:#38bdf8;}
     .pill.featured{background:rgba(16,185,129,.15);border:1px solid rgba(16,185,129,.25);color:#10b981;}
-    .pill.premium{background:rgba(192,132,252,.15);border:1px solid rgba(192,132,252,.25);color:#c084fc;}
+    /* Premium tag should be yellow (using accent colour) */
+    .pill.premium{background:rgba(250,204,21,.15);border:1px solid rgba(250,204,21,.25);color:var(--accent);} 
     /* Bottom stats row */
     .photo-stats{margin-top:auto;display:flex;gap:12px;align-items:center;color:#cbd5e1;font-size:14px;font-weight:600;}
     .photo-stat{display:inline-flex;align-items:center;gap:6px;}
@@ -118,11 +119,11 @@
   <section class="hero">
     <div class="container">
       <div class="hero-content">
-        <div class="hero-tag"><i class="fa-solid fa-fire"></i> Featured & Trending</div>
-        <h1>Trending and featured photos for you.</h1>
-        <p>Explore standout photos across all categories. See what's trending now and discover premium picks marked for exclusive members.</p>
+        <div class="hero-tag"><i class="fa-solid fa-bolt"></i> Featured Photos</div>
+        <h1>Featured photos for you.</h1>
+        <p>Explore standout photos across all categories. Discover premium picks marked for exclusive members.</p>
         <div class="hero-meta">
-          <span class="hero-pill"><i class="fa-solid fa-bolt"></i> Trending & featured</span>
+          <span class="hero-pill"><i class="fa-solid fa-star"></i> Curated highlights</span>
           <span class="hero-pill"><i class="fa-solid fa-clock"></i> Updated regularly</span>
           <span class="hero-pill"><i class="fa-solid fa-chart-simple"></i> See metrics</span>
         </div>
@@ -134,7 +135,7 @@
     <div class="container">
       <div class="section-head">
         <div>
-          <h2>Trending & Featured Photos</h2>
+          <h2>Featured Photos</h2>
           <p>Browse standout photos individually. Filter by category or search titles, hashtags, tags, creators and descriptions.</p>
         </div>
       </div>
@@ -523,9 +524,7 @@
       const image = photo.image || FALLBACK_IMAGE;
       // Build top tags
       const tagSpans = [];
-      if(photo.trending){
-        tagSpans.push('<span class="pill trending"><i class="fa-solid fa-fire"></i> Trending</span>');
-      }
+      // Do not show a trending tag on the featured page
       if(photo.featured){
         tagSpans.push('<span class="pill featured"><i class="fa-solid fa-bolt"></i> Featured</span>');
       }
