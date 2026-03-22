@@ -20,7 +20,7 @@
       --accent:#facc15;
       --line:rgba(255,255,255,0.08);
     }
-    html{scroll-behavior:smooth;background:var(--bg);} 
+    html{scroll-behavior:smooth;background:var(--bg);}
     body{background:var(--bg);color:var(--text);line-height:1.6;overflow-x:hidden;}
     img{max-width:100%;display:block;}
     a{text-decoration:none;color:inherit;transition:.3s;}
@@ -56,156 +56,177 @@
     .section-head{display:flex;align-items:end;justify-content:space-between;gap:18px;margin-bottom:22px;}
     .section-head h2{font-size:32px;margin-bottom:4px;}
     .section-head p{color:var(--muted);}
-    /* Remove category grouping container styles */
-    .featured-sections{margin-top:0;}
-    /* New layout: single photo grid for all featured/trending photos */
+    .featured-sections{display:grid;gap:30px;}
+    .category-block{background:linear-gradient(180deg,rgba(17,24,39,.96),rgba(15,23,42,.98));border:1px solid var(--line);border-radius:28px;padding:24px;box-shadow:0 16px 36px rgba(0,0,0,.18);}
+    .category-top{display:flex;align-items:start;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:18px;}
+    .category-top h3{font-size:26px;margin-bottom:4px;}
+    .category-top p{color:var(--muted);max-width:720px;}
+    .category-badges{display:flex;gap:10px;flex-wrap:wrap;}
+    .mini-pill{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;background:rgba(250,204,21,.12);border:1px solid rgba(250,204,21,.2);color:var(--accent);font-size:13px;font-weight:700;}
     .photo-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;}
-    .photo-card{background:var(--panel);border:1px solid var(--line);border-radius:22px;overflow:hidden;display:flex;flex-direction:column;min-height:100%;position:relative;}
-    .photo-card-image{aspect-ratio:4/3;background:#0b1220;overflow:hidden;position:relative;}
+    .photo-card{background:var(--panel);border:1px solid var(--line);border-radius:22px;overflow:hidden;display:flex;flex-direction:column;min-height:100%;}
+    .photo-card-image{aspect-ratio:4/3;background:#0b1220;overflow:hidden;}
     .photo-card-image img{width:100%;height:100%;object-fit:cover;transition:transform .35s ease;}
     .photo-card:hover .photo-card-image img{transform:scale(1.04);}
     .photo-card-body{padding:16px;display:flex;flex-direction:column;gap:10px;flex:1;}
-    .photo-card-body h4{font-size:18px;line-height:1.25;margin-bottom:4px;}
-    .photo-card-body p{color:var(--muted);font-size:14px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
-    /* Top tags for trending/featured/premium */
-    .top-tags{display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap;}
-    .pill{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;font-size:12px;font-weight:700;}
-    .pill.trending{background:rgba(56,189,248,.15);border:1px solid rgba(56,189,248,.25);color:#38bdf8;}
-    .pill.featured{background:rgba(16,185,129,.15);border:1px solid rgba(16,185,129,.25);color:#10b981;}
-    /* Premium tag should be yellow (using accent colour) */
-    .pill.premium{background:rgba(250,204,21,.15);border:1px solid rgba(250,204,21,.25);color:var(--accent);} 
-    /* Bottom stats row */
-    .photo-stats{margin-top:auto;display:flex;gap:12px;align-items:center;color:#cbd5e1;font-size:14px;font-weight:600;}
+    .photo-card-top{display:flex;align-items:start;justify-content:space-between;gap:12px;}
+    .photo-card h4{font-size:18px;line-height:1.25;}
+    .photo-card p{color:var(--muted);font-size:14px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+    .photo-meta{display:flex;flex-wrap:wrap;gap:8px;}
+    .tag{display:inline-flex;align-items:center;gap:6px;padding:7px 10px;border-radius:999px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);font-size:12px;color:#dbeafe;}
+    .photo-card-footer{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:auto;}
+    .view-link{display:inline-flex;align-items:center;gap:8px;color:var(--accent);font-weight:700;}
+    /* New styles for individual featured/trending cards */
+    .top-tags{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px;}
+    .pill{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;font-size:12px;font-weight:700;text-transform:uppercase;}
+    .pill.trending{background:rgba(250,204,21,.15);border:1px solid rgba(250,204,21,.35);color:var(--accent);}
+    .pill.featured{background:rgba(34,197,94,.15);border:1px solid rgba(34,197,94,.35);color:#a7f3d0;}
+    .pill.premium{background:rgba(139,92,246,.15);border:1px solid rgba(139,92,246,.35);color:#d8b4fe;}
+    .photo-stats{display:flex;gap:12px;align-items:center;margin-top:auto;font-size:14px;color:#cbd5e1;}
     .photo-stat{display:inline-flex;align-items:center;gap:6px;}
-    .photo-stat i{color:var(--accent);}
-    .empty-box{border:1px dashed rgba(255,255,255,.18);border-radius:22px;padding:28px;text-align:center;color:var(--muted);background:rgba(255,255,255,.02);} 
-
-    /* Begin visual card styles for featured page */
-    .visual-card{
-      position:relative;
-      min-height:450px;
-      border-radius:24px;
-      overflow:hidden;
-      border:1px solid var(--line);
-      background:#111827;
-      transition:.3s;
-      cursor:pointer;
-      box-shadow:0 14px 28px rgba(0,0,0,.16);
-    }
-
-    .visual-card:hover{
-      transform:translateY(-6px);
-      box-shadow:0 18px 36px rgba(0,0,0,.24);
-    }
-
-    .visual-card img{
-      position:absolute;
-      inset:0;
-      width:100%;
-      height:100%;
-      object-fit:cover;
-      background:#1e293b;
-    }
-
-    .visual-card::after{
-      content:"";
-      position:absolute;
-      inset:0;
-      z-index:1;
-      background:linear-gradient(
-        to top,
-        rgba(15,23,42,.96) 0%,
-        rgba(15,23,42,.72) 34%,
-        rgba(15,23,42,.20) 70%,
-        rgba(15,23,42,.04) 100%
-      );
-    }
-
-    .card-top-row{
-      position:absolute;
-      top:14px;
-      left:14px;
-      right:14px;
-      z-index:3;
-      display:flex;
-      align-items:flex-start;
-      justify-content:space-between;
-    }
-
-    .card-top-left,
-    .card-top-right{
-      display:flex;
-      align-items:center;
-      gap:8px;
-      flex-wrap:wrap;
-    }
-
-    .photo-overlay{
-      position:absolute;
-      inset:0;
-      z-index:2;
-      padding:14px;
-      display:flex;
-      flex-direction:column;
-      justify-content:flex-end;
-      gap:8px;
-    }
-
-    .overlay-category{
-      display:flex;
-      gap:8px;
-      flex-wrap:wrap;
-    }
-
-    .overlay-desc{
-      color:#fff;
-      font-size:14px;
-      line-height:1.45;
-      margin:0;
-      text-shadow:0 2px 10px rgba(0,0,0,.35);
-      display:-webkit-box;
-      -webkit-line-clamp:2;
-      -webkit-box-orient:vertical;
-      overflow:hidden;
-      max-width:92%;
-    }
-
-    .credit{
-      color:#e2e8f0;
-      font-size:13px;
-      font-weight:700;
-      text-shadow:0 2px 10px rgba(0,0,0,.35);
-      line-height:1.35;
-      display:flex;
-      align-items:center;
-      gap:8px;
-      flex-wrap:wrap;
-    }
-
-    .card-bottom{
-      display:flex;
-      align-items:flex-end;
-      justify-content:space-between;
-      gap:12px;
-      flex-wrap:wrap;
-      margin-top:2px;
-    }
-
-    .card-bottom-left,
-    .card-bottom-right{
-      display:flex;
-      align-items:center;
-      gap:8px;
-      flex-wrap:wrap;
-    }
-    /* End visual card styles */
+    .empty-box{border:1px dashed rgba(255,255,255,.18);border-radius:22px;padding:28px;text-align:center;color:var(--muted);background:rgba(255,255,255,.02);}
     footer{border-top:1px solid var(--line);padding:22px 0 38px;margin-top:20px;}
     .footer-inner{display:flex;justify-content:space-between;gap:18px;align-items:center;flex-wrap:wrap;}
     .footer-links{display:flex;gap:16px;flex-wrap:wrap;color:#cbd5e1;}
-    .footer-links a:hover{color:var(--accent);} 
+    .footer-links a:hover{color:var(--accent);}
     @media(max-width:980px){.photo-grid{grid-template-columns:repeat(2,minmax(0,1fr));}.toolbar{grid-template-columns:1fr 1fr;}.search-btn{grid-column:1/-1;}}
     @media(max-width:860px){.menu-toggle{display:flex;}.nav-links{position:absolute;top:calc(100% + 12px);right:0;left:0;background:rgba(15,23,42,.98);border:1px solid var(--line);border-radius:22px;padding:16px;display:none;flex-direction:column;align-items:flex-start;gap:14px;box-shadow:0 18px 36px rgba(0,0,0,.22);} .nav-links.show{display:flex;} .nav-links a{width:100%;padding:10px 0;} .nav-links a.active::after{display:none;} .nav-links a:hover,.nav-links a.active{background:rgba(250,204,21,.12);padding-left:10px;border-radius:12px;} .photo-grid{grid-template-columns:1fr;} .hero{padding:56px 0 34px;} }
-    @media(max-width:560px){.toolbar{grid-template-columns:1fr;}.hero-meta{flex-direction:column;align-items:flex-start;} .logo-title{font-size:23px;} .logo-sub{font-size:10px;letter-spacing:1.3px;}}
+    @media(max-width:560px){.toolbar{grid-template-columns:1fr;}.category-block{padding:18px;} .hero-meta{flex-direction:column;align-items:flex-start;} .logo-title{font-size:23px;} .logo-sub{font-size:10px;letter-spacing:1.3px;}}
+    /* Lightbox styles for photo detail view */
+    .lightbox{
+      position:fixed;
+      top:0;
+      left:0;
+      width:100%;
+      height:100%;
+      background:rgba(0,0,0,0.7);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      z-index:2000;
+      overflow-y:auto;
+      padding:1rem;
+    }
+    .lightbox.show{
+      display:flex;
+    }
+    .lightbox-panel{
+      background:var(--panel);
+      border-radius:8px;
+      max-width:1000px;
+      width:100%;
+      max-height:100%;
+      display:flex;
+      flex-direction:column;
+      overflow:hidden;
+    }
+    @media(min-width:768px){
+      .lightbox-panel{
+        flex-direction:row;
+      }
+    }
+    .lightbox-image-wrap{
+      flex:1;
+      background:#000;
+      position:relative;
+    }
+    .lightbox-image-wrap img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+    }
+    .lightbox-info{
+      flex:1;
+      padding:1rem;
+      overflow-y:auto;
+      color:var(--text);
+      position:relative;
+      background:var(--panel2);
+    }
+    .lightbox-close{
+      position:absolute;
+      top:0.5rem;
+      right:0.5rem;
+      font-size:1.5rem;
+      background:none;
+      border:none;
+      color:var(--text);
+      cursor:pointer;
+    }
+    .lightbox-header{
+      display:flex;
+      align-items:center;
+      gap:0.5rem;
+      flex-wrap:wrap;
+    }
+    .lightbox-header h3{
+      margin:0;
+      font-size:1.4rem;
+      color:var(--text);
+      flex:1;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .lightbox-header .pill{
+      font-size:0.75rem;
+      padding:0.2rem 0.4rem;
+      border-radius:4px;
+    }
+    .lightbox-meta{
+      margin-top:0.75rem;
+      display:flex;
+      flex-direction:column;
+      gap:0.25rem;
+      font-size:0.85rem;
+      color:var(--muted);
+    }
+    .lightbox-stats{
+      margin-top:0.75rem;
+      display:flex;
+      gap:1rem;
+      font-size:0.9rem;
+      color:var(--muted);
+    }
+    .lightbox-stats span i{
+      margin-right:0.3rem;
+    }
+    .lightbox-actions{
+      margin-top:1rem;
+      display:flex;
+      flex-wrap:wrap;
+      gap:0.5rem;
+    }
+    .lightbox-actions button{
+      background:var(--panel);
+      color:var(--text);
+      border:none;
+      padding:0.5rem 0.8rem;
+      border-radius:4px;
+      cursor:pointer;
+      font-size:0.85rem;
+      display:flex;
+      align-items:center;
+      gap:0.4rem;
+    }
+    .lightbox-actions button:hover{
+      background:var(--panel2);
+    }
+    .hidden{
+      display:none !important;
+    }
+    .pill.premium{
+      background:var(--accent);
+      color:#111827;
+    }
+    .lightbox-description{
+      margin-top:0.5rem;
+      color:var(--muted);
+      font-size:0.9rem;
+      line-height:1.4;
+    }
+
   </style>
 </head>
 <body>
@@ -239,13 +260,13 @@
   <section class="hero">
     <div class="container">
       <div class="hero-content">
-        <div class="hero-tag"><i class="fa-solid fa-bolt"></i> Featured Photos</div>
-        <h1>Featured photos for you.</h1>
-        <p>Explore standout photos across all categories. Discover premium picks marked for exclusive members.</p>
+        <div class="hero-tag"><i class="fa-solid fa-bolt"></i> Featured &amp; Trending</div>
+        <h1>Trending and featured photos for you.</h1>
+        <p>Explore standout photos across all categories. See what's trending now and discover premium picks marked for exclusive members.</p>
         <div class="hero-meta">
-          <span class="hero-pill"><i class="fa-solid fa-star"></i> Curated highlights</span>
+          <span class="hero-pill"><i class="fa-solid fa-fire"></i> Trending &amp; featured</span>
           <span class="hero-pill"><i class="fa-solid fa-clock"></i> Updated regularly</span>
-          <span class="hero-pill"><i class="fa-solid fa-chart-simple"></i> See metrics</span>
+          <span class="hero-pill"><i class="fa-solid fa-eye"></i> See metrics</span>
         </div>
       </div>
     </div>
@@ -255,7 +276,7 @@
     <div class="container">
       <div class="section-head">
         <div>
-          <h2>Featured Photos</h2>
+          <h2>Trending &amp; Featured Photos</h2>
           <p>Browse standout photos individually. Filter by category or search titles, hashtags, tags, creators and descriptions.</p>
         </div>
       </div>
@@ -276,9 +297,8 @@
         <button type="button" class="search-btn" id="clearFiltersBtn">Clear Filters</button>
       </div>
 
-      <!-- Photo grid will be injected here -->
       <div class="featured-sections" id="featuredSections">
-        <div class="empty-box">No photos matched your search yet. Try another category or clear the filters.</div>
+        <div class="empty-box">Photos will appear here once your collection has featured or trending items.</div>
       </div>
     </div>
   </section>
@@ -295,6 +315,39 @@
       </div>
     </div>
   </footer>
+
+  <!-- Lightbox markup for photo details -->
+  <div class="lightbox" id="lightbox">
+    <div class="lightbox-panel" role="dialog" aria-modal="true" aria-labelledby="lightboxPhotoTitle">
+      <div class="lightbox-image-wrap">
+        <img id="lightboxImg" src="" alt="Selected photo" />
+      </div>
+      <div class="lightbox-info">
+        <button type="button" class="lightbox-close" id="lightboxClose" aria-label="Close">×</button>
+        <div class="lightbox-header">
+          <h3 id="lightboxPhotoTitle">Untitled</h3>
+          <span id="lightboxPremiumTag" class="pill premium hidden">Premium</span>
+        </div>
+        <p class="lightbox-description" id="lightboxPhotoDescription"></p>
+        <div class="lightbox-meta">
+          <div><strong>Category:</strong> <span id="lightboxPhotoCategory">—</span></div>
+          <div><strong>Tags:</strong> <span id="lightboxPhotoTags">—</span></div>
+          <div><strong>Creator:</strong> <span id="lightboxPhotoCreator">—</span></div>
+        </div>
+        <div class="lightbox-stats">
+          <span><i class="fa-solid fa-eye"></i> <span id="lightboxPhotoViews">0</span></span>
+          <span><i class="fa-solid fa-heart"></i> <span id="lightboxPhotoLikes">0</span></span>
+          <span><i class="fa-solid fa-star"></i> <span id="lightboxPhotoFaves">0</span></span>
+        </div>
+        <div class="lightbox-actions">
+          <button type="button" id="lightboxLikeBtn"><i class="fa-solid fa-heart"></i> Like</button>
+          <button type="button" id="lightboxFavBtn"><i class="fa-solid fa-star"></i> Save</button>
+          <button type="button" id="lightboxShareBtn"><i class="fa-solid fa-share-nodes"></i> Share</button>
+          <button type="button" id="lightboxDownloadBtn"><i class="fa-solid fa-download"></i> Download</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <script src="pixnest-data.js"></script>
   <!-- Load Supabase client for dynamic featured content -->
@@ -416,24 +469,29 @@
         creatorWeights: {},
         hasSignals: false
       };
+
       const photoMap = new Map();
       categories.forEach(category => {
         (category.photos || []).forEach(photo => {
           photoMap.set(String(photo.id || ''), { ...photo, categoryName: category.name || '' });
         });
       });
+
       Object.entries(reactionState || {}).forEach(([photoId, state]) => {
         const photo = photoMap.get(String(photoId));
         if(!photo) return;
+
         let weight = 0;
         if(state && state.liked) weight += 2;
         if(state && state.favourited) weight += 4;
         if(!weight) return;
+
         profile.hasSignals = true;
         getPhotoTags(photo).forEach(tag => addWeight(profile.tagWeights, tag, weight));
         addWeight(profile.categoryWeights, photo.categoryName || '', weight + 1);
         addWeight(profile.creatorWeights, photo.credit || '', Math.max(1, weight - 1));
       });
+
       return profile;
     }
 
@@ -456,8 +514,6 @@
       creatorWeights: {},
       hasSignals: false
     };
-    // Flattened list of all photos with metadata. Populated in initializeFeatured().
-    let allPhotos = [];
 
     // Supabase configuration for fetching photos. These match the site-auth config.
     const SUPABASE_URL = 'https://vigczssznfvujttdapbv.supabase.co';
@@ -482,16 +538,20 @@
           .from('categories')
           .select('name, description, is_active')
           .order('name', { ascending: true });
+
         // Fetch all admin-approved photos with metrics
         const { data: photosData, error: photosError } = await supabaseClient
           .from('photos')
+          // Include featured and premium flags for tagging
           .select('id, title, description, credit, tags, category, image_url, created_at, views, likes, favourites, admin_approved, featured, is_premium, premium_only')
           .eq('admin_approved', true)
           .order('created_at', { ascending: false })
           .limit(1000);
+
         if(photosError){
           throw photosError;
         }
+
         const categoriesMap = {};
         // Build a map of category descriptions from the categories table
         if(Array.isArray(categoriesData)){
@@ -504,12 +564,16 @@
             }
           });
         }
+
         // Group photos by category and compute trending scores
         const grouped = {};
         if(Array.isArray(photosData)){
           photosData.forEach(photo => {
             const catName = photo.category || 'Uncategorized';
-            const trendingScore = (Number(photo.views) || 0) * 1 + (Number(photo.likes) || 0) * 3 + (Number(photo.favourites) || 0) * 4;
+            const trendingScore =
+              (Number(photo.views) || 0) * 1 +
+              (Number(photo.likes) || 0) * 3 +
+              (Number(photo.favourites) || 0) * 4;
             const photoObj = {
               id: photo.id,
               title: photo.title || '',
@@ -521,14 +585,13 @@
               views: photo.views || 0,
               likes: photo.likes || 0,
               favourites: photo.favourites || 0,
-              trendingScore: trendingScore,
-              featured: photo.featured || false,
-              isPremium: photo.is_premium || photo.premium_only || false
+              trendingScore: trendingScore
             };
             if(!grouped[catName]) grouped[catName] = [];
             grouped[catName].push(photoObj);
           });
         }
+
         // Build category objects sorted by trending score
         const trendingCategories = Object.keys(grouped).map(catName => {
           const photosList = grouped[catName].sort((a, b) => b.trendingScore - a.trendingScore);
@@ -540,12 +603,14 @@
             photos: photosList
           };
         }).filter(cat => cat.photos && cat.photos.length > 0);
+
         // Sort categories by the max trending score of their top photo
         trendingCategories.sort((a, b) => {
           const aScore = a.photos[0] ? a.photos[0].trendingScore : 0;
           const bScore = b.photos[0] ? b.photos[0].trendingScore : 0;
           return bScore - aScore;
         });
+
         return trendingCategories;
       } catch(error){
         console.error('Failed to load trending categories from Supabase:', error);
@@ -555,21 +620,7 @@
     }
 
     async function initializeFeatured(){
-      // Load categories with trending score
       featuredCategories = await loadTrendingCategories();
-      // Flatten all photos into a single list and include category name
-      allPhotos = [];
-      featuredCategories.forEach(category => {
-        (category.photos || []).forEach(photo => {
-          allPhotos.push({ ...photo, categoryName: category.name || 'Uncategorized' });
-        });
-      });
-      // Compute trending flags: mark top 15 photos by trendingScore as trending
-      const sortedByTrending = [...allPhotos].sort((a, b) => (b.trendingScore || 0) - (a.trendingScore || 0));
-      const topCount = Math.min(15, sortedByTrending.length);
-      sortedByTrending.slice(0, topCount).forEach(photo => {
-        photo.trending = true;
-      });
       featuredPreferenceProfile = buildPreferenceProfile(featuredCategories);
       // Update hero text based on preference signals
       if(featuredPreferenceProfile.hasSignals){
@@ -583,17 +634,11 @@
     }
 
     function fillCategoryFilter(){
-      categoryFilter.innerHTML = '<option value="all">All Categories</option>';
-      // Count photos per category from allPhotos
-      const counts = {};
-      allPhotos.forEach(photo => {
-        const name = photo.categoryName || 'Uncategorized';
-        counts[name] = (counts[name] || 0) + 1;
-      });
-      Object.keys(counts).forEach(name => {
+      categoryFilter.innerHTML = '<option value="all">All Featured Categories</option>';
+      featuredCategories.forEach(category => {
         const option = document.createElement('option');
-        option.value = name;
-        option.textContent = `${name} (${counts[name]})`;
+        option.value = category.name;
+        option.textContent = `${category.name} (${category.photos.length})`;
         categoryFilter.appendChild(option);
       });
     }
@@ -606,106 +651,316 @@
     function renderFeatured(){
       const searchTerm = searchInput.value.trim().toLowerCase();
       const selectedCategory = categoryFilter.value;
-      // Filter and sort all photos
+
+      const filteredCategories = featuredCategories
+        .map(category => ({
+          ...category,
+          photos: category.photos
+            .filter(photo => {
+              const categoryMatch = selectedCategory === 'all' || category.name === selectedCategory;
+              return categoryMatch && matchesSearch(photo, category.name, searchTerm);
+            })
+            .sort((a, b) => {
+              const preferenceDiff = getPreferenceScore(b, category.name, featuredPreferenceProfile) - getPreferenceScore(a, category.name, featuredPreferenceProfile);
+              if(preferenceDiff !== 0) return preferenceDiff;
+              return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
+            })
+        }))
+        .filter(category => category.photos.length > 0)
+        .sort((a, b) => {
+          const aScore = Math.max(...a.photos.map(photo => getPreferenceScore(photo, a.name, featuredPreferenceProfile)), 0);
+          const bScore = Math.max(...b.photos.map(photo => getPreferenceScore(photo, b.name, featuredPreferenceProfile)), 0);
+          if(bScore !== aScore) return bScore - aScore;
+          return b.photos.length - a.photos.length;
+        });
+
+      if(!filteredCategories.length){
+        featuredSections.innerHTML = '<div class="empty-box">No featured photos matched your search yet. Try another category or clear the filters.</div>';
+        return;
+      }
+
+      featuredSections.innerHTML = filteredCategories.map(category => {
+        const cards = category.photos.map(photo => {
+          const createdAt = photo.createdAt ? new Date(photo.createdAt) : null;
+          const formattedDate = createdAt && !Number.isNaN(createdAt.getTime())
+            ? createdAt.toLocaleDateString(undefined, { year:'numeric', month:'short', day:'numeric' })
+            : 'Recently added';
+          const tags = getPhotoTags(photo).slice(0, 3);
+          const image = photo.image || FALLBACK_IMAGE;
+          const categoryLink = `category.html?category=${encodeURIComponent(category.name)}`;
+
+          return `
+            <article class="photo-card">
+              <div class="photo-card-image">
+                <img src="${safeText(image)}" alt="${safeText(photo.title || category.name)}" loading="lazy">
+              </div>
+              <div class="photo-card-body">
+                <div class="photo-card-top">
+                  <div>
+                    <h4>${safeText(photo.title || 'Featured photo')}</h4>
+                    <p>${safeText(photo.description || 'A highlighted visual from the PixNest collection.')}</p>
+                  </div>
+                </div>
+                <div class="photo-meta">
+                  <span class="tag"><i class="fa-solid fa-bolt"></i> Featured</span>
+                  <span class="tag"><i class="fa-regular fa-calendar"></i> ${safeText(formattedDate)}</span>
+                  ${photo.credit ? `<span class="tag"><i class="fa-solid fa-user"></i> ${safeText(photo.credit)}</span>` : ''}
+                  ${tags.map(tag => `<span class="tag"><i class="fa-solid fa-hashtag"></i> ${safeText(tag)}</span>`).join('')}
+                </div>
+                <div class="photo-card-footer">
+                  <span class="tag"><i class="fa-solid fa-folder"></i> ${safeText(category.name)}</span>
+                  <a class="view-link" href="${categoryLink}">View category <i class="fa-solid fa-arrow-right"></i></a>
+                </div>
+              </div>
+            </article>
+          `;
+        }).join('');
+
+        return `
+          <section class="category-block">
+            <div class="category-top">
+              <div>
+                <h3>${safeText(category.name)}</h3>
+                <p>${safeText(category.description)}</p>
+              </div>
+              <div class="category-badges">
+                <span class="mini-pill"><i class="fa-solid fa-images"></i> ${category.photos.length} featured</span>
+                <a class="mini-pill" href="category.html?category=${encodeURIComponent(category.name)}"><i class="fa-solid fa-arrow-up-right-from-square"></i> Open category</a>
+              </div>
+            </div>
+            <div class="photo-grid">${cards}</div>
+          </section>
+        `;
+      }).join('');
+    }
+
+    // --- Override functions for flattened featured/trending display ---
+    // Flattened list of all photos with metadata. Will be populated in initializeFeatured.
+    let allPhotos = [];
+    // Save original functions (if needed)
+    const __originalInitializeFeatured = initializeFeatured;
+    const __originalFillCategoryFilter = fillCategoryFilter;
+    const __originalRenderFeatured = renderFeatured;
+    // Override initializeFeatured to flatten and compute trending
+    initializeFeatured = async function(){
+      featuredCategories = await loadTrendingCategories();
+      allPhotos = [];
+      featuredCategories.forEach(category => {
+        (category.photos || []).forEach(photo => {
+          allPhotos.push({ ...photo, categoryName: category.name || 'Uncategorized' });
+        });
+      });
+      const sortedByTrending = [...allPhotos].sort((a, b) => (b.trendingScore || 0) - (a.trendingScore || 0));
+      const topCount = Math.min(15, sortedByTrending.length);
+      sortedByTrending.slice(0, topCount).forEach(photo => { photo.trending = true; });
+      featuredPreferenceProfile = buildPreferenceProfile(featuredCategories);
+      if(featuredPreferenceProfile.hasSignals){
+        const heroText = document.querySelector('.hero-content p');
+        if(heroText){
+          heroText.textContent = 'Discover standout photos selected across the PixNest collection, with results weighted toward the hashtags, creators, and categories you engage with most.';
+        }
+      }
+      fillCategoryFilter();
+      renderFeatured();
+    };
+    // Override fillCategoryFilter to populate categories based on allPhotos
+    fillCategoryFilter = function(){
+      categoryFilter.innerHTML = '<option value="all">All Categories</option>';
+      const counts = {};
+      allPhotos.forEach(photo => {
+        const name = photo.categoryName || 'Uncategorized';
+        counts[name] = (counts[name] || 0) + 1;
+      });
+      Object.keys(counts).forEach(name => {
+        const option = document.createElement('option');
+        option.value = name;
+        option.textContent = `${name} (${counts[name]})`;
+        categoryFilter.appendChild(option);
+      });
+    };
+    // Helper to build markup for individual cards
+    function buildFeaturedCard(photo){
+      const image = photo.image || FALLBACK_IMAGE;
+      const tagSpans = [];
+      // Only show premium or featured tags. Trending tags are intentionally omitted on the featured page.
+      if(photo.featured){ tagSpans.push('<span class="pill featured"><i class="fa-solid fa-bolt"></i> Featured</span>'); }
+      if(photo.isPremium){ tagSpans.push('<span class="pill premium"><i class="fa-solid fa-gem"></i> Premium</span>'); }
+      // Each card carries the photo id so we can open the lightbox on click
+      const photoId = safeText(photo.id || photo.photo_id || '');
+      return `\n        <article class="photo-card" data-photo-id="${photoId}">\n          <div class="photo-card-image">\n            <img src="${safeText(image)}" alt="${safeText(photo.title || '')}" loading="lazy">\n          </div>\n          <div class="photo-card-body">\n            <div class="top-tags">\n              ${tagSpans.join('')}\n            </div>\n            <h4>${safeText(photo.title || 'Untitled')}</h4>\n            <p>${safeText(photo.description || '')}</p>\n            <div class="photo-stats">\n              <span class="photo-stat"><i class="fa-solid fa-eye"></i> ${safeText(photo.views)}</span>\n              <span class="photo-stat"><i class="fa-solid fa-heart"></i> ${safeText(photo.likes)}</span>\n              <span class="photo-stat"><i class="fa-solid fa-star"></i> ${safeText(photo.favourites)}</span>\n            </div>\n          </div>\n        </article>\n      `;
+    }
+    // Override renderFeatured to display flattened photos
+    renderFeatured = function(){
+      const searchTerm = searchInput.value.trim().toLowerCase();
+      const selectedCategory = categoryFilter.value;
       let filtered = allPhotos.filter(photo => {
         const categoryMatch = selectedCategory === 'all' || photo.categoryName === selectedCategory;
         return categoryMatch && matchesSearch(photo, photo.categoryName, searchTerm);
       });
-      // Sort by trending flag, preference score, and trending score, then most recent
       filtered = filtered.sort((a, b) => {
-        // Trending photos come first
         const aTrend = a.trending ? 1 : 0;
         const bTrend = b.trending ? 1 : 0;
         if(bTrend !== aTrend) return bTrend - aTrend;
-        // Preference difference
         const prefDiff = getPreferenceScore(b, b.categoryName, featuredPreferenceProfile) - getPreferenceScore(a, a.categoryName, featuredPreferenceProfile);
         if(prefDiff !== 0) return prefDiff;
-        // Trending score difference
         const trendDiff = (b.trendingScore || 0) - (a.trendingScore || 0);
         if(trendDiff !== 0) return trendDiff;
-        // Newest first
         return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
       });
       if(!filtered.length){
         featuredSections.innerHTML = '<div class="empty-box">No photos matched your search yet. Try another category or clear the filters.</div>';
         return;
       }
-      // Build cards
       const cardsHtml = filtered.map(buildFeaturedCard).join('');
       featuredSections.innerHTML = `<div class="photo-grid">${cardsHtml}</div>`;
-    }
+    };
 
-    // Helper functions to clean photo titles and avoid displaying raw file names
-    function isLikelyFileName(value = ""){
-      const text = String(value || "").trim();
-      if(!text) return false;
-      const extPattern = /\.(jpg|jpeg|png|gif|webp|svg|bmp|avif)$/i;
-      const imageCodePattern = /^(img|image|dsc|pxl|pxl_|screenshot|screen-shot|whatsapp image|photo|file)[-_ ]?\d+/i;
-      const shortSlugPattern = /^[a-z0-9_-]{1,18}$/i;
-      return extPattern.test(text) || imageCodePattern.test(text) || shortSlugPattern.test(text);
-    }
+    // -------------------------------------------------------------------------
+    // Lightbox logic for photo detail view
+    // Grab references to lightbox elements
+    const lightboxElm = document.getElementById('lightbox');
+    const lightboxImg = document.getElementById('lightboxImg');
+    const lightboxPhotoTitleElm = document.getElementById('lightboxPhotoTitle');
+    const lightboxPhotoDescElm = document.getElementById('lightboxPhotoDescription');
+    const lightboxPhotoCategoryElm = document.getElementById('lightboxPhotoCategory');
+    const lightboxPhotoTagsElm = document.getElementById('lightboxPhotoTags');
+    const lightboxPhotoCreatorElm = document.getElementById('lightboxPhotoCreator');
+    const lightboxPhotoViewsElm = document.getElementById('lightboxPhotoViews');
+    const lightboxPhotoLikesElm = document.getElementById('lightboxPhotoLikes');
+    const lightboxPhotoFavesElm = document.getElementById('lightboxPhotoFaves');
+    const lightboxPremiumTagElm = document.getElementById('lightboxPremiumTag');
+    const lightboxCloseBtn = document.getElementById('lightboxClose');
+    const likeBtn = document.getElementById('lightboxLikeBtn');
+    const favBtn = document.getElementById('lightboxFavBtn');
+    const shareBtn = document.getElementById('lightboxShareBtn');
+    const downloadBtn = document.getElementById('lightboxDownloadBtn');
 
-    function getSafePhotoTitle(photo){
-      const possibleFields = [
-        photo.display_title,
-        photo.caption,
-        photo.headline,
-        photo.custom_title,
-        photo.public_title,
-        photo.title
-      ];
-      const found = possibleFields.find(value => String(value || "").trim());
-      const clean = String(found || "").trim();
-      if(!clean) return "";
-      if(isLikelyFileName(clean)) return "";
-      return clean;
-    }
+    let currentLightboxPhoto = null;
 
-    // Generate markup for a single featured/trending card
-    function buildFeaturedCard(photo){
-      const image = photo.image || FALLBACK_IMAGE;
-      const creatorName = photo.creator_name || photo.creator || photo.username || "Unknown";
-      const safeTitle = getSafePhotoTitle(photo) || 'Untitled';
-      const category = photo.categoryName || photo.category || 'Photo';
-      const description = String(photo.description || '').trim();
-
-      // Determine tags: show premium and featured, no trending on featured page
-      const topLeftTags = [];
+    function renderPhotoDetails(photo){
+      currentLightboxPhoto = photo;
+      const src = photo.image || photo.preview_url || FALLBACK_IMAGE;
+      lightboxImg.src = src;
+      lightboxImg.alt = photo.title || 'Selected photo';
+      lightboxPhotoTitleElm.textContent = photo.title || 'Untitled';
+      lightboxPhotoDescElm.textContent = photo.description || '';
+      lightboxPhotoCategoryElm.textContent = photo.category || '—';
+      const tagsArr = getPhotoTags(photo);
+      lightboxPhotoTagsElm.textContent = tagsArr && tagsArr.length ? tagsArr.join(', ') : '—';
+      lightboxPhotoCreatorElm.textContent = photo.creator_name || 'Unknown';
+      lightboxPhotoViewsElm.textContent = photo.views || 0;
+      lightboxPhotoLikesElm.textContent = photo.likes || 0;
+      lightboxPhotoFavesElm.textContent = photo.favourites || 0;
       if(photo.isPremium){
-        topLeftTags.push(`<span class="pill premium"><i class="fa-solid fa-gem"></i> Premium</span>`);
+        lightboxPremiumTagElm.classList.remove('hidden');
+      }else{
+        lightboxPremiumTagElm.classList.add('hidden');
       }
-      if(photo.featured){
-        topLeftTags.push(`<span class="pill featured"><i class="fa-solid fa-bolt"></i> Featured</span>`);
-      }
-      // Build visual-card markup with overlay. Only metrics (views, likes, favourites) shown at bottom.
-      return `
-        <article class="visual-card">
-          <img src="${safeText(image)}" alt="${safeText(safeTitle)}">
-          <div class="card-top-row">
-            <div class="card-top-left">
-              ${topLeftTags.join('')}
-            </div>
-            <div class="card-top-right"></div>
-          </div>
-          <div class="photo-overlay">
-            <div class="overlay-category">
-              <span class="pill">${safeText(category)}</span>
-            </div>
-            ${description ? `<p class="overlay-desc">${safeText(description)}</p>` : ""}
-            <div class="credit"><span>By ${safeText(creatorName)}</span></div>
-            <div class="card-bottom">
-              <div class="card-bottom-left"></div>
-              <div class="card-bottom-right">
-                <div class="photo-stats">
-                  <span class="photo-stat"><i class="fa-solid fa-eye"></i> ${safeText(photo.views)}</span>
-                  <span class="photo-stat"><i class="fa-solid fa-heart"></i> ${safeText(photo.likes)}</span>
-                  <span class="photo-stat"><i class="fa-solid fa-star"></i> ${safeText(photo.favourites)}</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </article>
-      `;
+    }
+
+    function openPhotoLightbox(photo){
+      renderPhotoDetails(photo);
+      lightboxElm.classList.add('show');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closePhotoLightbox(){
+      lightboxElm.classList.remove('show');
+      document.body.style.overflow = '';
+      currentLightboxPhoto = null;
+    }
+
+    if(lightboxCloseBtn){
+      lightboxCloseBtn.addEventListener('click', closePhotoLightbox);
+    }
+    if(lightboxElm){
+      lightboxElm.addEventListener('click', (event) => {
+        if(event.target === lightboxElm){
+          closePhotoLightbox();
+        }
+      });
+    }
+
+    // Like button handler: increments likes locally and updates database
+    if(likeBtn){
+      likeBtn.addEventListener('click', async () => {
+        if(!currentLightboxPhoto) return;
+        // increment like count
+        const nextLikes = (currentLightboxPhoto.likes || 0) + 1;
+        currentLightboxPhoto.likes = nextLikes;
+        lightboxPhotoLikesElm.textContent = nextLikes;
+        // update supabase if id exists
+        if(currentLightboxPhoto.id){
+          try{
+            await supabaseClient
+              .from('photos')
+              .update({ likes: nextLikes })
+              .eq('id', currentLightboxPhoto.id);
+          }catch(err){ console.warn('Like update failed', err); }
+        }
+      });
+    }
+
+    // Favourite button handler: increments favourites locally and updates database
+    if(favBtn){
+      favBtn.addEventListener('click', async () => {
+        if(!currentLightboxPhoto) return;
+        const nextFaves = (currentLightboxPhoto.favourites || 0) + 1;
+        currentLightboxPhoto.favourites = nextFaves;
+        lightboxPhotoFavesElm.textContent = nextFaves;
+        if(currentLightboxPhoto.id){
+          try{
+            await supabaseClient
+              .from('photos')
+              .update({ favourites: nextFaves })
+              .eq('id', currentLightboxPhoto.id);
+          }catch(err){ console.warn('Favourite update failed', err); }
+        }
+      });
+    }
+
+    // Share button handler using Web Share API or fallback to copy link
+    if(shareBtn){
+      shareBtn.addEventListener('click', async () => {
+        if(!currentLightboxPhoto) return;
+        const url = currentLightboxPhoto.image || currentLightboxPhoto.preview_url || '';
+        const title = currentLightboxPhoto.title || 'PixNest Photo';
+        const text = currentLightboxPhoto.description || '';
+        if(navigator.share){
+          try{
+            await navigator.share({ title, text, url });
+          }catch(err){ console.warn('Share cancelled', err); }
+        }else{
+          try{
+            await navigator.clipboard.writeText(url);
+            alert('Link copied to clipboard');
+          }catch(err){ alert('Could not copy link'); }
+        }
+      });
+    }
+
+    // Download button handler: open image in new tab
+    if(downloadBtn){
+      downloadBtn.addEventListener('click', () => {
+        if(!currentLightboxPhoto) return;
+        const url = currentLightboxPhoto.image || currentLightboxPhoto.preview_url || '';
+        if(url){
+          window.open(url, '_blank');
+        }
+      });
+    }
+
+    // Attach click listener to open lightbox when photo card is clicked
+    if(featuredSections){
+      featuredSections.addEventListener('click', (event) => {
+        const card = event.target.closest('.photo-card');
+        if(!card) return;
+        const photoId = card.getAttribute('data-photo-id');
+        const photo = allPhotos.find(p => String(p.id || p.photo_id) === String(photoId));
+        if(photo){
+          openPhotoLightbox(photo);
+        }
+      });
     }
 
     searchInput.addEventListener('input', renderFeatured);
@@ -720,6 +975,7 @@
     initializeFeatured();
   </script>
   <script src="site-auth.js"></script>
+
 <script src="active-nav.js"></script>
 </body>
 </html>

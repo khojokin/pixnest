@@ -1685,8 +1685,9 @@
         <p>Premium members can view premium collections, discover creator exclusives, and buy locked sellable photos from approved creators.</p>
 
         <div class="hero-meta">
-          <!-- Show only a premium tag on the premium page. Other tags (featured, trending) are removed for clarity -->
-          <span class="pill premium"><i class="fa-solid fa-crown"></i> Premium Photos</span>
+          <span class="pill premium"><i class="fa-solid fa-star"></i> Premium Photos</span>
+          <span class="pill featured"><i class="fa-solid fa-shield"></i> Member Access</span>
+          <span class="pill trending"><i class="fa-solid fa-cart-shopping"></i> Buy To Unlock</span>
         </div>
       </div>
     </div>
@@ -1717,6 +1718,8 @@
 
         <select id="premiumFilter" class="search-select">
           <option value="all">All Premium Photos</option>
+          <option value="featured">Featured Premium</option>
+          <option value="trending">Trending Premium</option>
           <option value="for-sale">For Sale</option>
         </select>
 
@@ -3263,8 +3266,7 @@ async function openLightbox(photo){
       const description = getDescription(photo);
       const creatorName = getCreatorName(photo) || "Unknown Creator";
       const photoId = getPhotoId(photo);
-      // We don't show trending tags on the premium page
-      const isTrending = false;
+      const isTrending = trendingIds.has(photoId);
       const lockedForBuyer = isSellablePhoto(photo) && !isPhotoUnlocked(photo);
       const priceText = formatPrice(getPhotoPrice(photo));
 
@@ -3275,10 +3277,11 @@ async function openLightbox(photo){
           <div class="card-top-row">
             <div class="card-top-left">
               <span class="pill premium"><i class="fa-solid fa-crown"></i> Premium</span>
+              ${isTrending ? `<span class="pill trending"><i class="fa-solid fa-fire"></i> Trending</span>` : ``}
             </div>
 
             <div class="card-top-right">
-              <!-- Do not show trending or featured tags on the premium page -->
+              ${photo.featured ? `<span class="pill featured"><i class="fa-solid fa-bolt"></i> Featured</span>` : ``}
               ${isSellablePhoto(photo) && lockedForBuyer ? `<span class="pill locked-pill"><i class="fa-solid fa-lock"></i> ${escapeHtml(priceText)}</span>` : ``}
               ${isSellablePhoto(photo) && !lockedForBuyer ? `<span class="pill unlocked-pill"><i class="fa-solid fa-lock-open"></i> Unlocked</span>` : ``}
             </div>
@@ -3419,7 +3422,6 @@ async function openLightbox(photo){
       );
       const forSaleCount = allPremiumPhotos.filter(photo => isSellablePhoto(photo)).length;
       const unlockedCount = allPremiumPhotos.filter(photo => isPhotoUnlocked(photo) && isSellablePhoto(photo)).length;
-      // Count of premium photos marked as featured is not relevant here
       const featuredCount = allPremiumPhotos.filter(photo => photo.featured).length;
 
       statsStrip.innerHTML = `
@@ -3438,7 +3440,6 @@ async function openLightbox(photo){
           <span>Your Unlocked Photos</span>
         </div>
 
-        <!-- We remove featured premium count as trending/featured tags are not shown on the premium page -->
         <div class="stat-box">
           <strong>${escapeHtml(compactNumber(featuredCount))}</strong>
           <span>Featured Premium</span>
@@ -3500,8 +3501,7 @@ async function openLightbox(photo){
 
       const searchValue = searchInput.value.trim().toLowerCase();
       const filterValue = premiumFilter.value;
-      // Trending is not shown on the premium page so trendingIds is an empty set
-      const trendingIds = new Set();
+      const trendingIds = getTrendingIds(allPremiumPhotos);
 
       const rows = allPremiumPhotos.filter(photo => {
         const text = [
@@ -3515,7 +3515,11 @@ async function openLightbox(photo){
         const matchesText = !searchValue || text.includes(searchValue);
 
         let matchesFilter = true;
-        if(filterValue === "for-sale"){
+        if(filterValue === "featured"){
+          matchesFilter = Boolean(photo.featured);
+        }else if(filterValue === "trending"){
+          matchesFilter = trendingIds.has(getPhotoId(photo));
+        }else if(filterValue === "for-sale"){
           matchesFilter = isSellablePhoto(photo);
         }
 
