@@ -1147,6 +1147,107 @@
       font-size:28px;
     }
 
+    /* Follow modal styles */
+    .follow-modal{
+      position:fixed;
+      inset:0;
+      background:rgba(2,6,23,.85);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      z-index:2500;
+      padding:20px;
+    }
+    .follow-modal.show{
+      display:flex;
+    }
+    .follow-panel{
+      width:min(480px,100%);
+      max-height:90vh;
+      overflow:auto;
+      background:#111827;
+      border:1px solid var(--line);
+      border-radius:22px;
+      padding:18px;
+      box-shadow:0 24px 60px rgba(0,0,0,.35);
+    }
+    .follow-header{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      margin-bottom:14px;
+    }
+    .follow-header h3{
+      font-size:24px;
+      color:#fff;
+    }
+    .follow-header button{
+      background:none;
+      border:none;
+      color:#94a3b8;
+      font-size:22px;
+      cursor:pointer;
+    }
+    .follow-list{
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+    .follow-item{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      background:#111827;
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:10px 14px;
+    }
+    .follow-avatar{
+      width:48px;
+      height:48px;
+      border-radius:50%;
+      overflow:hidden;
+      background:linear-gradient(135deg,#facc15,#fb7185);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:#111827;
+      font-size:18px;
+      font-weight:800;
+      flex-shrink:0;
+    }
+    .follow-avatar img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+    }
+    .follow-name{
+      flex:1;
+      margin-left:12px;
+      color:#fff;
+      font-size:16px;
+      font-weight:700;
+      overflow:hidden;
+      white-space:nowrap;
+      text-overflow:ellipsis;
+    }
+    .follow-view-profile{
+      display:inline-block;
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(255,255,255,.08);
+      color:#e5e7eb;
+      font-size:13px;
+      padding:6px 10px;
+      border-radius:10px;
+      text-decoration:none;
+      white-space:nowrap;
+    }
+    .follow-view-profile:hover{
+      background:rgba(250,204,21,.12);
+      color:var(--accent);
+      border-color:rgba(250,204,21,.24);
+    }
+
     .close-btn{
       width:42px;
       height:42px;
@@ -2108,6 +2209,12 @@
     const coverFileInput = document.getElementById("coverFileInput");
     const changeAvatarMenuBtn = document.getElementById("changeAvatarMenuBtn");
     const changeCoverMenuBtn = document.getElementById("changeCoverMenuBtn");
+
+    // Follow modal elements
+    const followModal = document.getElementById("followModal");
+    const followModalTitle = document.getElementById("followModalTitle");
+    const followList = document.getElementById("followList");
+    const closeFollowModalBtn = document.getElementById("closeFollowModal");
     const changeAvatarModalBtn = document.getElementById("changeAvatarModalBtn");
     const changeCoverModalBtn = document.getElementById("changeCoverModalBtn");
     const editProfileMenuBtn = document.getElementById("editProfileMenuBtn");
@@ -3813,6 +3920,102 @@ function buildPhotoStats(photo){
           renderLightbox(activePhoto);
         }
       }
+
+      // After rendering header and sections, attach click listeners to followers/following counts
+      attachFollowListeners();
+    }
+
+    // Open follower or following modal
+    async function openFollowModal(type){
+      if(!currentUser){
+        showNotice("Log in first.");
+        return;
+      }
+      followModalTitle.textContent = type === 'followers' ? 'Followers' : 'Following';
+      followList.innerHTML = '<div style="padding:8px;color:#94a3b8;">Loading...</div>';
+      followModal.classList.add('show');
+      document.body.style.overflow = 'hidden';
+      let usersList = [];
+      try{
+        if(type === 'followers'){
+          const { data: followsData, error } = await supabaseClient
+            .from('user_follows')
+            .select('follower_user_id')
+            .eq('following_user_id', currentUser.id);
+          if(error) throw error;
+          const ids = Array.isArray(followsData) ? followsData.map(row => row.follower_user_id) : [];
+          if(ids.length > 0){
+            const { data: profilesData, error: err2 } = await supabaseClient
+              .from('profiles')
+              .select('id, display_name, full_name, avatar_url')
+              .in('id', ids);
+            if(err2) throw err2;
+            usersList = Array.isArray(profilesData) ? profilesData : [];
+          }
+        }else{
+          const { data: followsData, error } = await supabaseClient
+            .from('user_follows')
+            .select('following_user_id')
+            .eq('follower_user_id', currentUser.id);
+          if(error) throw error;
+          const ids = Array.isArray(followsData) ? followsData.map(row => row.following_user_id) : [];
+          if(ids.length > 0){
+            const { data: profilesData, error: err2 } = await supabaseClient
+              .from('profiles')
+              .select('id, display_name, full_name, avatar_url')
+              .in('id', ids);
+            if(err2) throw err2;
+            usersList = Array.isArray(profilesData) ? profilesData : [];
+          }
+        }
+      }catch(error){
+        console.error(error);
+        followList.innerHTML = '<div style="padding:8px;color:#fecaca;">Could not load list.</div>';
+        return;
+      }
+      if(!usersList || usersList.length === 0){
+        followList.innerHTML = '<div style="padding:8px;color:#94a3b8;">No users found.</div>';
+        return;
+      }
+      followList.innerHTML = '';
+      usersList.forEach((u) => {
+        const displayName = (u.display_name || u.full_name || '').trim();
+        const avatarUrl = String(u.avatar_url || '').trim();
+        const id = u.id;
+        const item = document.createElement('div');
+        item.className = 'follow-item';
+        const avatarHtml = avatarUrl
+          ? `<img src="${escapeHtml(avatarUrl)}" alt="${escapeHtml(displayName)}">`
+          : `<span>${escapeHtml((displayName.charAt(0) || 'P').toUpperCase())}</span>`;
+        item.innerHTML = `
+          <div class="follow-avatar">${avatarHtml}</div>
+          <div class="follow-name">${escapeHtml(displayName)}</div>
+          <a class="follow-view-profile" href="profile.html?creator=${encodeURIComponent(id)}&name=${encodeURIComponent(displayName)}">View</a>
+        `;
+        followList.appendChild(item);
+      });
+    }
+
+    function closeFollowModal(){
+      followModal.classList.remove('show');
+      document.body.style.overflow = '';
+    }
+
+    function attachFollowListeners(){
+      if(!topStatsRow) return;
+      const stats = topStatsRow.querySelectorAll('.top-stat');
+      if(stats && stats.length >= 3){
+        const followersStat = stats[1];
+        const followingStat = stats[2];
+        if(followersStat){
+          followersStat.style.cursor = 'pointer';
+          followersStat.addEventListener('click', () => openFollowModal('followers'));
+        }
+        if(followingStat){
+          followingStat.style.cursor = 'pointer';
+          followingStat.addEventListener('click', () => openFollowModal('following'));
+        }
+      }
     }
 
     navToggle.addEventListener("click", () => {
@@ -3960,6 +4163,20 @@ function buildPhotoStats(photo){
       handleLogout();
     });
 
+    // Follow modal close handlers
+    if(closeFollowModalBtn){
+      closeFollowModalBtn.addEventListener('click', () => {
+        closeFollowModal();
+      });
+    }
+    if(followModal){
+      followModal.addEventListener('click', (e) => {
+        if(e.target === followModal){
+          closeFollowModal();
+        }
+      });
+    }
+
     closeSettingsBtn.addEventListener("click", closeSettings);
     settingsModal.addEventListener("click", (e) => {
       if(e.target === settingsModal){
@@ -3999,6 +4216,17 @@ function buildPhotoStats(photo){
       refreshAccountPage();
     })();
   </script>
+  <!-- Follow Modal -->
+  <div id="followModal" class="follow-modal">
+    <div class="follow-panel">
+      <div class="follow-header">
+        <h3 id="followModalTitle">Followers</h3>
+        <button type="button" id="closeFollowModal">&times;</button>
+      </div>
+      <div class="follow-list" id="followList">
+      </div>
+    </div>
+  </div>
   <script src="site-auth.js"></script>
 
 <script src="active-nav.js"></script>

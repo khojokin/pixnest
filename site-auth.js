@@ -514,6 +514,7 @@
     toggle.id = 'siteAccountMenuToggle';
     toggle.setAttribute('aria-label', 'Open account menu');
     toggle.setAttribute('aria-expanded', 'false');
+    // Initially show hamburger icon; will be replaced with avatar if user is logged in
     toggle.innerHTML = '<i class="fa-solid fa-bars"></i>';
 
     const dropdown = document.createElement('div');
@@ -528,6 +529,8 @@
       `;
     }else{
       const access = await getAccountAccess(user, client);
+      // Replace the toggle icon with the user's avatar or initial when logged in
+      toggle.innerHTML = buildMenuAvatar(access);
       dropdown.innerHTML = `
         <div class="site-account-menu-head">
           <div class="site-account-menu-avatar">${buildMenuAvatar(access)}</div>
