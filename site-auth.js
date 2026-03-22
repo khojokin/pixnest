@@ -16,17 +16,18 @@
     { href:'contact.html', label:'Contact', keys:['contact.html','help.html'] }
   ];
 
-  const PREMIUM_FOOTER_ITEMS = [
-    { href:'about.html', label:'About' },
+  // Define a single footer item list for all users.
+  // The public requirement is to always show "License", "Terms", "About" and "Privacy" links in the footer.
+  const FOOTER_ITEMS = [
     { href:'license.html', label:'License' },
-    { href:'privacy.html', label:'Privacy' },
     { href:'terms.html', label:'Terms' },
-    { href:'contact.html', label:'Contact' }
+    { href:'about.html', label:'About' },
+    { href:'privacy.html', label:'Privacy' }
   ];
 
-  const NON_PREMIUM_FOOTER_ITEMS = [
-    { href:'premium.html', label:'Join Premium Membership' }
-  ];
+  // Keep legacy constants for backward compatibility but they are no longer used.
+  const PREMIUM_FOOTER_ITEMS = FOOTER_ITEMS;
+  const NON_PREMIUM_FOOTER_ITEMS = FOOTER_ITEMS;
 
   function currentPage(){
     return (location.pathname.split('/').pop() || 'index.html').toLowerCase();
@@ -38,7 +39,11 @@
   }
 
   function shouldSkipAuthInjection(){
-    return isPublicAuthPage();
+    // Always return false so that authentication UI is injected on every page, including
+    // login, signup and reset-password. This ensures that the navigation bar always
+    // shows the appropriate authentication links (Login/Sign Up) when a user is not
+    // logged in, even on the auth pages themselves.
+    return false;
   }
 
   function ensureGlobalStyles(){
@@ -337,7 +342,8 @@
   function standardizeFooter(isPremium){
     const footerLinks = document.querySelector('.footer-links');
     if(!footerLinks) return;
-    const items = isPremium ? PREMIUM_FOOTER_ITEMS : NON_PREMIUM_FOOTER_ITEMS;
+    // Always use the unified FOOTER_ITEMS list regardless of membership state.
+    const items = FOOTER_ITEMS;
     footerLinks.innerHTML = items.map(item => `<a href="${item.href}">${item.label}</a>`).join('');
   }
 
@@ -468,6 +474,33 @@
     const authLinks = document.createElement('div');
     authLinks.className = 'site-auth-links';
     authLinks.id = 'siteAuthLinks';
+
+    // When no user is logged in, replace the hamburger menu with explicit Login and
+    // Sign Up buttons. These buttons live inside the `.site-auth-links` container and
+    // are appended directly to the navigation bar. Each button is styled using
+    // existing utility classes (`secondary` and `primary`) defined in
+    // ensureGlobalStyles(). We then mark the auth nav as ready and dispatch the
+    // appropriate event before returning early to skip building the account menu.
+    if(!user){
+      const loginAnchor = document.createElement('a');
+      loginAnchor.href = 'login.html';
+      loginAnchor.className = 'secondary';
+      loginAnchor.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> Login';
+      const signupAnchor = document.createElement('a');
+      signupAnchor.href = 'signup.html';
+      signupAnchor.className = 'primary';
+      // Use plain text without an icon for the sign up button to ensure the label
+      // displays correctly on all pages (including signup.html). An icon previously
+      // caused the label to be hidden due to styling conflicts.
+      signupAnchor.textContent = 'Sign Up';
+      authLinks.appendChild(loginAnchor);
+      authLinks.appendChild(signupAnchor);
+      navLinks.appendChild(authLinks);
+      markAuthNavReady();
+      window.__pixnestManagedAuthNav = true;
+      document.dispatchEvent(new Event('pixnest:auth-ui-updated'));
+      return;
+    }
 
     const menuWrap = document.createElement('div');
     menuWrap.className = 'site-account-menu-wrap';
