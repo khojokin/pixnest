@@ -402,7 +402,26 @@
       <p>©️ 2026 PixNest Admin Dashboard. Manage your platform with ease.</p>
     </div>
   </footer>
+<script>
+  document.getElementById("saveHeroBtn").addEventListener("click", async () => {
+  const { error } = await window.supabaseClient
+    .from("site_hero")
+    .update({
+      title: heroTitle.value,
+      subtitle: heroSubtitle.value,
+      description: heroDescription.value,
+      image_url: heroImage.value,
+      updated_at: new Date()
+    })
+    .eq("id", true);
 
+  if (error) {
+    alert("Error saving hero settings");
+  } else {
+    alert("Hero updated successfully");
+  }
+});
+</script>
   <script>
     // Mobile navigation toggle
     const navToggle = document.getElementById('navToggle');
@@ -426,5 +445,179 @@
   </script>
   <script src="site-auth.js"></script>
   <script src="active-nav.js"></script>
+  <!-- Load centralized Supabase client configuration -->
+  <script src="supabase-client.js"></script>
+  <!-- Admin dashboard logic to persist premium pricing, categories and payout approvals -->
+  <script>
+    // Premium plan pricing save handler
+    const savePremiumBtn = document.getElementById('savePremiumBtn');
+    if (savePremiumBtn) {
+      savePremiumBtn.addEventListener('click', async () => {
+        const monthly = parseFloat(document.getElementById('monthlyPrice').value);
+        const yearly = parseFloat(document.getElementById('yearlyPrice').value);
+        if (isNaN(monthly) || isNaN(yearly)) {
+          alert('Please enter valid numeric prices for the plans.');
+          return;
+        }
+        // Upsert both plans. The `onConflict` ensures we update existing rows based on the `plan` column.
+        const updates = [
+          { plan: 'monthly', price: monthly, updated_at: new Date() },
+          { plan: 'yearly', price: yearly, updated_at: new Date() }
+        ];
+        try {
+          const { error } = await window.supabaseClient
+            .from('premium_plans')
+            .upsert(updates, { onConflict: 'plan' });
+          if (error) throw error;
+          alert('Premium pricing saved successfully.');
+        } catch (err) {
+          console.error(err);
+          alert('Error saving premium pricing.');
+        }
+      });
+    }
+
+    // Category management: load, create and delete categories
+    async function loadCategories() {
+      const tbody = document.getElementById('categoryTable').querySelector('tbody');
+      tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:var(--muted);">Loading categories…</td></tr>';
+      try {
+        const { data, error } = await window.supabaseClient
+          .from('categories')
+          .select('*')
+          .order('created_at', { ascending: false });
+        if (error) throw error;
+        tbody.innerHTML = '';
+        if (!data || data.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:var(--muted);">No categories created yet.</td></tr>';
+          return;
+        }
+        data.forEach(cat => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>${cat.name}</td>
+            <td>${new Date(cat.created_at).toLocaleDateString()}</td>
+            <td>${cat.is_active ? 'Active' : 'Inactive'}</td>
+            <td><button data-id="${cat.id}" class="delete-category">Delete</button></td>
+          `;
+          tbody.appendChild(tr);
+        });
+      } catch (err) {
+        console.error(err);
+        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:var(--muted);">Error loading categories.</td></tr>';
+      }
+    }
+    const createCategoryBtn = document.getElementById('createCategoryBtn');
+    if (createCategoryBtn) {
+      createCategoryBtn.addEventListener('click', async () => {
+        const nameInput = document.getElementById('newCategoryName');
+        const name = (nameInput.value || '').trim();
+        if (!name) {
+          alert('Enter a category name.');
+          return;
+        }
+        try {
+          const { error } = await window.supabaseClient
+            .from('categories')
+            .insert({ name });
+          if (error) throw error;
+          alert('Category created successfully.');
+          nameInput.value = '';
+          loadCategories();
+        } catch (err) {
+          console.error(err);
+          alert('Error creating category.');
+        }
+      });
+    }
+    const categoryTable = document.getElementById('categoryTable');
+    if (categoryTable) {
+      categoryTable.addEventListener('click', async e => {
+        if (e.target.classList.contains('delete-category')) {
+          const id = e.target.getAttribute('data-id');
+          if (!id) return;
+          if (!confirm('Are you sure you want to delete this category?')) return;
+          try {
+            const { error } = await window.supabaseClient
+              .from('categories')
+              .delete()
+              .eq('id', id);
+            if (error) throw error;
+            alert('Category deleted.');
+            loadCategories();
+          } catch (err) {
+            console.error(err);
+            alert('Error deleting category.');
+          }
+        }
+      });
+    }
+
+    // Payout approvals: load pending requests and handle approvals/rejections
+    async function loadPayoutRequests() {
+      const tbody = document.getElementById('payoutTable').querySelector('tbody');
+      tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:var(--muted);">Loading payout requests…</td></tr>';
+      try {
+        const { data, error } = await window.supabaseClient
+          .from('payout_requests')
+          .select('*')
+          .eq('status', 'pending');
+        if (error) throw error;
+        tbody.innerHTML = '';
+        if (!data || data.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:var(--muted);">No payout requests pending.</td></tr>';
+          return;
+        }
+        data.forEach(req => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>${req.payout_email || req.user_id}</td>
+            <td>${req.bank_name || '-'}</td>
+            <td>${req.account_holder || '-'}</td>
+            <td>${req.account_number || '-'}</td>
+            <td>${req.sort_code || '-'}</td>
+            <td>
+              <button data-id="${req.id}" data-action="approve" class="payout-action">Approve</button>
+              <button data-id="${req.id}" data-action="reject" class="payout-action">Reject</button>
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+      } catch (err) {
+        console.error(err);
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:var(--muted);">Error loading payout requests.</td></tr>';
+      }
+    }
+    const payoutTable = document.getElementById('payoutTable');
+    if (payoutTable) {
+      payoutTable.addEventListener('click', async e => {
+        if (e.target.classList.contains('payout-action')) {
+          const id = e.target.getAttribute('data-id');
+          const action = e.target.getAttribute('data-action');
+          const status = action === 'approve' ? 'approved' : 'rejected';
+          if (!id || !action) return;
+          if (!confirm(`Are you sure you want to ${action} this payout?`)) return;
+          try {
+            const { error } = await window.supabaseClient
+              .from('payout_requests')
+              .update({ status, reviewed_at: new Date() })
+              .eq('id', id);
+            if (error) throw error;
+            alert(`Payout ${status}`);
+            loadPayoutRequests();
+          } catch (err) {
+            console.error(err);
+            alert('Error updating payout request.');
+          }
+        }
+      });
+    }
+
+    // Fetch categories and payout requests on page load
+    window.addEventListener('DOMContentLoaded', () => {
+      loadCategories();
+      loadPayoutRequests();
+    });
+  </script>
 </body>
 </html>

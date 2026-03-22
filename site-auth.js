@@ -3,6 +3,8 @@
   window.__pixnestSiteAuthBooted = true;
   const SUPABASE_URL = 'https://vigczssznfvujttdapbv.supabase.co';
   const SUPABASE_KEY = 'sb_publishable_UmF-mmVS42XeF6PqsNnCSw_wpA35wg2';
+  const { createClient } = supabase;
+window.supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY);
   const IDLE_LIMIT_MS = 30 * 60 * 1000;
   const LAST_ACTIVE_KEY = 'pixnest_last_active_at';
   const LOGOUT_NOTICE_KEY = 'pixnest_idle_logout_notice';

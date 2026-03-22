@@ -711,9 +711,8 @@
     const SUPABASE_URL = "https://vigczssznfvujttdapbv.supabase.co";
     const SUPABASE_KEY = "sb_publishable_UmF-mmVS42XeF6PqsNnCSw_wpA35wg2";
 
-    const { createClient } = supabase;
-    const supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY);
-
+    const supabaseClient = window.supabaseClient;
+    
     const navToggle = document.getElementById("navToggle");
     const navLinks = document.getElementById("navLinks");
 
@@ -765,9 +764,24 @@
       loginBtn.textContent = isLoading ? "Logging in..." : "Log In";
     }
 
-    function getAuthRedirectBase(){
-      return "https://pixnest.uk";
-    }
+    document.getElementById("saveHeroBtn").addEventListener("click", async () => {
+  const { error } = await window.supabaseClient
+    .from("site_hero")
+    .update({
+      title: heroTitle.value,
+      subtitle: heroSubtitle.value,
+      description: heroDescription.value,
+      image_url: heroImage.value,
+      updated_at: new Date()
+    })
+    .eq("id", true);
+
+  if (error) {
+    alert("Error saving hero settings");
+  } else {
+    alert("Hero updated successfully");
+  }
+});
 
     document.querySelectorAll(".toggle-password").forEach(button => {
       button.addEventListener("click", () => {

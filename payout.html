@@ -14,6 +14,8 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
   <!-- Supabase client for future bank detail storage -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- Centralized Supabase configuration -->
+  <script src="supabase-client.js"></script>
 
   <style>
     *{
@@ -407,32 +409,47 @@
     const savePayoutBtn = document.getElementById('savePayoutBtn');
     const payoutMessage = document.getElementById('payoutMessage');
     payoutForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      savePayoutBtn.disabled = true;
-      payoutMessage.textContent = '';
-      // Gather form data
-      const data = {
-        bank_name: document.getElementById('bankName').value.trim(),
-        account_holder: document.getElementById('accountHolder').value.trim(),
-        account_number: document.getElementById('accountNumber').value.trim(),
-        sort_code: document.getElementById('sortCode').value.trim(),
-        iban: document.getElementById('iban').value.trim(),
-        swift: document.getElementById('swiftCode').value.trim(),
-        payout_email: document.getElementById('payoutEmail').value.trim()
-      };
-      try{
-        // TODO: integrate with Supabase or your backend to save payout details
-        // Example: await supabaseClient.from('payout_details').upsert({ ...data });
-        // For now, just display success message
-        payoutMessage.textContent = 'Your payout details have been saved. An admin will review and approve your payout method.';
-        payoutMessage.style.color = getComputedStyle(document.documentElement).getPropertyValue('--success');
-      }catch(err){
-        payoutMessage.textContent = 'There was an error saving your payout details. Please try again later.';
-        payoutMessage.style.color = getComputedStyle(document.documentElement).getPropertyValue('--danger');
-      }finally{
-        savePayoutBtn.disabled = false;
-      }
-    });
+  e.preventDefault();
+  savePayoutBtn.disabled = true;
+  payoutMessage.textContent = '';
+
+  try {
+    const { data: userData, error: userError } = await window.supabaseClient.auth.getUser();
+
+    if (userError || !userData?.user) {
+      throw new Error("You must be logged in.");
+    }
+
+    const userId = userData.user.id;
+
+    const payload = {
+      user_id: userId,
+      bank_name: bankName.value.trim(),
+      account_holder: accountHolder.value.trim(),
+      account_number: accountNumber.value.trim(),
+      sort_code: sortCode.value.trim(),
+      iban: iban.value.trim(),
+      swift: swiftCode.value.trim(),
+      payout_email: payoutEmail.value.trim(),
+      status: "pending"
+    };
+
+    const { error } = await window.supabaseClient
+      .from("payout_requests")
+      .upsert(payload);
+
+    if (error) throw error;
+
+    payoutMessage.textContent = "Payout details saved successfully.";
+    payoutMessage.style.color = "#22c55e";
+
+  } catch (err) {
+    payoutMessage.textContent = err.message || "Error saving payout details.";
+    payoutMessage.style.color = "#ef4444";
+  } finally {
+    savePayoutBtn.disabled = false;
+  }
+});
   </script>
   <!-- Inject authentication/nav/footer -->
   <script src="site-auth.js"></script>
