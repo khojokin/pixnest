@@ -185,15 +185,6 @@
       flex-wrap:wrap;
     }
 
-    .nav-user-area{
-      position:relative;
-      display:flex;
-      align-items:center;
-      gap:10px;
-      flex-shrink:0;
-    }
-
-
     .nav-auth a{
       display:inline-flex;
       align-items:center;
@@ -1611,22 +1602,75 @@
         </span>
       </a>
 
-      <nav class="nav-links" id="navLinks">
-        <a href="index.html">Home</a>
-        <a href="explore.html">Explore</a>
-        <a href="category.html">Categories</a>
-        <a href="featured.html">Featured</a>
-        <a href="premium.html" class="active">Premium</a>
-        <a href="contact.html">Contact</a>
-      </nav>
+      <div class="nav-right">
+        <button class="menu-toggle" id="menuToggle" aria-label="Open menu" aria-expanded="false">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
 
-      <div class="nav-user-area" id="navUserArea"></div>
+        <nav class="nav-links" id="navLinks">
+          <a href="index.html">Home</a>
+          <a href="explore.html">Explore</a>
+          <a href="category.html">Categories</a>
+          <a href="featured.html">Featured</a>
+          <a href="premium.html" class="active">Premium</a>
+          <a href="contact.html">Contact</a>
 
-      <button class="menu-toggle" id="navToggle" aria-label="Open navigation" aria-expanded="false">
-        <span></span>
-        <span></span>
-        <span></span>
-      </button>
+          <div class="nav-auth" id="navAuth">
+          <a href="login.html" class="login-btn"><i class="fa-solid fa-right-to-bracket"></i>Login</a>
+          <a href="signup.html" class="signup-btn"><i class="fa-solid fa-user-plus"></i>Sign Up</a>
+        </div>
+        </nav>
+
+        <div class="account-menu-wrap hidden" id="accountMenuWrap">
+          <button class="account-menu-btn" id="accountMenuBtn" aria-label="Open account menu" aria-expanded="false">
+            <i class="fa-solid fa-bars"></i>
+          </button>
+
+          <div class="account-menu-dropdown" id="accountMenuDropdown">
+            <div class="account-menu-head">
+              <div class="account-menu-avatar" id="menuAvatar"></div>
+              <div>
+                <strong id="menuName">PixNest User</strong>
+                <small id="menuEmail">Signed in</small>
+              </div>
+            </div>
+
+            <div class="account-menu-links">
+              <a class="account-link" href="account.html">
+                <i class="fa-solid fa-user"></i>
+                Account
+              </a>
+
+              <a class="account-link" href="account.html">
+                <i class="fa-solid fa-id-card"></i>
+                Account Settings
+              </a>
+
+              <a class="account-link" href="upload.html">
+                <i class="fa-solid fa-cloud-arrow-up"></i>
+                Upload
+              </a>
+
+              <a class="account-link hidden" href="creator-studio.html" id="menuDashboardLink">
+                <i class="fa-solid fa-chart-line"></i>
+                Creator Studio
+              </a>
+
+              <a class="account-link" href="help.html">
+                <i class="fa-solid fa-circle-question"></i>
+                Help
+              </a>
+
+              <button type="button" class="account-logout" id="logoutBtn">
+                <i class="fa-solid fa-right-from-bracket"></i>
+                Logout
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </header>
 

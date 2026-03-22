@@ -141,7 +141,12 @@
       white-space:nowrap;
     }
 
-     
+    .nav-right{
+      display:flex;
+      align-items:center;
+      gap:18px;
+      flex-wrap:wrap;
+    }
 
     .nav-links{
       display:flex;
@@ -173,7 +178,77 @@
       border-radius:999px;
     }
 
-    
+    .auth-links{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    .nav-chip{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 12px;
+      border-radius:999px;
+      background:rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.08);
+      color:#e5e7eb;
+      font-size:12px;
+      font-weight:700;
+    }
+
+    .nav-chip.verified{
+      background:rgba(59,130,246,.12);
+      border-color:rgba(59,130,246,.2);
+      color:#93c5fd;
+    }
+
+    .nav-chip.premium{
+      background:rgba(250,204,21,.12);
+      border-color:rgba(250,204,21,.2);
+      color:#fde68a;
+    }
+
+    .nav-chip.founder{
+      background:rgba(250,204,21,.12);
+      border-color:rgba(250,204,21,.2);
+      color:var(--accent);
+    }
+
+    .nav-auth-btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      min-height:42px;
+      padding:10px 14px;
+      border-radius:12px;
+      font-size:14px;
+      font-weight:700;
+      border:none;
+      cursor:pointer;
+    }
+
+    .nav-auth-btn.primary{
+      background:var(--accent);
+      color:#111827;
+    }
+
+    .nav-auth-btn.primary:hover{
+      transform:translateY(-2px);
+      box-shadow:0 10px 24px rgba(250,204,21,.18);
+    }
+
+    .nav-auth-btn.secondary{
+      background:transparent;
+      color:#fff;
+      border:1px solid rgba(255,255,255,.15);
+    }
+
+    .nav-auth-btn.secondary:hover{
+      background:rgba(255,255,255,.06);
+    }
 
     .nav-toggle{
       display:none;
@@ -198,110 +273,6 @@
       background:var(--accent);
       display:block;
     }
-
-    .logo-wrap,
-.logo-wrap:hover,
-.logo-wrap:focus{
-  text-decoration:none !important;
-}
-
-.logo-wrap::after,
-.logo-title::after,
-.logo-sub::after{
-  content:none !important;
-  display:none !important;
-}
-
-.nav{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:20px;
-  padding:16px 0;
-  position:relative;
-}
-
-.nav-links{
-  display:flex;
-  align-items:center;
-  gap:20px;
-  flex-wrap:wrap;
-  margin-left:auto;
-}
-
-.nav-user-area{
-  position:relative;
-  display:flex;
-  align-items:center;
-  gap:10px;
-  flex-shrink:0;
-}
-
-.nav-toggle{
-  display:none;
-  width:46px;
-  height:46px;
-  border-radius:12px;
-  border:1px solid rgba(250,204,21,.35);
-  background:#111827;
-  color:var(--accent);
-  align-items:center;
-  justify-content:center;
-  cursor:pointer;
-  flex-direction:column;
-  gap:5px;
-  flex-shrink:0;
-}
-
-.nav-toggle span{
-  width:20px;
-  height:2px;
-  border-radius:999px;
-  background:var(--accent);
-  display:block;
-}
-
-@media(max-width:860px){
-  .nav-toggle{
-    display:flex;
-  }
-
-  .nav-links{
-    position:absolute;
-    top:100%;
-    left:0;
-    right:0;
-    display:none;
-    flex-direction:column;
-    align-items:flex-start;
-    gap:0;
-    background:#0f172a;
-    border:1px solid var(--line);
-    border-radius:16px;
-    padding:12px;
-    box-shadow:0 16px 30px rgba(0,0,0,.28);
-    margin-left:0;
-  }
-
-  .nav-links.show{
-    display:flex;
-  }
-
-  .nav-links a{
-    width:100%;
-    padding:12px 10px;
-    border-radius:10px;
-  }
-
-  .nav-links a.active::after{
-    display:none;
-  }
-
-  .nav-links a:hover,
-  .nav-links a.active{
-    background:rgba(250,204,21,.12);
-  }
-}
 
     .hero{
       background:
@@ -1603,34 +1574,35 @@
 </head>
 <body>
 
-   <header>
-  <div class="container nav">
-    <a href="index.html" class="logo-wrap">
-      <span class="logo-mark">P</span>
-      <span class="logo-text">
-        <span class="logo-title">PixNest</span>
-        <span class="logo-sub">Photo Collection Site</span>
-      </span>
-    </a>
+  <header>
+    <div class="container nav">
+      <a href="index.html" class="logo-wrap">
+        <span class="logo-mark">P</span>
+        <span class="logo-text">
+          <span class="logo-title">PixNest</span>
+          <span class="logo-sub">Photo Collection Site</span>
+        </span>
+      </a>
 
-    <nav class="nav-links" id="navLinks">
-      <a href="index.html" class="active">Home</a>
-      <a href="explore.html">Explore</a>
-      <a href="category.html">Categories</a>
-      <a href="featured.html">Featured</a>
-      <a href="premium.html">Premium</a>
-      <a href="contact.html">Contact</a>
-    </nav>
+      <div class="nav-right">
+        <nav class="nav-links" id="navLinks">
+          <a href="index.html" class="active">Home</a>
+          <a href="explore.html">Explore</a>
+          <a href="category.html">Categories</a>
+          <a href="premium.html">Premium</a>
+          <a href="about.html">About</a>
+          <a href="contact.html">Contact</a>
+          <div class="auth-links" id="authNavLinks"></div>
+        </nav>
 
-    <div class="nav-user-area" id="navUserArea"></div>
-
-    <button class="nav-toggle" id="navToggle" aria-label="Open navigation" aria-expanded="false">
-      <span></span>
-      <span></span>
-      <span></span>
-    </button>
-  </div>
-</header>
+        <button class="nav-toggle" id="navToggle" aria-label="Open navigation" aria-expanded="false">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </div>
+    </div>
+  </header>
 
   <section class="hero">
     <div class="container">
@@ -1727,7 +1699,7 @@
       <p id="ctaText">Browse curated categories, discover standout images, and enjoy a growing library of free and premium visuals.</p>
       <div class="cta-actions" id="ctaActions">
         <a href="explore.html" class="btn btn-primary">Explore Gallery</a>
-        <a href="featured.html" class="btn btn-secondary">Featured</a>
+        <a href="signup.html" class="btn btn-secondary">Create Account</a>
       </div>
     </div>
   </section>
@@ -2972,9 +2944,9 @@
             <i class="fa-solid fa-compass"></i>
             Explore Photos
           </a>
-          <a href="featured.html" class="btn btn-secondary">
-            <i class="fa-solid fa-bolt"></i>
-            Featured
+          <a href="signup.html" class="btn btn-secondary">
+            <i class="fa-solid fa-user-plus"></i>
+            Create Account
           </a>
         `;
 
@@ -2983,8 +2955,8 @@
             <i class="fa-solid fa-images"></i>
             Explore Gallery
           </a>
-          <a href="featured.html" class="btn btn-secondary">
-            <i class="fa-solid fa-bolt"></i>
+          <a href="signup.html" class="btn btn-secondary">
+            <i class="fa-solid fa-user-plus"></i>
             Join PixNest
           </a>
         `;
@@ -3834,8 +3806,9 @@
       await loadPhotos();
     })();
   </script>
- 
- 
+  <script src="site-auth.js"></script>
+
+<script src="active-nav.js"></script>
 </body>
 </html>
  

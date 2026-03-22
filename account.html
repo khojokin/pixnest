@@ -3,22 +3,24 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PixNest | Account</title>
-  <!-- Favicon and icons -->
+  <title>PixNest | My Account</title>
+
+
+
   <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png" />
   <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png" />
   <link rel="shortcut icon" href="favicon.ico" />
   <link rel="apple-touch-icon" href="apple-touch-icon.png" />
-  <!-- Font Awesome for icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
-    /* Basic resets and root variables */
     *{
       margin:0;
       padding:0;
       box-sizing:border-box;
       font-family:Arial, Helvetica, sans-serif;
     }
+
     :root{
       --bg:#0f172a;
       --panel:#111827;
@@ -27,39 +29,61 @@
       --muted:#94a3b8;
       --accent:#facc15;
       --line:rgba(255,255,255,0.08);
+      --blue:#3b82f6;
+      --success:#22c55e;
+      --danger:#ef4444;
     }
+
     html{
       scroll-behavior:smooth;
+      min-height:100%;
       background:var(--bg);
     }
+
     body{
+      min-height:100%;
       background:var(--bg);
       color:var(--text);
       line-height:1.6;
       overflow-x:hidden;
     }
-    img{max-width:100%;display:block;}
-    a{ text-decoration:none; color:inherit; transition:.3s; }
+
+    img{
+      max-width:100%;
+      display:block;
+    }
+
+    a{
+      text-decoration:none;
+      color:inherit;
+      transition:.3s;
+    }
+
     button,
     input,
-    select,
     textarea{
       font-family:Arial, Helvetica, sans-serif;
       transition:.3s;
     }
+
     .container{
       width:min(1200px,92%);
       margin:auto;
     }
-    /* Header and navigation styles */
+
+    .hidden{
+      display:none !important;
+    }
+
     header{
       position:sticky;
       top:0;
-      z-index:1000;
+      z-index:1100;
       background:rgba(15,23,42,0.95);
       border-bottom:1px solid var(--line);
       backdrop-filter:blur(8px);
     }
+
     .nav{
       display:flex;
       align-items:center;
@@ -68,6 +92,7 @@
       padding:16px 0;
       position:relative;
     }
+
     .logo-wrap{
       display:flex;
       align-items:center;
@@ -75,6 +100,7 @@
       flex-shrink:0;
       min-width:0;
     }
+
     .logo-mark{
       width:52px;
       height:52px;
@@ -89,12 +115,14 @@
       box-shadow:0 0 16px rgba(250,204,21,0.28);
       flex-shrink:0;
     }
+
     .logo-text{
       display:flex;
       flex-direction:column;
       line-height:1;
       min-width:0;
     }
+
     .logo-title{
       font-size:27px;
       font-weight:800;
@@ -102,6 +130,7 @@
       letter-spacing:.4px;
       white-space:nowrap;
     }
+
     .logo-sub{
       font-size:11px;
       color:#cbd5e1;
@@ -110,22 +139,32 @@
       margin-top:4px;
       white-space:nowrap;
     }
+
+    .nav-right{
+      display:flex;
+      align-items:center;
+      gap:12px;
+    }
+
     .nav-links{
       display:flex;
       align-items:center;
       gap:20px;
       flex-wrap:wrap;
     }
+
     .nav-links a{
       color:#cbd5e1;
       font-size:15px;
       position:relative;
       padding-bottom:4px;
     }
+
     .nav-links a:hover,
     .nav-links a.active{
       color:var(--accent);
     }
+
     .nav-links a.active::after{
       content:"";
       position:absolute;
@@ -136,14 +175,7 @@
       background:var(--accent);
       border-radius:999px;
     }
-    .nav-user-area{
-      position:relative;
-      display:flex;
-      align-items:center;
-      gap:10px;
-      flex-shrink:0;
-    }
-    /* Navigation toggle button: replicate styles for responsiveness */
+
     .nav-toggle{
       display:none;
       width:46px;
@@ -159,6 +191,7 @@
       gap:5px;
       flex-shrink:0;
     }
+
     .nav-toggle span{
       width:20px;
       height:2px;
@@ -166,15 +199,1220 @@
       background:var(--accent);
       display:block;
     }
+
+    .account-menu-toggle{
+      width:46px;
+      height:46px;
+      border-radius:12px;
+      border:1px solid rgba(250,204,21,.35);
+      background:#111827;
+      color:var(--accent);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      cursor:pointer;
+      flex-shrink:0;
+      font-size:17px;
+    }
+
+    .account-menu-wrap{
+      position:relative;
+    }
+
+    .account-dropdown{
+      position:absolute;
+      top:calc(100% + 10px);
+      right:0;
+      width:min(330px,90vw);
+      background:#111827;
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:10px;
+      box-shadow:0 18px 36px rgba(0,0,0,.28);
+      display:none;
+      z-index:1200;
+    }
+
+    .account-dropdown.show{
+      display:block;
+    }
+
+    .account-dropdown a,
+    .account-dropdown button{
+      width:100%;
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding:12px 12px;
+      border:none;
+      background:transparent;
+      color:#e5e7eb;
+      border-radius:12px;
+      font-size:14px;
+      cursor:pointer;
+      text-align:left;
+    }
+
+    .account-dropdown a:hover,
+    .account-dropdown button:hover{
+      background:rgba(250,204,21,.10);
+      color:var(--accent);
+    }
+
+    .account-dropdown button.danger{
+      color:#fecaca;
+    }
+
+    .account-dropdown button.danger:hover{
+      background:rgba(239,68,68,.10);
+      color:#fecaca;
+    }
+
+    .hero{
+      background:#0f172a;
+      padding:34px 0 0;
+    }
+
+    .hero-inner{
+      width:min(1100px,100%);
+      margin:auto;
+      padding:0 0 28px;
+    }
+
+    .account-card{
+      position:relative;
+      overflow:hidden;
+      background:rgba(17,24,39,.86);
+      border:1px solid rgba(255,255,255,.10);
+      border-radius:28px;
+      backdrop-filter:blur(14px);
+      box-shadow:0 22px 48px rgba(0,0,0,.22);
+      padding:22px;
+      isolation:isolate;
+    }
+
+    .account-card::before{
+      content:"";
+      position:absolute;
+      left:0;
+      right:0;
+      top:0;
+      height:190px;
+      background:
+        linear-gradient(rgba(15,23,42,.40), rgba(15,23,42,.82)),
+        var(--account-cover, none) center/cover no-repeat;
+      opacity:.96;
+      pointer-events:none;
+      z-index:0;
+    }
+
+    .account-card::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:linear-gradient(
+        to bottom,
+        rgba(15,23,42,.10) 0px,
+        rgba(15,23,42,.03) 125px,
+        rgba(17,24,39,0) 190px,
+        rgba(17,24,39,0) 100%
+      );
+      pointer-events:none;
+      z-index:0;
+    }
+
+    #loggedInArea,
+    #loginRequiredBox{
+      position:relative;
+      z-index:1;
+    }
+
+    .profile-top{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:18px;
+      flex-wrap:wrap;
+      margin-bottom:14px;
+      padding-top:18px;
+    }
+
+    .profile-main{
+      display:flex;
+      align-items:flex-start;
+      gap:18px;
+      flex:1;
+      min-width:260px;
+    }
+
+    .avatar-wrap{
+      position:relative;
+      flex-shrink:0;
+    }
+
+    .avatar{
+      width:112px;
+      height:112px;
+      border-radius:50%;
+      overflow:hidden;
+      background:linear-gradient(135deg,#facc15,#fb7185);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:#111827;
+      font-size:34px;
+      font-weight:800;
+      border:4px solid rgba(255,255,255,.18);
+      box-shadow:0 12px 24px rgba(0,0,0,.2);
+    }
+
+    .avatar img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+    }
+
+    .small-circle-btn{
+      position:absolute;
+      right:-2px;
+      bottom:6px;
+      width:40px;
+      height:40px;
+      border:none;
+      border-radius:50%;
+      background:#ffffff;
+      color:#111827;
+      font-size:17px;
+      font-weight:800;
+      cursor:pointer;
+      box-shadow:0 8px 20px rgba(0,0,0,.2);
+    }
+
+    .profile-copy{
+      flex:1;
+      min-width:220px;
+    }
+
+    .name-row{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      flex-wrap:wrap;
+      margin-bottom:4px;
+    }
+
+    .profile-name{
+      font-size:34px;
+      line-height:1.08;
+      color:#fff;
+      font-weight:800;
+      word-break:break-word;
+    }
+
+    .blue-check{
+      color:#60a5fa;
+      font-size:18px;
+      display:none;
+    }
+
+    .blue-check.show{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+    }
+
+    .creator-badges{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      flex-wrap:wrap;
+      margin-top:8px;
+      margin-bottom:10px;
+    }
+
+    .status-badge{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      min-height:34px;
+      padding:8px 12px;
+      border-radius:999px;
+      font-size:12px;
+      font-weight:800;
+      border:1px solid rgba(255,255,255,.12);
+      background:#111827;
+      color:#fff;
+    }
+
+    .status-badge.verified{
+      background:rgba(59,130,246,.12);
+      border-color:rgba(59,130,246,.22);
+      color:#93c5fd;
+    }
+
+    .status-badge.premium{
+      background:rgba(250,204,21,.14);
+      border-color:rgba(250,204,21,.24);
+      color:#fde68a;
+    }
+
+    .status-badge.approved{
+      background:rgba(34,197,94,.14);
+      border-color:rgba(34,197,94,.24);
+      color:#86efac;
+    }
+
+    .profile-role{
+      color:#cbd5e1;
+      font-size:18px;
+      margin-bottom:8px;
+    }
+
+    .profile-bio{
+      color:#e2e8f0;
+      font-size:14px;
+      max-width:620px;
+    }
+
+    .stats-row{
+      display:grid;
+      grid-template-columns:repeat(3,minmax(110px,1fr));
+      gap:12px;
+      width:min(440px,100%);
+    }
+
+    .top-stat{
+      background:#111827;
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:14px 14px;
+      text-align:center;
+    }
+
+    .top-stat strong{
+      display:block;
+      color:#fff;
+      font-size:26px;
+      line-height:1;
+      font-weight:800;
+    }
+
+    .top-stat span{
+      display:block;
+      color:#cbd5e1;
+      font-size:14px;
+      margin-top:6px;
+      line-height:1.1;
+    }
+
+    .action-row{
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:14px;
+      margin-top:18px;
+    }
+
+    .account-btn{
+      min-height:52px;
+      border:none;
+      border-radius:16px;
+      background:rgba(255,255,255,.12);
+      border:1px solid rgba(255,255,255,.10);
+      color:#fff;
+      font-size:17px;
+      font-weight:800;
+      cursor:pointer;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+    }
+
+    .account-btn:hover{
+      transform:translateY(-2px);
+      border-color:rgba(250,204,21,.24);
+      color:var(--accent);
+    }
+
+    .pro-board{
+      margin-top:18px;
+      background:linear-gradient(135deg,rgba(255,255,255,.10),rgba(255,255,255,.06));
+      border:1px solid rgba(255,255,255,.10);
+      border-radius:22px;
+      padding:18px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:16px;
+      flex-wrap:wrap;
+    }
+
+    .pro-board h3{
+      color:#fff;
+      font-size:26px;
+      line-height:1.15;
+      margin-bottom:4px;
+    }
+
+    .pro-board p{
+      color:#cbd5e1;
+      font-size:15px;
+      max-width:720px;
+    }
+
+    .pro-btn{
+      min-height:48px;
+      padding:10px 18px;
+      border:none;
+      border-radius:14px;
+      background:var(--accent);
+      color:#111827;
+      font-size:14px;
+      font-weight:800;
+      cursor:pointer;
+      white-space:nowrap;
+    }
+
+    .pro-btn:hover{
+      transform:translateY(-2px);
+      box-shadow:0 10px 24px rgba(250,204,21,.2);
+    }
+
+    .pro-btn:disabled{
+      background:rgba(255,255,255,.12);
+      color:#94a3b8;
+      cursor:not-allowed;
+      box-shadow:none;
+      transform:none;
+    }
+
+    .danger-zone{
+      margin-top:18px;
+      background:linear-gradient(135deg,rgba(239,68,68,.14),rgba(127,29,29,.16));
+      border:1px solid rgba(239,68,68,.28);
+      border-radius:22px;
+      padding:20px;
+    }
+
+    .danger-zone-head{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:14px;
+      flex-wrap:wrap;
+      margin-bottom:16px;
+    }
+
+    .danger-zone-head h3{
+      color:#fff;
+      font-size:26px;
+      line-height:1.15;
+      margin-bottom:6px;
+    }
+
+    .danger-zone-head p{
+      color:#fecaca;
+      max-width:760px;
+      font-size:15px;
+    }
+
+    .danger-chip{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 12px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(255,255,255,.08);
+      color:#fff;
+      font-size:12px;
+      font-weight:800;
+      letter-spacing:.02em;
+      white-space:nowrap;
+    }
+
+    .delete-form{
+      display:grid;
+      gap:14px;
+    }
+
+    .delete-label{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      color:#fff;
+      font-size:15px;
+      font-weight:700;
+      flex-wrap:wrap;
+    }
+
+    .delete-label span{
+      color:#fecaca;
+      font-size:13px;
+      font-weight:700;
+    }
+
+    .delete-textarea{
+      min-height:132px;
+      border-radius:18px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(15,23,42,.55);
+      color:#fff;
+      padding:16px 18px;
+      font-size:15px;
+      resize:vertical;
+      outline:none;
+    }
+
+    .delete-textarea:focus{
+      border-color:rgba(239,68,68,.45);
+      box-shadow:0 0 0 3px rgba(239,68,68,.12);
+    }
+
+    .delete-check{
+      display:flex;
+      align-items:flex-start;
+      gap:12px;
+      color:#fff;
+      font-size:15px;
+      line-height:1.5;
+    }
+
+    .delete-check input{
+      margin-top:3px;
+      width:18px;
+      height:18px;
+      accent-color:var(--danger);
+      flex-shrink:0;
+    }
+
+    .delete-actions{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:16px;
+      flex-wrap:wrap;
+    }
+
+    .danger-btn{
+      background:var(--danger);
+      color:#fff;
+      border:none;
+    }
+
+    .danger-btn:hover{
+      transform:translateY(-2px);
+      box-shadow:0 12px 26px rgba(239,68,68,.24);
+    }
+
+    .danger-btn:disabled{
+      background:rgba(255,255,255,.12);
+      color:#94a3b8;
+      cursor:not-allowed;
+      box-shadow:none;
+      transform:none;
+    }
+
+    .delete-note{
+      color:#fecaca;
+      max-width:520px;
+      font-size:14px;
+      line-height:1.5;
+    }
+
+    section{
+      padding:36px 0 0;
+      background:#0f172a;
+    }
+
+    .section-head{
+      display:flex;
+      align-items:end;
+      justify-content:space-between;
+      gap:20px;
+      flex-wrap:wrap;
+      margin-bottom:22px;
+    }
+
+    .section-head h2{
+      font-size:28px;
+      color:#fff;
+      margin-bottom:6px;
+    }
+
+    .section-head p{
+      color:var(--muted);
+      max-width:760px;
+    }
+
+    .section-count{
+      color:#cbd5e1;
+      font-size:14px;
+      background:#111827;
+      border:1px solid var(--line);
+      padding:8px 12px;
+      border-radius:999px;
+    }
+
+    .photo-grid{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:24px;
+    }
+
+    .visual-card{
+      position:relative;
+      min-height:430px;
+      border-radius:24px;
+      overflow:hidden;
+      border:1px solid var(--line);
+      background:#111827;
+      transition:.3s;
+      cursor:pointer;
+      box-shadow:0 14px 28px rgba(0,0,0,.16);
+    }
+
+    .visual-card:hover{
+      transform:translateY(-6px);
+      box-shadow:0 18px 36px rgba(0,0,0,.24);
+    }
+
+    .visual-card img{
+      position:absolute;
+      inset:0;
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      background:#1e293b;
+    }
+
+    .visual-card::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      z-index:1;
+      background:linear-gradient(
+        to top,
+        rgba(15,23,42,.96) 0%,
+        rgba(15,23,42,.72) 34%,
+        rgba(15,23,42,.20) 70%,
+        rgba(15,23,42,.04) 100%
+      );
+    }
+
+    .locked-card img{
+      filter:blur(10px) brightness(.55);
+      transform:scale(1.05);
+    }
+
+    .locked-card::before{
+      content:"Premium";
+      position:absolute;
+      top:14px;
+      right:14px;
+      z-index:4;
+      background:#facc15;
+      color:#111827;
+      font-size:12px;
+      font-weight:800;
+      padding:6px 10px;
+      border-radius:999px;
+      box-shadow:0 8px 20px rgba(250,204,21,.18);
+    }
+
+    .action-icon.disabled,
+    .lightbox-social.disabled,
+    .photo-stat.disabled{
+      opacity:.45;
+      cursor:not-allowed;
+      pointer-events:none;
+    }
+
+    .lock-note{
+      color:#fde68a;
+      font-size:13px;
+      font-weight:700;
+      text-shadow:0 2px 10px rgba(0,0,0,.35);
+    }
+
+    .card-top-row{
+      position:absolute;
+      top:14px;
+      left:14px;
+      right:14px;
+      z-index:3;
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:10px;
+    }
+
+    .card-top-left{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      flex-wrap:wrap;
+      min-width:0;
+    }
+
+    .card-top-right{
+      display:flex;
+      align-items:center;
+      justify-content:flex-end;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+
+    .photo-overlay{
+      position:absolute;
+      inset:0;
+      z-index:2;
+      padding:14px;
+      display:flex;
+      flex-direction:column;
+      justify-content:flex-end;
+      gap:8px;
+    }
+
+    .overlay-category{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:6px;
+      padding:6px 10px;
+      border-radius:999px;
+      font-size:11px;
+      background:rgba(0,0,0,.74);
+      border:1px solid rgba(255,255,255,.12);
+      color:#fff;
+      backdrop-filter:blur(8px);
+      white-space:nowrap;
+    }
+
+    .pill.category-tag{
+      background:rgba(0,0,0,.84);
+      color:#fff;
+      border:1px solid rgba(255,255,255,.16);
+    }
+
+    .pill.featured{
+      background:rgba(34,197,94,.18);
+      border-color:rgba(34,197,94,.28);
+      color:#86efac;
+    }
+
+    .pill.trending{
+      background:rgba(59,130,246,.16);
+      border-color:rgba(59,130,246,.26);
+      color:#93c5fd;
+    }
+
+    .pill.premium{
+      background:rgba(250,204,21,.22);
+      border:1px solid rgba(250,204,21,.42);
+      color:#fde68a;
+      box-shadow:0 8px 22px rgba(250,204,21,.14);
+    }
+
+    .pill.pending{
+      background:rgba(239,68,68,.16);
+      border-color:rgba(239,68,68,.26);
+      color:#fecaca;
+    }
+
+    .pill.approved{
+      background:rgba(34,197,94,.16);
+      border-color:rgba(34,197,94,.26);
+      color:#bbf7d0;
+    }
+
+    .overlay-desc{
+      color:#fff;
+      font-size:14px;
+      line-height:1.45;
+      margin:0;
+      text-shadow:0 2px 10px rgba(0,0,0,.35);
+      display:-webkit-box;
+      -webkit-line-clamp:2;
+      -webkit-box-orient:vertical;
+      overflow:hidden;
+      max-width:92%;
+    }
+
+    .credit{
+      color:#e2e8f0;
+      font-size:13px;
+      font-weight:700;
+      text-shadow:0 2px 10px rgba(0,0,0,.35);
+      line-height:1.35;
+    }
+
+    .card-bottom{
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-top:2px;
+    }
+
+    .card-bottom-left{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      flex-wrap:wrap;
+      justify-content:flex-start;
+    }
+
+    .card-bottom-right{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+
+    .photo-stats{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      flex-wrap:wrap;
+      margin-top:2px;
+    }
+
+    .photo-stat{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding:7px 10px;
+      border-radius:999px;
+      font-size:11px;
+      font-weight:700;
+      color:#fff;
+      background:rgba(255,255,255,.12);
+      border:1px solid rgba(255,255,255,.14);
+      backdrop-filter:blur(8px);
+      line-height:1;
+    }
+
+    .photo-stat i{
+      color:var(--accent);
+      font-size:11px;
+    }
+
+    .photo-stat.react-btn{
+      cursor:pointer;
+      border:none;
+    }
+
+    .photo-stat.react-btn:hover{
+      transform:translateY(-2px);
+      border-color:rgba(250,204,21,.3);
+    }
+
+    .photo-stat.react-btn.active{
+      background:rgba(250,204,21,.16);
+      border-color:rgba(250,204,21,.35);
+      color:#fff;
+    }
+
+    .photo-stat.react-btn.active i{
+      color:var(--accent);
+    }
+
+    .action-icon{
+      width:38px;
+      height:38px;
+      border-radius:50%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:rgba(255,255,255,.12);
+      border:1px solid rgba(255,255,255,.14);
+      color:#fff;
+      cursor:pointer;
+      backdrop-filter:blur(8px);
+      font-size:14px;
+      text-decoration:none;
+      flex-shrink:0;
+    }
+
+    .action-icon:hover{
+      color:var(--accent);
+      border-color:rgba(250,204,21,.3);
+      transform:translateY(-2px);
+    }
+
+    .empty-box,
+    .login-box{
+      background:#111827;
+      border:1px dashed rgba(255,255,255,.14);
+      border-radius:22px;
+      padding:28px;
+      color:var(--muted);
+      text-align:center;
+      grid-column:1 / -1;
+    }
+
+    .empty-box h3,
+    .login-box h3{
+      color:#fff;
+      font-size:24px;
+      margin-bottom:10px;
+    }
+
+    .empty-box p,
+    .login-box p{
+      color:#cbd5e1;
+      margin-bottom:18px;
+    }
+
+    .empty-actions{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+
+    .empty-actions a{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      min-height:46px;
+      padding:10px 18px;
+      border-radius:14px;
+      font-weight:800;
+    }
+
+    .empty-actions .primary{
+      background:var(--accent);
+      color:#111827;
+    }
+
+    .empty-actions .secondary{
+      background:#111827;
+      color:#fff;
+      border:1px solid rgba(255,255,255,.12);
+    }
+
+    .settings-modal,
+    .lightbox{
+      position:fixed;
+      inset:0;
+      background:rgba(2,6,23,.86);
+      backdrop-filter:blur(10px);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:20px;
+      z-index:2000;
+    }
+
+    .settings-modal.show,
+    .lightbox.show{
+      display:flex;
+    }
+
+    .settings-panel{
+      width:min(760px,100%);
+      max-height:90vh;
+      overflow:auto;
+      background:#111827;
+      border:1px solid var(--line);
+      border-radius:26px;
+      padding:22px;
+      box-shadow:0 24px 60px rgba(0,0,0,.35);
+    }
+
+    .settings-head{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom:18px;
+    }
+
+    .settings-head h3{
+      color:#fff;
+      font-size:28px;
+    }
+
+    .close-btn{
+      width:42px;
+      height:42px;
+      border:none;
+      border-radius:12px;
+      background:#0f172a;
+      border:1px solid var(--line);
+      color:#fff;
+      font-size:20px;
+      cursor:pointer;
+      flex-shrink:0;
+    }
+
+    .close-btn:hover{
+      color:var(--accent);
+    }
+
+    .settings-grid{
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:16px;
+      margin-bottom:18px;
+    }
+
+    .settings-group{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+
+    .settings-group.full{
+      grid-column:1 / -1;
+    }
+
+    .settings-group label{
+      color:#e5e7eb;
+      font-size:14px;
+      font-weight:700;
+    }
+
+    .settings-input,
+    .settings-textarea{
+      width:100%;
+      background:#0f172a;
+      border:1px solid rgba(255,255,255,0.08);
+      border-radius:12px;
+      color:#ffffff;
+      outline:none;
+      font-size:15px;
+    }
+
+    .settings-input{
+      min-height:48px;
+      padding:12px 14px;
+    }
+
+    .settings-textarea{
+      min-height:130px;
+      padding:12px 14px;
+      resize:vertical;
+    }
+
+    .settings-input:focus,
+    .settings-textarea:focus{
+      border-color:rgba(250,204,21,0.55);
+      box-shadow:0 0 0 3px rgba(250,204,21,0.08);
+    }
+
+    .settings-actions{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:8px;
+    }
+
+    .main-btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      min-height:44px;
+      padding:10px 16px;
+      border:none;
+      border-radius:12px;
+      cursor:pointer;
+      font-size:14px;
+      font-weight:800;
+    }
+
+    .main-btn.primary{
+      background:var(--accent);
+      color:#111827;
+      box-shadow:0 8px 20px rgba(250,204,21,.18);
+    }
+
+    .main-btn.secondary{
+      background:#111827;
+      border:1px solid var(--line);
+      color:#fff;
+    }
+
+    .lightbox-panel{
+      width:min(1180px,100%);
+      height:min(92vh,900px);
+      max-height:92vh;
+      background:#111827;
+      border:1px solid var(--line);
+      border-radius:24px;
+      overflow:hidden;
+      display:grid;
+      grid-template-columns:minmax(0,1.08fr) minmax(320px,.92fr);
+      align-items:stretch;
+      box-shadow:0 24px 60px rgba(0,0,0,.35);
+    }
+
+    .lightbox-image-wrap{
+      background:#020617;
+      min-height:0;
+      height:100%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:12px;
+      overflow:hidden;
+    }
+
+    .lightbox-image-wrap img{
+      width:100%;
+      height:100%;
+      max-width:100%;
+      max-height:100%;
+      object-fit:contain;
+      object-position:center;
+      border-radius:18px;
+    }
+
+    .lightbox-info{
+      padding:14px 14px 20px;
+      overflow-y:auto;
+      position:relative;
+      background:#111827;
+      min-height:0;
+    }
+
+    .lightbox-title{
+      font-size:22px;
+      color:#fff;
+      margin-bottom:8px;
+      word-break:break-word;
+      line-height:1.2;
+    }
+
+    .lightbox-actions{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:18px;
+      margin-bottom:20px;
+    }
+
+    .detail-list{
+      display:grid;
+      gap:10px;
+      margin-top:4px;
+    }
+
+    .detail-item{
+      background:#0f172a;
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:12px 14px;
+    }
+
+    .detail-item strong{
+      display:block;
+      color:var(--accent);
+      font-size:13px;
+      margin-bottom:4px;
+      text-transform:uppercase;
+      letter-spacing:.8px;
+    }
+
+    .detail-item span{
+      color:#e5e7eb;
+      font-size:14px;
+      word-break:break-word;
+    }
+
+    .notice{
+      position:fixed;
+      left:50%;
+      bottom:24px;
+      transform:translateX(-50%);
+      background:#111827;
+      border:1px solid var(--line);
+      color:#fff;
+      padding:12px 16px;
+      border-radius:14px;
+      box-shadow:0 12px 28px rgba(0,0,0,.24);
+      z-index:2200;
+      display:none;
+      max-width:min(92vw,460px);
+      text-align:center;
+    }
+
+    .notice.show{
+      display:block;
+    }
+
+    footer{
+      background:#0b1220;
+      border-top:1px solid var(--line);
+      padding:24px 0;
+      margin-top:34px;
+    }
+
+    .footer-inner{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:20px;
+      flex-wrap:wrap;
+    }
+
+    .footer-inner p{
+      color:#94a3b8;
+      font-size:14px;
+    }
+
+    .footer-links{
+      display:flex;
+      flex-wrap:wrap;
+      gap:16px;
+    }
+
+    .footer-links a{
+      color:#cbd5e1;
+      font-size:14px;
+    }
+
+    .footer-links a:hover{
+      color:var(--accent);
+    }
+
+    @media(max-width:1024px){
+      .photo-grid{
+        grid-template-columns:repeat(2,1fr);
+      }
+
+      .lightbox-panel{
+        grid-template-columns:1fr;
+      }
+    }
+
     @media(max-width:860px){
       .nav-toggle{
         display:flex;
       }
+
       .nav-links{
         position:absolute;
         top:100%;
         left:0;
-        right:0;
+        right:70px;
         display:none;
         flex-direction:column;
         align-items:flex-start;
@@ -184,65 +1422,151 @@
         border-radius:16px;
         padding:12px;
         box-shadow:0 16px 30px rgba(0,0,0,.28);
-        margin-left:0;
       }
+
       .nav-links.show{
         display:flex;
       }
+
       .nav-links a{
         width:100%;
         padding:12px 10px;
         border-radius:10px;
       }
+
       .nav-links a.active::after{
         display:none;
       }
+
       .nav-links a:hover,
       .nav-links a.active{
         background:rgba(250,204,21,.12);
       }
+
+      .profile-top{
+        flex-direction:column;
+      }
+
+      .stats-row{
+        width:100%;
+      }
+
+      .settings-grid{
+        grid-template-columns:1fr;
+      }
     }
-    /* Account page specific styles */
-    .account-shell{
-      padding:50px 0;
+
+    @media(max-width:680px){
+      .photo-grid{
+        grid-template-columns:1fr;
+      }
+
+      .action-row{
+        grid-template-columns:1fr;
+      }
+
+      .settings-actions{
+        flex-direction:column;
+        align-items:stretch;
+      }
+
+      .main-btn{
+        width:100%;
+      }
     }
-    .account-section{
-      padding:20px 0;
-      border-bottom:1px solid var(--line);
+
+    @media(max-width:560px){
+      .container{
+        width:min(1200px,94%);
+      }
+
+      .hero{
+        padding:18px 0 0;
+      }
+
+      .logo-title{
+        font-size:20px;
+      }
+
+      .logo-sub{
+        font-size:9px;
+        letter-spacing:1.2px;
+      }
+
+      .profile-main{
+        flex-direction:column;
+      }
+
+      .profile-name{
+        font-size:28px;
+      }
+
+      .top-stat strong{
+        font-size:22px;
+      }
+
+      .top-stat span{
+        font-size:13px;
+      }
+
+      .pro-board h3{
+        font-size:22px;
+      }
+
+      .pro-board p{
+        font-size:14px;
+      }
     }
-    .account-section h2{
-      font-size:24px;
-      margin-bottom:8px;
-      color:#fff;
-    }
-    .account-section p{
-      color:var(--muted);
-      font-size:15px;
-    }
-    footer{
-      border-top:1px solid var(--line);
-      padding:22px 0 38px;
-      margin-top:20px;
-    }
-    .footer-inner{
-      display:flex;
-      justify-content:space-between;
-      gap:18px;
+  
+    .verified-name-inline{
+      display:inline-flex;
       align-items:center;
+      gap:8px;
       flex-wrap:wrap;
+      min-width:0;
+      vertical-align:middle;
     }
-    .footer-links{
-      display:flex;
-      gap:16px;
-      flex-wrap:wrap;
-      color:#cbd5e1;
+
+    .verified-name-inline .name-text{
+      min-width:0;
+      word-break:break-word;
     }
-    .footer-links a:hover{
-      color:var(--accent);
+
+    .verified-name-badge{
+      width:20px;
+      height:20px;
+      border-radius:50%;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      background:rgba(59,130,246,.18);
+      color:#93c5fd;
+      border:1px solid rgba(96,165,250,.34);
+      box-shadow:0 6px 14px rgba(2,6,23,.18);
+      font-size:10px;
+      line-height:1;
+      flex-shrink:0;
+    }
+
+  
+    .lightbox:not(.show),
+    .photo-lightbox:not(.show),
+    .profile-overlay:not(.show),
+    .site-auth-modal-backdrop:not(.show){
+      pointer-events:none !important;
+      visibility:hidden;
+    }
+    .lightbox.show,
+    .photo-lightbox.show,
+    .profile-overlay.show,
+    .site-auth-modal-backdrop.show{
+      pointer-events:auto !important;
+      visibility:visible;
     }
   </style>
 </head>
 <body>
+
   <header>
     <div class="container nav">
       <a href="index.html" class="logo-wrap">
@@ -253,82 +1577,438 @@
         </span>
       </a>
 
-      <nav class="nav-links" id="navLinks">
-        <a href="index.html">Home</a>
-        <a href="explore.html">Explore</a>
-        <a href="category.html">Categories</a>
-        <a href="featured.html">Featured</a>
-        <a href="premium.html">Premium</a>
-        <a href="contact.html">Contact</a>
-      </nav>
+      <div class="nav-right">
+        <nav class="nav-links" id="navLinks">
+          <a href="index.html">Home</a>
+          <a href="explore.html">Explore</a>
+          <a href="category.html">Categories</a>
+          <a href="premium.html">Premium</a>
+          <a href="about.html">About</a>
+          <a href="contact.html">Contact</a>
+          <a href="account.html" class="active">My Account</a>
+        </nav>
 
-      <div class="nav-user-area" id="navUserArea"></div>
+        <button class="nav-toggle" id="navToggle" aria-label="Open navigation" aria-expanded="false">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
 
-      <button class="nav-toggle" id="navToggle" aria-label="Open navigation" aria-expanded="false">
-        <span></span>
-        <span></span>
-        <span></span>
-      </button>
+        <div class="account-menu-wrap">
+          <button class="account-menu-toggle" id="accountMenuToggle" aria-label="Open account menu">
+            <i class="fa-solid fa-bars"></i>
+          </button>
+
+          <div class="account-dropdown" id="accountDropdown">
+            <button type="button" id="editProfileMenuBtn">
+              <i class="fa-solid fa-user-pen"></i>
+              Edit profile
+            </button>
+
+            <button type="button" id="changeAvatarMenuBtn">
+              <i class="fa-solid fa-camera"></i>
+              Change profile picture
+            </button>
+
+            <button type="button" id="changeCoverMenuBtn">
+              <i class="fa-solid fa-image"></i>
+              Change cover photo
+            </button>
+
+            <button type="button" id="verificationRequestBtn">
+              <i class="fa-solid fa-badge-check"></i>
+              Submit verification request
+            </button>
+
+            <button type="button" id="dashboardRequestBtn">
+              <i class="fa-solid fa-chart-line"></i>
+              Submit creator studio request
+            </button>
+
+            <a href="premium.html">
+              <i class="fa-solid fa-crown"></i>
+              Buy premium membership
+            </a>
+
+            <button type="button" id="mutedAccountsBtn">
+              <i class="fa-solid fa-volume-xmark"></i>
+              Muted accounts
+            </button>
+
+            <button type="button" id="contentPreferencesBtn">
+              <i class="fa-solid fa-sliders"></i>
+              Content preferences
+            </button>
+
+            <button type="button" id="accessibilityBtn">
+              <i class="fa-solid fa-universal-access"></i>
+              Accessibility
+            </button>
+
+            <button type="button" id="languageBtn">
+              <i class="fa-solid fa-language"></i>
+              Language and translations
+            </button>
+
+            <button type="button" id="mediaQualityBtn">
+              <i class="fa-solid fa-image"></i>
+              Media quality
+            </button>
+
+            <button type="button" id="privacyCentreBtn">
+              <i class="fa-solid fa-shield-heart"></i>
+              Privacy Centre
+            </button>
+
+            <button type="button" id="accountStatusBtn">
+              <i class="fa-solid fa-circle-info"></i>
+              Account Status
+            </button>
+
+            <button type="button" class="danger hidden" id="deleteAccountMenuBtn">
+              <i class="fa-solid fa-user-xmark"></i>
+              Delete my account
+            </button>
+
+            <button type="button" class="danger" id="logoutBtn">
+              <i class="fa-solid fa-right-from-bracket"></i>
+              Log out
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   </header>
 
-  <main class="account-shell">
-    <div class="container">
-      <h1 style="font-size:32px;margin-bottom:20px;">Account</h1>
-      <section id="edit-profile" class="account-section">
-        <h2>Edit Profile</h2>
-        <p>Update your personal information such as your name, bio, and other details.</p>
-      </section>
-      <section id="change-profile-picture" class="account-section">
-        <h2>Change Profile Picture</h2>
-        <p>Upload a new profile picture to personalize your account.</p>
-      </section>
-      <section id="change-cover-photo" class="account-section">
-        <h2>Change Cover Photo</h2>
-        <p>Select a new cover photo for your profile header.</p>
-      </section>
-      <section id="verification-request" class="account-section">
-        <h2>Submit Verification Request</h2>
-        <p>Request verification to get a verified badge on your profile.</p>
-      </section>
-      <section id="dashboard-request" class="account-section">
-        <h2>Submit Dashboard Request</h2>
-        <p>Apply for a creator dashboard to manage your uploads and insights.</p>
-      </section>
-      <section id="muted-accounts" class="account-section">
-        <h2>Muted Accounts</h2>
-        <p>Manage accounts you have muted on PixNest.</p>
-      </section>
-      <section id="content-preferences" class="account-section">
-        <h2>Content Preferences</h2>
-        <p>Adjust your content filters and preferences.</p>
-      </section>
-      <section id="accessibility" class="account-section">
-        <h2>Accessibility</h2>
-        <p>Configure accessibility options to improve your browsing experience.</p>
-      </section>
-      <section id="language-translations" class="account-section">
-        <h2>Language and Translations</h2>
-        <p>Set your preferred language and translation settings.</p>
-      </section>
-      <section id="media-quality" class="account-section">
-        <h2>Media Quality</h2>
-        <p>Choose the default quality for photos and media.</p>
-      </section>
-      <section id="privacy-centre" class="account-section">
-        <h2>Privacy Centre</h2>
-        <p>Review and adjust your privacy settings.</p>
-      </section>
-      <section id="account-status" class="account-section">
-        <h2>Account Status</h2>
-        <p>View information about the status of your PixNest account.</p>
-      </section>
+  <section class="hero" id="accountHero">
+    <div class="container hero-inner">
+      <div class="account-card" id="accountCard">
+        <div id="loggedInArea">
+          <div class="profile-top">
+            <div class="profile-main">
+              <div class="avatar-wrap">
+                <div class="avatar" id="accountAvatar"></div>
+                <button type="button" class="small-circle-btn" id="changeAvatarBtn">
+                  <i class="fa-solid fa-plus"></i>
+                </button>
+              </div>
+
+              <div class="profile-copy">
+                <div class="name-row">
+                  <h1 class="profile-name" id="accountName">My Account</h1>
+                  <span class="blue-check" id="blueCheck">
+                    <i class="fa-solid fa-circle-check"></i>
+                  </span>
+                </div>
+
+                <div class="creator-badges" id="statusBadges"></div>
+
+                <div class="profile-role" id="accountRole">Creator</div>
+                <div class="profile-bio" id="accountBio">Update your profile, manage your posts, and grow your creator dashboard.</div>
+              </div>
+            </div>
+
+            <div class="stats-row" id="topStatsRow">
+              <div class="top-stat">
+                <strong>0</strong>
+                <span>Posts</span>
+              </div>
+              <div class="top-stat">
+                <strong>0</strong>
+                <span>Followers</span>
+              </div>
+              <div class="top-stat">
+                <strong>0</strong>
+                <span>Following</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="action-row">
+            <button type="button" class="account-btn" id="editProfileBtn">
+              <i class="fa-solid fa-user-pen"></i>
+              Edit Profile
+            </button>
+
+            <button type="button" class="account-btn" id="shareProfileBtn">
+              <i class="fa-solid fa-share-nodes"></i>
+              Share Profile
+            </button>
+          </div>
+
+          <div class="pro-board">
+            <div>
+              <h3>Creator Studio</h3>
+              <p id="proBoardText">Available when your creator profile has creator studio approval.</p>
+            </div>
+
+            <button type="button" class="pro-btn" id="professionalDashboardBtn" disabled>
+              Open Creator Studio
+            </button>
+          </div>
+
+          <section class="danger-zone hidden" id="deleteAccountSection">
+            <div class="danger-zone-head">
+              <div>
+                <h3>Delete Account</h3>
+                <p>Permanently delete your own PixNest account here. The reason box is optional. Admin and founder accounts cannot be deleted from this form.</p>
+              </div>
+              <span class="danger-chip">User only</span>
+            </div>
+
+            <form id="deleteAccountForm" class="delete-form">
+              <label class="delete-label" for="deleteReasonInput">
+                Why are you leaving?
+                <span>Optional</span>
+              </label>
+              <textarea id="deleteReasonInput" class="delete-textarea" placeholder="Tell us anything you want us to improve. You can leave this blank."></textarea>
+
+              <label class="delete-check" for="deleteConfirmCheck">
+                <input type="checkbox" id="deleteConfirmCheck">
+                <span>I understand this permanently deletes my account and profile access.</span>
+              </label>
+
+              <div class="delete-actions">
+                <button type="submit" class="main-btn danger-btn" id="deleteAccountBtn">
+                  <i class="fa-solid fa-trash-can"></i>
+                  Delete My Account
+                </button>
+                <p class="delete-note" id="deleteAccountNote">Only you can delete your own account here. Your reason is optional and used only to improve PixNest.</p>
+              </div>
+            </form>
+          </section>
+        </div>
+
+        <div class="login-box hidden" id="loginRequiredBox">
+          <h3>You need to log in first</h3>
+          <p>Sign in to view your private dashboard, profile tools, posts, reposts, and favourites.</p>
+          <div class="empty-actions">
+            <a href="login.html" class="primary">
+              <i class="fa-solid fa-right-to-bracket"></i>
+              Login
+            </a>
+            <a href="signup.html" class="secondary">
+              <i class="fa-solid fa-user-plus"></i>
+              Create Account
+            </a>
+          </div>
+        </div>
+      </div>
     </div>
-  </main>
+  </section>
+
+  <section id="postsSection">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <h2>My Posts</h2>
+          <p>All photos you uploaded to PixNest.</p>
+        </div>
+        <div class="section-count" id="postsCountChip">0 posts</div>
+      </div>
+
+      <div class="photo-grid" id="postsGrid">
+        <div class="empty-box">
+          <h3>No posts yet</h3>
+          <p>Your uploaded photos will show here.</p>
+          <div class="empty-actions">
+            <a href="upload.html" class="primary">
+              <i class="fa-solid fa-upload"></i>
+              Upload Photo
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="repostsSection">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <h2>My Reposts</h2>
+          <p>Posts you reposted will appear here.</p>
+        </div>
+        <div class="section-count" id="repostsCountChip">0 reposts</div>
+      </div>
+
+      <div class="photo-grid" id="repostsGrid">
+        <div class="empty-box">
+          <h3>No reposts yet</h3>
+          <p>Reposted content will show in this section when available.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="favouritesSection" style="padding-bottom:54px;">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <h2>My Favourites</h2>
+          <p>Posts you saved to favourites.</p>
+        </div>
+        <div class="section-count" id="favouritesCountChip">0 favourites</div>
+      </div>
+
+      <div class="photo-grid" id="favouritesGrid">
+        <div class="empty-box">
+          <h3>No favourites yet</h3>
+          <p>Posts you favourite will show here.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <input type="file" id="avatarFileInput" accept="image/*" class="hidden" />
+  <input type="file" id="coverFileInput" accept="image/*" class="hidden" />
+
+  <div class="settings-modal" id="settingsModal">
+    <div class="settings-panel">
+      <div class="settings-head">
+        <h3>Edit Profile</h3>
+        <button type="button" class="close-btn" id="closeSettingsBtn">×</button>
+      </div>
+
+      <form id="settingsForm">
+        <div class="settings-grid">
+          <div class="settings-group">
+            <label for="fullNameInput">Full Name</label>
+            <input class="settings-input" id="fullNameInput" type="text" placeholder="Your full name">
+          </div>
+
+          <div class="settings-group">
+            <label for="usernameInput">Username</label>
+            <input class="settings-input" id="usernameInput" type="text" placeholder="yourusername">
+          </div>
+
+          <div class="settings-group">
+            <label for="roleInput">Role / Profession</label>
+            <input class="settings-input" id="roleInput" type="text" placeholder="Web designer">
+          </div>
+
+          <div class="settings-group">
+            <label for="followersInput">Followers Count</label>
+            <input class="settings-input" id="followersInput" type="number" min="0" placeholder="0">
+          </div>
+
+          <div class="settings-group">
+            <label for="followingInput">Following Count</label>
+            <input class="settings-input" id="followingInput" type="number" min="0" placeholder="0">
+          </div>
+
+          <div class="settings-group full">
+            <label for="bioInput">Bio</label>
+            <textarea class="settings-textarea" id="bioInput" placeholder="Write a short bio for your creator profile"></textarea>
+          </div>
+
+          <div class="settings-group">
+            <label for="avatarInput">Avatar Image URL</label>
+            <input class="settings-input" id="avatarInput" type="url" placeholder="https://...">
+          </div>
+
+          <div class="settings-group">
+            <label for="coverInput">Cover Image URL</label>
+            <input class="settings-input" id="coverInput" type="url" placeholder="https://...">
+          </div>
+
+          <div class="settings-group">
+            <label for="instagramInput">Instagram URL</label>
+            <input class="settings-input" id="instagramInput" type="url" placeholder="https://instagram.com/...">
+          </div>
+
+          <div class="settings-group">
+            <label for="xInput">X / Twitter URL</label>
+            <input class="settings-input" id="xInput" type="url" placeholder="https://x.com/...">
+          </div>
+
+          <div class="settings-group">
+            <label for="facebookInput">Facebook URL</label>
+            <input class="settings-input" id="facebookInput" type="url" placeholder="https://facebook.com/...">
+          </div>
+
+          <div class="settings-group">
+            <label for="websiteInput">Website URL</label>
+            <input class="settings-input" id="websiteInput" type="url" placeholder="https://...">
+          </div>
+        </div>
+
+        <div class="settings-actions">
+          <button type="submit" class="main-btn primary">
+            <i class="fa-solid fa-floppy-disk"></i>
+            Save Changes
+          </button>
+
+          <button type="button" class="main-btn secondary" id="resetSettingsBtn">
+            <i class="fa-solid fa-rotate-left"></i>
+            Reset
+          </button>
+
+          <button type="button" class="main-btn secondary" id="changeAvatarModalBtn">
+            <i class="fa-solid fa-camera"></i>
+            Upload Profile Picture
+          </button>
+
+          <button type="button" class="main-btn secondary" id="changeCoverModalBtn">
+            <i class="fa-solid fa-image"></i>
+            Upload Cover Photo
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="lightbox" id="lightbox">
+    <div class="lightbox-panel">
+      <div class="lightbox-image-wrap">
+        <img id="lightboxImage" src="" alt="Large view">
+      </div>
+
+      <div class="lightbox-info">
+        <button type="button" class="close-btn" id="lightboxClose" style="position:absolute;top:14px;right:14px;">×</button>
+
+        <h3 class="lightbox-title" id="lightboxTitle">Photo</h3>
+
+        <div id="lightboxStatsWrap" style="margin-bottom:18px;"></div>
+
+        <div class="lightbox-actions" id="lightboxActions"></div>
+
+        <div class="detail-list">
+          <div class="detail-item">
+            <strong>Category</strong>
+            <span id="lightboxCategory">—</span>
+          </div>
+
+          <div class="detail-item">
+            <strong>Creator</strong>
+            <span id="lightboxCredit">—</span>
+          </div>
+
+          <div class="detail-item">
+            <strong>Tags</strong>
+            <span id="lightboxTags">—</span>
+          </div>
+
+          <div class="detail-item">
+            <strong>Description</strong>
+            <span id="lightboxDescription">—</span>
+          </div>
+
+          <div class="detail-item">
+            <strong>Posted</strong>
+            <span id="lightboxPosted">—</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="notice" id="noticeBar"></div>
 
   <footer>
     <div class="container footer-inner">
       <p>©️ 2026 PixNest. Discover and share powerful visual collections.</p>
+
       <div class="footer-links">
         <a href="about.html">About</a>
         <a href="license.html">License</a>
@@ -339,9 +2019,1945 @@
     </div>
   </footer>
 
-  <!-- Include JavaScript to power authentication, navigation, and account functions -->
-  <script src="config.js"></script>
-  <script src="nav.js"></script>
-  <script src="account.js"></script>
+  <script>
+    const REACTION_KEY = "pixnest_photo_reactions_v1";
+    const CREATOR_PREFS_KEY = "pixnest_creator_prefs_v1";
+    const VIEWED_SESSION_KEY = "pixnest_viewed_session_v1";
+    const SUPABASE_URL = "https://vigczssznfvujttdapbv.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_UmF-mmVS42XeF6PqsNnCSw_wpA35wg2";
+    const PROFILE_MEDIA_BUCKET = "profile-media";
+    const REQUESTS_TABLE = "creator_requests";
+    const CREATOR_PROFILE_TABLE = "creator_profiles";
+    const DEFAULT_COVER = "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&w=1600&q=80";
+
+    const LOCKED_SVG =
+      "data:image/svg+xml;charset=UTF-8," +
+      encodeURIComponent(`
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800">
+          <defs>
+            <linearGradient id="g" x1="0" x2="1" y1="0" y2="1">
+              <stop offset="0%" stop-color="#0f172a"/>
+              <stop offset="100%" stop-color="#1e293b"/>
+            </linearGradient>
+          </defs>
+          <rect width="800" height="800" fill="url(#g)"/>
+          <circle cx="400" cy="300" r="95" fill="rgba(250,204,21,0.12)" stroke="rgba(250,204,21,0.35)" stroke-width="6"/>
+          <path d="M350 300v-34c0-28 22-50 50-50s50 22 50 50v34" fill="none" stroke="#facc15" stroke-width="20" stroke-linecap="round"/>
+          <rect x="320" y="300" rx="24" ry="24" width="160" height="150" fill="#111827" stroke="rgba(250,204,21,0.28)" stroke-width="6"/>
+          <circle cx="400" cy="370" r="18" fill="#facc15"/>
+          <rect x="390" y="388" width="20" height="34" rx="10" fill="#facc15"/>
+          <text x="400" y="540" text-anchor="middle" fill="#f8fafc" font-size="38" font-family="Arial, Helvetica, sans-serif" font-weight="700">Premium Photo</text>
+          <text x="400" y="585" text-anchor="middle" fill="#94a3b8" font-size="22" font-family="Arial, Helvetica, sans-serif">Unlock with membership</text>
+        </svg>
+      `);
+
+    const { createClient } = supabase;
+    const supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    const navLinks = document.getElementById("navLinks");
+    const navToggle = document.getElementById("navToggle");
+    const accountMenuToggle = document.getElementById("accountMenuToggle");
+    const accountDropdown = document.getElementById("accountDropdown");
+
+    const accountHero = document.getElementById("accountHero");
+    const accountCard = document.getElementById("accountCard");
+    const loggedInArea = document.getElementById("loggedInArea");
+    const loginRequiredBox = document.getElementById("loginRequiredBox");
+    const accountAvatar = document.getElementById("accountAvatar");
+    const accountName = document.getElementById("accountName");
+    const blueCheck = document.getElementById("blueCheck");
+    const statusBadges = document.getElementById("statusBadges");
+    const accountRole = document.getElementById("accountRole");
+    const accountBio = document.getElementById("accountBio");
+    const topStatsRow = document.getElementById("topStatsRow");
+    const editProfileBtn = document.getElementById("editProfileBtn");
+    const shareProfileBtn = document.getElementById("shareProfileBtn");
+    const lightboxCategory = document.getElementById("lightboxCategory");
+    const lightboxCredit = document.getElementById("lightboxCredit");
+    const lightboxTags = document.getElementById("lightboxTags");
+    const lightboxDescription = document.getElementById("lightboxDescription");
+    const changeAvatarBtn = document.getElementById("changeAvatarBtn");
+    const proBoardText = document.getElementById("proBoardText");
+    const professionalDashboardBtn = document.getElementById("professionalDashboardBtn");
+
+    const postsGrid = document.getElementById("postsGrid");
+    const repostsGrid = document.getElementById("repostsGrid");
+    const favouritesGrid = document.getElementById("favouritesGrid");
+    const postsCountChip = document.getElementById("postsCountChip");
+    const repostsCountChip = document.getElementById("repostsCountChip");
+    const favouritesCountChip = document.getElementById("favouritesCountChip");
+
+    const settingsModal = document.getElementById("settingsModal");
+    const closeSettingsBtn = document.getElementById("closeSettingsBtn");
+    const settingsForm = document.getElementById("settingsForm");
+    const fullNameInput = document.getElementById("fullNameInput");
+    const usernameInput = document.getElementById("usernameInput");
+    const roleInput = document.getElementById("roleInput");
+    const followersInput = document.getElementById("followersInput");
+    const followingInput = document.getElementById("followingInput");
+    const bioInput = document.getElementById("bioInput");
+    const avatarInput = document.getElementById("avatarInput");
+    const coverInput = document.getElementById("coverInput");
+    const instagramInput = document.getElementById("instagramInput");
+    const xInput = document.getElementById("xInput");
+    const facebookInput = document.getElementById("facebookInput");
+    const websiteInput = document.getElementById("websiteInput");
+    const resetSettingsBtn = document.getElementById("resetSettingsBtn");
+
+    const avatarFileInput = document.getElementById("avatarFileInput");
+    const coverFileInput = document.getElementById("coverFileInput");
+    const changeAvatarMenuBtn = document.getElementById("changeAvatarMenuBtn");
+    const changeCoverMenuBtn = document.getElementById("changeCoverMenuBtn");
+    const changeAvatarModalBtn = document.getElementById("changeAvatarModalBtn");
+    const changeCoverModalBtn = document.getElementById("changeCoverModalBtn");
+    const editProfileMenuBtn = document.getElementById("editProfileMenuBtn");
+    const verificationRequestBtn = document.getElementById("verificationRequestBtn");
+    const dashboardRequestBtn = document.getElementById("dashboardRequestBtn");
+    const mutedAccountsBtn = document.getElementById("mutedAccountsBtn");
+    const contentPreferencesBtn = document.getElementById("contentPreferencesBtn");
+    const accessibilityBtn = document.getElementById("accessibilityBtn");
+    const languageBtn = document.getElementById("languageBtn");
+    const mediaQualityBtn = document.getElementById("mediaQualityBtn");
+    const privacyCentreBtn = document.getElementById("privacyCentreBtn");
+    const accountStatusBtn = document.getElementById("accountStatusBtn");
+    const deleteAccountMenuBtn = document.getElementById("deleteAccountMenuBtn");
+    const logoutBtn = document.getElementById("logoutBtn");
+
+    const deleteAccountSection = document.getElementById("deleteAccountSection");
+    const deleteAccountForm = document.getElementById("deleteAccountForm");
+    const deleteReasonInput = document.getElementById("deleteReasonInput");
+    const deleteConfirmCheck = document.getElementById("deleteConfirmCheck");
+    const deleteAccountBtn = document.getElementById("deleteAccountBtn");
+    const deleteAccountNote = document.getElementById("deleteAccountNote");
+
+    const lightbox = document.getElementById("lightbox");
+    const lightboxClose = document.getElementById("lightboxClose");
+    const lightboxImage = document.getElementById("lightboxImage");
+    const lightboxTitle = document.getElementById("lightboxTitle");
+    const lightboxStatsWrap = document.getElementById("lightboxStatsWrap");
+    const lightboxActions = document.getElementById("lightboxActions");
+
+    const noticeBar = document.getElementById("noticeBar");
+
+    let currentUser = null;
+    const PHOTO_LOAD_LIMIT = 30;
+    let photosLoadInFlight = null;
+    let photosLoadedOnce = false;
+    let lastAuthRefreshKey = null;
+    const signedImageUrlCache = new Map();
+    let currentCreatorProfile = null;
+    let allPhotos = [];
+    let reactionState = loadReactionState();
+    let creatorPrefs = loadCreatorPrefs();
+    let viewedSession = loadViewedSession();
+    let activeLightboxPhotoId = "";
+
+    function showNotice(text){
+      noticeBar.textContent = text;
+      noticeBar.classList.add("show");
+      clearTimeout(showNotice._timer);
+      showNotice._timer = setTimeout(() => {
+        noticeBar.classList.remove("show");
+      }, 2400);
+    }
+
+    function escapeHtml(value = ""){
+      return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+
+
+    function buildInlineVerifiedName(name, verified){
+      const safeName = escapeHtml(String(name || "Unknown").trim() || "Unknown");
+      return `
+        <span class="verified-name-inline${verified ? " is-verified" : ""}">
+          <span class="name-text">${safeName}</span>
+          ${verified ? '<span class="verified-name-badge" title="Verified profile" aria-label="Verified profile"><i class="fa-solid fa-check"></i></span>' : ''}
+        </span>
+      `;
+    }
+
+
+    function normalize(value = ""){
+      return String(value || "").trim().toLowerCase();
+    }
+
+    function compactNumber(value){
+      try{
+        return new Intl.NumberFormat("en", {
+          notation:"compact",
+          maximumFractionDigits:1
+        }).format(Number(value || 0));
+      }catch(error){
+        return String(value || 0);
+      }
+    }
+
+    function loadReactionState(){
+      try{
+        const saved = localStorage.getItem(REACTION_KEY);
+        const parsed = JSON.parse(saved || "{}");
+        return parsed && typeof parsed === "object" ? parsed : {};
+      }catch(error){
+        return {};
+      }
+    }
+
+    function saveReactionState(){
+      localStorage.setItem(REACTION_KEY, JSON.stringify(reactionState));
+    }
+
+    function loadCreatorPrefs(){
+      try{
+        const saved = localStorage.getItem(CREATOR_PREFS_KEY);
+        const parsed = JSON.parse(saved || "{}");
+        return parsed && typeof parsed === "object" ? parsed : {};
+      }catch(error){
+        return {};
+      }
+    }
+
+    function loadViewedSession(){
+      try{
+        const saved = sessionStorage.getItem(VIEWED_SESSION_KEY);
+        const parsed = JSON.parse(saved || "{}");
+        return parsed && typeof parsed === "object" ? parsed : {};
+      }catch(error){
+        return {};
+      }
+    }
+
+    function saveViewedSession(){
+      sessionStorage.setItem(VIEWED_SESSION_KEY, JSON.stringify(viewedSession));
+    }
+
+    function isLikelyFileName(value = ""){
+      const text = String(value || "").trim();
+      if(!text) return false;
+
+      const extPattern = /\.(jpg|jpeg|png|gif|webp|svg|bmp|avif)$/i;
+      const imageCodePattern = /^(img|image|dsc|pxl|pxl_|screenshot|screen-shot|whatsapp image|photo|file)[-_ ]?\d+/i;
+      const shortSlugPattern = /^[a-z0-9_-]{1,18}$/i;
+
+      return extPattern.test(text) || imageCodePattern.test(text) || shortSlugPattern.test(text);
+    }
+
+    function getMembershipPlan(user){
+      return String(
+        user?.app_metadata?.membership_plan ||
+        user?.app_metadata?.plan ||
+        user?.user_metadata?.membership_plan ||
+        user?.user_metadata?.plan ||
+        ""
+      ).trim().toLowerCase();
+    }
+
+    function getDisplayName(user){
+      return String(
+        currentCreatorProfile?.display_name ||
+        user?.user_metadata?.full_name ||
+        user?.user_metadata?.name ||
+        user?.email?.split("@")[0] ||
+        "Creator"
+      ).trim();
+    }
+
+    function getUsername(user){
+      const saved = String(
+        currentCreatorProfile?.username ||
+        user?.user_metadata?.username ||
+        ""
+      ).trim();
+      if(saved) return saved;
+      return getDisplayName(user).toLowerCase().replace(/[^a-z0-9]+/g, "").slice(0, 16) || "creator";
+    }
+
+    function getUserAvatar(user){
+      return String(
+        currentCreatorProfile?.avatar_url ||
+        user?.user_metadata?.avatar_url ||
+        user?.user_metadata?.picture ||
+        ""
+      ).trim();
+    }
+
+    function getUserCover(user){
+      return String(
+        currentCreatorProfile?.cover_url ||
+        user?.user_metadata?.cover_url ||
+        user?.user_metadata?.background_url ||
+        ""
+      ).trim();
+    }
+
+    function getUserRole(user){
+      return String(
+        currentCreatorProfile?.role ||
+        currentCreatorProfile?.profession ||
+        user?.user_metadata?.headline ||
+        user?.user_metadata?.profession ||
+        "Creator"
+      ).trim();
+    }
+
+    function getUserBio(user){
+      return String(
+        currentCreatorProfile?.bio ||
+        user?.user_metadata?.bio ||
+        "Update your profile, manage your posts, and grow your creator dashboard."
+      ).trim();
+    }
+
+    function getFollowerCount(user){
+      return Number(
+        currentCreatorProfile?.followers_count ||
+        user?.user_metadata?.followers_count ||
+        user?.user_metadata?.followers ||
+        0
+      ) || 0;
+    }
+
+    function getFollowingCountProfile(){
+      return Number(currentCreatorProfile?.following_count || 0) || 0;
+    }
+
+    function isFounder(user){
+      return normalize(user?.app_metadata?.role) === "founder" || user?.app_metadata?.is_admin === true;
+    }
+
+    function isAdminAccount(user){
+      return Boolean(
+        normalize(user?.app_metadata?.role) === "admin" ||
+        normalize(user?.app_metadata?.role) === "founder" ||
+        user?.app_metadata?.is_admin === true ||
+        currentCreatorProfile?.site_admin === true ||
+        currentCreatorProfile?.super_admin === true ||
+        ["admin", "founder"].includes(normalize(currentCreatorProfile?.role))
+      );
+    }
+
+    function isVerified(user){
+      return Boolean(
+        isFounder(user) ||
+        currentCreatorProfile?.verified === true ||
+        user?.app_metadata?.is_verified === true ||
+        user?.user_metadata?.is_verified === true ||
+        user?.user_metadata?.verified === true ||
+        user?.user_metadata?.verification_approved === true
+      );
+    }
+
+    function isPremiumMember(user){
+      return Boolean(
+        currentCreatorProfile?.premium_member === true ||
+        ["premium", "premium-monthly", "premium-yearly"].includes(getMembershipPlan(user)) ||
+        user?.user_metadata?.premium_member === true ||
+        user?.user_metadata?.is_premium === true
+      );
+    }
+
+    function isProfessionalApproved(user){
+      return Boolean(
+        currentCreatorProfile?.professional_dashboard_approved === true ||
+        user?.user_metadata?.professional_dashboard_approved === true ||
+        user?.user_metadata?.pro_dashboard_approved === true
+      );
+    }
+
+    function isCreatorApproved(user){
+      return Boolean(
+        currentCreatorProfile?.creator_approved === true ||
+        user?.user_metadata?.creator_approved === true ||
+        user?.user_metadata?.approved_creator === true
+      );
+    }
+
+    function buildStatusBadges(user){
+      const items = [];
+
+      if(isPremiumMember(user)){
+        items.push(`
+          <span class="status-badge premium">
+            <i class="fa-solid fa-crown"></i>
+            Premium Member
+          </span>
+        `);
+      }
+
+      if(isVerified(user)){
+        items.push(`
+          <span class="status-badge verified">
+            <i class="fa-solid fa-circle-check"></i>
+            Verified
+          </span>
+        `);
+      }
+
+      if(isCreatorApproved(user) || isProfessionalApproved(user)){
+        items.push(`
+          <span class="status-badge approved">
+            <i class="fa-solid fa-shield-check"></i>
+            Creator Approved
+          </span>
+        `);
+      }
+
+      return items.join("");
+    }
+
+    function getPhotoId(photo){
+      return String(
+        photo.id ||
+        photo.photo_id ||
+        photo.image_url ||
+        photo.created_at ||
+        `${photo.category || ""}-${photo.credit || ""}`
+      );
+    }
+
+    function getPhotoById(photoId){
+      return allPhotos.find(photo => getPhotoId(photo) === String(photoId)) || null;
+    }
+
+    function getSafePhotoTitle(photo){
+      const possibleFields = [
+        photo.display_title,
+        photo.caption,
+        photo.headline,
+        photo.custom_title,
+        photo.public_title,
+        photo.title
+      ];
+
+      const found = possibleFields.find(value => String(value || "").trim());
+      const clean = String(found || "").trim();
+
+      if(!clean) return "";
+      if(isLikelyFileName(clean)) return "";
+      return clean;
+    }
+
+    function getDescription(photo){
+      return String(photo.description || "").trim();
+    }
+
+    function getPhotoAlt(photo){
+      return getSafePhotoTitle(photo) || getDescription(photo) || String(photo.category || "PixNest photo");
+    }
+
+    function getShareTitle(photo){
+      const safeTitle = getSafePhotoTitle(photo);
+      const description = getDescription(photo);
+      const category = String(photo.category || "").trim();
+
+      if(safeTitle) return `${safeTitle} on PixNest`;
+      if(description) return `${description} on PixNest`;
+      if(category) return `${category} photo on PixNest`;
+      return "Photo on PixNest";
+    }
+
+    function getPhotoTags(photo){
+      return (photo.tags || "")
+        .split(/[,|]/)
+        .map(tag => tag.trim())
+        .filter(Boolean)
+        .filter(tag => !isLikelyFileName(tag));
+    }
+
+    function getCreatorName(photo){
+      return String(
+        photo.credit ||
+        photo.creator_name ||
+        photo.uploader_name ||
+        photo.author ||
+        "Unknown Creator"
+      ).trim();
+    }
+
+    function getNumberValue(photo, keys = []){
+      for(const key of keys){
+        const value = photo[key];
+
+        if(typeof value === "number" && Number.isFinite(value)){
+          return value;
+        }
+
+        if(typeof value === "string" && value.trim() !== "" && !Number.isNaN(Number(value))){
+          return Number(value);
+        }
+      }
+      return 0;
+    }
+
+    function getFavouriteBaseValue(photo){
+      const numericFavourite = getNumberValue(photo, [
+        "favourites",
+        "favorites",
+        "favourite_count",
+        "favorite_count",
+        "favourites_count",
+        "favorites_count",
+        "total_favourites",
+        "total_favorites"
+      ]);
+
+      if(numericFavourite) return numericFavourite;
+
+      const booleanKeys = [
+        "favourite",
+        "favorite",
+        "is_favourite",
+        "is_favorite"
+      ];
+
+      for(const key of booleanKeys){
+        if(typeof photo[key] === "boolean"){
+          return photo[key] ? 1 : 0;
+        }
+      }
+
+      return 0;
+    }
+
+    function getBasePhotoMetrics(photo){
+      return {
+        likes: getNumberValue(photo, ["likes","like_count","likes_count","total_likes"]),
+        views: getNumberValue(photo, ["views","view_count","views_count","total_views"]),
+        favourites: getFavouriteBaseValue(photo)
+      };
+    }
+
+    function getPhotoReactionState(photoId){
+      return reactionState[String(photoId)] || { liked:false, favourited:false };
+    }
+
+    function getPhotoMetrics(photo){
+      const id = getPhotoId(photo);
+      const state = getPhotoReactionState(id);
+      const base = getBasePhotoMetrics(photo);
+
+      return {
+        likes: base.likes + (state.liked ? 1 : 0),
+        views: base.views,
+        favourites: base.favourites + (state.favourited ? 1 : 0)
+      };
+    }
+
+    function toggleReaction(photoId, reactionType){
+      const key = reactionType === "like" ? "liked" : "favourited";
+      const current = {
+        liked: !!getPhotoReactionState(photoId).liked,
+        favourited: !!getPhotoReactionState(photoId).favourited
+      };
+
+      current[key] = !current[key];
+
+      if(!current.liked && !current.favourited){
+        delete reactionState[String(photoId)];
+      }else{
+        reactionState[String(photoId)] = current;
+      }
+
+      saveReactionState();
+      refreshAccountPage();
+    }
+
+    function currentUserMatchesPhoto(photo){
+      if(!currentUser) return false;
+
+      const userId = normalize(currentUser.id);
+      const email = normalize(currentUser.email);
+      const displayName = normalize(getDisplayName(currentUser));
+      const username = normalize(getUsername(currentUser));
+
+      const ids = [
+        photo.user_id,
+        photo.owner_id,
+        photo.auth_user_id,
+        photo.profile_id,
+        photo.uploader_id,
+        photo.creator_id
+      ].map(normalize);
+
+      const names = [
+        photo.credit,
+        photo.creator_name,
+        photo.uploader_name,
+        photo.author
+      ].map(normalize);
+
+      const emails = [
+        photo.email,
+        photo.creator_email,
+        photo.owner_email
+      ].map(normalize);
+
+      return ids.includes(userId) || emails.includes(email) || names.includes(displayName) || names.includes(username);
+    }
+
+    function isRepostRecord(photo){
+      return Boolean(
+        photo.is_repost ||
+        photo.reposted ||
+        photo.repost_of_id ||
+        photo.original_photo_id ||
+        photo.original_post_id
+      );
+    }
+
+    function currentUserMatchesRepost(photo){
+      if(!currentUser) return false;
+
+      const userId = normalize(currentUser.id);
+      const email = normalize(currentUser.email);
+      const displayName = normalize(getDisplayName(currentUser));
+      const username = normalize(getUsername(currentUser));
+
+      const ids = [
+        photo.reposted_by_id,
+        photo.repost_user_id,
+        photo.shared_by_id
+      ].map(normalize);
+
+      const names = [
+        photo.reposted_by,
+        photo.shared_by,
+        photo.repost_username
+      ].map(normalize);
+
+      const emails = [
+        photo.reposted_by_email,
+        photo.shared_by_email
+      ].map(normalize);
+
+      return ids.includes(userId) || emails.includes(email) || names.includes(displayName) || names.includes(username);
+    }
+
+    function getMyPosts(){
+      return allPhotos.filter(photo => currentUserMatchesPhoto(photo) && !isRepostRecord(photo));
+    }
+
+    function getMyReposts(){
+      return allPhotos.filter(photo => currentUserMatchesRepost(photo) || (currentUserMatchesPhoto(photo) && isRepostRecord(photo)));
+    }
+
+    function getMyFavourites(){
+      return allPhotos.filter(photo => getPhotoReactionState(getPhotoId(photo)).favourited);
+    }
+
+    function isPremiumPhoto(photo){
+      return Boolean(photo?.is_premium || photo?.premium_only);
+    }
+
+    function isOwner(photo){
+      if(!currentUser) return false;
+
+      const currentId = normalize(currentUser.id);
+      const ids = [
+        photo.user_id,
+        photo.owner_id,
+        photo.auth_user_id,
+        photo.profile_id,
+        photo.uploader_id,
+        photo.creator_id
+      ].map(normalize);
+
+      return ids.includes(currentId);
+    }
+
+    function canAccessPremiumPhoto(photo){
+      return !isPremiumPhoto(photo) || isPremiumMember(currentUser) || isOwner(photo);
+    }
+
+    function isLockedPhoto(photo){
+      return isPremiumPhoto(photo) && !canAccessPremiumPhoto(photo);
+    }
+
+    function showPremiumLockNotice(){
+      showNotice("This premium photo is locked. Join premium to view, share, or download it.");
+    }
+
+    function handleLockedPremiumPhoto(){
+      showPremiumLockNotice();
+      window.location.href = "premium.html";
+    }
+
+    function getApprovalState(photo){
+      if(photo.is_approved === true || normalize(photo.approval_status) === "approved" || normalize(photo.status) === "approved"){
+        return "approved";
+      }
+      if(photo.is_approved === false || normalize(photo.approval_status) === "pending" || normalize(photo.status) === "pending"){
+        return "pending";
+      }
+      return "";
+    }
+
+    function getTrendingIds(rows){
+      const scored = [...rows].sort((a, b) => {
+        const am = getPhotoMetrics(a);
+        const bm = getPhotoMetrics(b);
+        const as = (am.views * 2) + (am.likes * 3) + (am.favourites * 3) + (a.featured ? 10 : 0);
+        const bs = (bm.views * 2) + (bm.likes * 3) + (bm.favourites * 3) + (b.featured ? 10 : 0);
+        return bs - as;
+      });
+
+      return new Set(scored.slice(0, 6).map(item => getPhotoId(item)));
+    }
+
+    function buildPhotoStats(photo){
+      const id = getPhotoId(photo);
+      const state = getPhotoReactionState(id);
+      const metrics = getPhotoMetrics(photo);
+
+      return `
+        <div class="photo-stats">
+          <button
+            type="button"
+            class="photo-stat react-btn ${state.liked ? "active" : ""}"
+            data-photo-id="${escapeHtml(id)}"
+            data-reaction="like"
+            aria-label="Like photo"
+            title="Like photo"
+          >
+            <i class="fa-solid fa-heart"></i>
+            <span>${escapeHtml(compactNumber(metrics.likes))}</span>
+          </button>
+
+          <span class="photo-stat" aria-label="Views">
+            <i class="fa-solid fa-eye"></i>
+            <span>${escapeHtml(compactNumber(metrics.views))}</span>
+          </span>
+
+          <button
+            type="button"
+            class="photo-stat react-btn ${state.favourited ? "active" : ""}"
+            data-photo-id="${escapeHtml(id)}"
+            data-reaction="favourite"
+            aria-label="Favourite photo"
+            title="Favourite photo"
+          >
+            <i class="fa-solid fa-star"></i>
+            <span>${escapeHtml(compactNumber(metrics.favourites))}</span>
+          </button>
+        </div>
+      `;
+    }
+
+    function sanitizeFileName(value = ""){
+      return String(value)
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "")
+        .slice(0, 60);
+    }
+
+    function getUrlExtension(url = ""){
+      try{
+        const pathname = new URL(url).pathname;
+        const cleanPath = pathname.split("?")[0];
+        const match = cleanPath.match(/\.([a-zA-Z0-9]+)$/);
+        if(match){
+          return match[1].toLowerCase();
+        }
+      }catch(error){
+      }
+      return "jpg";
+    }
+
+    function getDownloadFileName(photo, url = ""){
+      const safeTitle = getSafePhotoTitle(photo);
+      const description = getDescription(photo);
+      const category = String(photo.category || "").trim();
+      const creator = String(getCreatorName(photo) || "").trim();
+
+      const base =
+        sanitizeFileName(safeTitle) ||
+        sanitizeFileName(description.split(" ").slice(0, 6).join(" ")) ||
+        sanitizeFileName(category) ||
+        sanitizeFileName(creator) ||
+        "pixnest-photo";
+
+      const extension = getUrlExtension(url);
+      return `${base}.${extension}`;
+    }
+
+    function parseSupabaseStorageUrl(url = ""){
+      try{
+        const parsed = new URL(url);
+        const marker = "/storage/v1/object/public/";
+        const markerIndex = parsed.pathname.indexOf(marker);
+
+        if(markerIndex === -1){
+          return null;
+        }
+
+        const remainder = parsed.pathname.slice(markerIndex + marker.length);
+        const parts = remainder.split("/").filter(Boolean);
+
+        if(parts.length < 2){
+          return null;
+        }
+
+        const bucket = parts.shift();
+        const path = parts.join("/");
+
+        if(!bucket || !path){
+          return null;
+        }
+
+        return {
+          bucket,
+          path: decodeURIComponent(path)
+        };
+      }catch(error){
+        return null;
+      }
+    }
+
+    function triggerBlobDownload(blob, fileName){
+      const blobUrl = URL.createObjectURL(blob);
+      const anchor = document.createElement("a");
+      anchor.href = blobUrl;
+      anchor.download = fileName;
+      document.body.appendChild(anchor);
+      anchor.click();
+      anchor.remove();
+
+      setTimeout(() => {
+        URL.revokeObjectURL(blobUrl);
+      }, 1000);
+    }
+
+    async function downloadPhoto(url, fileName){
+      if(!url) throw new Error("No image URL");
+
+      const storageInfo = parseSupabaseStorageUrl(url);
+
+      if(storageInfo){
+        const { data, error } = await supabaseClient.storage.from(storageInfo.bucket).download(storageInfo.path);
+        if(!error && data){
+          triggerBlobDownload(data, fileName);
+          return;
+        }
+      }
+
+      const response = await fetch(url, { mode:"cors" });
+      if(!response.ok){
+        throw new Error("Download failed");
+      }
+
+      const blob = await response.blob();
+      triggerBlobDownload(blob, fileName);
+    }
+
+    function setButtonLoadingState(button, isLoading){
+      if(!button) return;
+
+      button.classList.toggle("is-loading", isLoading);
+
+      if(isLoading){
+        button.dataset.originalHtml = button.innerHTML;
+        button.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+      }else if(button.dataset.originalHtml){
+        button.innerHTML = button.dataset.originalHtml;
+      }
+    }
+
+    async function handleNativeShare(button){
+      if(button.classList.contains("disabled") || button.dataset.premiumLocked === "true"){
+        handleLockedPremiumPhoto();
+        return;
+      }
+
+      const url = button.getAttribute("data-share-url") || window.location.href;
+      const title = button.getAttribute("data-share-title") || "PixNest";
+
+      if(navigator.share){
+        try{
+          await navigator.share({ title, url });
+        }catch(error){
+        }
+      }else{
+        try{
+          await navigator.clipboard.writeText(url);
+          showNotice("Link copied.");
+        }catch(error){
+          alert("Link copy failed. You can copy it manually:\n" + url);
+        }
+      }
+    }
+
+    async function handleDownloadButtonClick(button){
+      if(button.classList.contains("disabled") || button.dataset.premiumLocked === "true"){
+        handleLockedPremiumPhoto();
+        return;
+      }
+
+      const url = button.getAttribute("data-download-url") || "";
+      const fileName = button.getAttribute("data-download-name") || "pixnest-photo.jpg";
+
+      if(!url || url === LOCKED_SVG){
+        handleLockedPremiumPhoto();
+        return;
+      }
+
+      try{
+        setButtonLoadingState(button, true);
+        await downloadPhoto(url, fileName);
+      }catch(error){
+        console.error(error);
+        alert("Download could not start. Please try again.");
+      }finally{
+        setButtonLoadingState(button, false);
+      }
+    }
+
+    function bindDownloadButtons(scope){
+      scope.querySelectorAll(".download-btn").forEach(button => {
+        if(button.dataset.downloadBound === "true") return;
+        button.dataset.downloadBound = "true";
+
+        button.addEventListener("click", async (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          await handleDownloadButtonClick(button);
+        });
+      });
+    }
+
+    function bindReactionButtons(scope){
+      scope.querySelectorAll(".react-btn").forEach(button => {
+        if(button.dataset.reactionBound === "true") return;
+        button.dataset.reactionBound = "true";
+
+        button.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+
+          const photoId = button.getAttribute("data-photo-id");
+          const reactionType = button.getAttribute("data-reaction");
+
+          if(!photoId || !reactionType) return;
+          toggleReaction(photoId, reactionType);
+        });
+      });
+    }
+
+    function getViewColumnName(photo){
+      if(Object.prototype.hasOwnProperty.call(photo, "views")) return "views";
+      if(Object.prototype.hasOwnProperty.call(photo, "view_count")) return "view_count";
+      if(Object.prototype.hasOwnProperty.call(photo, "views_count")) return "views_count";
+      if(Object.prototype.hasOwnProperty.call(photo, "total_views")) return "total_views";
+      return "views";
+    }
+
+    function applyLocalViewIncrement(photo){
+      const photoId = getPhotoId(photo);
+      const column = getViewColumnName(photo);
+
+      allPhotos = allPhotos.map(item => {
+        if(getPhotoId(item) !== photoId) return item;
+        return {
+          ...item,
+          [column]: getNumberValue(item, [column]) + 1
+        };
+      });
+    }
+
+    async function incrementPhotoViews(photo){
+      const stableId = String(photo.id || getPhotoId(photo));
+      if(viewedSession[stableId]) return;
+
+      viewedSession[stableId] = true;
+      saveViewedSession();
+
+      applyLocalViewIncrement(photo);
+
+      if(!photo.id){
+        return;
+      }
+
+      try{
+        const column = getViewColumnName(photo);
+        const currentValue = getNumberValue(photo, [column]);
+        const nextValue = currentValue + 1;
+
+        const { error } = await supabaseClient
+          .from("photos")
+          .update({ [column]: nextValue })
+          .eq("id", photo.id);
+
+        if(error){
+          console.error("View update failed:", error);
+        }
+      }catch(error){
+        console.error("View increment error:", error);
+      }
+    }
+
+    function getTotalViews(rows){
+      return rows.reduce((sum, photo) => sum + getPhotoMetrics(photo).views, 0);
+    }
+
+    function getFollowingCount(){
+      return getFollowingCountProfile() || Object.values(creatorPrefs).filter(item => item && item.followed).length;
+    }
+
+    function buildCard(photo, trendingIds){
+      const locked = isLockedPhoto(photo);
+      const description = locked ? "Premium members only." : getDescription(photo);
+      const creatorName = getCreatorName(photo) || "Unknown Creator";
+      const photoId = getPhotoId(photo);
+      const isTrending = trendingIds.has(photoId);
+      const approval = getApprovalState(photo);
+      const imageSrc = locked ? LOCKED_SVG : (photo.image_url || DEFAULT_COVER);
+
+      return `
+        <article class="visual-card ${locked ? "locked-card" : ""}" data-photo-id="${escapeHtml(photoId)}">
+          <img src="${escapeHtml(imageSrc)}" alt="${escapeHtml(locked ? "Premium photo" : getPhotoAlt(photo))}">
+
+          <div class="card-top-row">
+            <div class="card-top-left">
+              ${isTrending && !photo.featured ? `<span class="pill trending"><i class="fa-solid fa-fire"></i> Trending</span>` : ``}
+              ${photo.featured ? `<span class="pill featured"><i class="fa-solid fa-bolt"></i> Featured</span>` : ``}
+              ${approval === "approved" ? `<span class="pill approved"><i class="fa-solid fa-shield-check"></i> Approved</span>` : ``}
+              ${approval === "pending" ? `<span class="pill pending"><i class="fa-solid fa-hourglass-half"></i> Pending</span>` : ``}
+            </div>
+
+            <div class="card-top-right">
+              ${isPremiumPhoto(photo) ? `<span class="pill premium"><i class="fa-solid fa-star"></i> Premium</span>` : ``}
+            </div>
+          </div>
+
+          <div class="photo-overlay">
+            <div class="overlay-category">
+              <span class="pill category-tag">${escapeHtml(photo.category || "Photo")}</span>
+            </div>
+
+            ${description ? `<p class="overlay-desc">${escapeHtml(description)}</p>` : ""}
+            <div class="credit">By ${buildInlineVerifiedName(creatorName, isCreatorVerified(photo))}</div>
+
+            <div class="card-bottom">
+              <div class="card-bottom-left">
+                ${locked ? `
+                  <a
+                    class="action-icon"
+                    href="premium.html"
+                    aria-label="Unlock premium"
+                    title="Unlock premium"
+                  >
+                    <i class="fa-solid fa-crown"></i>
+                  </a>
+                ` : `
+                  <button
+                    type="button"
+                    class="action-icon share-btn"
+                    aria-label="Share"
+                    title="Share"
+                    data-share-url="${escapeHtml(photo.image_url || window.location.href)}"
+                    data-share-title="${escapeHtml(getShareTitle(photo))}"
+                  >
+                    <i class="fa-solid fa-share-nodes"></i>
+                  </button>
+
+                  <button
+                    type="button"
+                    class="action-icon download-btn"
+                    data-download-url="${escapeHtml(photo.image_url || "")}"
+                    data-download-name="${escapeHtml(getDownloadFileName(photo, photo.image_url || ""))}"
+                    aria-label="Download image"
+                    title="Download image"
+                  >
+                    <i class="fa-solid fa-download"></i>
+                  </button>
+                `}
+              </div>
+
+              <div class="card-bottom-right">
+                ${locked ? `<div class="lock-note">Join premium to enlarge, share, or download.</div>` : buildPhotoStats(photo)}
+              </div>
+            </div>
+          </div>
+        </article>
+      `;
+    }
+
+    function activateCards(rows, container){
+      container.querySelectorAll(".visual-card").forEach(card => {
+        const photoId = card.getAttribute("data-photo-id");
+        const photo = rows.find(item => getPhotoId(item) === String(photoId));
+        if(!photo) return;
+
+        card.addEventListener("click", async (e) => {
+          if(e.target.closest(".share-btn") || e.target.closest(".download-btn") || e.target.closest(".react-btn")){
+            return;
+          }
+          await openLightbox(photo);
+        });
+      });
+
+      container.querySelectorAll(".share-btn").forEach(btn => {
+        btn.addEventListener("click", async (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          await handleNativeShare(btn);
+        });
+      });
+
+      bindDownloadButtons(container);
+      bindReactionButtons(container);
+    }
+
+    function renderGridSection(rows, container, emptyTitle, emptyText, countChip, countLabel){
+      countChip.textContent = `${rows.length} ${countLabel}`;
+
+      if(!rows.length){
+        container.innerHTML = `
+          <div class="empty-box">
+            <h3>${escapeHtml(emptyTitle)}</h3>
+            <p>${escapeHtml(emptyText)}</p>
+          </div>
+        `;
+        return;
+      }
+
+      const trendingIds = getTrendingIds(rows);
+      container.innerHTML = rows.map(photo => buildCard(photo, trendingIds)).join("");
+      activateCards(rows, container);
+    }
+
+    function openSettings(){
+      if(!currentUser){
+        showNotice("Log in first.");
+        return;
+      }
+      fillSettingsForm();
+      settingsModal.classList.add("show");
+      document.body.style.overflow = "hidden";
+    }
+
+    function closeSettings(){
+      settingsModal.classList.remove("show");
+      document.body.style.overflow = "";
+    }
+
+    function fillSettingsForm(){
+      if(!currentUser) return;
+
+      fullNameInput.value = currentCreatorProfile?.display_name || currentUser.user_metadata?.full_name || currentUser.user_metadata?.name || "";
+      usernameInput.value = currentCreatorProfile?.username || currentUser.user_metadata?.username || "";
+      roleInput.value = currentCreatorProfile?.role || currentCreatorProfile?.profession || currentUser.user_metadata?.headline || currentUser.user_metadata?.profession || "";
+      followersInput.value = String(getFollowerCount(currentUser));
+      followingInput.value = String(getFollowingCountProfile());
+      bioInput.value = currentCreatorProfile?.bio || currentUser.user_metadata?.bio || "";
+      avatarInput.value = currentCreatorProfile?.avatar_url || currentUser.user_metadata?.avatar_url || "";
+      coverInput.value = currentCreatorProfile?.cover_url || currentUser.user_metadata?.cover_url || currentUser.user_metadata?.background_url || "";
+      instagramInput.value = currentCreatorProfile?.instagram_url || currentUser.user_metadata?.instagram || "";
+      xInput.value = currentCreatorProfile?.x_url || currentUser.user_metadata?.x || currentUser.user_metadata?.twitter || "";
+      facebookInput.value = currentCreatorProfile?.facebook_url || currentUser.user_metadata?.facebook || "";
+      websiteInput.value = currentCreatorProfile?.website_url || currentUser.user_metadata?.website || "";
+    }
+
+    async function saveCreatorProfile(profileData){
+      if(!currentUser) return;
+
+      const payload = {
+        user_id: currentUser.id,
+        email: currentUser.email || "",
+        display_name: profileData.display_name || "",
+        username: profileData.username || "",
+        role: profileData.role || "",
+        profession: profileData.role || "",
+        bio: profileData.bio || "",
+        avatar_url: profileData.avatar_url || "",
+        cover_url: profileData.cover_url || "",
+        instagram_url: profileData.instagram_url || "",
+        x_url: profileData.x_url || "",
+        facebook_url: profileData.facebook_url || "",
+        website_url: profileData.website_url || "",
+        followers_count: Number(profileData.followers_count || 0),
+        following_count: Number(profileData.following_count || 0),
+        updated_at: new Date().toISOString()
+      };
+
+      const { error } = await supabaseClient
+        .from(CREATOR_PROFILE_TABLE)
+        .upsert(payload, { onConflict:"user_id" });
+
+      if(error) throw error;
+    }
+
+    async function saveSettings(e){
+      e.preventDefault();
+      if(!currentUser) return;
+
+      const payload = {
+        display_name: fullNameInput.value.trim(),
+        username: usernameInput.value.trim(),
+        role: roleInput.value.trim(),
+        followers_count: Number(followersInput.value || 0),
+        following_count: Number(followingInput.value || 0),
+        bio: bioInput.value.trim(),
+        avatar_url: avatarInput.value.trim(),
+        cover_url: coverInput.value.trim(),
+        instagram_url: instagramInput.value.trim(),
+        x_url: xInput.value.trim(),
+        facebook_url: facebookInput.value.trim(),
+        website_url: websiteInput.value.trim()
+      };
+
+      try{
+        await saveCreatorProfile(payload);
+
+        const { error } = await supabaseClient.auth.updateUser({
+          data: {
+            full_name: payload.display_name,
+            username: payload.username,
+            headline: payload.role,
+            profession: payload.role,
+            bio: payload.bio,
+            avatar_url: payload.avatar_url,
+            cover_url: payload.cover_url
+          }
+        });
+        if(error) throw error;
+
+        await initCurrentUser();
+        await loadCreatorProfile();
+        refreshAccountPage();
+        closeSettings();
+        showNotice("Profile updated.");
+      }catch(error){
+        console.error(error);
+        alert("Could not save your profile changes.");
+      }
+    }
+
+    function resetSettings(){
+      fillSettingsForm();
+      showNotice("Changes reset.");
+    }
+
+    async function uploadProfileMedia(file, kind){
+      if(!currentUser || !file) return "";
+
+      const fileExt = (file.name.split(".").pop() || "jpg").toLowerCase();
+      const path = `${currentUser.id}/${kind}-${Date.now()}.${fileExt}`;
+
+      const { error } = await supabaseClient.storage
+        .from(PROFILE_MEDIA_BUCKET)
+        .upload(path, file, { upsert:true });
+
+      if(error){
+        throw error;
+      }
+
+      const { data } = supabaseClient.storage
+        .from(PROFILE_MEDIA_BUCKET)
+        .getPublicUrl(path);
+
+      return data?.publicUrl || "";
+    }
+
+    async function handleMediaUpload(file, kind){
+      if(!file || !currentUser) return;
+
+      try{
+        showNotice(kind === "avatar" ? "Uploading profile picture..." : "Uploading cover photo...");
+        const url = await uploadProfileMedia(file, kind);
+
+        if(!url){
+          throw new Error("No media URL returned");
+        }
+
+        const creatorUpdate = kind === "avatar"
+          ? { avatar_url:url }
+          : { cover_url:url };
+
+        await saveCreatorProfile({
+          display_name: currentCreatorProfile?.display_name || getDisplayName(currentUser),
+          username: currentCreatorProfile?.username || getUsername(currentUser),
+          role: currentCreatorProfile?.role || getUserRole(currentUser),
+          followers_count: getFollowerCount(currentUser),
+          following_count: getFollowingCountProfile(),
+          bio: currentCreatorProfile?.bio || getUserBio(currentUser),
+          avatar_url: kind === "avatar" ? url : (currentCreatorProfile?.avatar_url || getUserAvatar(currentUser)),
+          cover_url: kind === "cover" ? url : (currentCreatorProfile?.cover_url || getUserCover(currentUser)),
+          instagram_url: currentCreatorProfile?.instagram_url || "",
+          x_url: currentCreatorProfile?.x_url || "",
+          facebook_url: currentCreatorProfile?.facebook_url || "",
+          website_url: currentCreatorProfile?.website_url || ""
+        });
+
+        const authUpdate = kind === "avatar"
+          ? { avatar_url:url }
+          : { cover_url:url };
+
+        const { error } = await supabaseClient.auth.updateUser({ data:authUpdate });
+        if(error) throw error;
+
+        await initCurrentUser();
+        await loadCreatorProfile();
+        refreshAccountPage();
+        showNotice(kind === "avatar" ? "Profile picture updated." : "Cover photo updated.");
+      }catch(error){
+        console.error(error);
+        alert("Upload failed. Make sure your Supabase storage bucket 'profile-media' exists and allows uploads.");
+      }
+    }
+
+    async function shareProfile(){
+      if(!currentUser){
+        showNotice("Log in first.");
+        return;
+      }
+
+      const publicUrl = `${window.location.origin}${window.location.pathname.replace("account.html", "profile.html")}?creator=${encodeURIComponent(currentUser.id)}&name=${encodeURIComponent(getDisplayName(currentUser))}`;
+      const title = `${getDisplayName(currentUser)} on PixNest`;
+
+      if(navigator.share){
+        try{
+          await navigator.share({ title, url: publicUrl });
+        }catch(error){
+        }
+      }else{
+        try{
+          await navigator.clipboard.writeText(publicUrl);
+          showNotice("Profile link copied.");
+        }catch(error){
+          alert("Could not copy profile link.");
+        }
+      }
+    }
+
+    async function submitRequest(requestType){
+      if(!currentUser){
+        showNotice("Log in first.");
+        return;
+      }
+
+      try{
+        const payload = {
+          user_id: currentUser.id,
+          email: currentUser.email || "",
+          request_type: requestType,
+          status: "pending",
+          created_at: new Date().toISOString()
+        };
+
+        const { error } = await supabaseClient
+          .from(REQUESTS_TABLE)
+          .insert([payload]);
+
+        if(error) throw error;
+
+        showNotice(
+          requestType === "verification"
+            ? "Verification request submitted."
+            : "Creator studio request submitted."
+        );
+      }catch(error){
+        console.error(error);
+        alert("Request could not be submitted. Create a 'creator_requests' table in Supabase first.");
+      }
+    }
+
+    function buildLightboxActions(photo){
+      if(isLockedPhoto(photo)){
+        return `
+          <a
+            class="account-btn"
+            href="premium.html"
+            style="min-height:44px;padding:10px 14px;border-radius:12px;font-size:14px;"
+          >
+            <i class="fa-solid fa-crown"></i>
+            Unlock Premium
+          </a>
+        `;
+      }
+
+      const imageUrl = photo.image_url || "";
+      const downloadName = getDownloadFileName(photo, imageUrl);
+
+      return `
+        <button
+          type="button"
+          class="account-btn"
+          data-share-url="${escapeHtml(imageUrl || window.location.href)}"
+          data-share-title="${escapeHtml(getShareTitle(photo))}"
+          id="lightboxShareBtn"
+          style="min-height:44px;padding:10px 14px;border-radius:12px;font-size:14px;"
+        >
+          <i class="fa-solid fa-share-nodes"></i>
+          Share
+        </button>
+
+        <button
+          type="button"
+          class="account-btn download-btn"
+          data-download-url="${escapeHtml(imageUrl)}"
+          data-download-name="${escapeHtml(downloadName)}"
+          style="min-height:44px;padding:10px 14px;border-radius:12px;font-size:14px;"
+        >
+          <i class="fa-solid fa-download"></i>
+          Download
+        </button>
+      `;
+    }
+
+    function formatPostDate(photo){
+      const value = (
+        photo.posted_at ||
+        photo.published_at ||
+        photo.created_at ||
+        photo.uploaded_at ||
+        photo.post_date ||
+        photo.date ||
+        ""
+      );
+
+      if(!value) return "Unknown date";
+
+      const date = new Date(value);
+      if(Number.isNaN(date.getTime())){
+        return String(value);
+      }
+
+      return date.toLocaleDateString("en-GB", {
+        day:"numeric",
+        month:"short",
+        year:"numeric"
+      });
+    }
+
+    function renderLightbox(photo){
+      lightboxImage.src = isLockedPhoto(photo) ? LOCKED_SVG : (photo.image_url || "");
+      lightboxImage.alt = getPhotoAlt(photo);
+      lightboxTitle.textContent = getSafePhotoTitle(photo) || photo.category || "Photo";
+
+      document.getElementById("lightboxCategory").textContent = photo.category || "Uncategorized";
+      document.getElementById("lightboxCredit").innerHTML = buildInlineVerifiedName(getCreatorName(photo) || "Unknown", isCreatorVerified(photo));
+      document.getElementById("lightboxTags").textContent = getPhotoTags(photo).join(", ") || "No tags";
+      document.getElementById("lightboxDescription").textContent = getDescription(photo) || "No description added.";
+      document.getElementById("lightboxPosted").textContent = formatPostDate(photo);
+
+      lightboxStatsWrap.innerHTML = isLockedPhoto(photo) ? `<div class="lock-note">Join premium to enlarge, share, or download this photo.</div>` : buildPhotoStats(photo);
+      lightboxActions.innerHTML = buildLightboxActions(photo);
+
+      const shareBtn = document.getElementById("lightboxShareBtn");
+      if(shareBtn){
+        shareBtn.addEventListener("click", async (e) => {
+          e.preventDefault();
+          await handleNativeShare(shareBtn);
+        });
+      }
+
+      bindReactionButtons(lightboxStatsWrap);
+      bindDownloadButtons(lightboxActions);
+    }
+
+    async function openLightbox(photo){
+      if(isLockedPhoto(photo)){
+        handleLockedPremiumPhoto();
+        return;
+      }
+
+      await incrementPhotoViews(photo);
+      const freshPhoto = getPhotoById(getPhotoId(photo)) || photo;
+      activeLightboxPhotoId = getPhotoId(freshPhoto);
+      renderLightbox(freshPhoto);
+      lightbox.classList.add("show");
+      document.body.style.overflow = "hidden";
+    }
+
+    function closeLightbox(){
+      activeLightboxPhotoId = "";
+      lightbox.classList.remove("show");
+      document.body.style.overflow = "";
+      lightboxActions.innerHTML = "";
+      lightboxStatsWrap.innerHTML = "";
+      lightboxImage.src = "";
+      lightboxImage.alt = "Large view";
+    }
+
+    async function initCurrentUser(){
+      try{
+        const { data } = await supabaseClient.auth.getUser();
+        currentUser = data?.user || null;
+      }catch(error){
+        currentUser = null;
+      }
+    }
+
+    async function loadCreatorProfile(){
+      currentCreatorProfile = null;
+      if(!currentUser) return;
+
+      try{
+        const { data, error } = await supabaseClient
+          .from(CREATOR_PROFILE_TABLE)
+          .select("*")
+          .eq("user_id", currentUser.id)
+          .maybeSingle();
+
+        if(error){
+          throw error;
+        }
+
+        currentCreatorProfile = data || null;
+      }catch(error){
+        currentCreatorProfile = null;
+      }
+    }
+
+    async function loadPhotos(forceRefresh = false){
+      if(photosLoadInFlight && !forceRefresh){
+        return photosLoadInFlight;
+      }
+
+      photosLoadInFlight = (async () => {
+        try{
+          const { data, error } = await supabaseClient
+            .from("photos")
+            .select("*")
+            .order("created_at", { ascending:false })
+            .limit(PHOTO_LOAD_LIMIT);
+
+          if(error){
+            throw error;
+          }
+
+          rawPhotos = Array.isArray(data) ? data : [];
+          allPhotos = await safelyPreparePhotosForDisplay(rawPhotos);
+          photosLoadedOnce = true;
+
+          applyAdminText();
+          refreshPhotoSections();
+        }catch(error){
+          console.error(error);
+          categoryGrid.innerHTML = `<div class="empty-box">Could not load categories from Supabase.</div>`;
+          if(typeof featuredGrid !== "undefined" && featuredGrid){
+            featuredGrid.innerHTML = `<div class="empty-box">Could not load featured photos from Supabase.</div>`;
+          }
+          if(typeof trendingGrid !== "undefined" && trendingGrid){
+            trendingGrid.innerHTML = `<div class="empty-box">Could not load trending photos from Supabase.</div>`;
+          }
+          if(typeof photoGrid !== "undefined" && photoGrid){
+            photoGrid.innerHTML = `<div class="empty-box">Could not load photos from Supabase.</div>`;
+          }
+          if(typeof galleryGrid !== "undefined" && galleryGrid){
+            galleryGrid.innerHTML = `<div class="empty-box">Could not load photos from Supabase.</div>`;
+          }
+        }finally{
+          photosLoadInFlight = null;
+        }
+      })();
+
+      return photosLoadInFlight;
+    }
+
+    function updateDeleteAccountVisibility(){
+      const canShowDelete = Boolean(currentUser) && !isAdminAccount(currentUser);
+
+      if(deleteAccountSection){
+        deleteAccountSection.classList.toggle("hidden", !canShowDelete);
+      }
+
+      if(deleteAccountMenuBtn){
+        deleteAccountMenuBtn.classList.toggle("hidden", !canShowDelete);
+      }
+
+      if(deleteAccountNote){
+        deleteAccountNote.textContent = canShowDelete
+          ? "Only you can delete your own account here. Your reason is optional and used only to improve PixNest."
+          : "Admin and founder accounts cannot be deleted from this form.";
+      }
+    }
+
+    async function handleDeleteAccount(e){
+      e.preventDefault();
+
+      if(!currentUser){
+        showNotice("Log in first.");
+        return;
+      }
+
+      if(isAdminAccount(currentUser)){
+        showNotice("Admin accounts cannot be deleted from this form.");
+        return;
+      }
+
+      if(!deleteConfirmCheck.checked){
+        showNotice("Tick the confirmation box before deleting your account.");
+        return;
+      }
+
+      const confirmDelete = window.confirm("Delete your PixNest account permanently? This cannot be undone.");
+      if(!confirmDelete){
+        return;
+      }
+
+      const originalHtml = deleteAccountBtn.innerHTML;
+      deleteAccountBtn.disabled = true;
+      deleteAccountBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Deleting...';
+
+      try{
+        const { data, error } = await supabaseClient.rpc("request_self_account_deletion", {
+          reason_text: deleteReasonInput.value.trim() || null
+        });
+
+        if(error){
+          throw error;
+        }
+
+        showNotice(data?.message || "Your account has been deleted.");
+
+        try{
+          await supabaseClient.auth.signOut();
+        }catch(signOutError){
+          console.warn("Sign out after delete failed", signOutError);
+        }
+
+        setTimeout(() => {
+          window.location.href = "index.html";
+        }, 900);
+      }catch(error){
+        alert(error?.message || "Could not delete your account.");
+      }finally{
+        deleteAccountBtn.disabled = false;
+        deleteAccountBtn.innerHTML = originalHtml;
+      }
+    }
+
+    async function handleLogout(){
+      try{
+        await supabaseClient.auth.signOut();
+        currentUser = null;
+        currentCreatorProfile = null;
+        closeSettings();
+        closeLightbox();
+        refreshAccountPage();
+        showNotice("Logged out successfully.");
+      }catch(error){
+        alert("Could not log out.");
+      }
+    }
+
+    function renderLoggedOutState(){
+      loggedInArea.classList.add("hidden");
+      loginRequiredBox.classList.remove("hidden");
+      if(deleteReasonInput){
+        deleteReasonInput.value = "";
+      }
+      if(deleteConfirmCheck){
+        deleteConfirmCheck.checked = false;
+      }
+      updateDeleteAccountVisibility();
+      postsGrid.innerHTML = "";
+      repostsGrid.innerHTML = "";
+      favouritesGrid.innerHTML = "";
+      postsCountChip.textContent = "0 posts";
+      repostsCountChip.textContent = "0 reposts";
+      favouritesCountChip.textContent = "0 favourites";
+    }
+
+    function renderHeader(){
+      if(!currentUser){
+        renderLoggedOutState();
+        return;
+      }
+
+      loggedInArea.classList.remove("hidden");
+      loginRequiredBox.classList.add("hidden");
+
+      const myPosts = getMyPosts();
+      const avatar = getUserAvatar(currentUser);
+      const cover = getUserCover(currentUser) || DEFAULT_COVER;
+      const displayName = getDisplayName(currentUser);
+      const followerCount = getFollowerCount(currentUser);
+      const followingCount = getFollowingCount();
+      const totalViews = getTotalViews(myPosts);
+      const canOpenProDashboard = isProfessionalApproved(currentUser);
+
+      accountHero.style.background = "#0f172a";
+      accountCard.style.setProperty("--account-cover", `url("${cover}")`);
+
+      accountAvatar.innerHTML = avatar
+        ? `<img src="${escapeHtml(avatar)}" alt="${escapeHtml(displayName)}">`
+        : `<span>${escapeHtml((displayName.charAt(0) || "P").toUpperCase())}</span>`;
+
+      accountName.textContent = displayName;
+      blueCheck.classList.toggle("show", isVerified(currentUser));
+      statusBadges.innerHTML = buildStatusBadges(currentUser);
+      accountRole.textContent = getUserRole(currentUser);
+      accountBio.textContent = getUserBio(currentUser);
+
+      topStatsRow.innerHTML = `
+        <div class="top-stat">
+          <strong>${escapeHtml(compactNumber(myPosts.length))}</strong>
+          <span>Posts</span>
+        </div>
+        <div class="top-stat">
+          <strong>${escapeHtml(compactNumber(followerCount))}</strong>
+          <span>Followers</span>
+        </div>
+        <div class="top-stat">
+          <strong>${escapeHtml(compactNumber(followingCount))}</strong>
+          <span>Following</span>
+        </div>
+      `;
+
+      updateDeleteAccountVisibility();
+
+      if(canOpenProDashboard){
+        proBoardText.textContent = `Professional dashboard unlocked. Followers: ${compactNumber(followerCount)}. Total views: ${compactNumber(totalViews)}.`;
+        professionalDashboardBtn.disabled = false;
+      }else{
+        proBoardText.textContent = `Professional dashboard is locked until the PixNest review team approves your creator profile for dashboard access.`;
+        professionalDashboardBtn.disabled = true;
+      }
+    }
+
+    function renderSections(){
+      if(!currentUser){
+        return;
+      }
+
+      const myPosts = getMyPosts();
+      const myReposts = getMyReposts();
+      const myFavourites = getMyFavourites();
+
+      renderGridSection(
+        myPosts,
+        postsGrid,
+        "No posts yet",
+        "Your uploaded photos will show here. If your creator uploads require review-team approval, pending posts will show a pending badge.",
+        postsCountChip,
+        "posts"
+      );
+
+      renderGridSection(
+        myReposts,
+        repostsGrid,
+        "No reposts yet",
+        "Reposted content will show in this section when available.",
+        repostsCountChip,
+        "reposts"
+      );
+
+      renderGridSection(
+        myFavourites,
+        favouritesGrid,
+        "No favourites yet",
+        "Posts you favourite will show here.",
+        favouritesCountChip,
+        "favourites"
+      );
+    }
+
+    function refreshAccountPage(){
+      renderHeader();
+      renderSections();
+
+      if(activeLightboxPhotoId && lightbox.classList.contains("show")){
+        const activePhoto = getPhotoById(activeLightboxPhotoId);
+        if(activePhoto){
+          renderLightbox(activePhoto);
+        }
+      }
+    }
+
+    navToggle.addEventListener("click", () => {
+      navLinks.classList.toggle("show");
+      const expanded = navToggle.getAttribute("aria-expanded") === "true";
+      navToggle.setAttribute("aria-expanded", String(!expanded));
+    });
+
+    accountMenuToggle.addEventListener("click", (e) => {
+      e.stopPropagation();
+      accountDropdown.classList.toggle("show");
+    });
+
+    document.addEventListener("click", (e) => {
+      if(!accountDropdown.contains(e.target) && !accountMenuToggle.contains(e.target)){
+        accountDropdown.classList.remove("show");
+      }
+
+      if(window.innerWidth <= 860 && !navLinks.contains(e.target) && !navToggle.contains(e.target)){
+        navLinks.classList.remove("show");
+        navToggle.setAttribute("aria-expanded", "false");
+      }
+    });
+
+    window.addEventListener("resize", () => {
+      if(window.innerWidth > 860){
+        navLinks.classList.remove("show");
+        navToggle.setAttribute("aria-expanded", "false");
+      }
+    });
+
+    editProfileBtn.addEventListener("click", openSettings);
+    editProfileMenuBtn.addEventListener("click", () => {
+      accountDropdown.classList.remove("show");
+      openSettings();
+    });
+
+    shareProfileBtn.addEventListener("click", shareProfile);
+
+    professionalDashboardBtn.addEventListener("click", () => {
+      if(!professionalDashboardBtn.disabled){
+        window.location.href = "creator-studio.html";
+      }
+    });
+
+    verificationRequestBtn.addEventListener("click", async () => {
+      accountDropdown.classList.remove("show");
+      await submitRequest("verification");
+    });
+
+    dashboardRequestBtn.addEventListener("click", async () => {
+      accountDropdown.classList.remove("show");
+      await submitRequest("professional_dashboard");
+    });
+
+    changeAvatarBtn.addEventListener("click", () => avatarFileInput.click());
+    changeAvatarMenuBtn.addEventListener("click", () => {
+      accountDropdown.classList.remove("show");
+      avatarFileInput.click();
+    });
+
+    changeCoverMenuBtn.addEventListener("click", () => {
+      accountDropdown.classList.remove("show");
+      coverFileInput.click();
+    });
+
+    changeAvatarModalBtn.addEventListener("click", () => avatarFileInput.click());
+    changeCoverModalBtn.addEventListener("click", () => coverFileInput.click());
+
+    mutedAccountsBtn.addEventListener("click", () => {
+      accountDropdown.classList.remove("show");
+      showNotice("Muted accounts settings ready for setup.");
+    });
+
+    contentPreferencesBtn.addEventListener("click", () => {
+      accountDropdown.classList.remove("show");
+      showNotice("Content preferences settings ready for setup.");
+    });
+
+    accessibilityBtn.addEventListener("click", () => {
+      accountDropdown.classList.remove("show");
+      showNotice("Accessibility settings ready for setup.");
+    });
+
+    languageBtn.addEventListener("click", () => {
+      accountDropdown.classList.remove("show");
+      showNotice("Language and translations settings ready for setup.");
+    });
+
+    mediaQualityBtn.addEventListener("click", () => {
+      accountDropdown.classList.remove("show");
+      showNotice("Media quality settings ready for setup.");
+    });
+
+    privacyCentreBtn.addEventListener("click", () => {
+      accountDropdown.classList.remove("show");
+      showNotice("Privacy Centre ready for setup.");
+    });
+
+    accountStatusBtn.addEventListener("click", () => {
+      accountDropdown.classList.remove("show");
+
+      if(!currentUser){
+        showNotice("Log in first.");
+        return;
+      }
+
+      const followerCount = getFollowerCount(currentUser);
+      const totalViews = getTotalViews(getMyPosts());
+      const statusText = `Followers: ${compactNumber(followerCount)} · Views: ${compactNumber(totalViews)} · Verified: ${isVerified(currentUser) ? "Yes" : "No"} · Premium: ${isPremiumMember(currentUser) ? "Yes" : "No"}`;
+      showNotice(statusText);
+    });
+
+    avatarFileInput.addEventListener("change", async () => {
+      const file = avatarFileInput.files?.[0];
+      if(file){
+        await handleMediaUpload(file, "avatar");
+      }
+      avatarFileInput.value = "";
+    });
+
+    deleteAccountMenuBtn?.addEventListener("click", () => {
+      accountDropdown.classList.remove("show");
+      if(!currentUser){
+        showNotice("Log in first.");
+        return;
+      }
+      if(isAdminAccount(currentUser)){
+        showNotice("Admin accounts cannot be deleted from this form.");
+        return;
+      }
+      deleteAccountSection?.scrollIntoView({ behavior:"smooth", block:"start" });
+    });
+
+    coverFileInput.addEventListener("change", async () => {
+      const file = coverFileInput.files?.[0];
+      if(file){
+        await handleMediaUpload(file, "cover");
+      }
+      coverFileInput.value = "";
+    });
+
+    logoutBtn.addEventListener("click", () => {
+      accountDropdown.classList.remove("show");
+      handleLogout();
+    });
+
+    closeSettingsBtn.addEventListener("click", closeSettings);
+    settingsModal.addEventListener("click", (e) => {
+      if(e.target === settingsModal){
+        closeSettings();
+      }
+    });
+
+    settingsForm.addEventListener("submit", saveSettings);
+    resetSettingsBtn.addEventListener("click", resetSettings);
+    deleteAccountForm?.addEventListener("submit", handleDeleteAccount);
+
+    lightboxClose.addEventListener("click", closeLightbox);
+    lightbox.addEventListener("click", (e) => {
+      if(e.target === lightbox){
+        closeLightbox();
+      }
+    });
+
+    document.addEventListener("keydown", (e) => {
+      if(e.key === "Escape"){
+        closeSettings();
+        closeLightbox();
+      }
+    });
+
+    supabaseClient.auth.onAuthStateChange(async () => {
+      await initCurrentUser();
+      await loadCreatorProfile();
+      await loadPhotos();
+      refreshAccountPage();
+    });
+
+    (async function init(){
+      await initCurrentUser();
+      await loadCreatorProfile();
+      await loadPhotos();
+      refreshAccountPage();
+    })();
+  </script>
+  <script src="site-auth.js"></script>
+
+<script src="active-nav.js"></script>
 </body>
 </html>
+ 

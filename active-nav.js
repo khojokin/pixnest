@@ -120,10 +120,21 @@
   }
 
   function candidateAnchors(){
+    /*
+     * Identify anchors that should receive the active state.
+     * We exclude the site logo (which uses the `logo-wrap` class) so it
+     * doesn't get styled like a navigation item. Only links defined in the
+     * GROUPS or DIRECT_ONLY sets and located inside recognised navigation
+     * containers are considered.
+     */
     return Array.from(document.querySelectorAll('a[href]')).filter((a) => {
       const href = basename(a.getAttribute('href') || '');
       if(!href) return false;
+      // Skip anchors that are not part of the known page lists
       if(!KNOWN.has(href) && !DIRECT_ONLY.has(href)) return false;
+      // Exclude the site logo link to prevent underline on the logo
+      if(a.classList.contains('logo-wrap')) return false;
+      // Only include links that live in expected navigation containers
       return Boolean(a.closest('header, nav, .nav-links, .site-account-dropdown, .mobile-menu, .menu-panel, .sidebar-nav, .account-menu, .dropdown-menu, .dropdown, .drawer, .hamburger-menu, .menu-list, .menu-links'));
     });
   }

@@ -177,15 +177,6 @@
       flex-wrap:wrap;
     }
 
-    .nav-user-area{
-      position:relative;
-      display:flex;
-      align-items:center;
-      gap:10px;
-      flex-shrink:0;
-    }
-
-
     .nav-auth a{
       display:inline-flex;
       align-items:center;
@@ -1453,22 +1444,25 @@
         </span>
       </a>
 
-      <nav class="nav-links" id="navLinks">
-        <a href="index.html">Home</a>
-        <a href="explore.html" class="active">Explore</a>
-        <a href="category.html">Categories</a>
-        <a href="featured.html">Featured</a>
-        <a href="premium.html">Premium</a>
-        <a href="contact.html">Contact</a>
-      </nav>
-
-      <div class="nav-user-area" id="navUserArea"></div>
-
-      <button class="menu-toggle" id="navToggle" aria-label="Open navigation" aria-expanded="false">
+      <button class="menu-toggle" id="menuToggle" aria-label="Open menu" aria-expanded="false">
         <span></span>
         <span></span>
         <span></span>
       </button>
+
+      <nav class="nav-links" id="navLinks">
+        <a href="index.html">Home</a>
+        <a href="explore.html" class="active">Explore</a>
+        <a href="category.html">Categories</a>
+        <a href="about.html">About</a>
+        <a href="upload.html">Upload</a>
+        <a href="contact.html">Contact</a>
+
+        <div class="nav-auth" id="navAuth">
+          <a href="login.html" class="login-btn"><i class="fa-solid fa-right-to-bracket"></i>Login</a>
+          <a href="signup.html" class="signup-btn"><i class="fa-solid fa-user-plus"></i>Sign Up</a>
+        </div>
+      </nav>
     </div>
   </header>
 
@@ -3452,16 +3446,9 @@ async function openLightbox(photo){
       refreshPhotoDisplays();
     });
   </script>
- <script src="pixnest-data.js"></script>
-<script src="js/config.js"></script>
-<script src="js/state.js"></script>
-<script src="js/utils.js"></script>
-<script src="js/auth.js"></script>
-<script src="js/nav.js"></script>
-<script src="js/premium.js"></script>
-<script src="js/creators.js"></script>
-<script src="js/gallery.js"></script>
-<script src="js/explore.js"></script>
- </body>
+  <script src="site-auth.js"></script>
+
+<script src="active-nav.js"></script>
+</body>
 </html>
  
