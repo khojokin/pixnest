@@ -494,7 +494,9 @@
 .photo-stat.disabled{
   opacity:.45;
   cursor:not-allowed;
-  pointer-events:none;
+  /* Allow pointer events so we can intercept clicks on disabled
+   * actions and display a premium prompt. */
+  pointer-events:auto;
 }
 
 .lock-note{
@@ -644,9 +646,9 @@
       display:inline-flex;
       align-items:center;
       gap:6px;
-      padding:7px 10px;
+      padding:8px 12px;
       border-radius:999px;
-      font-size:11px;
+      font-size:12px;
       font-weight:700;
       color:#fff;
       background:rgba(255,255,255,.12);
@@ -657,7 +659,7 @@
 
     .photo-stat i{
       color:var(--accent);
-      font-size:11px;
+      font-size:13px;
     }
 
     .photo-stat.react-btn{
@@ -678,6 +680,20 @@
 
     .photo-stat.react-btn.active i{
       color:var(--accent);
+    }
+
+/*
+ * Disabled reaction buttons (used for premium photos) should appear inactive
+ * and prevent user interaction.  They inherit the same layout as regular
+ * stats but are less opaque and ignore pointer events.  This helps users
+ * understand that the action is unavailable unless they subscribe to
+ * premium.
+ */
+.photo-stat.react-btn.disabled{
+      opacity:.45;
+      cursor:not-allowed;
+      /* Do not disable pointer events so we can intercept clicks and show
+       * a premium prompt when users attempt to interact with locked actions. */
     }
 
     .action-icon{
@@ -763,12 +779,18 @@
     }
 
     
+/*
+ * Ensure photos in the lightbox fill the available space.  Using
+ * `object-fit: cover` crops the image to its container while preserving
+ * aspect ratio.  This avoids large letterbox areas around tall or wide
+ * images when viewed in the creator profile lightbox.
+ */
 .lightbox-image-wrap img{
       width:100%;
       height:100%;
       max-width:100%;
       max-height:100%;
-      object-fit:contain;
+      object-fit:cover;
       object-position:center;
       border-radius:18px;
     }
@@ -1025,8 +1047,8 @@
     }
 
     .lightbox-social{
-      width:42px;
-      height:42px;
+      width:46px;
+      height:46px;
       border-radius:50%;
       display:flex;
       align-items:center;
@@ -1034,7 +1056,7 @@
       background:#0f172a;
       border:1px solid var(--line);
       color:#fff;
-      font-size:15px;
+      font-size:16px;
       cursor:pointer;
       flex-shrink:0;
     }
@@ -1045,10 +1067,11 @@
       transform:translateY(-2px);
     }
 
-    .lightbox-social.disabled{
+.lightbox-social.disabled{
       opacity:.45;
       cursor:not-allowed;
-      pointer-events:none;
+      /* Keep pointer events enabled so clicks can trigger premium prompt */
+      pointer-events:auto;
     }
 
     .detail-list{
@@ -2087,7 +2110,9 @@ function getSafePhotoTitle(photo){
     try{
       const photo = getPhotoById(photoId);
       if(photo && reactionType === "favourite" && isPremiumPhoto(photo)){
-        showNotice("Premium photos cannot be added to favourites.");
+        // For premium photos, favouriting is locked.  Prompt users to join
+        // premium instead of silently failing.
+        handleLockedPremiumPhoto();
         return;
       }
     }catch(e){
@@ -2548,7 +2573,21 @@ function handleLockedPremiumPhoto(){
             <span>${escapeHtml(compactNumber(metrics.views))}</span>
           </span>
 
-      ${isPrem ? `` : `
+      ${isPrem ? `
+      <button
+        type="button"
+        class="photo-stat react-btn disabled"
+        data-photo-id="${escapeHtml(id)}"
+        data-reaction="favourite"
+        data-premium-locked="true"
+        aria-label="Premium photo – join premium to favourite"
+        title="Premium photo – join premium to favourite"
+        ${stopCardAttr}
+      >
+        <i class="fa-solid fa-star"></i>
+        <span>${escapeHtml(compactNumber(metrics.favourites))}</span>
+      </button>
+      ` : `
       <button
         type="button"
         class="photo-stat react-btn ${state.favourited ? "active" : ""}"
@@ -2776,10 +2815,19 @@ function handleLockedPremiumPhoto(){
       actions.push(buildSocialButton(photo.facebook || "", "fa-brands fa-facebook-f", "Creator Facebook"));
 
       if(isPremiumPhoto(photo)){
+        // For premium photos, share and download actions are disabled but still
+        // present so the user can be prompted to join premium.  We assign
+        // data-premium-locked="true" to trigger the locked behaviour in
+        // the event handlers.  Keeping the same IDs allows the
+        // existing event binding code to run and detect the lock state.
         actions.push(`
         <button
           type="button"
           class="lightbox-social disabled"
+          id="lightboxShareBtn"
+          data-share-url="${escapeHtml(imageUrl || window.location.href)}"
+          data-share-title="${escapeHtml(shareTitle)}"
+          data-premium-locked="true"
           title="Share disabled for premium photo"
           aria-label="Share disabled for premium photo"
         >
@@ -2789,7 +2837,10 @@ function handleLockedPremiumPhoto(){
         actions.push(`
         <button
           type="button"
-          class="lightbox-social disabled"
+          class="lightbox-social download-btn disabled"
+          data-download-url="${escapeHtml(imageUrl)}"
+          data-download-name="${escapeHtml(downloadName)}"
+          data-premium-locked="true"
           title="Download disabled for premium photo"
           aria-label="Download disabled for premium photo"
         >
@@ -2912,6 +2963,11 @@ async function handleDownloadButtonClick(button){
         button.addEventListener("click", async (e) => {
           e.preventDefault();
           e.stopPropagation();
+          // If download is locked for premium content, prompt user to upgrade
+          if(button.classList.contains("disabled") || button.dataset.premiumLocked === "true"){
+            handleLockedPremiumPhoto();
+            return;
+          }
           await handleDownloadButtonClick(button);
         });
       });
@@ -2925,6 +2981,13 @@ async function handleDownloadButtonClick(button){
         button.addEventListener("click", (e) => {
           e.preventDefault();
           e.stopPropagation();
+
+          // If this reaction button is disabled for premium content, prompt
+          // the user to join premium and do not toggle any reaction state.
+          if(button.classList.contains("disabled") || button.dataset.premiumLocked === "true"){
+            handleLockedPremiumPhoto();
+            return;
+          }
 
           const photoId = button.getAttribute("data-photo-id");
           const reactionType = button.getAttribute("data-reaction");

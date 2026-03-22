@@ -573,7 +573,8 @@
 .photo-stat.disabled{
   opacity:.45;
   cursor:not-allowed;
-  pointer-events:none;
+  /* Keep pointer events enabled so clicks can trigger premium prompts */
+  pointer-events:auto;
 }
 
 .lock-note{
@@ -723,9 +724,9 @@
       display:inline-flex;
       align-items:center;
       gap:6px;
-      padding:7px 10px;
+      padding:8px 12px;
       border-radius:999px;
-      font-size:11px;
+      font-size:12px;
       font-weight:700;
       color:#fff;
       background:rgba(255,255,255,.12);
@@ -736,7 +737,7 @@
 
     .photo-stat i{
       color:var(--accent);
-      font-size:11px;
+      font-size:13px;
     }
 
     .photo-stat.react-btn{
@@ -842,12 +843,17 @@
     }
 
     
+/*
+ * Fill the lightbox image container with the photo, cropping as needed
+ * to maintain aspect ratio.  Using `object-fit: cover` ensures the
+ * photo always covers the available space without stretching.
+ */
 .lightbox-image-wrap img{
       width:100%;
       height:100%;
       max-width:100%;
       max-height:100%;
-      object-fit:contain;
+      object-fit:cover;
       object-position:center;
       border-radius:18px;
     }
@@ -1104,8 +1110,8 @@
     }
 
     .lightbox-social{
-      width:42px;
-      height:42px;
+      width:46px;
+      height:46px;
       border-radius:50%;
       display:flex;
       align-items:center;
@@ -1113,7 +1119,7 @@
       background:#0f172a;
       border:1px solid var(--line);
       color:#fff;
-      font-size:15px;
+      font-size:16px;
       cursor:pointer;
       flex-shrink:0;
     }
@@ -1124,10 +1130,11 @@
       transform:translateY(-2px);
     }
 
-    .lightbox-social.disabled{
+.lightbox-social.disabled{
       opacity:.45;
       cursor:not-allowed;
-      pointer-events:none;
+      /* Allow pointer events so the click handler can show premium prompt */
+      pointer-events:auto;
     }
 
     .detail-list{
@@ -2150,7 +2157,7 @@ function getPhotoTags(photo){
         try{
           const photo = getPhotoById(photoId);
           if(photo && isPremiumPhoto(photo)){
-            showNotice("Premium photos cannot be added to favourites.");
+            handleLockedPremiumPhoto();
             return;
           }
         }catch(_e){
@@ -2573,7 +2580,21 @@ function handleLockedPremiumPhoto(){
             <span>${escapeHtml(compactNumber(metrics.views))}</span>
           </span>
 
-      ${isPrem ? `` : `
+      ${isPrem ? `
+          <button
+            type="button"
+            class="photo-stat react-btn disabled"
+            data-photo-id="${escapeHtml(id)}"
+            data-reaction="favourite"
+            data-premium-locked="true"
+            aria-label="Premium photo – join premium to favourite"
+            title="Premium photo – join premium to favourite"
+            ${stopCardAttr}
+          >
+            <i class="fa-solid fa-star"></i>
+            <span>${escapeHtml(compactNumber(metrics.favourites))}</span>
+          </button>
+      ` : `
           <button
             type="button"
             class="photo-stat react-btn ${state.favourited ? "active" : ""}"
@@ -2801,12 +2822,18 @@ function handleLockedPremiumPhoto(){
       actions.push(buildSocialButton(photo.x || "", "fa-brands fa-x-twitter", "Creator X"));
       actions.push(buildSocialButton(photo.facebook || "", "fa-brands fa-facebook-f", "Creator Facebook"));
 
-      // For premium photos, disable share and download options
+      // For premium photos, disable share and download options but keep
+      // buttons to prompt users to join premium.  Assign
+      // data-premium-locked to trigger the locked behaviour.
       if(isPrem){
         actions.push(`
         <button
           type="button"
           class="lightbox-social disabled"
+          id="lightboxShareBtn"
+          data-share-url="${escapeHtml(imageUrl || window.location.href)}"
+          data-share-title="${escapeHtml(shareTitle)}"
+          data-premium-locked="true"
           title="Share disabled for premium photo"
           aria-label="Share disabled for premium photo"
         >
@@ -2816,7 +2843,10 @@ function handleLockedPremiumPhoto(){
         actions.push(`
         <button
           type="button"
-          class="lightbox-social disabled"
+          class="lightbox-social download-btn disabled"
+          data-download-url="${escapeHtml(imageUrl)}"
+          data-download-name="${escapeHtml(downloadName)}"
+          data-premium-locked="true"
           title="Download disabled for premium photo"
           aria-label="Download disabled for premium photo"
         >
@@ -2939,6 +2969,11 @@ async function handleDownloadButtonClick(button){
         button.addEventListener("click", async (e) => {
           e.preventDefault();
           e.stopPropagation();
+          // If download is locked for premium content, prompt user to upgrade
+          if(button.classList.contains("disabled") || button.dataset.premiumLocked === "true"){
+            handleLockedPremiumPhoto();
+            return;
+          }
           await handleDownloadButtonClick(button);
         });
       });
@@ -2952,6 +2987,13 @@ async function handleDownloadButtonClick(button){
         button.addEventListener("click", (e) => {
           e.preventDefault();
           e.stopPropagation();
+
+          // If this reaction button is disabled for premium content, prompt
+          // the user to join premium and do not toggle any reaction state.
+          if(button.classList.contains("disabled") || button.dataset.premiumLocked === "true"){
+            handleLockedPremiumPhoto();
+            return;
+          }
 
           const photoId = button.getAttribute("data-photo-id");
           const reactionType = button.getAttribute("data-reaction");
@@ -3075,6 +3117,11 @@ async function handleDownloadButtonClick(button){
           ${favourited ? "Creator in Favourites" : "Add Creator to Favourites"}
         </button>
 
+        <button type="button" class="creator-action-btn" id="viewProfileBtn">
+          <i class="fa-solid fa-user"></i>
+          View Profile
+        </button>
+
         <button type="button" class="creator-action-btn" id="shareProfileBtn">
           <i class="fa-solid fa-share-nodes"></i>
           Share Profile
@@ -3082,6 +3129,7 @@ async function handleDownloadButtonClick(button){
       `;
 
       const favouriteCreatorBtn = document.getElementById("favouriteCreatorBtn");
+      const viewProfileBtn = document.getElementById("viewProfileBtn");
       const shareProfileBtn = document.getElementById("shareProfileBtn");
     const lightboxCategory = document.getElementById("lightboxCategory");
     const lightboxCredit = document.getElementById("lightboxCredit");
@@ -3094,6 +3142,13 @@ async function handleDownloadButtonClick(button){
           updateCreatorPref(photo, { favourited: !favourited });
           showNotice(favourited ? "Creator removed from favourites." : "Creator added to favourites.");
           refreshPhotoDisplays();
+        });
+      }
+
+      if(viewProfileBtn){
+        viewProfileBtn.addEventListener("click", () => {
+          const href = `profile.html?creator=${encodeURIComponent(getCreatorKey(photo))}&name=${encodeURIComponent(getCreatorName(photo))}`;
+          window.location.href = href;
         });
       }
 
