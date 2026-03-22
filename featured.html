@@ -79,6 +79,126 @@
     .photo-stat{display:inline-flex;align-items:center;gap:6px;}
     .photo-stat i{color:var(--accent);}
     .empty-box{border:1px dashed rgba(255,255,255,.18);border-radius:22px;padding:28px;text-align:center;color:var(--muted);background:rgba(255,255,255,.02);} 
+
+    /* Begin visual card styles for featured page */
+    .visual-card{
+      position:relative;
+      min-height:450px;
+      border-radius:24px;
+      overflow:hidden;
+      border:1px solid var(--line);
+      background:#111827;
+      transition:.3s;
+      cursor:pointer;
+      box-shadow:0 14px 28px rgba(0,0,0,.16);
+    }
+
+    .visual-card:hover{
+      transform:translateY(-6px);
+      box-shadow:0 18px 36px rgba(0,0,0,.24);
+    }
+
+    .visual-card img{
+      position:absolute;
+      inset:0;
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      background:#1e293b;
+    }
+
+    .visual-card::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      z-index:1;
+      background:linear-gradient(
+        to top,
+        rgba(15,23,42,.96) 0%,
+        rgba(15,23,42,.72) 34%,
+        rgba(15,23,42,.20) 70%,
+        rgba(15,23,42,.04) 100%
+      );
+    }
+
+    .card-top-row{
+      position:absolute;
+      top:14px;
+      left:14px;
+      right:14px;
+      z-index:3;
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+    }
+
+    .card-top-left,
+    .card-top-right{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+
+    .photo-overlay{
+      position:absolute;
+      inset:0;
+      z-index:2;
+      padding:14px;
+      display:flex;
+      flex-direction:column;
+      justify-content:flex-end;
+      gap:8px;
+    }
+
+    .overlay-category{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+
+    .overlay-desc{
+      color:#fff;
+      font-size:14px;
+      line-height:1.45;
+      margin:0;
+      text-shadow:0 2px 10px rgba(0,0,0,.35);
+      display:-webkit-box;
+      -webkit-line-clamp:2;
+      -webkit-box-orient:vertical;
+      overflow:hidden;
+      max-width:92%;
+    }
+
+    .credit{
+      color:#e2e8f0;
+      font-size:13px;
+      font-weight:700;
+      text-shadow:0 2px 10px rgba(0,0,0,.35);
+      line-height:1.35;
+      display:flex;
+      align-items:center;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+
+    .card-bottom{
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-top:2px;
+    }
+
+    .card-bottom-left,
+    .card-bottom-right{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+    /* End visual card styles */
     footer{border-top:1px solid var(--line);padding:22px 0 38px;margin-top:20px;}
     .footer-inner{display:flex;justify-content:space-between;gap:18px;align-items:center;flex-wrap:wrap;}
     .footer-links{display:flex;gap:16px;flex-wrap:wrap;color:#cbd5e1;}
@@ -515,37 +635,73 @@
       featuredSections.innerHTML = `<div class="photo-grid">${cardsHtml}</div>`;
     }
 
+    // Helper functions to clean photo titles and avoid displaying raw file names
+    function isLikelyFileName(value = ""){
+      const text = String(value || "").trim();
+      if(!text) return false;
+      const extPattern = /\.(jpg|jpeg|png|gif|webp|svg|bmp|avif)$/i;
+      const imageCodePattern = /^(img|image|dsc|pxl|pxl_|screenshot|screen-shot|whatsapp image|photo|file)[-_ ]?\d+/i;
+      const shortSlugPattern = /^[a-z0-9_-]{1,18}$/i;
+      return extPattern.test(text) || imageCodePattern.test(text) || shortSlugPattern.test(text);
+    }
+
+    function getSafePhotoTitle(photo){
+      const possibleFields = [
+        photo.display_title,
+        photo.caption,
+        photo.headline,
+        photo.custom_title,
+        photo.public_title,
+        photo.title
+      ];
+      const found = possibleFields.find(value => String(value || "").trim());
+      const clean = String(found || "").trim();
+      if(!clean) return "";
+      if(isLikelyFileName(clean)) return "";
+      return clean;
+    }
+
     // Generate markup for a single featured/trending card
     function buildFeaturedCard(photo){
-      const createdAt = photo.createdAt ? new Date(photo.createdAt) : null;
-      const formattedDate = createdAt && !Number.isNaN(createdAt.getTime())
-        ? createdAt.toLocaleDateString(undefined, { year:'numeric', month:'short', day:'numeric' })
-        : 'Recently added';
       const image = photo.image || FALLBACK_IMAGE;
-      // Build top tags
-      const tagSpans = [];
-      // Do not show a trending tag on the featured page
-      if(photo.featured){
-        tagSpans.push('<span class="pill featured"><i class="fa-solid fa-bolt"></i> Featured</span>');
-      }
+      const creatorName = photo.creator_name || photo.creator || photo.username || "Unknown";
+      const safeTitle = getSafePhotoTitle(photo) || 'Untitled';
+      const category = photo.categoryName || photo.category || 'Photo';
+      const description = String(photo.description || '').trim();
+
+      // Determine tags: show premium and featured, no trending on featured page
+      const topLeftTags = [];
       if(photo.isPremium){
-        tagSpans.push('<span class="pill premium"><i class="fa-solid fa-gem"></i> Premium</span>');
+        topLeftTags.push(`<span class="pill premium"><i class="fa-solid fa-gem"></i> Premium</span>`);
       }
+      if(photo.featured){
+        topLeftTags.push(`<span class="pill featured"><i class="fa-solid fa-bolt"></i> Featured</span>`);
+      }
+      // Build visual-card markup with overlay. Only metrics (views, likes, favourites) shown at bottom.
       return `
-        <article class="photo-card">
-          <div class="photo-card-image">
-            <img src="${safeText(image)}" alt="${safeText(photo.title || '')}" loading="lazy">
-          </div>
-          <div class="photo-card-body">
-            <div class="top-tags">
-              ${tagSpans.join('')}
+        <article class="visual-card">
+          <img src="${safeText(image)}" alt="${safeText(safeTitle)}">
+          <div class="card-top-row">
+            <div class="card-top-left">
+              ${topLeftTags.join('')}
             </div>
-            <h4>${safeText(photo.title || 'Untitled')}</h4>
-            <p>${safeText(photo.description || '')}</p>
-            <div class="photo-stats">
-              <span class="photo-stat"><i class="fa-solid fa-eye"></i> ${safeText(photo.views)}</span>
-              <span class="photo-stat"><i class="fa-solid fa-heart"></i> ${safeText(photo.likes)}</span>
-              <span class="photo-stat"><i class="fa-solid fa-star"></i> ${safeText(photo.favourites)}</span>
+            <div class="card-top-right"></div>
+          </div>
+          <div class="photo-overlay">
+            <div class="overlay-category">
+              <span class="pill">${safeText(category)}</span>
+            </div>
+            ${description ? `<p class="overlay-desc">${safeText(description)}</p>` : ""}
+            <div class="credit"><span>By ${safeText(creatorName)}</span></div>
+            <div class="card-bottom">
+              <div class="card-bottom-left"></div>
+              <div class="card-bottom-right">
+                <div class="photo-stats">
+                  <span class="photo-stat"><i class="fa-solid fa-eye"></i> ${safeText(photo.views)}</span>
+                  <span class="photo-stat"><i class="fa-solid fa-heart"></i> ${safeText(photo.likes)}</span>
+                  <span class="photo-stat"><i class="fa-solid fa-star"></i> ${safeText(photo.favourites)}</span>
+                </div>
+              </div>
             </div>
           </div>
         </article>
