@@ -1575,31 +1575,22 @@
 <body>
 
   <header>
-    <div class="container nav">
-      <a href="index.html" class="logo-wrap">
-        <span class="logo-mark">P</span>
-        <span class="logo-text">
-          <span class="logo-title">PixNest</span>
-          <span class="logo-sub">Photo Collection Site</span>
-        </span>
-      </a>
+    <nav class="nav-links" id="navLinks">
+  <a href="index.html" class="active">Home</a>
+  <a href="explore.html">Explore</a>
+  <a href="category.html">Categories</a>
+  <a href="featured.html">Featured</a>
+  <a href="premium.html">Premium</a>
+  <a href="contact.html">Contact</a>
+</nav>
 
-      <div class="nav-right">
-        <nav class="nav-links" id="navLinks">
-          <a href="index.html" class="active">Home</a>
-          <a href="explore.html">Explore</a>
-          <a href="category.html">Categories</a>
-          <a href="premium.html">Premium</a>
-          <a href="about.html">About</a>
-          <a href="contact.html">Contact</a>
-          <div class="auth-links" id="authNavLinks"></div>
-        </nav>
+<div class="nav-user-area" id="navUserArea"></div>
 
-        <button class="nav-toggle" id="navToggle" aria-label="Open navigation" aria-expanded="false">
-          <span></span>
-          <span></span>
-          <span></span>
-        </button>
+<button class="nav-toggle" id="navToggle" aria-label="Open navigation" aria-expanded="false">
+  <span></span>
+  <span></span>
+  <span></span>
+</button>
       </div>
     </div>
   </header>
@@ -3809,6 +3800,8 @@
   <script src="site-auth.js"></script>
 
 <script src="active-nav.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/main.js"></script>
 </body>
 </html>
  
