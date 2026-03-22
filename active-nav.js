@@ -124,7 +124,7 @@
      * Identify anchors that should receive the active state.
      * We exclude the site logo (which uses the `logo-wrap` class) so it
      * doesn't get styled like a navigation item. Only links defined in the
-     * GROUPS or DIRECT_ONLY sets and located inside recognised navigation
+     * KNOWN or DIRECT_ONLY sets and located inside recognised navigation
      * containers are considered.
      */
     return Array.from(document.querySelectorAll('a[href]')).filter((a) => {
