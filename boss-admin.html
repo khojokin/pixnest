@@ -1199,6 +1199,7 @@
        <button class="tab-btn" data-tab="photos">Photo Review</button>
        <button class="tab-btn" data-tab="users">Users</button>
        <button class="tab-btn" data-tab="flags">Flags & Holds</button>
+       <button class="tab-btn" data-tab="contact-messages">Contact Messages</button>
        <button class="tab-btn" data-tab="chat">Live Chat</button>
        <button class="tab-btn" data-tab="audit">Audit Log</button>
      </div>
@@ -1397,6 +1398,15 @@
        </div>
      </div>
 
+    <!-- New contact messages tab -->
+    <div class="tab-section" id="tab-contact-messages">
+      <div class="panel">
+        <h2>Contact Messages</h2>
+        <p class="panel-sub">Messages sent from the contact page.</p>
+        <div class="card-list" id="contactMessagesList"></div>
+      </div>
+    </div>
+
      <div class="tab-section" id="tab-chat">
        <div class="finance-admin-grid">
          <div class="panel">
@@ -1514,6 +1524,9 @@
  const markChatOpenBtn = document.getElementById("markChatOpenBtn");
  const auditList = document.getElementById("auditList");
 
+// Contact messages list
+const contactMessagesList = document.getElementById("contactMessagesList");
+
  const photoSearch = document.getElementById("photoSearch");
  const photoFilter = document.getElementById("photoFilter");
  const userSearch = document.getElementById("userSearch");
@@ -1541,6 +1554,9 @@
  let payoutProfilesData = [];
  let taxFormsData = [];
  let withdrawalsData = [];
+
+// Data for contact messages loaded from the contact_messages table
+let contactMessagesData = [];
 
  if(menuToggle && navLinks){
    menuToggle.addEventListener("click", () => {
@@ -1832,6 +1848,7 @@
      loadUsers(),
      loadFlags(),
      loadSupportSessions(),
+     loadContactMessages(),
      loadAudit()
    ]);
 
@@ -1980,6 +1997,128 @@
      requestsList.innerHTML = '<div class="empty-box">No requests found.</div>';
      return;
    }
+
+// -----------------------------------------------------------------------------
+// Contact messages
+// Load messages submitted through the contact page and display them in the
+// Contact Messages tab. Admins can start a live chat in response or delete the
+// message after handling it.
+async function loadContactMessages(){
+  try{
+    const { data, error } = await supabaseClient
+      .from('contact_messages')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .limit(100);
+    if(error) throw error;
+    contactMessagesData = Array.isArray(data) ? data : [];
+    renderContactMessages();
+  }catch(error){
+    console.error(error);
+    if(contactMessagesList){
+      contactMessagesList.innerHTML = '<div class="empty-box">Could not load contact messages.</div>';
+    }
+  }
+}
+
+function renderContactMessages(){
+  if(!contactMessagesList) return;
+  if(!contactMessagesData || contactMessagesData.length === 0){
+    contactMessagesList.innerHTML = '<div class="empty-box">No contact messages found.</div>';
+    return;
+  }
+  contactMessagesList.innerHTML = contactMessagesData.map(msg => {
+    const created = formatDate(msg.created_at);
+    const priority = escapeHtml(msg.priority || 'Normal');
+    return `
+      <div class="item-card">
+        <div class="item-head">
+          <div>
+            <div class="item-title">${escapeHtml(msg.subject || 'Contact')}</div>
+            <div class="item-meta">
+              Name: ${escapeHtml(msg.full_name || '—')}<br>
+              Email: ${escapeHtml(msg.email || '—')}<br>
+              Created: ${escapeHtml(created)}
+            </div>
+          </div>
+          <div>${priority}</div>
+        </div>
+        <div class="item-body">
+          <p><strong>Reason:</strong> ${escapeHtml(msg.reason || '')}</p>
+          <p>${escapeHtml(msg.message || '')}</p>
+        </div>
+        <div class="action-row">
+          <button class="btn ghost contact-reply-btn" data-contact-id="${escapeHtml(msg.id)}">
+            <i class="fa-solid fa-comments"></i>
+            Reply via Chat
+          </button>
+          <button class="btn ghost contact-delete-btn" data-contact-id="${escapeHtml(msg.id)}">
+            <i class="fa-solid fa-trash"></i>
+            Delete
+          </button>
+        </div>
+      </div>
+    `;
+  }).join('');
+  // Attach actions
+  contactMessagesList.querySelectorAll('.contact-reply-btn').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const id = btn.getAttribute('data-contact-id');
+      const msg = contactMessagesData.find(item => String(item.id) === String(id));
+      if(!msg) return;
+      try{
+        // Create a new live support session for this contact
+        const { data: sessionData, error: sessionError } = await supabaseClient
+          .from('live_support_sessions')
+          .insert({
+            user_id: msg.user_id || null,
+            visitor_name: msg.full_name || msg.email || 'Visitor',
+            visitor_email: msg.email || '',
+            status: 'open'
+          })
+          .select('*')
+          .single();
+        if(sessionError) throw sessionError;
+        // Send an initial admin message referencing the subject
+        await supabaseClient
+          .from('live_support_messages')
+          .insert({
+            session_id: sessionData.id,
+            sender_name: (adminProfile?.full_name || adminProfile?.display_name || 'Support'),
+            sender_type: 'admin',
+            message: `Regarding your message: ${msg.subject || 'Contact request'}`
+          });
+        // Reload support sessions and open the new one
+        await loadSupportSessions();
+        if(typeof openAdminChatSession === 'function'){
+          await openAdminChatSession(sessionData);
+        }
+        showNotice('Chat session started.');
+      }catch(error){
+        console.error(error);
+        showNotice('Could not start chat for this message.');
+      }
+    });
+  });
+  contactMessagesList.querySelectorAll('.contact-delete-btn').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const id = btn.getAttribute('data-contact-id');
+      try{
+        const { error } = await supabaseClient
+          .from('contact_messages')
+          .delete()
+          .eq('id', id);
+        if(error) throw error;
+        contactMessagesData = contactMessagesData.filter(item => String(item.id) !== String(id));
+        renderContactMessages();
+        showNotice('Contact message deleted.');
+      }catch(error){
+        console.error(error);
+        showNotice('Could not delete contact message.');
+      }
+    });
+  });
+}
 
    requestsList.innerHTML = requestsData.map(req => `
      <div class="item-card">

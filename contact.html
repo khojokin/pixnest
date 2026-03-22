@@ -199,6 +199,97 @@
       border:1px solid rgba(255,255,255,.14);
     }
 
+  /* Live chat support styles */
+  #liveSupportSection {
+    margin-top: 60px;
+  }
+  .live-chat-box {
+    min-height: 280px;
+    max-height: 380px;
+    overflow-y: auto;
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    background: #0f172a;
+    padding: 16px;
+    display: grid;
+    gap: 12px;
+  }
+  .chat-empty {
+    color: var(--muted);
+    text-align: center;
+    padding: 24px;
+  }
+  .chat-message {
+    display: flex;
+  }
+  .chat-message.user {
+    justify-content: flex-end;
+  }
+  .chat-bubble {
+    max-width: min(85%, 480px);
+    padding: 12px 14px;
+    border-radius: 16px;
+    border: 1px solid var(--line);
+    background: #111827;
+    color: var(--text);
+  }
+  .chat-message.user .chat-bubble {
+    background: rgba(250, 204, 21, 0.14);
+    border-color: rgba(250, 204, 21, 0.22);
+  }
+  .chat-bubble strong {
+    display: block;
+    font-size: 12px;
+    margin-bottom: 4px;
+    color: var(--accent);
+  }
+  .chat-bubble span {
+    display: block;
+    font-size: 14px;
+    color: var(--text);
+  }
+  .chat-bubble small {
+    display: block;
+    margin-top: 8px;
+    color: var(--muted);
+    font-size: 11px;
+  }
+  .chat-input {
+    display: flex;
+    flex-direction: row;
+    gap: 12px;
+    margin-top: 10px;
+  }
+  .chat-input textarea {
+    flex-grow: 1;
+    min-height: 90px;
+    resize: vertical;
+    background: #0f172a;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    color: #fff;
+    font-size: 15px;
+    padding: 14px 16px;
+  }
+  .chat-input button {
+    min-height: 42px;
+    padding: 10px 20px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 700;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    background: var(--accent);
+    color: #111827;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+  .chat-input button:hover:not(:disabled) {
+    transform: translateY(-2px);
+  }
+  .chat-input button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
    .nav-auth .signup-btn{
      background:var(--accent);
      color:#111827;
@@ -971,6 +1062,35 @@
    </div>
  </section>
 
+  <!-- Live chat support section -->
+  <section id="liveSupportSection">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <h2>Live Chat Support</h2>
+          <p>Start a live chat with our support team. You'll need to be logged in.</p>
+        </div>
+      </div>
+      <div class="panel">
+        <!-- Show login/signup prompt when not authenticated -->
+        <div id="liveAuthGate2">
+          <p>Please <a href="login.html">login</a> or <a href="signup.html">sign up</a> to start chat.</p>
+        </div>
+        <!-- Live chat container, hidden until authenticated -->
+        <div id="liveChatContainer" class="hidden">
+          <div id="chatInfo" style="margin-bottom:12px;">Connected to your support session.</div>
+          <div id="chatMessages" class="live-chat-box">
+            <div class="chat-empty">No messages yet.</div>
+          </div>
+          <div class="chat-input">
+            <textarea id="chatInput" placeholder="Type your message here..."></textarea>
+            <button id="chatSendBtn" class="btn primary">Send</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
  <section>
    <div class="container">
      <div class="section-head">
@@ -1193,6 +1313,15 @@
    let siteData = loadAdminData();
    let currentSession = null;
 
+  // Elements and state for live chat support
+  const chatAuthGate = document.getElementById("liveAuthGate2");
+  const liveChatContainer = document.getElementById("liveChatContainer");
+  const chatMessages = document.getElementById("chatMessages");
+  const chatInput = document.getElementById("chatInput");
+  const chatSendBtn = document.getElementById("chatSendBtn");
+  let activeChatSession = null;
+  let liveChannel2 = null;
+
    if(menuToggle && navLinks){
      menuToggle.addEventListener("click", () => {
        navLinks.classList.toggle("show");
@@ -1339,12 +1468,15 @@
        currentSession = null;
      }
 
-     updateAuthUi();
+    updateAuthUi();
+    // Initialize live chat on page load
+    await initLiveChat();
 
-     supabaseClient.auth.onAuthStateChange((_event, session) => {
-       currentSession = session || null;
-       updateAuthUi();
-     });
+    supabaseClient.auth.onAuthStateChange(async (_event, session) => {
+      currentSession = session || null;
+      updateAuthUi();
+      await initLiveChat();
+    });
    }
 
    async function submitContactForm(e){
@@ -1399,6 +1531,152 @@
        emailAddress.value = currentSession.user.email || "";
      }
    }
+
+  // ---------------------------------------------------------------------------
+  // Live chat support functions
+  // Render chat messages in the chat window
+  function renderChatMessages(messages) {
+    if (!messages || messages.length === 0) {
+      chatMessages.innerHTML = '<div class="chat-empty">No messages yet.</div>';
+      return;
+    }
+    chatMessages.innerHTML = messages.map(msg => {
+      const isUser = String(msg.sender_type || "").toLowerCase() === "user";
+      const senderName = escapeHtml(msg.sender_name || (isUser ? "You" : "Admin"));
+      const content = escapeHtml(msg.message || "");
+      const time = msg.created_at ? new Date(msg.created_at).toLocaleString("en-GB") : "";
+      return `
+        <div class="chat-message ${isUser ? "user" : ""}">
+          <div class="chat-bubble">
+            <strong>${senderName}</strong>
+            <span>${content}</span>
+            <small>${time}</small>
+          </div>
+        </div>
+      `;
+    }).join("");
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+  }
+
+  // Load chat messages from Supabase for the active session
+  async function loadChatMessages() {
+    if (!activeChatSession) return;
+    try {
+      const { data, error } = await supabaseClient
+        .from("live_support_messages")
+        .select("*")
+        .eq("session_id", activeChatSession.id)
+        .order("created_at", { ascending: true })
+        .limit(500);
+      if (error) throw error;
+      renderChatMessages(data || []);
+    } catch (error) {
+      console.error(error);
+      chatMessages.innerHTML = '<div class="chat-empty">Could not load messages.</div>';
+    }
+  }
+
+  // Subscribe to new chat messages via Supabase realtime
+  function subscribeToChatMessages(sessionId) {
+    if (liveChannel2) {
+      supabaseClient.removeChannel(liveChannel2);
+      liveChannel2 = null;
+    }
+    if (!sessionId) return;
+    liveChannel2 = supabaseClient
+      .channel(`contact-chat-${sessionId}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "live_support_messages",
+          filter: `session_id=eq.${sessionId}`
+        },
+        async () => {
+          await loadChatMessages();
+        }
+      )
+      .subscribe();
+  }
+
+  // Restore or create a chat session for the current user
+  async function restoreChatSession() {
+    if (!(currentSession && currentSession.user)) {
+      activeChatSession = null;
+      return;
+    }
+    try {
+      const { data: sessions } = await supabaseClient
+        .from("live_support_sessions")
+        .select("*")
+        .eq("user_id", currentSession.user.id)
+        .order("created_at", { ascending: false })
+        .limit(1);
+      let session = (Array.isArray(sessions) && sessions.length) ? sessions[0] : null;
+      if (!session) {
+        const { data: newSessionData, error: sessionError } = await supabaseClient
+          .from("live_support_sessions")
+          .insert({
+            user_id: currentSession.user.id,
+            visitor_name: getCurrentUserDisplayName(),
+            visitor_email: currentSession.user.email || "",
+            status: "open"
+          })
+          .select("*")
+          .single();
+        if (sessionError) throw sessionError;
+        session = newSessionData;
+      }
+      activeChatSession = session;
+      await loadChatMessages();
+      subscribeToChatMessages(activeChatSession.id);
+    } catch (error) {
+      console.error(error);
+      chatMessages.innerHTML = '<div class="chat-empty">Could not load chat.</div>';
+    }
+  }
+
+  // Initialize live chat based on authentication state
+  async function initLiveChat() {
+    if (!(currentSession && currentSession.user)) {
+      // Hide chat container and show login prompt
+      if (chatAuthGate) chatAuthGate.classList.remove("hidden");
+      if (liveChatContainer) liveChatContainer.classList.add("hidden");
+      activeChatSession = null;
+      return;
+    }
+    if (chatAuthGate) chatAuthGate.classList.add("hidden");
+    if (liveChatContainer) liveChatContainer.classList.remove("hidden");
+    await restoreChatSession();
+  }
+
+  // Send a message from the user to support
+  if (chatSendBtn) {
+    chatSendBtn.addEventListener("click", async () => {
+      const message = chatInput.value.trim();
+      if (!message || !activeChatSession) return;
+      try {
+        chatSendBtn.disabled = true;
+        const { error } = await supabaseClient
+          .from("live_support_messages")
+          .insert({
+            session_id: activeChatSession.id,
+            sender_name: getCurrentUserDisplayName() || "You",
+            sender_type: "user",
+            message
+          });
+        if (error) throw error;
+        chatInput.value = "";
+        // Messages auto-refresh via subscription
+      } catch (error) {
+        console.error(error);
+        showNotice("Could not send message.");
+      } finally {
+        chatSendBtn.disabled = false;
+      }
+    });
+  }
 
    contactForm.addEventListener("submit", submitContactForm);
    clearBtn.addEventListener("click", clearForm);
