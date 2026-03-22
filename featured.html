@@ -348,6 +348,29 @@
     cursor:pointer;
   }
 
+  /* Follow button styling */
+  .follow-btn{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    min-height:40px;
+    width:100%;
+    border:1px solid var(--line);
+    border-radius:14px;
+    background:#111827;
+    color:var(--accent);
+    font-size:14px;
+    font-weight:700;
+    cursor:pointer;
+    margin-bottom:10px;
+  }
+  /* State when the user is following the creator */
+  .follow-btn.following{
+    background:var(--accent);
+    color:#111827;
+  }
+
   </style>
 </head>
 <body>
@@ -463,8 +486,8 @@
                 </div>
               </div>
             </div>
-            <!-- Follow button disabled by default -->
-            <button type="button" class="follow-btn" disabled>
+            <!-- Follow button (enabled by default, toggles follow/unfollow state) -->
+            <button type="button" id="followBtn" class="follow-btn">
               <i class="fa-solid fa-user-plus"></i>
               Follow
             </button>
@@ -483,11 +506,11 @@
               </div>
             </div>
             <div class="creator-actions-line">
-              <button type="button" class="creator-line-btn" disabled>
+              <button type="button" id="creatorFavBtn" class="creator-line-btn">
                 <i class="fa-solid fa-star"></i>
                 Add to Favourites
               </button>
-              <button type="button" class="creator-line-btn" disabled>
+              <button type="button" id="creatorProfileBtn" class="creator-line-btn">
                 <i class="fa-solid fa-user"></i>
                 View Profile
               </button>
@@ -1049,6 +1072,21 @@
           fbDate.textContent = 'Posted —';
         }
       }
+
+      // Populate creator stats (followers, following, posts) if available; default to 0
+      const fbFollowingCount = document.getElementById('fbCreatorFollowingCount');
+      const fbFollowersCount = document.getElementById('fbCreatorFollowersCount');
+      const fbPostsCount = document.getElementById('fbCreatorPostsCount');
+      if(fbFollowingCount) fbFollowingCount.textContent = String(photo.following_count || 0);
+      if(fbFollowersCount) fbFollowersCount.textContent = String(photo.followers_count || 0);
+      if(fbPostsCount) fbPostsCount.textContent = String(photo.creator_post_count || 0);
+
+      // Reset follow button state
+      const followBtnElm = document.getElementById('followBtn');
+      if(followBtnElm){
+        followBtnElm.classList.remove('following');
+        followBtnElm.innerHTML = '<i class="fa-solid fa-user-plus"></i> Follow';
+      }
     }
 
     function openPhotoLightbox(photo){
@@ -1074,15 +1112,22 @@
       });
     }
 
-    // Like button handler: increments likes locally and updates database
+    // Like button handler: toggles like state so each user can like/unlike only once
     if(likeBtn){
       likeBtn.addEventListener('click', async () => {
         if(!currentLightboxPhoto) return;
-        // increment like count
-        const nextLikes = (currentLightboxPhoto.likes || 0) + 1;
+        // Determine previous liked state on the current photo
+        const wasLiked = !!currentLightboxPhoto.__liked;
+        let nextLikes = Number(currentLightboxPhoto.likes || 0);
+        if(wasLiked){
+          nextLikes = Math.max(0, nextLikes - 1);
+        }else{
+          nextLikes = nextLikes + 1;
+        }
         currentLightboxPhoto.likes = nextLikes;
-        lightboxPhotoLikesElm.textContent = nextLikes;
-        // update supabase if id exists
+        currentLightboxPhoto.__liked = !wasLiked;
+        lightboxPhotoLikesElm.textContent = String(nextLikes);
+        // Persist the like count if the photo has an ID
         if(currentLightboxPhoto.id){
           try{
             await supabaseClient
@@ -1094,13 +1139,20 @@
       });
     }
 
-    // Favourite button handler: increments favourites locally and updates database
+    // Favourite button handler: toggles favourite state so users can save/un‑save once
     if(favBtn){
       favBtn.addEventListener('click', async () => {
         if(!currentLightboxPhoto) return;
-        const nextFaves = (currentLightboxPhoto.favourites || 0) + 1;
+        const wasFaved = !!currentLightboxPhoto.__faved;
+        let nextFaves = Number(currentLightboxPhoto.favourites || 0);
+        if(wasFaved){
+          nextFaves = Math.max(0, nextFaves - 1);
+        }else{
+          nextFaves = nextFaves + 1;
+        }
         currentLightboxPhoto.favourites = nextFaves;
-        lightboxPhotoFavesElm.textContent = nextFaves;
+        currentLightboxPhoto.__faved = !wasFaved;
+        lightboxPhotoFavesElm.textContent = String(nextFaves);
         if(currentLightboxPhoto.id){
           try{
             await supabaseClient
@@ -1163,6 +1215,68 @@
       categoryFilter.value = 'all';
       renderFeatured();
     });
+
+    // --- Creator profile card interactions ---
+    const followBtnElm = document.getElementById('followBtn');
+    const creatorFavBtnElm = document.getElementById('creatorFavBtn');
+    const creatorProfileBtnElm = document.getElementById('creatorProfileBtn');
+
+    // Follow/unfollow handler: toggles state and updates follower count
+    if(followBtnElm){
+      followBtnElm.addEventListener('click', async () => {
+        if(!currentLightboxPhoto) return;
+        // Retrieve current followers count from the DOM
+        const countElm = document.getElementById('fbCreatorFollowersCount');
+        let followersCount = 0;
+        if(countElm && countElm.textContent){
+          followersCount = Number(countElm.textContent) || 0;
+        }
+        const isFollowing = followBtnElm.classList.contains('following');
+        if(isFollowing){
+          // Unfollow
+          followersCount = Math.max(0, followersCount - 1);
+          followBtnElm.classList.remove('following');
+          followBtnElm.innerHTML = '<i class="fa-solid fa-user-plus"></i> Follow';
+        }else{
+          // Follow
+          followersCount = followersCount + 1;
+          followBtnElm.classList.add('following');
+          followBtnElm.innerHTML = '<i class="fa-solid fa-user-check"></i> Following';
+        }
+        if(countElm){ countElm.textContent = String(followersCount); }
+        // Persist follow count to supabase if creator_id exists
+        if(currentLightboxPhoto.creator_id){
+          try{
+            await supabaseClient
+              .from('profiles')
+              .update({ followers: followersCount })
+              .eq('id', currentLightboxPhoto.creator_id);
+          }catch(err){ console.warn('Follower update failed', err); }
+        }
+      });
+    }
+
+    // Favourite button in creator card: delegates to main favourite button
+    if(creatorFavBtnElm && favBtn){
+      creatorFavBtnElm.addEventListener('click', () => {
+        // Trigger the main favourite button click to reuse its logic
+        favBtn.click();
+      });
+    }
+
+    // View profile button: navigates to the creator's profile page
+    if(creatorProfileBtnElm){
+      creatorProfileBtnElm.addEventListener('click', () => {
+        if(!currentLightboxPhoto) return;
+        const creatorId = currentLightboxPhoto.creator_id || currentLightboxPhoto.uploaded_by || '';
+        if(creatorId){
+          window.location.href = 'profile.html?id=' + encodeURIComponent(creatorId);
+        }else if(currentLightboxPhoto.creator_name){
+          // Fallback to creator name if id is unavailable
+          window.location.href = 'profile.html?name=' + encodeURIComponent(currentLightboxPhoto.creator_name);
+        }
+      });
+    }
 
     // Kick off asynchronous initialization of featured/trending categories.
     initializeFeatured();
