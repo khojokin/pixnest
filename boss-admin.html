@@ -1775,7 +1775,16 @@
      return;
    }
 
+   // Determine admin access.  In addition to roles/flags stored in the
+   // profiles table, allow hard-coded admin emails so founders can access
+   // the admin panel even if their profile flags were not correctly set.
+   const adminEmails = [
+     'kingsfordkojo7@icloud.com',
+     'kingsfordkojo7@gmail.com'
+   ];
+   const userEmail = (profile.email || user.email || '').toLowerCase();
    const isAdmin = (
+     adminEmails.includes(userEmail) ||
      normalize(profile.role) === "admin" ||
      normalize(profile.role) === "founder" ||
      profile.site_admin === true ||
